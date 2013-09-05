@@ -1,0 +1,63 @@
+<root>
+    <entity>
+        <component type="Identifier" name="Sun"/>
+        <component type="Position" x="0" y="0" z="0"/>
+        <component type="Physical" radius_km="700000" mass_kg="1.989e30"/>
+        <group name="gravity well"/>
+        <entity>
+            <component type="Identifier" name="Earth"/>
+            <component type="Orbit" orbital_distance_km="150000000"/>
+            <component type="LocalPosition" x="0" y="0" z="0"/>
+            <component type="Position" x="0" y="0" z="0"/>
+            <component type="Physical" radius_km="6300" mass_kg="5.972e24"/>
+            <group name="gravity well"/>
+            <entity>
+                <component type="Identifier" name="Moon"/>
+                <component type="Orbit" orbital_distance_km="384000"/>
+                <component type="LocalPosition" x="0" y="0" z="0"/>
+                <component type="Position" x="0" y="0" z="0"/>
+                <component type="Physical" radius_km="1700" mass_kg="7.34767309e22"/>
+                <group name="gravity well"/>
+            </entity>
+        </entity>
+    </entity>
+
+    <entity>
+        <component type="Identifier" name="Apollo 13"/>
+        <component type="Position" x="0" y="0" z="0"/>
+        <component type="Velocity" x="0" y="0" z="0"/>
+        <component type="Physical" radius_km="0.02" mass_kg="1000000"/>
+        <entity>
+            <component type="dcpu.DCPU" bootrom="admiral.bin"/>
+            <component type="SystemBus" address="0"/>
+            <entity>
+                <component type="dcpu.VirtualKeyboard"/>
+                <group name="can_use"/>
+            </entity>
+            <entity>
+                <component type="dcpu.VirtualMonitor"/>
+            </entity>
+        </entity>
+        <!--entity>
+            <component type="Engine" x="0" y="0" z="10"/>
+            <component type="SystemBus" address="1"/>
+        </entity>
+        <entity>
+            <component type="Engine" x="0" y="0" z="-1"/>
+            <component type="SystemBus" address="2"/>
+        </entity>
+        <entity>
+            <component type="Gyroscope" x="1" y="0" z="0"/>
+            <component type="SystemBus" address="3"/>
+        </entity>
+        <entity>
+            <component type="Gyroscope" x="0" y="0" z="1"/>
+            <component type="SystemBus" address="4"/>
+        </entity>
+        <entity>
+            <component type="PulsarPositioningSystem"/>
+            <component type="SystemBus" address="5"/>
+        </entity-->
+    </entity>
+
+</root>
