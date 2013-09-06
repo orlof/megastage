@@ -1,6 +1,7 @@
-*.class
+classes/
 
 # Package Files #
+Megastage.iml
 megastage.jar
 *.war
 *.ear

@@ -195,12 +195,10 @@ public class DCPU extends BaseComponent {
                         }
                         break;
                     case 16: //HWN
-                        System.out.println("HWN");
                         cycles++;
                         set(aaddr, (char) hardware.size());
                         break;
                     case 17: //HWQ
-                        System.out.println("HWQ");
                         cycles += 3;
                         synchronized (hardware) {
                             if ((a >= 0) && (a < hardware.size())) {

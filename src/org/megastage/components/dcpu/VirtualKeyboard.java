@@ -39,6 +39,7 @@ public class VirtualKeyboard extends DCPUHardware {
         System.out.println("Type " + i);
         if (i < 20 || i >= 127) return;
         if (keyBuffer[kwp & 0x3F] == 0) {
+            System.out.println("key added to buffer");
             keyBuffer[kwp++ & 0x3F] = (char) i;
             doInterrupt = true;
         }
@@ -73,6 +74,7 @@ public class VirtualKeyboard extends DCPUHardware {
             kwp = 0;
         } else if (a == 1) {
             if ((dcpu.registers[2] = keyBuffer[(krp & 0x3F)]) != 0) {
+                System.out.println("dcpu.registers[2] = " + dcpu.registers[2]);
                 keyBuffer[(krp++ & 0x3F)] = 0;
             }
         } else if (a == 2) {
