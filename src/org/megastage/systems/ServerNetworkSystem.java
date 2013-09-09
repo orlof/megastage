@@ -47,7 +47,7 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
             buffer.putChar(c);
         }
 
-        network.send(buffer);
+        network.broadcast(buffer);
     }
 
     public void sendMemory(SocketAddress remote, int messageID, Entity entity, char[] data) {
@@ -61,7 +61,7 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
             buffer.putChar(c);
         }
 
-        network.send(remote, buffer);
+        network.unicast(remote, buffer);
     }
 
     private void sendStartUse(Entity entity) {
@@ -69,7 +69,7 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
         buffer.putInt(Globals.Message.START_USE);
         buffer.putInt(entity.getId());
 
-        network.send(buffer);
+        network.broadcast(buffer);
     }
 
     public void handleMessage(SocketAddress remote, ByteBuffer buf) {
