@@ -60,8 +60,16 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
 
     public void sendUseEntity() {
         System.out.println("ClientNetworkSystem.sendUseEntity");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
+        ByteBuffer buf = ByteBuffer.wrap(new byte[4]);
         buf.putInt(Globals.Message.USE_ENTITY);
+        network.send(buf);
+    }
+
+    public void sendRequestEntityData(int entityID) {
+        System.out.println("ClientNetworkSystem.sendRequestEntityData");
+        ByteBuffer buf = ByteBuffer.wrap(new byte[8]);
+        buf.putInt(Globals.Message.REQUEST_ENTITY_DATA);
+        buf.putInt(entityID);
         network.send(buf);
     }
 
@@ -84,11 +92,14 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
     HashMap<Integer, Integer> clientToServer = new HashMap<Integer, Integer>();
     
     public void handleMessage(SocketAddress remote, ByteBuffer buf) {
+        System.out.println("ClientNetworkSystem.handleMessage");
         int msgID = buf.getInt();
 
         switch(msgID) {
             case Globals.Message.VIDEO_RAM:
-                handleVideoRAMMessage(buf);
+            case Globals.Message.FONT_RAM:
+            case Globals.Message.PALETTE_RAM:
+                handleRAMMessage(msgID, buf);
                 break;
             default:
                 System.out.println("ERROR packet");
@@ -97,7 +108,7 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
 
     @Mapper
     ComponentMapper<VirtualMonitorView> viewMapper;
-    private void handleVideoRAMMessage(ByteBuffer buf) {
+    private void handleRAMMessage(int msgID, ByteBuffer buf) {
         System.out.println("ClientNetworkSystem.handleVideoRAMMessage");
 
         int serverID = buf.getInt();
@@ -108,16 +119,28 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
             VirtualMonitorView mon = new VirtualMonitorView();
             entity.addComponent(mon);
 
+            sendRequestEntityData(serverID);
+
             world.getSystem(ClientRenderSystem.class).panel.image = mon.img;
         }
 
         VirtualMonitorView monitor = viewMapper.get(entity);
         
-        char[] mem = new char[384];
-        for(int i=0; i < 384; i++) {
+        char[] mem = new char[buf.remaining()/2];
+        for(int i=0; i < mem.length; i++) {
             mem[i] = buf.getChar();
         }
-        monitor.updateVideo(mem);
+        switch(msgID) {
+            case Globals.Message.VIDEO_RAM:
+                monitor.updateVideo(mem);
+                break;
+            case Globals.Message.FONT_RAM:
+                monitor.updateFont(mem);
+                break;
+            case Globals.Message.PALETTE_RAM:
+                monitor.updatePalette(mem);
+                break;
+        }
     }
 
     private Entity createEntity(int serverID) {

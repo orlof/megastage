@@ -18,6 +18,14 @@ public class RAM {
         update(memory, start, size);
     }
 
+    public RAM(char[] mem) {
+        this.mem = mem;
+    }
+
+    public boolean update(char[] mem) {
+        return update(mem, (char) 0, mem.length);
+    }
+
     public boolean update(char[] memory, char start, int size) {
         if(equals(memory, start, size)) return false;
 
@@ -34,4 +42,5 @@ public class RAM {
 
         return true;
     }
+
 }

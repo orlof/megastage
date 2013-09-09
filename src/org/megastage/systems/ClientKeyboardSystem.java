@@ -22,18 +22,57 @@ public class ClientKeyboardSystem extends VoidEntitySystem {
     public ClientKeyboardSystem() {
         super();
 
+        // TODO keeping button down should never produce repeated key_typed or pressed events
         KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         manager.addKeyEventDispatcher(new KeyEventDispatcher() {
+            boolean[] downChar = new boolean[256];
+            boolean[] downCode = new boolean[256];
+            boolean[] downChar2 = new boolean[256];
             @Override
             public boolean dispatchKeyEvent(KeyEvent e) {
+                System.out.println("ClientKeyboardSystem.dispatchKeyEvent");
                 if (e.getID() == KeyEvent.KEY_PRESSED) {
-                    world.getSystem(ClientNetworkSystem.class).sendKeyPressed(e.getKeyChar());
-                    //kbd.keyPressed(e.getKeyCode());
+                    if(e.getKeyChar() == 65535) {
+                        if(!downCode[e.getKeyCode()]) {
+                            downCode[e.getKeyCode()] = true;
+                            System.out.println("PRESS e.getKeyCode() = " + (int) e.getKeyCode());
+                            world.getSystem(ClientNetworkSystem.class).sendKeyPressed(e.getKeyCode());
+                        }
+                        return true;
+                    }
+
+                    if(!downChar[e.getKeyChar()]) {
+                        downChar[e.getKeyChar()] = true;
+                        System.out.println("PRESS e.getKeyChar() = " + (int) e.getKeyChar());
+                        world.getSystem(ClientNetworkSystem.class).sendKeyPressed(e.getKeyChar());
+                    }
+                    return true;
+
                 } else if (e.getID() == KeyEvent.KEY_RELEASED) {
-                    world.getSystem(ClientNetworkSystem.class).sendKeyReleased(e.getKeyChar());
-                    //kbd.keyReleased(e.getKeyCode());
+                    if(e.getKeyChar() == 65535) {
+                        if(downCode[e.getKeyCode()]) {
+                            downCode[e.getKeyCode()] = false;
+                            System.out.println("REL e.getKeyCode() = " + (int) e.getKeyCode());
+                            world.getSystem(ClientNetworkSystem.class).sendKeyReleased(e.getKeyCode());
+                        }
+                        return true;
+                    }
+
+                    if(downChar[e.getKeyChar()] || downChar2[e.getKeyChar()]) {
+                        downChar[e.getKeyChar()] = false;
+                        downChar2[e.getKeyChar()] = false;
+                        System.out.println("REL e.getKeyChar() = " + (int) e.getKeyChar());
+                        world.getSystem(ClientNetworkSystem.class).sendKeyReleased(e.getKeyChar());
+                    }
+                    return true;
+
                 } else if (e.getID() == KeyEvent.KEY_TYPED) {
-                    world.getSystem(ClientNetworkSystem.class).sendKeyTyped(e.getKeyChar());
+                    if(!downChar2[e.getKeyChar()]) {
+                        downChar2[e.getKeyChar()] = true;
+                        System.out.println("TYPE e.getKeyChar() = " + (int) e.getKeyChar());
+                        world.getSystem(ClientNetworkSystem.class).sendKeyTyped(e.getKeyChar());
+                    }
+                    return true;
                 }
                 return false;
             }

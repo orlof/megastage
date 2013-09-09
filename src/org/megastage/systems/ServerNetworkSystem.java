@@ -5,7 +5,9 @@ import com.artemis.annotations.Mapper;
 import com.artemis.managers.GroupManager;
 import com.artemis.managers.TagManager;
 import com.artemis.systems.VoidEntitySystem;
+import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
+import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.util.Globals;
 import org.megastage.util.Network;
 import org.megastage.components.dcpu.VirtualKeyboard;
@@ -34,10 +36,10 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
         return true;
     }
 
-    public void sendVideoMemory(int messageID, Entity entity, char[] data) {
-        System.out.println("ServerNetworkSystem.send");
+    public void sendMemory(int messageID, Entity entity, char[] data) {
+        System.out.println("ServerNetworkSystem.sendMemory");
 
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[776]); // 2*384 + 4 + 4 = 776
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[2*data.length + 8]); // 2*384 + 4 + 4 = 776
         buffer.putInt(messageID);
         buffer.putInt(entity.getId());
 
@@ -46,6 +48,20 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
         }
 
         network.send(buffer);
+    }
+
+    public void sendMemory(SocketAddress remote, int messageID, Entity entity, char[] data) {
+        System.out.println("ServerNetworkSystem.sendMemory");
+
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[2*data.length + 8]); // 2*384 + 4 + 4 = 776
+        buffer.putInt(messageID);
+        buffer.putInt(entity.getId());
+
+        for(char c: data) {
+            buffer.putChar(c);
+        }
+
+        network.send(remote, buffer);
     }
 
     private void sendStartUse(Entity entity) {
@@ -69,6 +85,9 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
                 break;
             case Globals.Message.USE_ENTITY:
                 handleUseEntityMessage(remote);
+                break;
+            case Globals.Message.REQUEST_ENTITY_DATA:
+                handleRequestEntityDataMessage(remote, buf.getInt());
                 break;
             case Globals.Message.KEY_TYPED:
             case Globals.Message.KEY_PRESSED:
@@ -114,7 +133,28 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
 
         world.getManager(TagManager.class).register(tag, entity);
         
-        // sendStartUse(entity);
+        sendEntityDataMessage(remote, entity.getId());
+    }
+
+    private void handleRequestEntityDataMessage(SocketAddress remote, int entityID) {
+        System.out.println("ServerNetworkSystem.handleRequestEntityDataMessage");
+
+        sendEntityDataMessage(remote, entityID);
+                
+    }
+
+    private void sendEntityDataMessage(SocketAddress remote, int entityID) {
+        Entity entity = world.getEntity(entityID);
+        Bag<Component> bag = entity.getComponents(new Bag<Component>());
+        for(int i=0; i < bag.size(); i++) {
+            Component component = bag.get(i);
+            if(component instanceof VirtualMonitor) {
+                VirtualMonitor mon = (VirtualMonitor) component;
+                sendMemory(remote, Globals.Message.VIDEO_RAM, entity, mon.videoRAM.mem);
+                sendMemory(remote, Globals.Message.FONT_RAM, entity, mon.fontRAM.mem);
+                sendMemory(remote, Globals.Message.PALETTE_RAM, entity, mon.paletteRAM.mem);
+            }
+        }
     }
 
     private void handleLoginMessage(SocketAddress c) {
