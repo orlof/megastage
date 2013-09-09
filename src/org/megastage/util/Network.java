@@ -65,7 +65,7 @@ public class Network {
     }
 
     public void tick() {
-        System.out.println("Network.tick");
+        // System.out.println("Network.tick");
         sendAll();
         receiveAll();
     }
