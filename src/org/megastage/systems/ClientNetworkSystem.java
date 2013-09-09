@@ -9,8 +9,6 @@ import org.megastage.util.Network;
 import org.megastage.components.client.VirtualMonitorView;
 import org.megastage.util.NetworkListener;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -41,28 +39,28 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.KEY_TYPED);
         buf.putInt(key);
-        network.send(buf);
+        network.broadcast(buf);
     }
 
     public void sendKeyPressed(int key) {
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.KEY_PRESSED);
         buf.putInt(key);
-        network.send(buf);
+        network.broadcast(buf);
     }
 
     public void sendKeyReleased(int key) {
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.KEY_RELEASED);
         buf.putInt(key);
-        network.send(buf);
+        network.broadcast(buf);
     }
 
     public void sendUseEntity() {
         System.out.println("ClientNetworkSystem.sendUseEntity");
         ByteBuffer buf = ByteBuffer.wrap(new byte[4]);
         buf.putInt(Globals.Message.USE_ENTITY);
-        network.send(buf);
+        network.broadcast(buf);
     }
 
     public void sendRequestEntityData(int entityID) {
@@ -70,7 +68,7 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
         ByteBuffer buf = ByteBuffer.wrap(new byte[8]);
         buf.putInt(Globals.Message.REQUEST_ENTITY_DATA);
         buf.putInt(entityID);
-        network.send(buf);
+        network.broadcast(buf);
     }
 
     public void sendLogin() {
@@ -78,14 +76,14 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
 
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.LOGIN);
-        network.send(buf);
+        network.broadcast(buf);
     }
 
     public void sendLogout() {
         System.out.println("ClientNetworkSystem.sendLogout");
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.LOGOUT);
-        network.send(buf);
+        network.broadcast(buf);
     }
 
     HashMap<Integer, Integer> serverToClient = new HashMap<Integer, Integer>();

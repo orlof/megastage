@@ -15,8 +15,7 @@ public class Network {
     private ByteBuffer receiveBuffer = ByteBuffer.wrap(new byte[1024]);
 
     // TODO outbound must be synchronized
-    private Queue<ByteBuffer> outbound = new LinkedList<ByteBuffer>();
-    private Queue<Pair> outboundSingle = new LinkedList<Pair>();
+    private Queue<BroadcastMessage> outbound = new LinkedList<BroadcastMessage>();
     private HashSet<SocketAddress> remotes = new HashSet<SocketAddress>();
 
     public Network(NetworkListener listener, int port) {
@@ -55,14 +54,14 @@ public class Network {
         remotes.remove(address);
     }
 
-    public void send(ByteBuffer buf) {
-        System.out.println("Network.send");
-        outbound.add(buf);
+    public void broadcast(ByteBuffer buf) {
+        System.out.println("Network.broadcast");
+        outbound.add(new BroadcastMessage(buf));
     }
 
-    public void send(SocketAddress remote, ByteBuffer buf) {
-        System.out.println("Network.send");
-        outboundSingle.add(new Pair(remote, buf));
+    public void unicast(SocketAddress remote, ByteBuffer buf) {
+        System.out.println("Network.broadcast");
+        outbound.add(new UnicastMessage(remote, buf));
     }
 
     public void tick() {
@@ -73,12 +72,18 @@ public class Network {
 
     private void sendAll() {
         try {
-            for(ByteBuffer buffer: outbound) {
-                buffer.flip();
+            for(BroadcastMessage msg: outbound) {
+                msg.buffer.flip();
 
-                for(SocketAddress s: remotes) {
-                    System.out.println("Network.sendAll sending " + buffer.remaining() + " bytes to " + s.toString());
-                    channel.send(buffer, s);
+                if(msg instanceof UnicastMessage) {
+                    UnicastMessage unicastMessage = (UnicastMessage) msg;
+                    System.out.println("Network.sendAll sending " + unicastMessage.buffer.remaining() + " bytes to " + unicastMessage.remote.toString());
+                    channel.send(unicastMessage.buffer, unicastMessage.remote);
+                } else {
+                    for(SocketAddress s: remotes) {
+                        System.out.println("Network.sendAll sending " + msg.buffer.remaining() + " bytes to " + s.toString());
+                        channel.send(msg.buffer, s);
+                    }
                 }
             }
 
@@ -87,18 +92,6 @@ public class Network {
             e1.printStackTrace();
         }
 
-        try {
-            for(Pair pair: outboundSingle) {
-                pair.msg.flip();
-
-                System.out.println("Network.sendAll sending " + pair.msg.remaining() + " bytes to " + pair.remote.toString());
-                channel.send(pair.msg, pair.remote);
-            }
-
-            outboundSingle.clear();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
     }
 
     private void receiveAll() {
@@ -119,14 +112,21 @@ public class Network {
             e.printStackTrace();
         }
     }
-    
-    private class Pair {
-        private Pair(SocketAddress remote, ByteBuffer msg) {
-            this.remote = remote;
-            this.msg = msg;
-        }
 
-        SocketAddress remote;
-        ByteBuffer msg;
+    private static class BroadcastMessage {
+        public ByteBuffer buffer;
+
+        private BroadcastMessage(ByteBuffer buffer) {
+            this.buffer = buffer;
+        }
+    }
+
+    private static class UnicastMessage extends BroadcastMessage {
+        public SocketAddress remote;
+
+        private UnicastMessage(SocketAddress remote, ByteBuffer buffer) {
+            super(buffer);
+            this.remote = remote;
+        }
     }
 }
