@@ -39,5 +39,8 @@ public class Globals {
         public static final int LOGOUT = 6;
         public static final int KEY_RELEASED = 7;
         public static final int KEY_PRESSED = 8;
+        public static final int FONT_RAM = 9;
+        public static final int PALETTE_RAM = 10;
+        public static final int REQUEST_ENTITY_DATA = 11;
     }
 }

@@ -34,22 +34,22 @@ public class VirtualKeyboard extends DCPUHardware {
         this.keyMapping = new AWTKeyMapping(true);
     }
 
-    public void keyTyped(int i) {
-        System.out.println("VirtualKeyboard.keyTyped");
-        System.out.println("Type " + i);
-        if (i < 20 || i >= 127) return;
+    public void keyTyped(int key) {
+        System.out.println("VirtualKeyboard.keyTyped: " + key);
+        if (key < 20 || key >= 127) return;
         if (keyBuffer[kwp & 0x3F] == 0) {
-            System.out.println("key added to buffer");
-            keyBuffer[kwp++ & 0x3F] = (char) i;
+            System.out.println("key added to buffer: " + kwp);
+            keyBuffer[kwp++ & 0x3F] = (char) key;
             doInterrupt = true;
         }
     }
 
     public void keyPressed(int key) {
-        System.out.println("Press " + key);
+        System.out.println("VirtualKeyboard.keyPressed: " + key);
         int i = keyMapping.getKey(key);
         if (i < 0) return;
         if ((i < 20 || i >= 127) && keyBuffer[kwp & 0x3F] == 0) {
+            System.out.println("key added to buffer: " + kwp);
             keyBuffer[kwp++ & 0x3F] = (char) i;
         }
         isDown[i] = true;
@@ -57,7 +57,7 @@ public class VirtualKeyboard extends DCPUHardware {
     }
 
     public void keyReleased(int key) {
-        System.out.println("Release " + key);
+        System.out.println("VirtualKeyboard.keyReleased: " + key);
         int i = keyMapping.getKey(key);
         if (i < 0) return;
         isDown[i] = false;
@@ -67,14 +67,16 @@ public class VirtualKeyboard extends DCPUHardware {
     public void interrupt() {
         int a = dcpu.registers[0];
         if (a == 0) {
+            System.out.println("VirtualKeyboard.interrupt a=0");
             for (int i = 0; i < keyBuffer.length; i++) {
                 keyBuffer[i] = 0;
             }
             krp = 0;
             kwp = 0;
         } else if (a == 1) {
-            if ((dcpu.registers[2] = keyBuffer[(krp & 0x3F)]) != 0) {
-                System.out.println("dcpu.registers[2] = " + dcpu.registers[2]);
+            dcpu.registers[2] = keyBuffer[(krp & 0x3F)];
+            if (dcpu.registers[2] != 0) {
+                System.out.println("read from keyBuffer["+krp+"++] = " + dcpu.registers[2]);
                 keyBuffer[(krp++ & 0x3F)] = 0;
             }
         } else if (a == 2) {

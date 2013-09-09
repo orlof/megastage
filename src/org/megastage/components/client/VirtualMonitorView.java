@@ -27,61 +27,26 @@ public class VirtualMonitorView extends Component {
     public boolean isDirty = false;
 
     public VirtualMonitorView() {
-        resetFont();
-        resetPalette();
     }
 
-    public void resetFont() {
-        int[] pixels = new int[4096];
-        try {
-            ImageIO.read(new File("font.png")).getRGB(0, 0, 128, 32, pixels, 0, 128);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        for (int c = 0; c < 128; c++) {
-            int ro = c * 2;
-            int xo = c % 32 * 4;
-            int yo = c / 32 * 8;
-            for (int x = 0; x < 4; x++) {
-                int bb = 0;
-                for (int y = 0; y < 8; y++)
-                    if ((pixels[(xo + x + (yo + y) * 128)] & 0xFF) > 128)
-                        bb |= 1 << y;
-                fontMemRam[ro + x / 2] = (char) (fontMemRam[ro + x / 2] | bb << (x + 1 & 0x1) * 8);
-            }
-        }
-    }
-
-    public void resetPalette() {
+    public void updatePalette(char[] mem) {
         for (int i = 0; i < 16; i++) {
-            int b = (i >> 0 & 0x1) * 170;
-            int g = (i >> 1 & 0x1) * 170;
-            int r = (i >> 2 & 0x1) * 170;
-            if (i == 6) {
-                g -= 85;
-            } else if (i >= 8) {
-                r += 85;
-                g += 85;
-                b += 85;
-            }
-            paletteMemRam[i] = 0xff000000 | r << 16 | g << 8 | b;
-        }
-    }
-
-    public void updatePalette(RAM ram) {
-        for (int i = 0; i < 16; i++) {
-            char ch = ram.mem[i];
+            char ch = mem[i];
             int b = (ch & 0xF) * 17;
             int g = (ch >> 4 & 0xF) * 17;
             int r = (ch >> 8 & 0xF) * 17;
             paletteMemRam[i] = (0xFF000000 | r << 16 | g << 8 | b);
         }
+        isDirty = true;
     }
-
 
     public void updateVideo(char[] mem) {
         screenMemRam = mem;
+        isDirty = true;
+    }
+
+    public void updateFont(char[] mem) {
+        fontMemRam = mem;
         isDirty = true;
     }
 

@@ -14,7 +14,9 @@ public class Network {
     private DatagramChannel channel;
     private ByteBuffer receiveBuffer = ByteBuffer.wrap(new byte[1024]);
 
+    // TODO outbound must be synchronized
     private Queue<ByteBuffer> outbound = new LinkedList<ByteBuffer>();
+    private Queue<Pair> outboundSingle = new LinkedList<Pair>();
     private HashSet<SocketAddress> remotes = new HashSet<SocketAddress>();
 
     public Network(NetworkListener listener, int port) {
@@ -54,10 +56,17 @@ public class Network {
     }
 
     public void send(ByteBuffer buf) {
+        System.out.println("Network.send");
         outbound.add(buf);
     }
 
+    public void send(SocketAddress remote, ByteBuffer buf) {
+        System.out.println("Network.send");
+        outboundSingle.add(new Pair(remote, buf));
+    }
+
     public void tick() {
+        System.out.println("Network.tick");
         sendAll();
         receiveAll();
     }
@@ -74,6 +83,19 @@ public class Network {
             }
 
             outbound.clear();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+        try {
+            for(Pair pair: outboundSingle) {
+                pair.msg.flip();
+
+                System.out.println("Network.sendAll sending " + pair.msg.remaining() + " bytes to " + pair.remote.toString());
+                channel.send(pair.msg, pair.remote);
+            }
+
+            outboundSingle.clear();
         } catch (IOException e1) {
             e1.printStackTrace();
         }
@@ -96,5 +118,15 @@ public class Network {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    private class Pair {
+        private Pair(SocketAddress remote, ByteBuffer msg) {
+            this.remote = remote;
+            this.msg = msg;
+        }
+
+        SocketAddress remote;
+        ByteBuffer msg;
     }
 }
