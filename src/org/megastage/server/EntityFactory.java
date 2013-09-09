@@ -25,6 +25,8 @@ public class EntityFactory {
             for(Element e: element.getChildren("component")) {
                 Class clazz = Class.forName("org.megastage.components." + e.getAttributeValue("type"));
                 BaseComponent comp = (BaseComponent) clazz.newInstance();
+                System.out.println("comp.getClass().getName() = " + comp.getClass().getName());
+                System.out.println("parent.getClass().getName() = " + parent);
                 comp.init(world, parent, e);
                 entity.addComponent(comp);
             }
@@ -40,6 +42,7 @@ public class EntityFactory {
             }
 
             entity.addToWorld();
+            System.out.println("entity.toString() = " + entity.toString());
 
             for(Element e: element.getChildren("entity")) {
                 create(world, e, entity);

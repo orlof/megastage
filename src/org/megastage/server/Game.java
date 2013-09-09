@@ -48,7 +48,7 @@ public class Game {
             Globals.time = ctime;
 
             world.process();
-            Thread.sleep(1000);
+            Thread.sleep(100);
         }
     }
 }

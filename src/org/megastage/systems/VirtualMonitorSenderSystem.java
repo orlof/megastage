@@ -8,6 +8,9 @@ import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.util.Globals;
 import org.megastage.components.dcpu.VirtualMonitor;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class VirtualMonitorSenderSystem extends EntityProcessingSystem {
     @Mapper ComponentMapper<VirtualMonitor> virtualMonitorMapper;
 
@@ -17,14 +20,14 @@ public class VirtualMonitorSenderSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity entity) {
-        System.out.println("VirtualMonitorSenderSystem.process");
+        Logger.getLogger(VirtualMonitorSenderSystem.class.getName()).log(Level.INFO, "processing");
         VirtualMonitor mon = virtualMonitorMapper.get(entity);
         
         boolean changed = mon.videoRAMAddr == 0 ?
                 mon.videoRAM.update(VirtualMonitor.EMPTY, (char) 0, 384):
                 mon.videoRAM.update(mon.dcpu.ram, mon.videoRAMAddr, 384);
 
-        if(true) {
+        if(changed) {
             world.getSystem(ServerNetworkSystem.class).sendMemory(Globals.Message.VIDEO_RAM, entity, mon.videoRAM.mem);
         }
         

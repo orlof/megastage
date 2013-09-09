@@ -65,7 +65,7 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     private void sendStartUse(Entity entity) {
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[10]);
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[8]);
         buffer.putInt(Globals.Message.START_USE);
         buffer.putInt(entity.getId());
 
@@ -133,7 +133,7 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
 
         world.getManager(TagManager.class).register(tag, entity);
         
-        sendEntityDataMessage(remote, entity.getId());
+        // sendEntityDataMessage(remote, entity.getId());
     }
 
     private void handleRequestEntityDataMessage(SocketAddress remote, int entityID) {
@@ -144,6 +144,7 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     private void sendEntityDataMessage(SocketAddress remote, int entityID) {
+        System.out.println("ServerNetworkSystem.sendEntityDataMessage");
         Entity entity = world.getEntity(entityID);
         Bag<Component> bag = entity.getComponents(new Bag<Component>());
         for(int i=0; i < bag.size(); i++) {
@@ -160,6 +161,7 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
     private void handleLoginMessage(SocketAddress c) {
         System.out.println("ServerNetworkSystem.login: " + c.toString());
         network.addRemote(c);
+        sendEntityDataMessage(c, 6);
     }
 
     private void handleLogoutMessage(SocketAddress c) {

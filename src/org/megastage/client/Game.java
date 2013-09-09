@@ -58,7 +58,7 @@ public class Game {
             if(state == State.STOPPING) {
                 state = State.STOPPED;
             }
-            Thread.sleep(1000);
+            Thread.sleep(100);
             world.process();
         }
     }
