@@ -1,5 +1,7 @@
 package org.megastage.util;
 
+import org.megastage.util.application.Log;
+
 import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
@@ -7,8 +9,11 @@ import java.nio.channels.DatagramChannel;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Logger;
 
 public class Network {
+    private final static Logger LOG = Logger.getLogger(Network.class.getName());
+
     private NetworkListener listener;
 
     private DatagramChannel channel;
@@ -55,12 +60,12 @@ public class Network {
     }
 
     public void broadcast(ByteBuffer buf) {
-        System.out.println("Network.broadcast");
+        LOG.finer(buf.position() + " bytes to ALL remotes");
         outbound.add(new BroadcastMessage(buf));
     }
 
     public void unicast(SocketAddress remote, ByteBuffer buf) {
-        System.out.println("Network.broadcast");
+        LOG.finer(buf.position() + " bytes to " + remote.toString());
         outbound.add(new UnicastMessage(remote, buf));
     }
 
@@ -77,11 +82,14 @@ public class Network {
 
                 if(msg instanceof UnicastMessage) {
                     UnicastMessage unicastMessage = (UnicastMessage) msg;
-                    System.out.println("Network.sendAll sending " + unicastMessage.buffer.remaining() + " bytes to " + unicastMessage.remote.toString());
+
+                    LOG.finer(unicastMessage.buffer.remaining() + " bytes to " + unicastMessage.remote.toString());
+
                     channel.send(unicastMessage.buffer, unicastMessage.remote);
                 } else {
                     for(SocketAddress s: remotes) {
-                        System.out.println("Network.sendAll sending " + msg.buffer.remaining() + " bytes to " + s.toString());
+                        LOG.finer(msg.buffer.remaining() + " bytes to " + s.toString());
+
                         channel.send(msg.buffer, s);
                     }
                 }

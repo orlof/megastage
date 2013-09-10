@@ -12,11 +12,15 @@ import org.megastage.util.Globals;
 import org.megastage.util.Network;
 import org.megastage.components.dcpu.VirtualKeyboard;
 import org.megastage.util.NetworkListener;
+import org.megastage.util.application.Log;
 
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.util.logging.Logger;
 
 public class ServerNetworkSystem extends VoidEntitySystem implements NetworkListener {
+    private final static Logger LOG = Logger.getLogger(ServerNetworkSystem.class.getName());
+    
     @Mapper ComponentMapper<VirtualKeyboard> virtualKeyboardMapper;
 
     private Network network;
@@ -37,7 +41,7 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendMemory(int messageID, Entity entity, char[] data) {
-        System.out.println("ServerNetworkSystem.sendMemory");
+        LOG.finer(entity.toString());
 
         ByteBuffer buffer = ByteBuffer.wrap(new byte[2*data.length + 8]); // 2*384 + 4 + 4 = 776
         buffer.putInt(messageID);
@@ -51,7 +55,7 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendMemory(SocketAddress remote, int messageID, Entity entity, char[] data) {
-        System.out.println("ServerNetworkSystem.sendMemory");
+        LOG.finer(entity.toString() + " to remote " + remote.toString());
 
         ByteBuffer buffer = ByteBuffer.wrap(new byte[2*data.length + 8]); // 2*384 + 4 + 4 = 776
         buffer.putInt(messageID);
@@ -73,7 +77,7 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void handleMessage(SocketAddress remote, ByteBuffer buf) {
-        System.out.println("ServerNetworkSystem.handleMessage received " + buf.remaining() + " bytes from " + remote.toString());
+        LOG.fine(buf.remaining() + " bytes from " + remote.toString());
         int msgID = buf.getInt();
 
         switch(msgID) {
@@ -100,7 +104,6 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     private void handleKeyMessage(SocketAddress remote, int key, int messageType) {
-        System.out.println("ServerNetworkSystem.handleKeyTypedMessage");
         String tag = Globals.Tag.IN_USE + remote.toString();
         Entity entity = world.getManager(TagManager.class).getEntity(tag);
 
@@ -121,8 +124,6 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     private void handleUseEntityMessage(SocketAddress remote) {
-        System.out.println("ServerNetworkSystem.handleUseEntityMessage");
-
         GroupManager groupManager = world.getManager(GroupManager.class);
         ImmutableBag<Entity> groupCanUse = groupManager.getEntities(Globals.Group.CAN_USE);
 
@@ -137,35 +138,34 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     private void handleRequestEntityDataMessage(SocketAddress remote, int entityID) {
-        System.out.println("ServerNetworkSystem.handleRequestEntityDataMessage");
-
         sendEntityDataMessage(remote, entityID);
-                
     }
 
     private void sendEntityDataMessage(SocketAddress remote, int entityID) {
-        System.out.println("ServerNetworkSystem.sendEntityDataMessage");
         Entity entity = world.getEntity(entityID);
         Bag<Component> bag = entity.getComponents(new Bag<Component>());
         for(int i=0; i < bag.size(); i++) {
             Component component = bag.get(i);
             if(component instanceof VirtualMonitor) {
                 VirtualMonitor mon = (VirtualMonitor) component;
-                sendMemory(remote, Globals.Message.VIDEO_RAM, entity, mon.videoRAM.mem);
-                sendMemory(remote, Globals.Message.FONT_RAM, entity, mon.fontRAM.mem);
-                sendMemory(remote, Globals.Message.PALETTE_RAM, entity, mon.paletteRAM.mem);
+                sendVirtualMonitorData(remote, entity, mon);
             }
         }
     }
 
-    private void handleLoginMessage(SocketAddress c) {
-        System.out.println("ServerNetworkSystem.login: " + c.toString());
-        network.addRemote(c);
-        sendEntityDataMessage(c, 6);
+    private void handleLoginMessage(SocketAddress remote) {
+        network.addRemote(remote);
+
+        world.getSystem(ServerRemoteInitializationSystem.class).initializeClient(remote);
     }
 
     private void handleLogoutMessage(SocketAddress c) {
-        System.out.println("ServerNetworkSystem.logout: " + c.toString());
         network.removeRemote(c);
+    }
+
+    public void sendVirtualMonitorData(SocketAddress remote, Entity entity, VirtualMonitor mon) {
+        sendMemory(remote, Globals.Message.VIDEO_RAM, entity, mon.videoRAM.mem);
+        sendMemory(remote, Globals.Message.FONT_RAM, entity, mon.fontRAM.mem);
+        sendMemory(remote, Globals.Message.PALETTE_RAM, entity, mon.paletteRAM.mem);
     }
 }

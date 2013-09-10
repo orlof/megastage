@@ -5,7 +5,10 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,6 +21,7 @@ public class Main {
     public static final String version = "DEV";
 
     public static void main(String args[]) throws Exception {
+        LogManager.getLogManager().readConfiguration(new FileInputStream("server_logging.properties"));
         Element root = readConfig(args[0]);
         Game game = new Game(root);
         game.loopForever();

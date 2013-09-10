@@ -29,13 +29,16 @@
         <component type="Physical" radius_km="0.02" mass_kg="1000000"/>
         <entity>
             <component type="dcpu.DCPU" bootrom="admiral.bin"/>
+            <component type="Identifier" name="HAL"/>
             <component type="SystemBus" address="0"/>
             <entity>
                 <component type="dcpu.VirtualKeyboard"/>
+                <component type="Identifier" name="Generic"/>
                 <group name="can_use"/>
             </entity>
             <entity>
                 <component type="dcpu.VirtualMonitor"/>
+                <component type="Identifier" name="LEM"/>
             </entity>
         </entity>
         <!--entity>

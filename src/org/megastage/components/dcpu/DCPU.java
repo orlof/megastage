@@ -5,10 +5,12 @@ import com.artemis.World;
 import org.jdom2.Element;
 import org.megastage.util.Globals;
 import org.megastage.components.BaseComponent;
+import org.megastage.util.application.Log;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Experimental 1.7 update to Notch's 1.4 emulator
@@ -16,6 +18,8 @@ import java.util.List;
  * @author Notch, Herobrine
  */
 public class DCPU extends BaseComponent {
+    private final static Logger LOG = Logger.getLogger(DCPU.class.getName());
+
     public static final int KHZ = 100;
     public static final int HARDWARE_TICK_INTERVAL = 1000 * KHZ / 60;
 
@@ -73,10 +77,9 @@ public class DCPU extends BaseComponent {
     }
 
     public boolean connectHardware(DCPUHardware hw) {
-        System.out.println("DCPU.connectHardware: " + hw.toString());
+        LOG.fine(hw.toString());
         hw.dcpu = this;
         hardware.add(hw);
-        System.out.println("hardware = " + hardware);
         return true;
     }
 
@@ -93,7 +96,8 @@ public class DCPU extends BaseComponent {
         long uptime = Globals.time - startupTime;
         long cycleTarget = uptime * KHZ;
 
-        System.out.println("DCPU run cycles: " + (cycleTarget-cycles));
+        LOG.fine((cycleTarget-cycles) + " cycles ");
+
         while (cycles < cycleTarget) {
             tick();
 

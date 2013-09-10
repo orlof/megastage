@@ -8,8 +8,11 @@ import org.megastage.util.RAM;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class VirtualMonitor extends DCPUHardware {
+    private final static Logger LOG = Logger.getLogger(VirtualMonitor.class.getName());
+
     public static final int WIDTH_CHARS = 32;
     public static final int HEIGHT_CHARS = 12;
     public static final int WIDTH_PIXELS = 128;
@@ -81,13 +84,14 @@ public class VirtualMonitor extends DCPUHardware {
 
 
     public void interrupt() {
-        System.out.println("VirtualMonitor.interrupt");
         char a = dcpu.registers[0];
         char b = dcpu.registers[1];
 
+        LOG.fine("a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
+
         if (a == 0) {
+            LOG.finer("Changed video ram address");
             videoRAMAddr = b;
-            System.out.println("updated video ram address b = " + ((int) b));
         } else if (a == 1) {
             fontRAMAddr = b;
         } else if (a == 2) {
