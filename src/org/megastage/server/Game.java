@@ -27,6 +27,8 @@ public class Game {
         world.setManager(new TagManager());
 
         world.setSystem(new ServerNetworkSystem());
+        world.setSystem(new ServerRemoteInitializationSystem());
+
         //world.setSystem(new OrbitalMovementSystem());
         //world.setSystem(new CoordinateTransformSystem());
         //world.setSystem(new GravitySystem());
