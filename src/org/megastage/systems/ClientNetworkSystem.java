@@ -39,7 +39,7 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendKeyTyped(int key) {
-        LOG.fine("");
+        LOG.finer("");
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.KEY_TYPED);
         buf.putInt(key);
@@ -47,7 +47,7 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendKeyPressed(int key) {
-        LOG.fine("");
+        LOG.finer("");
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.KEY_PRESSED);
         buf.putInt(key);
@@ -55,7 +55,7 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendKeyReleased(int key) {
-        LOG.fine("");
+        LOG.finer("");
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.KEY_RELEASED);
         buf.putInt(key);
@@ -63,14 +63,14 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendUseEntity() {
-        LOG.fine("");
+        LOG.finer("");
         ByteBuffer buf = ByteBuffer.wrap(new byte[4]);
         buf.putInt(Globals.Message.USE_ENTITY);
         network.broadcast(buf);
     }
 
     public void sendRequestEntityData(int entityID) {
-        LOG.fine("");
+        LOG.finer("");
         ByteBuffer buf = ByteBuffer.wrap(new byte[8]);
         buf.putInt(Globals.Message.REQUEST_ENTITY_DATA);
         buf.putInt(entityID);
@@ -86,7 +86,7 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendLogout() {
-        LOG.fine("");
+        LOG.finer("");
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.LOGOUT);
         network.broadcast(buf);

@@ -15,7 +15,7 @@ public class Globals {
     public static String serverHost = "localhost";
     public static int serverPort = 12358;
 
-    public static int clientPort = serverPort + 1;
+    public static int clientPort = 0;
 
     public static long time = System.currentTimeMillis();
 
