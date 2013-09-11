@@ -56,7 +56,6 @@ public class ApplicationFrame {
     }
 
     public void close() {
-        System.out.println("ApplicationFrame.windowClosing");
         // save the window settings on exit
         int currentExtendedState = frame.getExtendedState();
 
@@ -98,8 +97,6 @@ public class ApplicationFrame {
                 frame.createBufferStrategy(2);
             }
         });
-        
-        System.out.println("View initialized");
     }
 
     /**

@@ -32,9 +32,8 @@ public class Network {
 
             channel.configureBlocking(false);
 
-            DatagramSocket socket = channel.socket();
-            SocketAddress address = new InetSocketAddress(port);
-            socket.bind(address);
+            SocketAddress address = port == 0 ? null: new InetSocketAddress(port);
+            channel.socket().bind(address);
 
         } catch (SocketException e) {
             e.printStackTrace();
@@ -59,12 +58,12 @@ public class Network {
         remotes.remove(address);
     }
 
-    public void broadcast(ByteBuffer buf) {
+    public synchronized void broadcast(ByteBuffer buf) {
         LOG.finer(buf.position() + " bytes to ALL remotes");
         outbound.add(new BroadcastMessage(buf));
     }
 
-    public void unicast(SocketAddress remote, ByteBuffer buf) {
+    public synchronized void unicast(SocketAddress remote, ByteBuffer buf) {
         LOG.finer(buf.position() + " bytes to " + remote.toString());
         outbound.add(new UnicastMessage(remote, buf));
     }
@@ -75,7 +74,7 @@ public class Network {
         receiveAll();
     }
 
-    private void sendAll() {
+    private synchronized void sendAll() {
         try {
             for(BroadcastMessage msg: outbound) {
                 msg.buffer.flip();

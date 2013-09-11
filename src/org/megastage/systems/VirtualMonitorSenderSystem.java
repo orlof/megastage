@@ -23,7 +23,7 @@ public class VirtualMonitorSenderSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity entity) {
-        LOG.fine(entity.toString());
+        LOG.finer(entity.toString());
 
         VirtualMonitor mon = virtualMonitorMapper.get(entity);
 

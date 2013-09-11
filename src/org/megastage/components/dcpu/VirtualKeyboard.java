@@ -4,7 +4,11 @@ import com.artemis.Entity;
 import com.artemis.World;
 import org.jdom2.Element;
 
+import java.util.logging.Logger;
+
 public class VirtualKeyboard extends DCPUHardware {
+    private final static Logger LOG = Logger.getLogger(VirtualKeyboard.class.getName());
+
     public static final int KEY_BACKSPACE = 16;
     public static final int KEY_RETURN = 17;
     public static final int KEY_INSERT = 18;
@@ -35,21 +39,23 @@ public class VirtualKeyboard extends DCPUHardware {
     }
 
     public void keyTyped(int key) {
-        System.out.println("VirtualKeyboard.keyTyped: " + key);
+        LOG.finer("key ID: " + Integer.toHexString(key));
+
         if (key < 20 || key >= 127) return;
         if (keyBuffer[kwp & 0x3F] == 0) {
-            System.out.println("key added to buffer: " + kwp);
+            LOG.finer(String.format("write keyBuffer[%d]=%s", kwp, Integer.toHexString(key)));
             keyBuffer[kwp++ & 0x3F] = (char) key;
             doInterrupt = true;
         }
     }
 
     public void keyPressed(int key) {
-        System.out.println("VirtualKeyboard.keyPressed: " + key);
+        LOG.finer("key ID: " + Integer.toHexString(key));
+
         int i = keyMapping.getKey(key);
         if (i < 0) return;
         if ((i < 20 || i >= 127) && keyBuffer[kwp & 0x3F] == 0) {
-            System.out.println("key added to buffer: " + kwp);
+            LOG.finer(String.format("write keyBuffer[%d]=%s", kwp, Integer.toHexString(key)));
             keyBuffer[kwp++ & 0x3F] = (char) i;
         }
         isDown[i] = true;
@@ -57,7 +63,8 @@ public class VirtualKeyboard extends DCPUHardware {
     }
 
     public void keyReleased(int key) {
-        System.out.println("VirtualKeyboard.keyReleased: " + key);
+        LOG.finer("key ID: " + Integer.toHexString(key));
+
         int i = keyMapping.getKey(key);
         if (i < 0) return;
         isDown[i] = false;
@@ -67,7 +74,7 @@ public class VirtualKeyboard extends DCPUHardware {
     public void interrupt() {
         int a = dcpu.registers[0];
         if (a == 0) {
-            System.out.println("VirtualKeyboard.interrupt a=0");
+            LOG.finest("reset keyBuffer");
             for (int i = 0; i < keyBuffer.length; i++) {
                 keyBuffer[i] = 0;
             }
@@ -76,7 +83,7 @@ public class VirtualKeyboard extends DCPUHardware {
         } else if (a == 1) {
             dcpu.registers[2] = keyBuffer[(krp & 0x3F)];
             if (dcpu.registers[2] != 0) {
-                System.out.println("read from keyBuffer["+krp+"++] = " + dcpu.registers[2]);
+                LOG.finest(String.format("read %s = keyBuffer[%d]", Integer.toHexString(dcpu.registers[2]), krp));
                 keyBuffer[(krp++ & 0x3F)] = 0;
             }
         } else if (a == 2) {

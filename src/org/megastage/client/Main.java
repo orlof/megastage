@@ -18,7 +18,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         //setup the logger
-        LogManager.getLogManager().readConfiguration(new FileInputStream("logging.properties"));
+        LogManager.getLogManager().readConfiguration(new FileInputStream("client_logging.properties"));
 
         AppConfig.init("megastage_client", VERSION);
 

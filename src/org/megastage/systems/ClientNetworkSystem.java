@@ -13,8 +13,11 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 public class ClientNetworkSystem extends VoidEntitySystem implements NetworkListener {
+    private final static Logger LOG = Logger.getLogger(ClientNetworkSystem.class.getName());
+
     private Network network;
 
     public ClientNetworkSystem() {
@@ -36,6 +39,7 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendKeyTyped(int key) {
+        LOG.fine("");
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.KEY_TYPED);
         buf.putInt(key);
@@ -43,6 +47,7 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendKeyPressed(int key) {
+        LOG.fine("");
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.KEY_PRESSED);
         buf.putInt(key);
@@ -50,6 +55,7 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendKeyReleased(int key) {
+        LOG.fine("");
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.KEY_RELEASED);
         buf.putInt(key);
@@ -57,14 +63,14 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendUseEntity() {
-        System.out.println("ClientNetworkSystem.sendUseEntity");
+        LOG.fine("");
         ByteBuffer buf = ByteBuffer.wrap(new byte[4]);
         buf.putInt(Globals.Message.USE_ENTITY);
         network.broadcast(buf);
     }
 
     public void sendRequestEntityData(int entityID) {
-        System.out.println("ClientNetworkSystem.sendRequestEntityData");
+        LOG.fine("");
         ByteBuffer buf = ByteBuffer.wrap(new byte[8]);
         buf.putInt(Globals.Message.REQUEST_ENTITY_DATA);
         buf.putInt(entityID);
@@ -72,7 +78,7 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendLogin() {
-        System.out.println("ClientNetworkSystem.sendLogin");
+        LOG.info("");
 
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.LOGIN);
@@ -80,17 +86,16 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
     }
 
     public void sendLogout() {
-        System.out.println("ClientNetworkSystem.sendLogout");
+        LOG.fine("");
         ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
         buf.putInt(Globals.Message.LOGOUT);
         network.broadcast(buf);
     }
 
-    HashMap<Integer, Integer> serverToClient = new HashMap<Integer, Integer>();
+    HashMap<Integer, Entity> serverIDToClientEntity = new HashMap<Integer, Entity>();
     HashMap<Integer, Integer> clientToServer = new HashMap<Integer, Integer>();
     
     public void handleMessage(SocketAddress remote, ByteBuffer buf) {
-        System.out.println("ClientNetworkSystem.handleMessage");
         int msgID = buf.getInt();
 
         switch(msgID) {
@@ -100,26 +105,32 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
                 handleRAMMessage(msgID, buf);
                 break;
             default:
-                System.out.println("ERROR packet");
+                LOG.warning("Unknown message type: " + msgID);
         }
     }
 
     @Mapper
     ComponentMapper<VirtualMonitorView> viewMapper;
     private void handleRAMMessage(int msgID, ByteBuffer buf) {
-        System.out.println("ClientNetworkSystem.handleVideoRAMMessage");
+        LOG.fine("" + msgID);
 
         int serverID = buf.getInt();
-        Entity entity = getEntity(serverID);
+
+        Entity entity = serverIDToClientEntity.get(serverID);
 
         if(entity == null) {
-            entity = createEntity(serverID);
+            entity = world.createEntity();
+
             VirtualMonitorView mon = new VirtualMonitorView();
             entity.addComponent(mon);
 
-            sendRequestEntityData(serverID);
+            // sendRequestEntityData(serverID);
 
             world.getSystem(ClientRenderSystem.class).panel.image = mon.img;
+
+            world.addEntity(entity);
+            serverIDToClientEntity.put(serverID, entity);
+            clientToServer.put(entity.getId(), serverID);
         }
 
         VirtualMonitorView monitor = viewMapper.get(entity);
@@ -128,6 +139,7 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
         for(int i=0; i < mem.length; i++) {
             mem[i] = buf.getChar();
         }
+
         switch(msgID) {
             case Globals.Message.VIDEO_RAM:
                 monitor.updateVideo(mem);
@@ -140,19 +152,4 @@ public class ClientNetworkSystem extends VoidEntitySystem implements NetworkList
                 break;
         }
     }
-
-    private Entity createEntity(int serverID) {
-        Entity entity;
-        entity = world.createEntity();
-        world.addEntity(entity);
-        serverToClient.put(serverID, entity.getId());
-        clientToServer.put(entity.getId(), serverID);
-        return entity;
-    }
-
-    private Entity getEntity(int serverID) {
-        Integer clientID = serverToClient.get(serverID);
-        return clientID == null ? null: world.getEntity(clientID);
-    }
-
 }

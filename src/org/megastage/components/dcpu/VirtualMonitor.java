@@ -90,7 +90,6 @@ public class VirtualMonitor extends DCPUHardware {
         LOG.fine("a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
 
         if (a == 0) {
-            LOG.finer("Changed video ram address");
             videoRAMAddr = b;
         } else if (a == 1) {
             fontRAMAddr = b;
