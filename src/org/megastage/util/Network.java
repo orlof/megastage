@@ -35,6 +35,8 @@ public class Network {
             SocketAddress address = port == 0 ? null: new InetSocketAddress(port);
             channel.socket().bind(address);
 
+            LOG.info("local port bound to " + channel.socket().getLocalSocketAddress());
+
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -90,6 +92,7 @@ public class Network {
                         LOG.finer(msg.buffer.remaining() + " bytes to " + s.toString());
 
                         channel.send(msg.buffer, s);
+                        msg.buffer.rewind();
                     }
                 }
             }
