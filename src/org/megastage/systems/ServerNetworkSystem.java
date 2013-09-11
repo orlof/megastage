@@ -99,7 +99,7 @@ public class ServerNetworkSystem extends VoidEntitySystem implements NetworkList
                 handleKeyMessage(remote, buf.getInt(), msgID);
                 break;
             default:
-                System.out.println("ERROR packet");
+                LOG.warning("Unknown message type: " + msgID);
         }
     }
 

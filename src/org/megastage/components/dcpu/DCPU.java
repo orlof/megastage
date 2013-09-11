@@ -77,7 +77,7 @@ public class DCPU extends BaseComponent {
     }
 
     public boolean connectHardware(DCPUHardware hw) {
-        LOG.fine(hw.toString());
+        LOG.finer(hw.toString());
         hw.dcpu = this;
         hardware.add(hw);
         return true;
@@ -96,7 +96,7 @@ public class DCPU extends BaseComponent {
         long uptime = Globals.time - startupTime;
         long cycleTarget = uptime * KHZ;
 
-        LOG.fine((cycleTarget-cycles) + " cycles ");
+        LOG.finest((cycleTarget-cycles) + " cycles in batch");
 
         while (cycles < cycleTarget) {
             tick();
@@ -105,6 +105,9 @@ public class DCPU extends BaseComponent {
                 tickHardware();
             }
         }
+
+        LOG.finest(String.format("%.2f Hz", 1000.0 * cycles / uptime));
+
     }
 
     public void tickHardware() {
@@ -564,7 +567,6 @@ public class DCPU extends BaseComponent {
     }
 
     public void load(File file) throws IOException {
-        System.out.println("DCPU.load");
         DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
         int i= 0;
 
@@ -574,7 +576,7 @@ public class DCPU extends BaseComponent {
             }
         } catch (IOException e) {}
 
-        System.out.println("Loaded " + i + " words");
+        LOG.fine("Boot image: " + i + " words");
         
         try { dis.close(); } catch (IOException e) {}
         
