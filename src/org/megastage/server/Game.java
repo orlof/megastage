@@ -31,6 +31,8 @@ public class Game {
 
         //world.setSystem(new OrbitalMovementSystem());
         //world.setSystem(new CoordinateTransformSystem());
+        //world.setSystem(new AccelerationZeroSystem());
+        //world.setSystem(new ShipEngineSystem());
         //world.setSystem(new GravitySystem());
         //world.setSystem(new LinearMovementSystem());
         world.setSystem(new DCPUSystem());

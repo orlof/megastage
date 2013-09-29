@@ -5,8 +5,8 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
+import org.megastage.components.Acceleration;
 import org.megastage.components.Position;
-import org.megastage.components.Velocity;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,21 +16,21 @@ import org.megastage.components.Velocity;
  * To change this template use File | Settings | File Templates.
  */
 public class LinearMovementSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<Velocity> vm;
-    @Mapper ComponentMapper<Position> pm;
+    @Mapper ComponentMapper<Acceleration> accelerationMapper;
+    @Mapper ComponentMapper<Position> positionMapper;
 
     public LinearMovementSystem() {
-        super(Aspect.getAspectForAll(Position.class, Velocity.class));
+        super(Aspect.getAspectForAll(Position.class, Acceleration.class));
     }
 
     @Override
     protected void process(Entity entity) {
-        Position position = pm.get(entity);
-        Velocity velocity = vm.get(entity);
+        Position position = positionMapper.get(entity);
+        Acceleration acceleration = accelerationMapper.get(entity);
 
         double multiplier = 1000.0d * world.delta;
-        position.x += multiplier * velocity.x;
-        position.y += multiplier * velocity.y;
-        position.z += multiplier * velocity.z;
+        position.x += multiplier * acceleration.getCoordinateX();
+        position.y += multiplier * acceleration.getCoordinateY();
+        position.z += multiplier * acceleration.getCoordinateZ();
     }
 }

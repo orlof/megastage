@@ -10,6 +10,8 @@ import java.util.ArrayList;
  * To change this template use File | Settings | File Templates.
  */
 public class Vector {
+    public static final Vector ZERO = new Vector();
+
     final double x, y, z;
 
     public Vector() {
@@ -41,6 +43,10 @@ public class Vector {
         return new Vector(x + v.x, y + v.y, z + v.z);
     }
 
+    public Vector add(double dx, double dy, double dz) {
+        return new Vector(x + dx, y + dy, z + dz);
+    }
+
     // return the vector norm
     public Vector normalize(double tolerance) {
         double mag2 = x * x + y * y + z * z;
@@ -61,6 +67,22 @@ public class Vector {
         //Quaternion q2 = new Quaternion(normalize());
         Quaternion q2 = new Quaternion(this);
         return new Vector(q.multiply(q2).multiply(q.conjugate()));
+    }
+
+    public Vector multiply(double scalar) {
+        return new Vector(x * scalar, y * scalar, z * scalar);
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
     }
 
     public static void main(String[] args) throws Exception {

@@ -5,3 +5,6 @@ Megastage.iml
 megastage.jar
 *.war
 *.ear
+*~
+.idea/
+

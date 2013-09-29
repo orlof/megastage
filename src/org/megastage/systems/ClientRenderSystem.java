@@ -1,18 +1,11 @@
 package org.megastage.systems;
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
-import com.artemis.systems.EntityProcessingSystem;
 import com.artemis.systems.VoidEntitySystem;
-import org.megastage.client.Game;
 import org.megastage.client.ViewComp;
-import org.megastage.components.client.VirtualMonitorView;
 import org.megastage.util.application.ApplicationFrame;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowListener;
 
 public class ClientRenderSystem extends VoidEntitySystem {
@@ -25,6 +18,12 @@ public class ClientRenderSystem extends VoidEntitySystem {
         frame.init();
         frame.addCard(panel, "BootImage");
         frame.showCard("BootImage");
+
+        JPanel dcpuPanel = new JPanel(new BorderLayout());
+        JPanel drawPanel = new JPanel(null);
+        JSplitPane splitPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, drawPanel, dcpuPanel);
+
+        frame.addCard(splitPanel, "game");
     }
 
     @Override
