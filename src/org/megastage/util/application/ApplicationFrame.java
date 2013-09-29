@@ -27,7 +27,7 @@ public class ApplicationFrame {
         panel.repaint();
     }
 
-    public void addCard(final JPanel card, final String name) {
+    public void addCard(final Component card, final String name) {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
