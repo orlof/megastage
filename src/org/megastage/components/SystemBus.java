@@ -12,10 +12,10 @@ import org.jdom2.Element;
  * Time: 20:58
  */
 public class SystemBus extends BaseComponent {
+    public int address;
+
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {
         address = element.getAttribute("address").getIntValue();
     }
-    
-    public int address;
 }

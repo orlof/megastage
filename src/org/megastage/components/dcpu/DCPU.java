@@ -23,6 +23,8 @@ public class DCPU extends BaseComponent {
     public static final int KHZ = 100;
     public static final int HARDWARE_TICK_INTERVAL = 1000 * KHZ / 60;
 
+    public Entity ship;
+
     final public char[] ram = new char[65536];
     final public char[] registers = new char[8];
 
@@ -46,6 +48,7 @@ public class DCPU extends BaseComponent {
 
     @Override
     public void init(World world, Entity parent, Element element) {
+        this.ship = parent;
         try {
             load(new File("admiral.bin"));
 

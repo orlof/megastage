@@ -4,6 +4,7 @@ import com.artemis.Entity;
 import com.artemis.World;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.util.Vector;
 
 /**
  * MegaStage
@@ -20,4 +21,11 @@ public class Position extends BaseComponent {
         y = 1000000 * element.getAttribute("y").getLongValue();
         z = 1000000 * element.getAttribute("z").getLongValue();
     }
+
+    public void add(Vector vector) {
+        x += Math.round(vector.x);
+        y += Math.round(vector.y);
+        z += Math.round(vector.z);
+    }
+
 }
