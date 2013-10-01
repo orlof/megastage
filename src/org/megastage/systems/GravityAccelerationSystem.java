@@ -17,43 +17,43 @@ import org.megastage.components.*;
  * Time: 12:09 PM
  * To change this template use File | Settings | File Templates.
  */
-public class GravitySystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<Acceleration> accelerationMapper;
+public class GravityAccelerationSystem extends EntityProcessingSystem {
+    @Mapper ComponentMapper<GlobalAcceleration> globalAccelerationMapper;
     @Mapper ComponentMapper<Physical> physicalMapper;
     @Mapper ComponentMapper<Position> positionMapper;
 
-    private ImmutableBag<Entity> celestialBodies;
+    private ImmutableBag<Entity> celestials;
 
-    public GravitySystem() {
-        super(Aspect.getAspectForAll(Acceleration.class, Position.class));
+    public GravityAccelerationSystem() {
+        super(Aspect.getAspectForAll(GlobalAcceleration.class, Position.class));
     }
 
     @Override
     public void initialize() {
-        celestialBodies = world.getManager(GroupManager.class).getEntities("gravity well");
+        celestials = world.getManager(GroupManager.class).getEntities("celestial");
     }
 
     @Override
     protected void process(Entity entity) {
         Position position = positionMapper.get(entity);
-        Acceleration acceleration = accelerationMapper.get(entity);
+        GlobalAcceleration globalAcceleration = globalAccelerationMapper.get(entity);
 
-        for(int i=0; i < celestialBodies.size(); i++) {
-            Entity celestialEntity = celestialBodies.get(i);
-            Position celestialPosition = positionMapper.get(celestialEntity);
+        for(int i=0; i < celestials.size(); i++) {
+            Entity celestial = celestials.get(i);
+            Position celestialPosition = positionMapper.get(celestial);
             double dx = celestialPosition.x - position.x;
             double dy = celestialPosition.y - position.y;
             double dz = celestialPosition.z - position.z;
 
             double distanceSquared = dx*dx + dy*dy + dz*dz;
 
-            double celestialMass = physicalMapper.get(celestialEntity).mass;
+            double celestialMass = physicalMapper.get(celestial).mass;
             double gravitationalField = Globals.G * celestialMass / distanceSquared;
 
             double distance = Math.sqrt(distanceSquared);
 
             double multiplier = gravitationalField / distance;
-            acceleration.add(multiplier * dx, multiplier * dy, multiplier * dz);
+            globalAcceleration.add(multiplier * dx, multiplier * dy, multiplier * dz);
         }
     }
 }

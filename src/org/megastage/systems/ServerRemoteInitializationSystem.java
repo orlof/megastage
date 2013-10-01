@@ -16,6 +16,9 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Provides initialization data for newly joined clients
+ */
 public class ServerRemoteInitializationSystem extends EntitySystem {
     @Mapper ComponentMapper<VirtualMonitor> virtualMonitorMapper;
 
@@ -24,18 +27,20 @@ public class ServerRemoteInitializationSystem extends EntitySystem {
     }
 
     public LinkedList<SocketAddress> newRemotes = new LinkedList<SocketAddress>();
-    
+
     @Override
     protected void processEntities(ImmutableBag<Entity> entityImmutableBag) {
         ServerNetworkSystem networkSystem = world.getSystem(ServerNetworkSystem.class);
+
         for(int i=0; i < entityImmutableBag.size(); i++) {
             Entity entity = entityImmutableBag.get(i);
-            VirtualMonitor mon = entity.getComponent(VirtualMonitor.class);
-            
+            VirtualMonitor mon = virtualMonitorMapper.get(entity);
+
             for(SocketAddress remote: newRemotes) {
                 networkSystem.sendVirtualMonitorData(remote, entity, mon);
             }
         }
+
         newRemotes.clear();
     }
 

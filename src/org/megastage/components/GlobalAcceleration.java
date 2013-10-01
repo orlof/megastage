@@ -12,16 +12,11 @@ import org.megastage.util.Vector;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class Acceleration extends BaseComponent {
-    public Vector vector;
+public class GlobalAcceleration extends BaseComponent {
+    public Vector vector = Vector.ZERO;
 
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {
-        double x = element.getAttribute("x").getDoubleValue();
-        double y = element.getAttribute("y").getDoubleValue();
-        double z = element.getAttribute("z").getDoubleValue();
-        
-        vector = new Vector(x, y, z);
     }
 
     public void add(Vector v) {
@@ -35,16 +30,8 @@ public class Acceleration extends BaseComponent {
     public void set(Vector v) {
         vector = v;
     }
-    
-    public long getCoordinateX() {
-        return Math.round(vector.getX());
-    }
 
-    public long getCoordinateY() {
-        return Math.round(vector.getY());
-    }
-
-    public long getCoordinateZ() {
-        return Math.round(vector.getZ());
+    public Vector getVelocityChange(float time) {
+        return vector.multiply(1000.0 * time);
     }
 }

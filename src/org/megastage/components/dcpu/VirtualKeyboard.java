@@ -2,6 +2,7 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
 import java.util.logging.Logger;
@@ -28,7 +29,7 @@ public class VirtualKeyboard extends DCPUHardware {
     public boolean doInterrupt;
 
     @Override
-    public void init(World world, Entity parent, Element element) {
+    public void init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_KEYBOARD;
         revision = 0x1337;
         manufactorer = MANUFACTORER_MACKAPAR;

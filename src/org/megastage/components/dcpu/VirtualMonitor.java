@@ -2,6 +2,7 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.util.RAM;
 
@@ -28,7 +29,7 @@ public class VirtualMonitor extends DCPUHardware {
     public RAM videoRAM, fontRAM, paletteRAM;
 
     @Override
-    public void init(World world, Entity parent, Element element) {
+    public void init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_LEM;
         revision = 0x1802;
         manufactorer = MANUFACTORER_NYA_ELEKTRISKA;

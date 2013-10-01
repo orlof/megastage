@@ -29,12 +29,15 @@ public class Game {
         world.setSystem(new ServerNetworkSystem());
         world.setSystem(new ServerRemoteInitializationSystem());
 
-        //world.setSystem(new OrbitalMovementSystem());
-        //world.setSystem(new CoordinateTransformSystem());
-        //world.setSystem(new AccelerationZeroSystem());
-        //world.setSystem(new ShipEngineSystem());
-        //world.setSystem(new GravitySystem());
-        //world.setSystem(new LinearMovementSystem());
+        world.setSystem(new OrbitalMovementSystem());
+        world.setSystem(new CoordinateTransformSystem());
+
+        // world.setSystem(new ZeroAccelerationSystem());
+        world.setSystem(new EngineAccelerationSystem());
+        world.setSystem(new GravityAccelerationSystem());
+
+        world.setSystem(new ShipMovementSystem());
+
         world.setSystem(new DCPUSystem());
         world.setSystem(new VirtualMonitorSenderSystem());
 

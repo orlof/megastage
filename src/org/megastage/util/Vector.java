@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class Vector {
     public static final Vector ZERO = new Vector();
 
-    final double x, y, z;
+    public final double x, y, z;
 
     public Vector() {
         this.x = 0.0d;
@@ -73,18 +73,6 @@ public class Vector {
         return new Vector(x * scalar, y * scalar, z * scalar);
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getZ() {
-        return z;
-    }
-
     public static void main(String[] args) throws Exception {
         Heading h1 = new Heading();
         Heading h2 = new Heading(h1);
@@ -105,41 +93,17 @@ class Ship {
     double mass = 1.0d;
     double momentOfInertia = 1.0d;
 
-    ArrayList<Engine> engines = new ArrayList<Engine>();
     ArrayList<Gyro> gyros = new ArrayList<Gyro>();
 
     public Ship() {
-        engines.add(new Engine(0.0d, 0.0d, 10.0d)); // Main engine
-        engines.add(new Engine(0.0d, 0.0d, -1.0d)); // Braking
-
         gyros.add(new Gyro(1.0d, 0.0d, 0.0d)); // Pitch
         gyros.add(new Gyro(0.0d, 0.0d, 1.0d)); // Roll
     }
 
     public void tick(double dt) {
-        tickEngines(dt);
         tickGyros(dt);
 
         position = position.add(velocity);
-    }
-
-    public void tickEngines(double dt) {
-        // calculate total force in local coordinate space
-        double x=0.0d, y=0.0d, z=0.0d;
-
-        for(Engine engine: engines) {
-            x += engine.getThrustX();
-            y += engine.getThrustY();
-            z += engine.getThrustZ();
-        }
-
-        // calculate speed change in local coordinate space
-        double t = -dt / mass;
-        x *= t; y *= t; z *= t;
-
-        // convert speed change from local to global -space
-        Vector acceleration = new Vector(x, y, z).multiply(heading.total);
-        velocity = velocity.add(acceleration);
     }
 
     public void tickGyros(double dt) {
@@ -150,28 +114,6 @@ class Ship {
     }
 }
 
-class Engine {
-    Vector thrust;
-    double powerLevel = 0.0d;
-
-    public Engine(double x, double y, double z) {
-        thrust = new Vector(x, y, z);
-    }
-
-    public void setPowerLevel(double powerLevel) {
-        this.powerLevel = powerLevel / 100.0d;
-    }
-
-    public double getThrustX() {
-        return thrust.x * powerLevel;
-    }
-    public double getThrustY() {
-        return thrust.y * powerLevel;
-    }
-    public double getThrustZ() {
-        return thrust.z * powerLevel;
-    }
-}
 
 class Gyro {
     Vector axis;
