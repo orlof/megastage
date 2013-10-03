@@ -29,6 +29,7 @@ public class Globals {
         public static final String CAN_USE = "can_use";
     }
 
+<<<<<<< Updated upstream
     public class Message {
         public static final int LOGIN = 0;
         public static final int VIDEO_RAM = 1;
@@ -42,5 +43,9 @@ public class Globals {
         public static final int FONT_RAM = 9;
         public static final int PALETTE_RAM = 10;
         public static final int REQUEST_ENTITY_DATA = 11;
+=======
+    public class Shape {
+        public static final int SPHERE = 0;
+>>>>>>> Stashed changes
     }
 }
