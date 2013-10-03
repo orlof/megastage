@@ -42,13 +42,14 @@
                 <component type="Visible" object="monitor"/>
             </entity>
             <entity>
+                <component type="HWEngineController" x="0" y="0" z="10"/>
                 <component type="dcpu.HWEngineController" x="0" y="0" z="10"/>
             </entity>
             <entity>
                 <component type="dcpu.HWEngineController" x="0" y="0" z="-1"/>
             </entity>
             <entity>
-                <component type="dcpu.HWPulsarPositioningSystemController"/>
+                <component type="dcpu.HWPPSController"/>
             </entity>
         </entity>
         <!--entity>
