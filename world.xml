@@ -3,6 +3,7 @@
         <component type="Identifier" name="Sun"/>
         <component type="Position" x="0" y="0" z="0"/>
         <component type="Physical" radius_km="700000" mass_kg="1.989e30"/>
+        <component type="Visible" object="star"/>
         <group name="celestial"/>
         <entity>
             <component type="Identifier" name="Earth"/>
@@ -38,9 +39,16 @@
             </entity>
             <entity>
                 <component type="dcpu.VirtualMonitor"/>
+                <component type="Visible" object="monitor"/>
             </entity>
             <entity>
-                <component type="HWEngineController" x="0" y="0" z="10"/>
+                <component type="dcpu.HWEngineController" x="0" y="0" z="10"/>
+            </entity>
+            <entity>
+                <component type="dcpu.HWEngineController" x="0" y="0" z="-1"/>
+            </entity>
+            <entity>
+                <component type="dcpu.HWPulsarPositioningSystemController"/>
             </entity>
         </entity>
         <!--entity>
@@ -54,10 +62,6 @@
         <entity>
             <component type="Gyroscope" x="0" y="0" z="1"/>
             <component type="SystemBus" address="4"/>
-        </entity>
-        <entity>
-            <component type="PulsarPositioningSystem"/>
-            <component type="SystemBus" address="5"/>
         </entity-->
     </entity>
 

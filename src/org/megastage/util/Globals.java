@@ -21,7 +21,7 @@ public class Globals {
 
     public class Group {
         public static final String GRAVITY_WELLS = "gravity well";
-        public static final String CAN_USE = "can_use";
+        public static final String USABLE = "can_use";
     }
     
     public class Tag {
@@ -42,5 +42,10 @@ public class Globals {
         public static final int FONT_RAM = 9;
         public static final int PALETTE_RAM = 10;
         public static final int REQUEST_ENTITY_DATA = 11;
+        public static final int CELESTIAL_DATA = 12;
+    }
+
+    public class Shape {
+        public static final int SPHERE = 0;
     }
 }

@@ -6,12 +6,11 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.Position;
 import org.megastage.util.Globals;
-import org.megastage.util.Vector;
 
 import java.util.logging.Logger;
 
-public class HWPulsarPositionSystemController extends DCPUHardware {
-    private final static Logger LOG = Logger.getLogger(HWPulsarPositionSystemController.class.getName());
+public class HWPulsarPositioningSystemController extends DCPUHardware {
+    private final static Logger LOG = Logger.getLogger(HWPulsarPositioningSystemController.class.getName());
 
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {
@@ -26,7 +25,7 @@ public class HWPulsarPositionSystemController extends DCPUHardware {
         char a = dcpu.registers[0];
         char b = dcpu.registers[1];
 
-        LOG.fine("a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
+        LOG.fine("a=" + Integer.toHexString(a) + ", b=" + Integer.toHexString(b));
 
         if (a == 0) {
             Position position = ship.getComponent(Position.class);
