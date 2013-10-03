@@ -20,7 +20,32 @@ public class Globals {
     public static long time = System.currentTimeMillis();
 
     public class Group {
-        public static final String CELESTIAL = "celestial";
-        public static final String USABLE = "usable";
+        public static final String GRAVITY_WELLS = "gravity well";
+        public static final String USABLE = "can_use";
+    }
+    
+    public class Tag {
+        public static final String IN_USE = "IN_USE";
+        public static final String CAN_USE = "can_use";
+    }
+
+    public class Message {
+        public static final int LOGIN = 0;
+        public static final int VIDEO_RAM = 1;
+        public static final int KEY_TYPED = 2;
+        public static final int ENTITY = 3;
+        public static final int USE_ENTITY = 4;
+        public static final int START_USE = 5;
+        public static final int LOGOUT = 6;
+        public static final int KEY_RELEASED = 7;
+        public static final int KEY_PRESSED = 8;
+        public static final int FONT_RAM = 9;
+        public static final int PALETTE_RAM = 10;
+        public static final int REQUEST_ENTITY_DATA = 11;
+        public static final int CELESTIAL_DATA = 12;
+    }
+
+    public class Shape {
+        public static final int SPHERE = 0;
     }
 }
