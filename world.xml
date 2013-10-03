@@ -40,7 +40,17 @@
                 <component type="dcpu.VirtualMonitor"/>
             </entity>
             <entity>
+<<<<<<< Updated upstream
                 <component type="HWEngineController" x="0" y="0" z="10"/>
+=======
+                <component type="dcpu.HWEngineController" x="0" y="0" z="10"/>
+            </entity>
+            <entity>
+                <component type="dcpu.HWEngineController" x="0" y="0" z="-1"/>
+            </entity>
+            <entity>
+                <component type="dcpu.HWPPSController"/>
+>>>>>>> Stashed changes
             </entity>
         </entity>
         <!--entity>
