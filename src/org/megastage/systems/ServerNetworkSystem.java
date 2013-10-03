@@ -1,171 +1,148 @@
 package org.megastage.systems;
 
-import com.artemis.*;
-import com.artemis.annotations.Mapper;
+import com.artemis.Entity;
 import com.artemis.managers.GroupManager;
-import com.artemis.managers.TagManager;
 import com.artemis.systems.VoidEntitySystem;
-import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
-import org.megastage.components.dcpu.VirtualMonitor;
-import org.megastage.util.Globals;
-import org.megastage.util.Network;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Server;
+import org.megastage.components.ItemInUse;
 import org.megastage.components.dcpu.VirtualKeyboard;
-import org.megastage.util.NetworkListener;
-import org.megastage.util.application.Log;
+import org.megastage.components.dcpu.VirtualMonitor;
+import org.megastage.protocol.Network;
+import org.megastage.protocol.PlayerConnection;
+import org.megastage.util.Globals;
 
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
+import java.io.IOException;
 import java.util.logging.Logger;
 
-public class ServerNetworkSystem extends VoidEntitySystem implements NetworkListener {
+public class ServerNetworkSystem extends VoidEntitySystem {
     private final static Logger LOG = Logger.getLogger(ServerNetworkSystem.class.getName());
-    
-    @Mapper ComponentMapper<VirtualKeyboard> virtualKeyboardMapper;
 
-    private Network network;
+    private Server server;
 
     public ServerNetworkSystem() {
         super();
-        network = new Network(this, Globals.serverPort);
+
+        server = new Server() {
+            protected Connection newConnection () {
+                // By providing our own connection implementation, we can store per
+                // connection state without a connection ID to state look up.
+                return new PlayerConnection();
+            }
+        };
+
+        Network.register(server);
+
+        server.addListener(new ServerNetworkListener());
+
+        try {
+            server.bind(Globals.serverPort, Globals.serverPort + 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        server.start();
     }
 
     @Override
     protected void processSystem() {
-        network.tick();        
     }
 
     @Override
     protected boolean checkProcessing() {
-        return true;
+        return false;
     }
 
-    public void sendMemory(int messageID, Entity entity, char[] data) {
-        LOG.finer(entity.toString());
+    private void handleLoginMessage(PlayerConnection connection, Network.Login packet) {
+        Entity player = world.createEntity();
+        player.addToWorld();
 
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[2*data.length + 8]); // 2*384 + 4 + 4 = 776
-        buffer.putInt(messageID);
-        buffer.putInt(entity.getId());
+        connection.sendTCP(Network.LoginResponse.create(player));
 
-        for(char c: data) {
-            buffer.putChar(c);
-        }
+        unicastGroupData(connection, "star", new PacketFactory() {
+            public Object create(Entity entity) {
+                return Network.StarData.create(entity);
+            }
+        });
 
-        network.broadcast(buffer);
+        unicastGroupData(connection, "monitor", new PacketFactory() {
+            public Object create(Entity entity) {
+                return Network.MonitorData.create(entity);
+            }
+        });
     }
 
-    public void sendMemory(SocketAddress remote, int messageID, Entity entity, char[] data) {
-        LOG.finer(entity.toString() + " to remote " + remote.toString());
+    private void handleUseMessage(PlayerConnection connection, Network.Use packet) {
+        Entity item = world.getEntity(packet.entityID);
+        Entity player = connection.player;
 
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[2*data.length + 8]); // 2*384 + 4 + 4 = 776
-        buffer.putInt(messageID);
-        buffer.putInt(entity.getId());
+        ItemInUse comp = new ItemInUse();
+        comp.entity = item;
 
-        for(char c: data) {
-            buffer.putChar(c);
-        }
-
-        network.unicast(remote, buffer);
+        player.addComponent(comp);
     }
 
-    private void sendStartUse(Entity entity) {
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[8]);
-        buffer.putInt(Globals.Message.START_USE);
-        buffer.putInt(entity.getId());
+    private void handleKeyEventMessage(PlayerConnection connection, Network.KeyEvent packet) {
+        ItemInUse item = connection.player.getComponent(ItemInUse.class);
+        VirtualKeyboard kbd = item.entity.getComponent(VirtualKeyboard.class);
 
-        network.broadcast(buffer);
-    }
+        if(packet instanceof Network.KeyTyped) {
+            kbd.keyTyped(packet.key);
 
-    public void handleMessage(SocketAddress remote, ByteBuffer buf) {
-        LOG.fine(buf.remaining() + " bytes from " + remote.toString());
-        int msgID = buf.getInt();
+        } else if(packet instanceof Network.KeyPressed) {
+            kbd.keyPressed(packet.key);
 
-        switch(msgID) {
-            case Globals.Message.LOGIN:
-                handleLoginMessage(remote);
-                break;
-            case Globals.Message.LOGOUT:
-                handleLogoutMessage(remote);
-                break;
-            case Globals.Message.USE_ENTITY:
-                handleUseEntityMessage(remote);
-                break;
-            case Globals.Message.REQUEST_ENTITY_DATA:
-                handleRequestEntityDataMessage(remote, buf.getInt());
-                break;
-            case Globals.Message.KEY_TYPED:
-            case Globals.Message.KEY_PRESSED:
-            case Globals.Message.KEY_RELEASED:
-                handleKeyMessage(remote, buf.getInt(), msgID);
-                break;
-            default:
-                LOG.warning("Unknown message type: " + msgID);
+        } else if(packet instanceof Network.KeyReleased) {
+            kbd.keyReleased(packet.key);
         }
     }
 
-    private void handleKeyMessage(SocketAddress remote, int key, int messageType) {
-        String tag = Globals.Tag.IN_USE + remote.toString();
-        Entity entity = world.getManager(TagManager.class).getEntity(tag);
+    public void broadcastMonitorData(Entity entity) {
+        Network.MonitorData monitorData = new Network.MonitorData();
+        monitorData.entityID = entity.getId();
+        monitorData.monitor = entity.getComponent(VirtualMonitor.class);
 
-        if(entity != null) {
-            VirtualKeyboard kbd = virtualKeyboardMapper.get(entity);
-            switch(messageType) {
-                case Globals.Message.KEY_TYPED:
-                    kbd.keyTyped(key);
-                    break;
-                case Globals.Message.KEY_PRESSED:
-                    kbd.keyPressed(key);
-                    break;
-                case Globals.Message.KEY_RELEASED:
-                    kbd.keyReleased(key);
-                    break;
+        server.sendToAllUDP(monitorData);
+    }
+
+    private void unicastGroupData(PlayerConnection connection, String group, PacketFactory factory) {
+        ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities(group);
+        for(int i=0; i < entities.size(); i++) {
+            connection.sendTCP(factory.create(entities.get(i)));
+        }
+    }
+
+    private interface PacketFactory {
+        Object create(Entity entity);
+    }
+
+    private class ServerNetworkListener extends Listener {
+        @Override
+        public void connected(Connection connection) {
+            super.connected(connection);    //To change body of overridden methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void disconnected(Connection connection) {
+            super.disconnected(connection);    //To change body of overridden methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void received(Connection connection, Object o) {
+            PlayerConnection pc = (PlayerConnection) connection;
+
+            if(o instanceof Network.Login) {
+                handleLoginMessage(pc, (Network.Login) o);
+
+            } else if(o instanceof Network.Use) {
+                handleUseMessage(pc, (Network.Use) o);
+
+            } else if(o instanceof Network.KeyEvent) {
+                handleKeyEventMessage(pc, (Network.KeyEvent) o);
             }
         }
-    }
-
-    private void handleUseEntityMessage(SocketAddress remote) {
-        GroupManager groupManager = world.getManager(GroupManager.class);
-        ImmutableBag<Entity> groupCanUse = groupManager.getEntities(Globals.Group.CAN_USE);
-
-        // TODO replace with position based search
-        Entity entity = groupCanUse.get(0);
-
-        String tag = Globals.Tag.IN_USE + remote.toString();
-
-        world.getManager(TagManager.class).register(tag, entity);
-        
-        // sendEntityDataMessage(remote, entity.getId());
-    }
-
-    private void handleRequestEntityDataMessage(SocketAddress remote, int entityID) {
-        sendEntityDataMessage(remote, entityID);
-    }
-
-    private void sendEntityDataMessage(SocketAddress remote, int entityID) {
-        Entity entity = world.getEntity(entityID);
-        Bag<Component> bag = entity.getComponents(new Bag<Component>());
-        for(int i=0; i < bag.size(); i++) {
-            Component component = bag.get(i);
-            if(component instanceof VirtualMonitor) {
-                VirtualMonitor mon = (VirtualMonitor) component;
-                sendVirtualMonitorData(remote, entity, mon);
-            }
-        }
-    }
-
-    private void handleLoginMessage(SocketAddress remote) {
-        network.addRemote(remote);
-
-        world.getSystem(ServerRemoteInitializationSystem.class).initializeClient(remote);
-    }
-
-    private void handleLogoutMessage(SocketAddress c) {
-        network.removeRemote(c);
-    }
-
-    public void sendVirtualMonitorData(SocketAddress remote, Entity entity, VirtualMonitor mon) {
-        sendMemory(remote, Globals.Message.VIDEO_RAM, entity, mon.videoRAM.mem);
-        sendMemory(remote, Globals.Message.FONT_RAM, entity, mon.fontRAM.mem);
-        sendMemory(remote, Globals.Message.PALETTE_RAM, entity, mon.paletteRAM.mem);
     }
 }
+
