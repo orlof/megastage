@@ -20,13 +20,7 @@ public class Globals {
     public static long time = System.currentTimeMillis();
 
     public class Group {
-        public static final String GRAVITY_WELLS = "gravity well";
-        public static final String USABLE = "can_use";
+        public static final String CELESTIAL = "celestial";
+        public static final String USABLE = "usable";
     }
-    
-    public class Tag {
-        public static final String IN_USE = "IN_USE";
-        public static final String CAN_USE = "can_use";
-    }
-
 }
