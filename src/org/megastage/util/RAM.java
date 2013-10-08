@@ -10,7 +10,7 @@ import java.util.Arrays;
  * To change this template use File | Settings | File Templates.
  */
 public class RAM {
-    public char[] mem = new char[0];
+    public char[] mem;
 
     public RAM() {}
 

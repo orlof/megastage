@@ -73,13 +73,8 @@ public class Vector {
         return new Vector(x * scalar, y * scalar, z * scalar);
     }
 
-    public static void main(String[] args) throws Exception {
-        Heading h1 = new Heading();
-        Heading h2 = new Heading(h1);
-
-        h1.pitch(90);
-        h2.debug();
-        h2.yaw(90);
+    public Vector divide(double scalar) {
+        return new Vector(x / scalar, y / scalar, z / scalar);
     }
 }
 
@@ -87,7 +82,6 @@ public class Vector {
 class Ship {
     Vector position = new Vector();
 
-    Heading heading = new Heading();
     Vector velocity = new Vector();
 
     double mass = 1.0d;
@@ -109,7 +103,7 @@ class Ship {
     public void tickGyros(double dt) {
         for(Gyro gyro: gyros) {
             double angle = dt * gyro.power / momentOfInertia;
-            heading.rotate(gyro.axis, angle);
+            //heading.rotate(gyro.axis, angle);
         }
     }
 }

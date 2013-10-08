@@ -5,11 +5,9 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
-import org.megastage.util.Globals;
+import org.megastage.components.dcpu.LEMUtil;
 import org.megastage.components.dcpu.VirtualMonitor;
-import org.megastage.util.application.Log;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class VirtualMonitorSenderSystem extends EntityProcessingSystem {
@@ -23,32 +21,24 @@ public class VirtualMonitorSenderSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity entity) {
-        LOG.finer(entity.toString());
+        LOG.finest(entity.toString());
 
         VirtualMonitor mon = virtualMonitorMapper.get(entity);
 
-        boolean changed = mon.videoRAMAddr == 0 ?
-                mon.videoRAM.update(VirtualMonitor.EMPTY, (char) 0, 384):
-                mon.videoRAM.update(mon.dcpu.ram, mon.videoRAMAddr, 384);
+        boolean videoChanged = mon.videoAddr == 0 ?
+                mon.video.update(LEMUtil.defaultVideo):
+                mon.video.update(mon.dcpu.ram, mon.videoAddr, 384);
 
-        if(changed) {
-            world.getSystem(ServerNetworkSystem.class).sendMemory(Globals.Message.VIDEO_RAM, entity, mon.videoRAM.mem);
-        }
-        
-        changed = mon.fontRAMAddr == 0 ?
-                mon.fontRAM.update(VirtualMonitor.defaultFont):
-                mon.fontRAM.update(mon.dcpu.ram, mon.fontRAMAddr, 256);
+        boolean fontChanged = mon.fontAddr == 0 ?
+                mon.font.update(LEMUtil.defaultFont):
+                mon.font.update(mon.dcpu.ram, mon.fontAddr, 256);
 
-        if(changed) {
-            world.getSystem(ServerNetworkSystem.class).sendMemory(Globals.Message.FONT_RAM, entity, mon.fontRAM.mem);
-        }
+        boolean paletteChanged = mon.paletteAddr == 0 ?
+                mon.palette.update(LEMUtil.defaultPalette):
+                mon.palette.update(mon.dcpu.ram, mon.paletteAddr, 16);
 
-        changed = mon.paletteRAMAddr == 0 ?
-                mon.paletteRAM.update(VirtualMonitor.defaultPalette):
-                mon.paletteRAM.update(mon.dcpu.ram, mon.paletteRAMAddr, 16);
-
-        if(changed) {
-            world.getSystem(ServerNetworkSystem.class).sendMemory(Globals.Message.PALETTE_RAM, entity, mon.paletteRAM.mem);
+        if(videoChanged || fontChanged || paletteChanged) {
+            world.getSystem(ServerNetworkSystem.class).broadcastMonitorData(entity);
         }
 
     }
