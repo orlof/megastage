@@ -35,6 +35,8 @@ public class ServerNetworkSystem extends VoidEntitySystem {
 
         Network.register(server);
 
+        new Thread(server).start();
+
         server.addListener(new ServerNetworkListener());
 
         try {
@@ -42,8 +44,6 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        server.start();
     }
 
     @Override
@@ -55,11 +55,16 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         return false;
     }
 
-    private void handleLoginMessage(PlayerConnection connection, Network.Login packet) {
-        Entity player = world.createEntity();
-        player.addToWorld();
+    private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
+        world.deleteEntity(connection.player);
+        connection.close();
+    }
 
-        connection.sendTCP(Network.LoginResponse.create(player));
+    private void handleLoginMessage(PlayerConnection connection, Network.Login packet) {
+        connection.player = world.createEntity();
+        connection.player.addToWorld();
+
+        connection.sendTCP(new Network.LoginResponse());
 
         unicastGroupData(connection, "star", new PacketFactory() {
             public Object create(Entity entity) {
@@ -67,9 +72,21 @@ public class ServerNetworkSystem extends VoidEntitySystem {
             }
         });
 
+        unicastGroupData(connection, "satellite", new PacketFactory() {
+            public Object create(Entity entity) {
+                return Network.OrbitData.create(entity);
+            }
+        });
+
         unicastGroupData(connection, "monitor", new PacketFactory() {
             public Object create(Entity entity) {
                 return Network.MonitorData.create(entity);
+            }
+        });
+
+        unicastGroupData(connection, "keyboard", new PacketFactory() {
+            public Object create(Entity entity) {
+                return Network.KeyboardData.create(entity);
             }
         });
     }
@@ -86,6 +103,10 @@ public class ServerNetworkSystem extends VoidEntitySystem {
 
     private void handleKeyEventMessage(PlayerConnection connection, Network.KeyEvent packet) {
         ItemInUse item = connection.player.getComponent(ItemInUse.class);
+        if(item == null) {
+            return;
+        }
+
         VirtualKeyboard kbd = item.entity.getComponent(VirtualKeyboard.class);
 
         if(packet instanceof Network.KeyTyped) {
@@ -100,10 +121,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     }
 
     public void broadcastMonitorData(Entity entity) {
-        Network.MonitorData monitorData = new Network.MonitorData();
-        monitorData.entityID = entity.getId();
-        monitorData.monitor = entity.getComponent(VirtualMonitor.class);
-
+        Network.MonitorData monitorData = Network.MonitorData.create(entity);
         server.sendToAllUDP(monitorData);
     }
 
@@ -121,20 +139,22 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     private class ServerNetworkListener extends Listener {
         @Override
         public void connected(Connection connection) {
-            super.connected(connection);    //To change body of overridden methods use File | Settings | File Templates.
         }
 
         @Override
         public void disconnected(Connection connection) {
-            super.disconnected(connection);    //To change body of overridden methods use File | Settings | File Templates.
         }
 
         @Override
         public void received(Connection connection, Object o) {
+            LOG.info("Received: " + o.getClass().getName());
             PlayerConnection pc = (PlayerConnection) connection;
 
             if(o instanceof Network.Login) {
                 handleLoginMessage(pc, (Network.Login) o);
+
+            } else if(o instanceof Network.Logout) {
+                handleLogoutMessage(pc, (Network.Logout) o);
 
             } else if(o instanceof Network.Use) {
                 handleUseMessage(pc, (Network.Use) o);

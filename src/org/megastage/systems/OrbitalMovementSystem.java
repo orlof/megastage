@@ -5,10 +5,11 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
-import org.megastage.util.Globals;
 import org.megastage.components.LocalPosition;
 import org.megastage.components.Orbit;
-import org.megastage.components.Physical;
+import org.megastage.components.Position;
+import org.megastage.util.Globals;
+import org.megastage.util.Vector;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,26 +19,42 @@ import org.megastage.components.Physical;
  * To change this template use File | Settings | File Templates.
  */
 public class OrbitalMovementSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<Orbit> orbitMapper;
-    @Mapper ComponentMapper<LocalPosition> localPositionMapper;
+    @Mapper ComponentMapper<Position> POSITION;
+    @Mapper ComponentMapper<Orbit> ORBIT;
 
     public OrbitalMovementSystem() {
-        super(Aspect.getAspectForAll(Orbit.class, LocalPosition.class));
+        super(Aspect.getAspectForAll(Position.class, Orbit.class));
     }
 
     @Override
     protected void process(Entity entity) {
-        Orbit orbit = orbitMapper.get(entity);
+        double time = Globals.time / 1000.0d;
+        
+        Orbit orbit = ORBIT.get(entity);
+        Vector localSum = orbit.getLocalCoordinates(time);
+        
+        while(!isOrbitAroundFixedPosition(orbit)) {
+            orbit = getCentersOrbit(orbit);
+            localSum = localSum.add(orbit.getLocalCoordinates(time));
+        }
 
-        double mass = orbit.center.getComponent(Physical.class).mass;
-        double period = 2.0d * Math.PI * Math.sqrt(Math.pow(orbit.distance, 3.0d) / (Globals.G * mass));
+        Position fixedStar = getCentersFixedPosition(orbit);
 
-        double angularSpeed = 2.0d * Math.PI / period;
-        double angle = angularSpeed * Globals.time;
+        Position position = POSITION.get(entity);
+        position.x = Math.round(localSum.x) + fixedStar.x;
+        position.y = Math.round(localSum.y) + fixedStar.y;
+        position.y = fixedStar.z;
+    }
 
-        LocalPosition locPos = localPositionMapper.get(entity);
-        locPos.parent = orbit.center;
-        locPos.x = (long) (orbit.distance * Math.sin(angle));
-        locPos.y = (long) (orbit.distance * Math.cos(angle));
+    private Position getCentersFixedPosition(Orbit orbit) {
+        return POSITION.get(orbit.center);
+    }
+
+    private Orbit getCentersOrbit(Orbit orbit) {
+        return ORBIT.get(orbit.center);
+    }
+
+    private boolean isOrbitAroundFixedPosition(Orbit orbit) {
+        return !ORBIT.has(orbit.center);
     }
 }

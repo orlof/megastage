@@ -29,9 +29,7 @@ public class Game {
         world.setSystem(new ServerNetworkSystem());
 
         world.setSystem(new OrbitalMovementSystem());
-        world.setSystem(new CoordinateTransformSystem());
 
-        // world.setSystem(new ZeroAccelerationSystem());
         world.setSystem(new EngineAccelerationSystem());
         world.setSystem(new GravityAccelerationSystem());
 
@@ -50,7 +48,7 @@ public class Game {
     public void loopForever() throws InterruptedException {
         while (true) {
             long ctime = System.currentTimeMillis();
-            world.setDelta(ctime - Globals.time);
+            world.setDelta((ctime - Globals.time) / 1000.0f);
             Globals.time = ctime;
 
             world.process();

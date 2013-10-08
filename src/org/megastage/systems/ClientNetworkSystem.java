@@ -4,152 +4,174 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.VoidEntitySystem;
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import org.megastage.components.Orbit;
+import org.megastage.components.Position;
+import org.megastage.protocol.Network;
 import org.megastage.util.Globals;
-import org.megastage.util.Network;
 import org.megastage.components.client.VirtualMonitorView;
-import org.megastage.util.NetworkListener;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-public class ClientNetworkSystem extends VoidEntitySystem implements NetworkListener {
+public class ClientNetworkSystem extends VoidEntitySystem {
     private final static Logger LOG = Logger.getLogger(ClientNetworkSystem.class.getName());
 
-    private Network network;
+    private Client client;
 
     public ClientNetworkSystem() {
         super();
 
-        network = new Network(this, Globals.clientPort);
-        // add server as the only remote
-        network.addRemote(new InetSocketAddress(Globals.serverHost, Globals.serverPort));
+        client = new Client();
+        Network.register(client);
+
+        Thread kryoThread = new Thread(client);
+        kryoThread.setDaemon(true);
+        kryoThread.start();
+
+        try {
+            client.connect(5000, Globals.serverHost, Globals.serverPort, Globals.serverPort+1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        client.addListener(new ClientNetworkListener());
     }
 
     @Override
     protected void processSystem() {
-        network.tick();
     }
 
     @Override
     protected boolean checkProcessing() {
-        return true;
+        return false;
     }
 
     public void sendKeyTyped(int key) {
-        LOG.finer("");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
-        buf.putInt(Globals.Message.KEY_TYPED);
-        buf.putInt(key);
-        network.broadcast(buf);
+        Network.KeyEvent keyEvent = new Network.KeyTyped();
+        keyEvent.key = key;
+        client.sendUDP(keyEvent);
     }
 
     public void sendKeyPressed(int key) {
-        LOG.finer("");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
-        buf.putInt(Globals.Message.KEY_PRESSED);
-        buf.putInt(key);
-        network.broadcast(buf);
+        Network.KeyEvent keyEvent = new Network.KeyPressed();
+        keyEvent.key = key;
+        client.sendUDP(keyEvent);
     }
 
     public void sendKeyReleased(int key) {
-        LOG.finer("");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
-        buf.putInt(Globals.Message.KEY_RELEASED);
-        buf.putInt(key);
-        network.broadcast(buf);
+        Network.KeyEvent keyEvent = new Network.KeyReleased();
+        keyEvent.key = key;
+        client.sendUDP(keyEvent);
     }
 
-    public void sendUseEntity() {
-        LOG.finer("");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[4]);
-        buf.putInt(Globals.Message.USE_ENTITY);
-        network.broadcast(buf);
-    }
-
-    public void sendRequestEntityData(int entityID) {
-        LOG.finer("");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[8]);
-        buf.putInt(Globals.Message.REQUEST_ENTITY_DATA);
-        buf.putInt(entityID);
-        network.broadcast(buf);
+    public void sendUse() {
+        Network.Use use = new Network.Use();
+        use.entityID = 0;
+        client.sendUDP(use);
     }
 
     public void sendLogin() {
-        LOG.info("");
-
-        ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
-        buf.putInt(Globals.Message.LOGIN);
-        network.broadcast(buf);
+        Network.Login msg = new Network.Login();
+        client.sendTCP(msg);
     }
 
     public void sendLogout() {
-        LOG.finer("");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
-        buf.putInt(Globals.Message.LOGOUT);
-        network.broadcast(buf);
+        Network.Logout msg = new Network.Logout();
+        client.sendTCP(msg);
     }
+
+
+    private class ClientNetworkListener extends Listener {
+        @Override
+        public void connected(Connection connection) {
+            LOG.info("Connected to server: " + connection.toString());
+        }
+
+        @Override
+        public void disconnected(Connection connection) {
+            LOG.info("Disconnected from server: " + connection.toString());
+        }
+
+        @Override
+        public void received(Connection pc, Object o) {
+            LOG.info("Received: " + o.getClass().getName());
+
+            if(o instanceof Network.LoginResponse) {
+                // nothing to do - for now
+
+            } else if(o instanceof Network.StarData) {
+                handleStarDataMessage(pc, (Network.StarData) o);
+
+            } else if(o instanceof Network.OrbitData) {
+                handleOrbitDataMessage(pc, (Network.OrbitData) o);
+
+            } else if(o instanceof Network.MonitorData) {
+                handleMonitorDataMessage(pc, (Network.MonitorData) o);
+
+            } else if(o instanceof Network.KeyboardData) {
+                handleKeyboardDataMessage(pc, (Network.KeyboardData) o);
+
+            } else {
+                LOG.severe("Unknown message received");
+            }
+        }
+    }
+
+    private void handleKeyboardDataMessage(Connection pc, Network.KeyboardData keyboardData) {
+        Network.Use use = new Network.Use();
+        use.entityID = keyboardData.entityID;
+        client.sendUDP(use);
+    }
+
+    @Mapper ComponentMapper<VirtualMonitorView> viewMapper;
+
+    private boolean first = true;
+    private void handleMonitorDataMessage(Connection connection, Network.MonitorData monitorData) {
+        Entity monitor = ensureClientEntity(monitorData.entityID);
+
+        VirtualMonitorView view = viewMapper.get(monitor);
+        if(view == null) {
+            view = new VirtualMonitorView();
+            monitor.addComponent(view);
+
+            world.getSystem(ClientRenderSystem.class).panel.image = view.img;
+        }
+
+        view.update(monitorData);
+    }
+
+    private void handleStarDataMessage(Connection connection, Network.StarData starData) {
+        Entity star = ensureClientEntity(starData.entityID);
+        star.addComponent(starData.position);
+    }
+
+    private void handleOrbitDataMessage(Connection connection, Network.OrbitData orbitData) {
+        Orbit orbit = new Orbit();
+        orbit.center = ensureClientEntity(orbitData.centerID);
+        orbit.angularSpeed = orbitData.angularSpeed;
+        orbit.distance = orbitData.distance;
+
+        Entity satellite = ensureClientEntity(orbitData.entityID);
+        satellite.addComponent(orbit);
+    }
+
 
     HashMap<Integer, Entity> serverIDToClientEntity = new HashMap<Integer, Entity>();
-    HashMap<Integer, Integer> clientToServer = new HashMap<Integer, Integer>();
-    
-    public void handleMessage(SocketAddress remote, ByteBuffer buf) {
-        int msgID = buf.getInt();
+    HashMap<Integer, Integer> clientIDToServerID = new HashMap<Integer, Integer>();
 
-        switch(msgID) {
-            case Globals.Message.VIDEO_RAM:
-            case Globals.Message.FONT_RAM:
-            case Globals.Message.PALETTE_RAM:
-                handleRAMMessage(msgID, buf);
-                break;
-            default:
-                LOG.warning("Unknown message type: " + msgID);
+    private Entity ensureClientEntity(int serverEntityID) {
+        Entity clientEntity = serverIDToClientEntity.get(serverEntityID);
+        if(clientEntity == null) {
+            clientEntity = world.createEntity();
+            world.addEntity(clientEntity);
+            serverIDToClientEntity.put(serverEntityID, clientEntity);
+            clientIDToServerID.put(clientEntity.getId(), serverEntityID);
         }
+        return clientEntity;
     }
 
-    @Mapper
-    ComponentMapper<VirtualMonitorView> viewMapper;
-    private void handleRAMMessage(int msgID, ByteBuffer buf) {
-        LOG.fine("" + msgID);
-
-        int serverID = buf.getInt();
-
-        Entity entity = serverIDToClientEntity.get(serverID);
-
-        if(entity == null) {
-            entity = world.createEntity();
-
-            VirtualMonitorView mon = new VirtualMonitorView();
-            entity.addComponent(mon);
-
-            // sendRequestEntityData(serverID);
-
-            world.getSystem(ClientRenderSystem.class).panel.image = mon.img;
-
-            world.addEntity(entity);
-            serverIDToClientEntity.put(serverID, entity);
-            clientToServer.put(entity.getId(), serverID);
-        }
-
-        VirtualMonitorView monitor = viewMapper.get(entity);
-        
-        char[] mem = new char[buf.remaining()/2];
-        for(int i=0; i < mem.length; i++) {
-            mem[i] = buf.getChar();
-        }
-
-        switch(msgID) {
-            case Globals.Message.VIDEO_RAM:
-                monitor.updateVideo(mem);
-                break;
-            case Globals.Message.FONT_RAM:
-                monitor.updateFont(mem);
-                break;
-            case Globals.Message.PALETTE_RAM:
-                monitor.updatePalette(mem);
-                break;
-        }
-    }
 }

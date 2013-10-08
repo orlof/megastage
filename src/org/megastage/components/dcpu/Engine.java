@@ -4,16 +4,12 @@ import com.artemis.Entity;
 import com.artemis.World;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.util.RAM;
 import org.megastage.util.Vector;
 
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
 import java.util.logging.Logger;
 
-public class HWEngineController extends DCPUHardware {
-    private final static Logger LOG = Logger.getLogger(HWEngineController.class.getName());
+public class Engine extends DCPUHardware {
+    private final static Logger LOG = Logger.getLogger(Engine.class.getName());
 
     public Vector thrust;
     public char power;
@@ -29,7 +25,7 @@ public class HWEngineController extends DCPUHardware {
         double x = element.getAttribute("x").getDoubleValue();
         double y = element.getAttribute("y").getDoubleValue();
         double z = element.getAttribute("z").getDoubleValue();
-        thrust = new Vector(x, y, z);
+        thrust = new Vector(-x, -y, -z);
     }
 
     public void interrupt() {
@@ -45,16 +41,20 @@ public class HWEngineController extends DCPUHardware {
         }
     }
 
-    public double getPower() {
+    public double getPowerLevel() {
         return power / 65535.0d;
     }
 
     public Vector getCurrentAccelerationVector(double shipMass) {
-        double multiplier = getPower() / shipMass;
+        double multiplier = getPowerLevel() / shipMass;
         return thrust.multiply(multiplier);
     }
 
     public boolean isActive() {
         return power != 0;
+    }
+
+    public Vector getForce() {
+        return thrust.multiply(getPowerLevel());
     }
 }

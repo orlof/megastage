@@ -1,6 +1,8 @@
 package org.megastage.components.client;
 
 import com.artemis.Component;
+import org.megastage.components.dcpu.VirtualMonitor;
+import org.megastage.protocol.Network;
 import org.megastage.util.RAM;
 
 import javax.imageio.ImageIO;
@@ -26,9 +28,6 @@ public class VirtualMonitorView extends Component {
     public boolean blink = false;
     public boolean isDirty = false;
 
-    public VirtualMonitorView() {
-    }
-
     public void updatePalette(char[] mem) {
         for (int i = 0; i < 16; i++) {
             char ch = mem[i];
@@ -51,5 +50,10 @@ public class VirtualMonitorView extends Component {
     }
 
 
+    public void update(Network.MonitorData monitorData) {
+        updateVideo(monitorData.video);
+        updateFont(monitorData.font);
+        updatePalette(monitorData.palette);
 
+    }
 }
