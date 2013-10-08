@@ -28,4 +28,11 @@ public class Velocity extends BaseComponent {
         vector = vector.add(v);
     }
 
+    public Vector getPositionChange(float time) {
+        return vector.multiply(time);
+    }
+
+    public void accelerate(Acceleration acceleration, float time) {
+        vector = vector.add(acceleration.getVelocityChange(time));
+    }
 }

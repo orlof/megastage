@@ -9,8 +9,8 @@ import org.megastage.util.Globals;
 
 import java.util.logging.Logger;
 
-public class HWPPSController extends DCPUHardware {
-    private final static Logger LOG = Logger.getLogger(HWPPSController.class.getName());
+public class PPS extends DCPUHardware {
+    private final static Logger LOG = Logger.getLogger(PPS.class.getName());
 
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {

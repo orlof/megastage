@@ -12,7 +12,7 @@ import org.megastage.util.Vector;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class GlobalAcceleration extends BaseComponent {
+public class Acceleration extends BaseComponent {
     public Vector vector = Vector.ZERO;
 
     @Override
@@ -32,6 +32,6 @@ public class GlobalAcceleration extends BaseComponent {
     }
 
     public Vector getVelocityChange(float time) {
-        return vector.multiply(1000.0 * time);
+        return vector.multiply(time);
     }
 }

@@ -33,7 +33,6 @@ public class Game {
         world.initialize();
 
         world.getSystem(ClientNetworkSystem.class).sendLogin();
-        world.getSystem(ClientNetworkSystem.class).sendUseEntity();
 
         world.getSystem(ClientRenderSystem.class).addWindowListener(new WindowAdapter() {
             @Override
@@ -41,8 +40,6 @@ public class Game {
                 exit();
             }
         });
-
-
     }
 
     private void exit() {

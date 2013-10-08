@@ -107,7 +107,7 @@ public class Quaternion {
     }
 
     // return a / b
-    public Quaternion divides(Quaternion b) {
+    public Quaternion divide(Quaternion b) {
         Quaternion a = this;
         return a.inverse().multiply(b);
     }

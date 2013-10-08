@@ -2,23 +2,24 @@
     <entity>
         <component type="Identifier" name="Sun"/>
         <component type="Position" x="0" y="0" z="0"/>
-        <component type="Physical" radius_km="700000" mass_kg="1.989e30"/>
-        <component type="Visible" object="star"/>
-        <group name="celestial"/>
+        <component type="GravityField" mass_kg="1.989e30"/>
+        <group name="star"/>
+        <!--component type="Appearance" radius_km="700000"/-->
         <entity>
             <component type="Identifier" name="Earth"/>
-            <component type="Orbit" orbital_distance_km="150000000"/>
-            <component type="LocalPosition"/>
-            <component type="Position" x="0" y="0" z="0"/>
-            <component type="Physical" radius_km="6300" mass_kg="5.972e24"/>
-            <group name="celestial"/>
+            <component type="GravityField" mass_kg="5.972e24"/>
+            <component type="Orbit" orbital_distance_km="150000000" mass_kg="5.972e24"/>
+            <component type="Position"/>
+            <group name="satellite"/>
+            <!--component type="Mass" mass_kg="5.972e24"/-->
+            <!--component type="Appearance" radius_km="6300"/-->
             <entity>
                 <component type="Identifier" name="Moon"/>
-                <component type="Orbit" orbital_distance_km="384000"/>
-                <component type="LocalPosition"/>
-                <component type="Position" x="0" y="0" z="0"/>
-                <component type="Physical" radius_km="1700" mass_kg="7.34767309e22"/>
-                <group name="celestial"/>
+                <component type="GravityField" mass_kg="5.972e24"/>
+                <component type="Orbit" orbital_distance_km="384000" mass_kg="7.34767309e22"/>
+                <component type="Position"/>
+                <group name="satellite"/>
+                <!-- component type="Mass" radius_km="1700" mass_kg="7.34767309e22"/-->
             </entity>
         </entity>
     </entity>
@@ -26,30 +27,30 @@
     <entity>
         <component type="Identifier" name="Apollo 13"/>
         <component type="Position" x="0" y="0" z="0"/>
-        <component type="Heading"/>
-        <component type="ShipVelocity" x="0" y="0" z="0"/>
-        <component type="ShipGlobalAcceleration"/>
-        <component type="ShipLocalAcceleration"/>
-        <component type="Physical" radius_km="0.02" mass_kg="1000000"/>
+        <component type="Rotation"/>
+        <component type="Velocity" x="0" y="0" z="0"/>
+        <component type="Acceleration"/>
+        <component type="Mass" radius_km="0.02" mass_kg="1000000"/>
         <entity>
             <component type="dcpu.DCPU" bootrom="admiral.bin"/>
             <entity>
                 <component type="dcpu.VirtualKeyboard"/>
-                <group name="usable"/>
+                <group name="keyboard"/>
             </entity>
             <entity>
                 <component type="dcpu.VirtualMonitor"/>
-                <component type="Visible" object="monitor"/>
+                <group name="monitor"/>
             </entity>
             <entity>
-                <component type="HWEngineController" x="0" y="0" z="10"/>
-                <component type="dcpu.HWEngineController" x="0" y="0" z="10"/>
+                <component type="dcpu.Engine" x="0" y="0" z="10"/>
+                <component type="Rotation"/>
             </entity>
             <entity>
-                <component type="dcpu.HWEngineController" x="0" y="0" z="-1"/>
+                <component type="dcpu.Engine" x="0" y="0" z="-1"/>
+                <component type="Rotation"/>
             </entity>
             <entity>
-                <component type="dcpu.HWPPSController"/>
+                <component type="dcpu.PPS"/>
             </entity>
         </entity>
         <!--entity>
