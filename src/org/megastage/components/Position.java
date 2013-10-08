@@ -17,9 +17,9 @@ public class Position extends BaseComponent {
 
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {
-        x = 1000000 * element.getAttribute("x").getLongValue();
-        y = 1000000 * element.getAttribute("y").getLongValue();
-        z = 1000000 * element.getAttribute("z").getLongValue();
+        x = 1000000 * getLongValue(element, "x", 0);
+        x = 1000000 * getLongValue(element, "y", 0);
+        x = 1000000 * getLongValue(element, "z", 0);
     }
 
     public void add(Vector vector) {
@@ -28,4 +28,7 @@ public class Position extends BaseComponent {
         z += Math.round(vector.z);
     }
 
+    public void move(Velocity velocity, float time) {
+        add(velocity.getPositionChange(time));
+    }
 }

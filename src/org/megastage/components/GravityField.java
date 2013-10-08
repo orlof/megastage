@@ -11,12 +11,12 @@ import org.jdom2.Element;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class Physical extends BaseComponent {
+public class GravityField extends BaseComponent {
+    public double mass;
+
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {
-        radius = 1000000 * element.getAttribute("radius_km").getDoubleValue();
+        // radius = 1000000 * element.getAttribute("radius_km").getDoubleValue();
         mass = element.getAttribute("mass_kg").getDoubleValue();
     }
-
-    public double mass, radius;
 }

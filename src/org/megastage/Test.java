@@ -11,7 +11,16 @@ import org.megastage.server.Main;
  */
 public class Test {
     public static void main(String[] args) throws Exception {
-        org.megastage.client.Main.main(new String[0]);
-        Main.main(new String[]{"world.xml"});
+
+    }
+}
+
+interface A {
+    public void f();
+}
+
+class B implements A {
+    @Override
+    public void f() {
     }
 }
