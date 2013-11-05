@@ -3,6 +3,9 @@ package org.megastage.protocol;
 import com.artemis.Entity;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
+import com.esotericsoftware.minlog.Log;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.megastage.components.GravityAcceleration;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
@@ -24,18 +27,15 @@ public class Network {
         }
 
         kryo.register(char[].class);
+        kryo.register(Object[].class);
         kryo.register(Position.class);
         kryo.register(VirtualMonitor.class);
     }
 
     static public class Login {}
-    static public class Logout {}
-
     static public class LoginResponse {}
 
-    static public class Use {
-        public int entityID;
-    }
+    static public class Logout {}
 
     static public abstract class KeyEvent {
         public int key;
@@ -44,15 +44,33 @@ public class Network {
     static public class KeyTyped extends KeyEvent {}
     static public class KeyReleased extends KeyEvent {}
 
+    static public class SpatialData {
+        public int entityID;
+        public static SpatialData create(Entity entity) {
+            SpatialData data = new SpatialData();
+            data.entityID = entity.getId();
+            return data;
+        }
+    }
+
+    static public class UseData {
+        public int entityID;
+        public static UseData create(Entity entity) {
+            UseData data = new UseData();
+            data.entityID = entity.getId();
+            return data;
+        }
+    }
+
     static public class StarData {
         public int entityID;
         public Position position;
 
         public static StarData create(Entity entity) {
-            StarData starData = new StarData();
-            starData.entityID = entity.getId();
-            starData.position = entity.getComponent(Position.class);
-            return starData;
+            StarData data = new StarData();
+            data.entityID = entity.getId();
+            data.position = entity.getComponent(Position.class);
+            return data;
         }
     }
 
@@ -64,18 +82,32 @@ public class Network {
         public double angularSpeed;
 
         public static OrbitData create(Entity entity) {
-            OrbitData orbitData = new OrbitData();
-            orbitData.entityID = entity.getId();
+            OrbitData data = new OrbitData();
+            data.entityID = entity.getId();
 
             Orbit orbit = entity.getComponent(Orbit.class);
-            orbitData.centerID = orbit.center.getId();
-            orbitData.distance = orbit.distance;
-            orbitData.angularSpeed = orbit.angularSpeed;
+            data.centerID = orbit.center.getId();
+            data.distance = orbit.distance;
+            data.angularSpeed = orbit.angularSpeed;
 
-            return orbitData;
+            return data;
         }
     }
 
+    static public class PositionData {
+        public int entityID;
+        
+        public Position position;
+        
+        public static PositionData create(Entity entity) {
+            PositionData data = new PositionData();
+            data.entityID = entity.getId();
+            data.position = entity.getComponent(Position.class);
+
+            return data;
+        }
+    }
+    
     static public class MonitorData {
         public int entityID;
         public char[] video;
@@ -83,15 +115,15 @@ public class Network {
         public char[] palette;
 
         public static MonitorData create(Entity entity) {
-            MonitorData monitorData = new MonitorData();
-            monitorData.entityID = entity.getId();
+            MonitorData data = new MonitorData();
+            data.entityID = entity.getId();
 
             VirtualMonitor virtualMonitor = entity.getComponent(VirtualMonitor.class);
-            monitorData.video = virtualMonitor.video.mem;
-            monitorData.font = virtualMonitor.font.mem;
-            monitorData.palette = virtualMonitor.palette.mem;
+            data.video = virtualMonitor.video.mem;
+            data.font = virtualMonitor.font.mem;
+            data.palette = virtualMonitor.palette.mem;
 
-            return monitorData;
+            return data;
         }
     }
 
@@ -99,9 +131,9 @@ public class Network {
         public int entityID;
 
         public static KeyboardData create(Entity entity) {
-            KeyboardData keyboardData = new KeyboardData();
-            keyboardData.entityID = entity.getId();
-            return keyboardData;
+            KeyboardData data = new KeyboardData();
+            data.entityID = entity.getId();
+            return data;
         }
     }
 }

@@ -2,16 +2,13 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.Position;
 import org.megastage.util.Globals;
 
-import java.util.logging.Logger;
-
 public class PPS extends DCPUHardware {
-    private final static Logger LOG = Logger.getLogger(PPS.class.getName());
-
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_PPS;
@@ -25,7 +22,7 @@ public class PPS extends DCPUHardware {
         char a = dcpu.registers[0];
         char b = dcpu.registers[1];
 
-        LOG.fine("a=" + Integer.toHexString(a) + ", b=" + Integer.toHexString(b));
+        Log.debug("a=" + Integer.toHexString(a) + ", b=" + Integer.toHexString(b));
 
         if (a == 0) {
             Position position = ship.getComponent(Position.class);

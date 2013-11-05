@@ -2,15 +2,14 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.util.Globals;
 import org.megastage.components.BaseComponent;
-import org.megastage.util.application.Log;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Experimental 1.7 update to Notch's 1.4 emulator
@@ -18,8 +17,6 @@ import java.util.logging.Logger;
  * @author Notch, Herobrine
  */
 public class DCPU extends BaseComponent {
-    private final static Logger LOG = Logger.getLogger(DCPU.class.getName());
-
     public static final int KHZ = 100;
     public static final int HARDWARE_TICK_INTERVAL = 1000 * KHZ / 60;
 
@@ -80,7 +77,7 @@ public class DCPU extends BaseComponent {
     }
 
     public boolean connectHardware(DCPUHardware hw) {
-        LOG.finer(hw.toString());
+        Log.debug("connect hardware " + hw.toString());
         hw.dcpu = this;
         hardware.add(hw);
         return true;
@@ -99,7 +96,7 @@ public class DCPU extends BaseComponent {
         long uptime = Globals.time - startupTime;
         long cycleTarget = uptime * KHZ;
 
-        LOG.finest((cycleTarget-cycles) + " cycles in batch");
+        Log.trace((cycleTarget-cycles) + " cycles in batch");
 
         while (cycles < cycleTarget) {
             tick();
@@ -109,7 +106,7 @@ public class DCPU extends BaseComponent {
             }
         }
 
-        LOG.finest(String.format("%.2f Hz", 1000.0 * cycles / uptime));
+        Log.trace(String.format("%.2f Hz", 1000.0 * cycles / uptime));
 
     }
 
@@ -579,7 +576,7 @@ public class DCPU extends BaseComponent {
             }
         } catch (IOException e) {}
 
-        LOG.fine("Boot image: " + i + " words");
+        Log.info("Boot image: " + i + " words");
         
         try { dis.close(); } catch (IOException e) {}
         

@@ -8,3 +8,5 @@ megastage.jar
 *~
 .idea/
 
+/build/
+/dist/
