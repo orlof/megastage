@@ -17,7 +17,7 @@ public abstract class BaseComponent extends Component {
     public abstract void init(World world, Entity parent, Element element) throws Exception;
 
     protected long getLongValue(Element config, String attrName, long defaultValue) {
-        Attribute attr = config.getAttribute("x");
+        Attribute attr = config.getAttribute(attrName);
 
         try {
             if(attr != null) {

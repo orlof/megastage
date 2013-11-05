@@ -2,15 +2,12 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.util.Vector;
 
-import java.util.logging.Logger;
-
 public class Engine extends DCPUHardware {
-    private final static Logger LOG = Logger.getLogger(Engine.class.getName());
-
     public Vector thrust;
     public char power;
 
@@ -32,7 +29,7 @@ public class Engine extends DCPUHardware {
         char a = dcpu.registers[0];
         char b = dcpu.registers[1];
 
-        LOG.fine("a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
+        Log.debug("a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
 
         if (a == 0) {
             power = b;

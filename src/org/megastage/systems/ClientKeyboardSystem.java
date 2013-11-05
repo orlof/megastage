@@ -1,6 +1,7 @@
 package org.megastage.systems;
 
 import com.artemis.systems.VoidEntitySystem;
+import com.esotericsoftware.minlog.Log;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,10 +10,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public class ClientKeyboardSystem extends VoidEntitySystem {
-    private final static Logger LOG = Logger.getLogger(ClientKeyboardSystem.class.getName());
     private final Map<Integer, ReleasedAction> _map = new HashMap<Integer, ReleasedAction>();
 
     public ClientKeyboardSystem() {
@@ -61,7 +60,7 @@ public class ClientKeyboardSystem extends VoidEntitySystem {
         if (e.getKeyChar() == KeyEvent.CHAR_UNDEFINED) {
             int keyCode = e.getKeyCode();
             if (keyCode < 256 && !keyCodePressed[keyCode]) {
-                LOG.fine("PRESS KeyCode = " + Integer.toHexString(e.getKeyCode()));
+                Log.trace("PRESS KeyCode = " + Integer.toHexString(e.getKeyCode()));
                 keyCodePressed[keyCode] = true;
                 world.getSystem(ClientNetworkSystem.class).sendKeyPressed(keyCode);
             }
@@ -70,7 +69,7 @@ public class ClientKeyboardSystem extends VoidEntitySystem {
 
         char keyChar = e.getKeyChar();
         if (keyChar < 256 && !keyCharPressed[keyChar]) {
-            LOG.fine("PRESS KeyChar = " + Integer.toHexString(e.getKeyChar()));
+            Log.trace("PRESS KeyChar = " + Integer.toHexString(e.getKeyChar()));
             keyCharPressed[keyChar] = true;
             world.getSystem(ClientNetworkSystem.class).sendKeyPressed(e.getKeyChar());
         }
@@ -82,7 +81,7 @@ public class ClientKeyboardSystem extends VoidEntitySystem {
         if (e.getKeyChar() == KeyEvent.CHAR_UNDEFINED) {
             int keyCode = e.getKeyCode();
             if (keyCode < 256 && keyCodePressed[keyCode]) {
-                LOG.fine("RELEASE KeyCode = " + Integer.toHexString(e.getKeyCode()));
+                Log.trace("RELEASE KeyCode = " + Integer.toHexString(e.getKeyCode()));
                 keyCodePressed[keyCode] = false;
                 world.getSystem(ClientNetworkSystem.class).sendKeyReleased(keyCode);
             }
@@ -91,7 +90,7 @@ public class ClientKeyboardSystem extends VoidEntitySystem {
 
         char keyChar = e.getKeyChar();
         if (keyChar < 256 && keyCharPressed[keyChar]) {
-            LOG.fine("RELEASE KeyChar = " + Integer.toHexString(e.getKeyChar()));
+            Log.trace("RELEASE KeyChar = " + Integer.toHexString(e.getKeyChar()));
             keyCharPressed[keyChar] = false;
             keyCharTyped[keyChar] = false;
             world.getSystem(ClientNetworkSystem.class).sendKeyReleased(keyChar);
@@ -102,7 +101,7 @@ public class ClientKeyboardSystem extends VoidEntitySystem {
     public boolean keyTyped(KeyEvent e) {
         char keyChar = e.getKeyChar();
         if (keyChar < 256 && !keyCharTyped[keyChar]) {
-            LOG.fine("TYPE KeyChar = " + Integer.toHexString(e.getKeyChar()));
+            Log.trace("TYPE KeyChar = " + Integer.toHexString(e.getKeyChar()));
             keyCharTyped[keyChar] = true;
             world.getSystem(ClientNetworkSystem.class).sendKeyTyped(keyChar);
         }

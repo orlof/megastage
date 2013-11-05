@@ -7,24 +7,20 @@ import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.ItemInUse;
 import org.megastage.components.dcpu.VirtualKeyboard;
-import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.protocol.Network;
 import org.megastage.protocol.PlayerConnection;
 import org.megastage.util.Globals;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 public class ServerNetworkSystem extends VoidEntitySystem {
-    private final static Logger LOG = Logger.getLogger(ServerNetworkSystem.class.getName());
-
     private Server server;
 
-    public ServerNetworkSystem() {
-        super();
-
+    @Override
+    protected void initialize() {
         server = new Server() {
             protected Connection newConnection () {
                 // By providing our own connection implementation, we can store per
@@ -45,10 +41,9 @@ public class ServerNetworkSystem extends VoidEntitySystem {
             e.printStackTrace();
         }
     }
-
+    
     @Override
-    protected void processSystem() {
-    }
+    protected void processSystem() {}
 
     @Override
     protected boolean checkProcessing() {
@@ -80,7 +75,11 @@ public class ServerNetworkSystem extends VoidEntitySystem {
 
         unicastGroupData(connection, "monitor", new PacketFactory() {
             public Object create(Entity entity) {
-                return Network.MonitorData.create(entity);
+                return new Object[] {
+                    Network.SpatialData.create(entity),
+                    Network.MonitorData.create(entity),
+                    Network.PositionData.create(entity)
+                };
             }
         });
 
@@ -91,7 +90,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         });
     }
 
-    private void handleUseMessage(PlayerConnection connection, Network.Use packet) {
+    private void handleUseMessage(PlayerConnection connection, Network.UseData packet) {
         Entity item = world.getEntity(packet.entityID);
         Entity player = connection.player;
 
@@ -147,7 +146,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
 
         @Override
         public void received(Connection connection, Object o) {
-            LOG.info("Received: " + o.getClass().getName());
+            Log.info("Received: " + o.getClass().getName());
             PlayerConnection pc = (PlayerConnection) connection;
 
             if(o instanceof Network.Login) {
@@ -156,8 +155,8 @@ public class ServerNetworkSystem extends VoidEntitySystem {
             } else if(o instanceof Network.Logout) {
                 handleLogoutMessage(pc, (Network.Logout) o);
 
-            } else if(o instanceof Network.Use) {
-                handleUseMessage(pc, (Network.Use) o);
+            } else if(o instanceof Network.UseData) {
+                handleUseMessage(pc, (Network.UseData) o);
 
             } else if(o instanceof Network.KeyEvent) {
                 handleKeyEventMessage(pc, (Network.KeyEvent) o);

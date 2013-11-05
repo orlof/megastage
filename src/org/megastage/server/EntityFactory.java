@@ -4,10 +4,10 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.artemis.managers.GroupManager;
 import com.artemis.managers.TagManager;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 
-import java.util.logging.Logger;
 
 /**
  * MegaStage
@@ -16,17 +16,15 @@ import java.util.logging.Logger;
  * Time: 20:01
  */
 public class EntityFactory {
-    private final static Logger LOG = Logger.getLogger(EntityFactory.class.getName());
-
     public static Entity create(World world, Element element, Entity parent) {
         Entity entity = world.createEntity();
 
-        LOG.info(entity.toString());
-        if(parent != null) LOG.finer("Parent[" + parent.getId() + "]");
+        Log.info(entity.toString());
+        if(parent != null) Log.debug("Parent[" + parent.getId() + "]");
 
         try {
             for(Element e: element.getChildren("component")) {
-                LOG.finer("Add Component of type " + e.getAttributeValue("type"));
+                Log.debug("Add Component of type " + e.getAttributeValue("type"));
 
                 Class clazz = Class.forName("org.megastage.components." + e.getAttributeValue("type"));
                 BaseComponent comp = (BaseComponent) clazz.newInstance();
@@ -37,14 +35,14 @@ public class EntityFactory {
 
             for(Element e: element.getChildren("group")) {
                 String groupName = e.getAttributeValue("name");
-                LOG.finer("Add to group " + groupName);
+                Log.debug("Add to group " + groupName);
 
                 world.getManager(GroupManager.class).add(entity, groupName);
             }
 
             for(Element e: element.getChildren("tag")) {
                 String tagName = e.getAttributeValue("name");
-                LOG.finer("Tag with " + tagName);
+                Log.debug("Tag with " + tagName);
 
                 world.getManager(TagManager.class).register(tagName, entity);
             }

@@ -1,29 +1,28 @@
 package org.megastage.systems;
 
-import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.VoidEntitySystem;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Orbit;
-import org.megastage.components.Position;
 import org.megastage.protocol.Network;
 import org.megastage.util.Globals;
-import org.megastage.components.client.VirtualMonitorView;
+import org.megastage.components.ClientVideoMemory;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.logging.Logger;
 
 public class ClientNetworkSystem extends VoidEntitySystem {
-    private final static Logger LOG = Logger.getLogger(ClientNetworkSystem.class.getName());
-
     private Client client;
 
-    public ClientNetworkSystem() {
-        super();
+    private ClientEntityManagerSystem cems;
+    private ClientSpatialManagerSystem csms;
+
+    @Override
+    protected void initialize() {
+        this.cems = world.getSystem(ClientEntityManagerSystem.class);
+        this.csms = world.getSystem(ClientSpatialManagerSystem.class);
 
         client = new Client();
         Network.register(client);
@@ -42,13 +41,7 @@ public class ClientNetworkSystem extends VoidEntitySystem {
     }
 
     @Override
-    protected void processSystem() {
-    }
-
-    @Override
-    protected boolean checkProcessing() {
-        return false;
-    }
+    protected void processSystem() {}
 
     public void sendKeyTyped(int key) {
         Network.KeyEvent keyEvent = new Network.KeyTyped();
@@ -68,9 +61,9 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         client.sendUDP(keyEvent);
     }
 
-    public void sendUse() {
-        Network.Use use = new Network.Use();
-        use.entityID = 0;
+    public void sendUse(int entityID) {
+        Network.UseData use = new Network.UseData();
+        use.entityID = cems.convert(entityID);
         client.sendUDP(use);
     }
 
@@ -88,17 +81,27 @@ public class ClientNetworkSystem extends VoidEntitySystem {
     private class ClientNetworkListener extends Listener {
         @Override
         public void connected(Connection connection) {
-            LOG.info("Connected to server: " + connection.toString());
+            Log.info("Connected to server: " + connection.toString());
         }
 
         @Override
         public void disconnected(Connection connection) {
-            LOG.info("Disconnected from server: " + connection.toString());
+            Log.info("Disconnected from server: " + connection.toString());
         }
 
         @Override
         public void received(Connection pc, Object o) {
-            LOG.info("Received: " + o.getClass().getName());
+            if(o instanceof Object[]) {
+                for(Object packet: (Object[]) o) {
+                    handlePacket(pc, packet);
+                }
+            } else {
+                handlePacket(pc, o);
+            }
+        }
+        
+        public void handlePacket(Connection pc, Object o) {
+            Log.info("Received: " + o.getClass().getName());
 
             if(o instanceof Network.LoginResponse) {
                 // nothing to do - for now
@@ -115,63 +118,48 @@ public class ClientNetworkSystem extends VoidEntitySystem {
             } else if(o instanceof Network.KeyboardData) {
                 handleKeyboardDataMessage(pc, (Network.KeyboardData) o);
 
+            } else if(o instanceof Network.PositionData) {
+                handlePositionDataMessage(pc, (Network.PositionData) o);
+
+            } else if(o instanceof Network.SpatialData) {
+                handleSpatialDataMessage(pc, (Network.SpatialData) o);
+
             } else {
-                LOG.severe("Unknown message received");
+                Log.warn("Unknown message received");
             }
         }
     }
 
     private void handleKeyboardDataMessage(Connection pc, Network.KeyboardData keyboardData) {
-        Network.Use use = new Network.Use();
+        Network.UseData use = new Network.UseData();
         use.entityID = keyboardData.entityID;
         client.sendUDP(use);
     }
 
-    @Mapper ComponentMapper<VirtualMonitorView> viewMapper;
-
-    private boolean first = true;
-    private void handleMonitorDataMessage(Connection connection, Network.MonitorData monitorData) {
-        Entity monitor = ensureClientEntity(monitorData.entityID);
-
-        VirtualMonitorView view = viewMapper.get(monitor);
-        if(view == null) {
-            view = new VirtualMonitorView();
-            monitor.addComponent(view);
-
-            world.getSystem(ClientRenderSystem.class).panel.image = view.img;
-        }
-
-        view.update(monitorData);
+    private void handleMonitorDataMessage(Connection connection, Network.MonitorData data) {
+        ClientVideoMemory videoMemory = cems.getComponent(data.entityID, ClientVideoMemory.class);
+        videoMemory.update(data);
     }
 
-    private void handleStarDataMessage(Connection connection, Network.StarData starData) {
-        Entity star = ensureClientEntity(starData.entityID);
-        star.addComponent(starData.position);
+    private void handleSpatialDataMessage(Connection connection, Network.SpatialData data) {
+        Entity entity = cems.get(data.entityID);
+        csms.setupMonitor(entity);
+    }
+
+    private void handlePositionDataMessage(Connection connection, Network.PositionData data) {
+        cems.setComponent(data.entityID, data.position);
+    }
+
+    private void handleStarDataMessage(Connection connection, Network.StarData data) {
+        cems.setComponent(data.entityID, data.position);
     }
 
     private void handleOrbitDataMessage(Connection connection, Network.OrbitData orbitData) {
         Orbit orbit = new Orbit();
-        orbit.center = ensureClientEntity(orbitData.centerID);
+        orbit.center = cems.get(orbitData.centerID);
         orbit.angularSpeed = orbitData.angularSpeed;
         orbit.distance = orbitData.distance;
 
-        Entity satellite = ensureClientEntity(orbitData.entityID);
-        satellite.addComponent(orbit);
+        cems.setComponent(orbitData.entityID, orbit);
     }
-
-
-    HashMap<Integer, Entity> serverIDToClientEntity = new HashMap<Integer, Entity>();
-    HashMap<Integer, Integer> clientIDToServerID = new HashMap<Integer, Integer>();
-
-    private Entity ensureClientEntity(int serverEntityID) {
-        Entity clientEntity = serverIDToClientEntity.get(serverEntityID);
-        if(clientEntity == null) {
-            clientEntity = world.createEntity();
-            world.addEntity(clientEntity);
-            serverIDToClientEntity.put(serverEntityID, clientEntity);
-            clientIDToServerID.put(clientEntity.getId(), serverEntityID);
-        }
-        return clientEntity;
-    }
-
 }

@@ -39,6 +39,8 @@
             </entity>
             <entity>
                 <component type="dcpu.VirtualMonitor"/>
+                <component type="Position" x="-1500" y="-1000" z="0"/>
+                <component type="ServerSpatial"/>
                 <group name="monitor"/>
             </entity>
             <entity>

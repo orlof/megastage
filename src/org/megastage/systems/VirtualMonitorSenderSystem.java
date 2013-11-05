@@ -8,11 +8,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.dcpu.LEMUtil;
 import org.megastage.components.dcpu.VirtualMonitor;
 
-import java.util.logging.Logger;
-
 public class VirtualMonitorSenderSystem extends EntityProcessingSystem {
-    private final static Logger LOG = Logger.getLogger(VirtualMonitorSenderSystem.class.getName());
-
     @Mapper ComponentMapper<VirtualMonitor> virtualMonitorMapper;
 
     public VirtualMonitorSenderSystem() {
@@ -21,8 +17,6 @@ public class VirtualMonitorSenderSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity entity) {
-        LOG.finest(entity.toString());
-
         VirtualMonitor mon = virtualMonitorMapper.get(entity);
 
         boolean videoChanged = mon.videoAddr == 0 ?
