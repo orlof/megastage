@@ -34,12 +34,15 @@ public class Main extends SimpleApplication {
         Log.set(Log.LEVEL_DEBUG);
 
         Main app = new Main();
+        app.setShowSettings(false);
         app.start();
     }
     
     @Override
     public void simpleInitApp() {
-        cam.setLocation(new Vector3f(0,0,5));
+        cam.setLocation(new Vector3f(0,0,0));
+        cam.setFrustumFar(200000000000f);
+        Log.info("" + cam.getFrustumFar());
         
         ArtemisState s = new ArtemisState();
         stateManager.attach(s);

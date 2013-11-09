@@ -25,7 +25,7 @@ public class GravityAccelerationSystem extends EntityProcessingSystem {
     private GravityFieldSystem gravityFieldSystem;
 
     public GravityAccelerationSystem() {
-        super(Aspect.getAspectForAll(GravityAcceleration.class));
+        super(Aspect.getAspectForAll(GravityAcceleration.class, Position.class));
     }
 
     @Override

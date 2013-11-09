@@ -12,11 +12,6 @@ import org.jdom2.Element;
  * Time: 20:58
  */
 public class GravityField extends BaseComponent {
-    public double mass;
-
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
-        // radius = 1000000 * element.getAttribute("radius_km").getDoubleValue();
-        mass = element.getAttribute("mass_kg").getDoubleValue();
-    }
+    public void init(World world, Entity parent, Element element) throws DataConversionException {}
 }

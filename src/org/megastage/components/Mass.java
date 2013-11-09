@@ -16,6 +16,6 @@ public class Mass extends BaseComponent {
 
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {
-        mass = element.getAttribute("mass_kg").getDoubleValue();
+        mass = getDoubleValue(element, "kg", 0.0);
     }
 }

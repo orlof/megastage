@@ -30,10 +30,10 @@ public class Game {
 
         world.setSystem(new OrbitalMovementSystem());
 
-        world.setSystem(new EngineAccelerationSystem());
-        world.setSystem(new GravityAccelerationSystem());
+        //world.setSystem(new EngineAccelerationSystem());
+        //world.setSystem(new GravityAccelerationSystem());
 
-        world.setSystem(new ShipMovementSystem());
+        //world.setSystem(new ShipMovementSystem());
 
         world.setSystem(new DCPUSystem());
         world.setSystem(new VirtualMonitorSenderSystem());
@@ -52,6 +52,8 @@ public class Game {
             Globals.time = ctime;
 
             world.process();
+            
+            world.getSystem(ServerNetworkSystem.class).broadcastTimeData();
             Thread.sleep(100);
         }
     }

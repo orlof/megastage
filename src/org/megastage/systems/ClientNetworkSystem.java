@@ -106,8 +106,11 @@ public class ClientNetworkSystem extends VoidEntitySystem {
             if(o instanceof Network.LoginResponse) {
                 // nothing to do - for now
 
-            } else if(o instanceof Network.StarData) {
-                handleStarDataMessage(pc, (Network.StarData) o);
+            //} else if(o instanceof Network.StarData) {
+            //    handleStarDataMessage(pc, (Network.StarData) o);
+
+            } else if(o instanceof Network.TimeData) {
+                handleTimeDataMessage(pc, (Network.TimeData) o);
 
             } else if(o instanceof Network.OrbitData) {
                 handleOrbitDataMessage(pc, (Network.OrbitData) o);
@@ -121,8 +124,14 @@ public class ClientNetworkSystem extends VoidEntitySystem {
             } else if(o instanceof Network.PositionData) {
                 handlePositionDataMessage(pc, (Network.PositionData) o);
 
-            } else if(o instanceof Network.SpatialData) {
-                handleSpatialDataMessage(pc, (Network.SpatialData) o);
+            } else if(o instanceof Network.SpatialMonitorData) {
+                handleSpatialMonitorDataMessage(pc, (Network.SpatialMonitorData) o);
+
+            } else if(o instanceof Network.SpatialSphereData) {
+                handleSpatialSphereDataMessage(pc, (Network.SpatialSphereData) o);
+
+            } else if(o instanceof Network.MassData) {
+                handleMassDataMessage(pc, (Network.MassData) o);
 
             } else {
                 Log.warn("Unknown message received");
@@ -141,25 +150,39 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         videoMemory.update(data);
     }
 
-    private void handleSpatialDataMessage(Connection connection, Network.SpatialData data) {
+    private void handleSpatialMonitorDataMessage(Connection connection, Network.SpatialMonitorData data) {
         Entity entity = cems.get(data.entityID);
-        csms.setupMonitor(entity);
+        //csms.setupMonitor(entity);
+        csms.setupMonitor(entity, data);
+    }
+
+    private void handleSpatialSphereDataMessage(Connection connection, Network.SpatialSphereData data) {
+        Entity entity = cems.get(data.entityID);
+        //csms.setupMonitor(entity);
+        csms.setupSphere(entity, data);
     }
 
     private void handlePositionDataMessage(Connection connection, Network.PositionData data) {
         cems.setComponent(data.entityID, data.position);
     }
 
-    private void handleStarDataMessage(Connection connection, Network.StarData data) {
-        cems.setComponent(data.entityID, data.position);
+    private void handleMassDataMessage(Connection connection, Network.MassData data) {
+        cems.setComponent(data.entityID, data.mass);
     }
 
+/*    private void handleStarDataMessage(Connection connection, Network.StarData data) {
+        cems.setComponent(data.entityID, data.position);
+    }
+*/
     private void handleOrbitDataMessage(Connection connection, Network.OrbitData orbitData) {
         Orbit orbit = new Orbit();
         orbit.center = cems.get(orbitData.centerID);
-        orbit.angularSpeed = orbitData.angularSpeed;
         orbit.distance = orbitData.distance;
 
         cems.setComponent(orbitData.entityID, orbit);
+    }
+    
+    private void handleTimeDataMessage(Connection connection, Network.TimeData data) {
+        Globals.time = data.time;
     }
 }
