@@ -63,20 +63,29 @@ public class ServerNetworkSystem extends VoidEntitySystem {
 
         unicastGroupData(connection, "star", new PacketFactory() {
             public Object create(Entity entity) {
-                return Network.StarData.create(entity);
+                return new Object[] {
+                    Network.SpatialSphereData.create(entity),
+                    Network.PositionData.create(entity),
+                    Network.MassData.create(entity)
+                };
             }
         });
 
         unicastGroupData(connection, "satellite", new PacketFactory() {
             public Object create(Entity entity) {
-                return Network.OrbitData.create(entity);
+                return new Object[] {
+                    Network.SpatialSphereData.create(entity),
+                    Network.OrbitData.create(entity),
+                    Network.MassData.create(entity),
+                    Network.PositionData.create(entity)
+                };
             }
         });
 
         unicastGroupData(connection, "monitor", new PacketFactory() {
             public Object create(Entity entity) {
                 return new Object[] {
-                    Network.SpatialData.create(entity),
+                    Network.SpatialMonitorData.create(entity),
                     Network.MonitorData.create(entity),
                     Network.PositionData.create(entity)
                 };
@@ -122,6 +131,11 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     public void broadcastMonitorData(Entity entity) {
         Network.MonitorData monitorData = Network.MonitorData.create(entity);
         server.sendToAllUDP(monitorData);
+    }
+    
+    public void broadcastTimeData() {
+        Network.TimeData data = Network.TimeData.create();
+        server.sendToAllUDP(data);
     }
 
     private void unicastGroupData(PlayerConnection connection, String group, PacketFactory factory) {

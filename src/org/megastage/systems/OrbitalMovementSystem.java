@@ -5,11 +5,12 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
-import org.megastage.components.LocalPosition;
+import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector;
+import com.esotericsoftware.minlog.Log;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,6 +22,7 @@ import org.megastage.util.Vector;
 public class OrbitalMovementSystem extends EntityProcessingSystem {
     @Mapper ComponentMapper<Position> POSITION;
     @Mapper ComponentMapper<Orbit> ORBIT;
+    @Mapper ComponentMapper<Mass> MASS;
 
     public OrbitalMovementSystem() {
         super(Aspect.getAspectForAll(Position.class, Orbit.class));
@@ -31,19 +33,22 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
         double time = Globals.time / 1000.0d;
         
         Orbit orbit = ORBIT.get(entity);
-        Vector localSum = orbit.getLocalCoordinates(time);
+        Mass centerMass = MASS.get(orbit.center);        
+        Vector localSum = orbit.getLocalCoordinates(time, centerMass.mass);
         
         while(!isOrbitAroundFixedPosition(orbit)) {
             orbit = getCentersOrbit(orbit);
-            localSum = localSum.add(orbit.getLocalCoordinates(time));
+            centerMass = MASS.get(orbit.center);        
+            localSum = localSum.add(orbit.getLocalCoordinates(time, centerMass.mass));
         }
 
         Position fixedStar = getCentersFixedPosition(orbit);
 
         Position position = POSITION.get(entity);
         position.x = Math.round(localSum.x) + fixedStar.x;
-        position.y = Math.round(localSum.y) + fixedStar.y;
-        position.y = fixedStar.z;
+        position.y = fixedStar.y;
+        position.z = Math.round(localSum.z) + fixedStar.z;
+        Log.info(position.toString());
     }
 
     private Position getCentersFixedPosition(Orbit orbit) {

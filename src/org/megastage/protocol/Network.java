@@ -3,13 +3,13 @@ package org.megastage.protocol;
 import com.artemis.Entity;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
-import com.esotericsoftware.minlog.Log;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.megastage.components.GravityAcceleration;
+import com.jme3.math.ColorRGBA;
+import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
+import org.megastage.components.ServerSpatialSphere;
 import org.megastage.components.dcpu.VirtualMonitor;
+import org.megastage.util.Globals;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,7 +29,9 @@ public class Network {
         kryo.register(char[].class);
         kryo.register(Object[].class);
         kryo.register(Position.class);
+        kryo.register(Mass.class);
         kryo.register(VirtualMonitor.class);
+        kryo.register(ServerSpatialSphere.class);
     }
 
     static public class Login {}
@@ -44,10 +46,25 @@ public class Network {
     static public class KeyTyped extends KeyEvent {}
     static public class KeyReleased extends KeyEvent {}
 
-    static public class SpatialData {
+    static public class SpatialSphereData {
         public int entityID;
-        public static SpatialData create(Entity entity) {
-            SpatialData data = new SpatialData();
+        public ServerSpatialSphere spatial;
+
+        public static SpatialSphereData create(Entity entity) {
+            SpatialSphereData data = new SpatialSphereData();
+            data.entityID = entity.getId();
+            
+            data.spatial = entity.getComponent(ServerSpatialSphere.class);
+            
+            return data;
+        }
+    }
+
+    static public class SpatialMonitorData {
+        public int entityID;
+
+        public static SpatialMonitorData create(Entity entity) {
+            SpatialMonitorData data = new SpatialMonitorData();
             data.entityID = entity.getId();
             return data;
         }
@@ -79,7 +96,6 @@ public class Network {
 
         public int centerID;
         public double distance;
-        public double angularSpeed;
 
         public static OrbitData create(Entity entity) {
             OrbitData data = new OrbitData();
@@ -88,7 +104,6 @@ public class Network {
             Orbit orbit = entity.getComponent(Orbit.class);
             data.centerID = orbit.center.getId();
             data.distance = orbit.distance;
-            data.angularSpeed = orbit.angularSpeed;
 
             return data;
         }
@@ -108,6 +123,31 @@ public class Network {
         }
     }
     
+    static public class MassData {
+        public int entityID;
+        
+        public Mass mass;
+        
+        public static MassData create(Entity entity) {
+            MassData data = new MassData();
+            data.entityID = entity.getId();
+            data.mass = entity.getComponent(Mass.class);
+
+            return data;
+        }
+    }
+    
+    static public class TimeData {
+        public long time;
+
+        public static TimeData create() {
+            TimeData data = new TimeData();
+            data.time = Globals.time;
+
+            return data;
+        }
+    }
+
     static public class MonitorData {
         public int entityID;
         public char[] video;

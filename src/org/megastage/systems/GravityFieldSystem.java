@@ -5,13 +5,9 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.EntitySystem;
 import com.artemis.annotations.Mapper;
-import com.artemis.managers.GroupManager;
-import com.artemis.systems.EntityProcessingSystem;
-import com.artemis.systems.VoidEntitySystem;
 import com.artemis.utils.ImmutableBag;
-import org.megastage.components.Acceleration;
-import org.megastage.components.GravityAcceleration;
 import org.megastage.components.GravityField;
+import org.megastage.components.Mass;
 import org.megastage.components.Position;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector;
@@ -26,11 +22,12 @@ import org.megastage.util.Vector;
 public class GravityFieldSystem extends EntitySystem {
     @Mapper ComponentMapper<GravityField> GRAVITY_FIELD;
     @Mapper ComponentMapper<Position> POSITION;
+    @Mapper ComponentMapper<Mass> MASS;
     
     private ImmutableBag<Entity> gravityFieldEntities;
 
     public GravityFieldSystem() {
-        super(Aspect.getAspectForAll(GravityField.class, Position.class));
+        super(Aspect.getAspectForAll(GravityField.class, Position.class, Mass.class));
     }
 
     @Override
@@ -40,7 +37,7 @@ public class GravityFieldSystem extends EntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        return true;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
     
     public Vector getGravityField(Position coordinates) {
@@ -51,6 +48,7 @@ public class GravityFieldSystem extends EntitySystem {
             
             GravityField gravityField = GRAVITY_FIELD.get(entity);
             Position position = POSITION.get(entity);
+            Mass mass = MASS.get(entity);
 
             double dx = position.x - coordinates.x;
             double dy = position.y - coordinates.y;
@@ -58,8 +56,7 @@ public class GravityFieldSystem extends EntitySystem {
 
             double distanceSquared = dx*dx + dy*dy + dz*dz;
 
-            double celestialMass = gravityField.mass;
-            double gravitationalField = Globals.G * celestialMass / distanceSquared;
+            double gravitationalField = Globals.G * mass.mass / distanceSquared;
 
             double distance = Math.sqrt(distanceSquared);
 

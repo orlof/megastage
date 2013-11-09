@@ -13,5 +13,9 @@ import org.megastage.protocol.Network;
  * @author Teppo
  */
 public class ClientSpatial extends Component {
-    public Geometry geom;    
+    public Geometry geom;
+    
+    public ClientSpatial(Geometry geom) {
+        this.geom = geom;
+    }
 }

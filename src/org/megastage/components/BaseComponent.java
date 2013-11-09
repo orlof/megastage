@@ -29,4 +29,48 @@ public abstract class BaseComponent extends Component {
 
         return defaultValue;
     }
+
+    protected int getIntegerValue(Element config, String attrName, int defaultValue) {
+        Attribute attr = config.getAttribute(attrName);
+
+        if(attr != null) {
+            String value = attr.getValue();
+
+            if(value.startsWith("0x")) {
+                return (int) (Long.parseLong(value.substring(2), 16) & 0xffffffff);
+            } else {
+                return Integer.parseInt(value, 10);
+            }
+        }
+
+        return defaultValue;
+    }
+
+    protected double getDoubleValue(Element config, String attrName, double defaultValue) {
+        Attribute attr = config.getAttribute(attrName);
+
+        try {
+            if(attr != null) {
+                return attr.getDoubleValue();
+            }
+        } catch (DataConversionException e) {
+            e.printStackTrace();
+        }
+
+        return defaultValue;
+    }
+
+    protected float getFloatValue(Element config, String attrName, float defaultValue) {
+        Attribute attr = config.getAttribute(attrName);
+
+        try {
+            if(attr != null) {
+                return attr.getFloatValue();
+            }
+        } catch (DataConversionException e) {
+            e.printStackTrace();
+        }
+
+        return defaultValue;
+    }
 }

@@ -2,31 +2,34 @@
     <entity>
         <component type="Identifier" name="Sun"/>
         <component type="Position" x="0" y="0" z="0"/>
-        <component type="GravityField" mass_kg="1.989e30"/>
+        <component type="Mass" kg="1.989e28"/>
+        <component type="ServerSpatialSphere" z_samples="16" radial_samples="16" radius="10000" color_rgba="0xffffffff"/>
+        <component type="GravityField"/>
         <group name="star"/>
         <!--component type="Appearance" radius_km="700000"/-->
         <entity>
             <component type="Identifier" name="Earth"/>
-            <component type="GravityField" mass_kg="5.972e24"/>
-            <component type="Orbit" orbital_distance_km="150000000" mass_kg="5.972e24"/>
+            <component type="Mass" kg="5.972e25"/>
+            <component type="GravityField"/>
+            <component type="Orbit" orbital_distance="200000"/>
+            <component type="ServerSpatialSphere" z_samples="16" radial_samples="16" radius="2000" color_rgba="0xffffffff"/>
             <component type="Position"/>
             <group name="satellite"/>
-            <!--component type="Mass" mass_kg="5.972e24"/-->
-            <!--component type="Appearance" radius_km="6300"/-->
             <entity>
                 <component type="Identifier" name="Moon"/>
-                <component type="GravityField" mass_kg="5.972e24"/>
-                <component type="Orbit" orbital_distance_km="384000" mass_kg="7.34767309e22"/>
+                <component type="Mass" kg="7.4e23"/>
+                <component type="GravityField"/>
+                <component type="Orbit" orbital_distance="10000"/>
+                <component type="ServerSpatialSphere" z_samples="16" radial_samples="16" radius="100" color_rgba="0xffffffff"/>
                 <component type="Position"/>
                 <group name="satellite"/>
-                <!-- component type="Mass" radius_km="1700" mass_kg="7.34767309e22"/-->
             </entity>
         </entity>
     </entity>
 
-    <entity>
+    <!--entity>
         <component type="Identifier" name="Apollo 13"/>
-        <component type="Position" x="0" y="0" z="0"/>
+        <component type="Position" x="0" y="0" z="100000"/>
         <component type="Rotation"/>
         <component type="Velocity" x="0" y="0" z="0"/>
         <component type="Acceleration"/>
@@ -40,7 +43,7 @@
             <entity>
                 <component type="dcpu.VirtualMonitor"/>
                 <component type="Position" x="-1500" y="-1000" z="0"/>
-                <component type="ServerSpatial"/>
+                <component type="ServerSpatialMonitor"/>
                 <group name="monitor"/>
             </entity>
             <entity>
@@ -55,7 +58,7 @@
                 <component type="dcpu.PPS"/>
             </entity>
         </entity>
-        <!--entity>
+        <entity>
             <component type="Engine" x="0" y="0" z="-1"/>
             <component type="SystemBus" address="2"/>
         </entity>
@@ -66,7 +69,7 @@
         <entity>
             <component type="Gyroscope" x="0" y="0" z="1"/>
             <component type="SystemBus" address="4"/>
-        </entity-->
-    </entity>
+        </entity>
+    </entity-->
 
 </root>
