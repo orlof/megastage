@@ -10,10 +10,8 @@ import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
 import com.jme3.light.AmbientLight;
-import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
@@ -26,10 +24,15 @@ import com.jme3.texture.Texture2D;
 import com.jme3.texture.image.ImageRaster;
 import com.jme3.texture.plugins.AWTLoader;
 import com.jme3.util.TangentBinormalGenerator;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.Callable;
+import jmeplanet.FractalDataSource;
+import jmeplanet.Planet;
+import jmeplanet.PlanetAppState;
+import jmeplanet.test.Utility;
 import org.megastage.components.ClientRaster;
 import org.megastage.components.ClientSpatial;
-import org.megastage.components.ClientVideoMemory;
 import org.megastage.components.Position;
 import org.megastage.protocol.Network;
 
@@ -39,67 +42,75 @@ import org.megastage.protocol.Network;
  */
 public class ClientSpatialManagerSystem extends VoidEntitySystem {
 
-    private AssetManager assetManager;
-    private Node rootNode;
-    private Node worldNode;
-    private Node shipNode;
+    private final SimpleApplication app;
+
+    private final AssetManager assetManager;
+    private final PlanetAppState planetAppState;
+    private final Node systemNode;
     
     public ClientSpatialManagerSystem(SimpleApplication app) {
+        this.app = app;
         assetManager = app.getAssetManager();
-        rootNode = app.getRootNode();
-        
-        app.getFlyByCamera().setMoveSpeed(50000);
-        
-        //AmbientLight ambient = new AmbientLight();
-        //ambient.setColor(ColorRGBA.White);
-        //rootNode.addLight(ambient);
-        
-        /** Must add a light to make the lit object visible! */
-        DirectionalLight sun = new DirectionalLight();
-        sun.setDirection(new Vector3f(1,0,0).normalizeLocal());
-        sun.setColor(ColorRGBA.White);
-        rootNode.addLight(sun);
-        
-        worldNode = new Node("world");
-        // worldNode.setLocalTranslation(0, 0, -4000000f);
-        worldNode.setLocalTranslation(0, 0, -210000f);
-        rootNode.attachChild(worldNode);
-        
-        shipNode = new Node("ship");
-        rootNode.attachChild(shipNode);
+        systemNode = (Node) app.getRootNode().getChild("system");
+        planetAppState = app.getStateManager().getState(PlanetAppState.class);
     }
     
-   void setupSphere(Entity entity, Network.SpatialSphereData data) {
-        Log.info("setupSphere");
+   void setupSunLikeBody(final Entity entity, final Network.SpatialSunData data) {
+        Log.info("setupSunLikeBody");
 
-        Sphere mesh = new Sphere(data.spatial.zSamples, data.spatial.radialSamples, data.spatial.radius);
-        //Sphere mesh = new Sphere(data.spatial.zSamples, data.spatial.radialSamples, 1000000f);
-        mesh.setTextureMode(Sphere.TextureMode.Projected); // better quality on spheres
+        app.enqueue(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                Sphere mesh = new Sphere(32, 32, data.spatial.radius);
 
-        Geometry geom = new Geometry(entity.toString(), mesh);
-        TangentBinormalGenerator.generate(mesh);
-        
-        //Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        
-        mat.setTexture("DiffuseMap", assetManager.loadTexture("Textures/Terrain/Pond/Pond.jpg"));
-        mat.setTexture("NormalMap", assetManager.loadTexture("Textures/Terrain/Pond/Pond_normal.png"));
-        mat.setBoolean("UseMaterialColors",true);    
-        mat.setColor("Diffuse",ColorRGBA.White);
-        mat.setColor("Specular",ColorRGBA.White);
-        mat.setFloat("Shininess", 64f);  // [0,128]
-        geom.setMaterial(mat);
-        
-        //ColorRGBA colorRGBA = new ColorRGBA();
-        //colorRGBA.fromIntRGBA(data.spatial.color);
-        //mat.setColor("Color", colorRGBA);
-        //geom.setMaterial(mat);
-        
-        worldNode.attachChild(geom);
+                Geometry geom = new Geometry(entity.toString(), mesh);
 
-        entity.addComponent(new ClientSpatial(geom));
+                Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+                //Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
 
-        geom.addControl(new PositionControl(entity));
+                ColorRGBA colorRGBA = new ColorRGBA();
+                //colorRGBA.fromIntRGBA(data.spatial.color);
+                mat.setColor("Color", ColorRGBA.White);
+                geom.setMaterial(mat);
+
+                Node node = new Node(entity.toString());
+                node.attachChild(geom);
+
+                systemNode.attachChild(node);
+
+                //AmbientLight al = new AmbientLight();
+                //al.setColor(ColorRGBA.White.mult(1.3f));
+                //node.addLight(al);
+
+                entity.addComponent(new ClientSpatial(node));
+
+                geom.addControl(new PositionControl(entity));
+                return null;
+            }
+        });
+        
+    }
+
+    void setupPlanetLikeBody(final Entity entity, final Network.SpatialPlanetData data) {
+        Log.info("setupPlanetLikeBody");
+
+        app.enqueue(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                // Add planet
+                FractalDataSource planetDataSource = new FractalDataSource(4);
+                planetDataSource.setHeightScale(data.spatial.radius / 20f);
+                Planet planet = Utility.createEarthLikePlanet(assetManager, data.spatial.radius, null, planetDataSource);
+                planetAppState.addPlanet(planet);
+                systemNode.attachChild(planet);
+
+                entity.addComponent(new ClientSpatial(planet));
+
+                planet.addControl(new PositionControl(entity));
+                return null;
+            }
+        });
+        
     }
     
     public void setupMonitor(Entity entity, Network.SpatialMonitorData data) {
@@ -117,9 +128,9 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         mat.setTexture("ColorMap", tex);
         geom.setMaterial(mat);
         
-        shipNode.attachChild(geom);
+        //shipNode.attachChild(geom);
         
-        entity.addComponent(new ClientSpatial(geom));
+        entity.addComponent(new ClientSpatial(geom.getParent()));
         
         ClientRaster rasterComponent = new ClientRaster();
         rasterComponent.raster = raster;

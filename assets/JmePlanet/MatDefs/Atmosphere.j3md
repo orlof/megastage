@@ -1,0 +1,35 @@
+MaterialDef PlanetAtmosphere {
+
+	MaterialParameters {
+                Vector4 Ambient;
+                Vector4 Diffuse;
+                Vector4 Specular;
+                Float Shininess;
+
+                // Not used yet
+                Float PlanetRadius
+                Float AtmosphereRadius
+                Float AtmosphereDensity
+	}
+
+	Technique {
+                LightMode MultiPass
+		VertexShader GLSL100:   JmePlanet/MatDefs/Atmosphere.vert
+		FragmentShader GLSL100: JmePlanet/MatDefs/Atmosphere.frag
+
+		WorldParameters {
+			WorldViewProjectionMatrix
+			WorldMatrix
+			NormalMatrix
+                        WorldViewMatrix
+                        ViewMatrix
+                        FrustumNearFar
+		}
+
+                RenderState {
+                    FaceCull Off
+                    Blend Alpha
+                }
+	}
+
+}
