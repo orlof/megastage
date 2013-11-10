@@ -64,7 +64,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         unicastGroupData(connection, "star", new PacketFactory() {
             public Object create(Entity entity) {
                 return new Object[] {
-                    Network.SpatialSphereData.create(entity),
+                    Network.SpatialSunData.create(entity),
                     Network.PositionData.create(entity),
                     Network.MassData.create(entity)
                 };
@@ -74,7 +74,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         unicastGroupData(connection, "satellite", new PacketFactory() {
             public Object create(Entity entity) {
                 return new Object[] {
-                    Network.SpatialSphereData.create(entity),
+                    Network.SpatialPlanetData.create(entity),
                     Network.OrbitData.create(entity),
                     Network.MassData.create(entity),
                     Network.PositionData.create(entity)

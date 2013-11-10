@@ -3,7 +3,7 @@
         <component type="Identifier" name="Sun"/>
         <component type="Position" x="0" y="0" z="0"/>
         <component type="Mass" kg="1.989e28"/>
-        <component type="ServerSpatialSphere" z_samples="16" radial_samples="16" radius="10000" color_rgba="0xffffffff"/>
+        <component type="ServerSpatialSun" radius="10000" color_rgba="0xffffffff"/>
         <component type="GravityField"/>
         <group name="star"/>
         <!--component type="Appearance" radius_km="700000"/-->
@@ -12,7 +12,7 @@
             <component type="Mass" kg="5.972e25"/>
             <component type="GravityField"/>
             <component type="Orbit" orbital_distance="200000"/>
-            <component type="ServerSpatialSphere" z_samples="16" radial_samples="16" radius="2000" color_rgba="0xffffffff"/>
+            <component type="ServerSpatialPlanet" radius="2000"/>
             <component type="Position"/>
             <group name="satellite"/>
             <entity>
@@ -20,7 +20,7 @@
                 <component type="Mass" kg="7.4e23"/>
                 <component type="GravityField"/>
                 <component type="Orbit" orbital_distance="10000"/>
-                <component type="ServerSpatialSphere" z_samples="16" radial_samples="16" radius="100" color_rgba="0xffffffff"/>
+                <component type="ServerSpatialPlanet" radius="100"/>
                 <component type="Position"/>
                 <group name="satellite"/>
             </entity>

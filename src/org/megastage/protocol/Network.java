@@ -3,11 +3,11 @@ package org.megastage.protocol;
 import com.artemis.Entity;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
-import com.jme3.math.ColorRGBA;
 import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
-import org.megastage.components.ServerSpatialSphere;
+import org.megastage.components.ServerSpatialPlanet;
+import org.megastage.components.ServerSpatialSun;
 import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.util.Globals;
 
@@ -31,7 +31,8 @@ public class Network {
         kryo.register(Position.class);
         kryo.register(Mass.class);
         kryo.register(VirtualMonitor.class);
-        kryo.register(ServerSpatialSphere.class);
+        kryo.register(ServerSpatialSun.class);
+        kryo.register(ServerSpatialPlanet.class);
     }
 
     static public class Login {}
@@ -46,15 +47,29 @@ public class Network {
     static public class KeyTyped extends KeyEvent {}
     static public class KeyReleased extends KeyEvent {}
 
-    static public class SpatialSphereData {
+    static public class SpatialSunData {
         public int entityID;
-        public ServerSpatialSphere spatial;
+        public ServerSpatialSun spatial;
 
-        public static SpatialSphereData create(Entity entity) {
-            SpatialSphereData data = new SpatialSphereData();
+        public static SpatialSunData create(Entity entity) {
+            SpatialSunData data = new SpatialSunData();
             data.entityID = entity.getId();
             
-            data.spatial = entity.getComponent(ServerSpatialSphere.class);
+            data.spatial = entity.getComponent(ServerSpatialSun.class);
+            
+            return data;
+        }
+    }
+
+    static public class SpatialPlanetData {
+        public int entityID;
+        public ServerSpatialPlanet spatial;
+
+        public static SpatialPlanetData create(Entity entity) {
+            SpatialPlanetData data = new SpatialPlanetData();
+            data.entityID = entity.getId();
+            
+            data.spatial = entity.getComponent(ServerSpatialPlanet.class);
             
             return data;
         }

@@ -127,8 +127,11 @@ public class ClientNetworkSystem extends VoidEntitySystem {
             } else if(o instanceof Network.SpatialMonitorData) {
                 handleSpatialMonitorDataMessage(pc, (Network.SpatialMonitorData) o);
 
-            } else if(o instanceof Network.SpatialSphereData) {
-                handleSpatialSphereDataMessage(pc, (Network.SpatialSphereData) o);
+            } else if(o instanceof Network.SpatialSunData) {
+                handleSpatialSunDataMessage(pc, (Network.SpatialSunData) o);
+
+            } else if(o instanceof Network.SpatialPlanetData) {
+                handleSpatialPlanetDataMessage(pc, (Network.SpatialPlanetData) o);
 
             } else if(o instanceof Network.MassData) {
                 handleMassDataMessage(pc, (Network.MassData) o);
@@ -156,10 +159,16 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         csms.setupMonitor(entity, data);
     }
 
-    private void handleSpatialSphereDataMessage(Connection connection, Network.SpatialSphereData data) {
+    private void handleSpatialSunDataMessage(Connection connection, Network.SpatialSunData data) {
         Entity entity = cems.get(data.entityID);
         //csms.setupMonitor(entity);
-        csms.setupSphere(entity, data);
+        csms.setupSunLikeBody(entity, data);
+    }
+
+    private void handleSpatialPlanetDataMessage(Connection connection, Network.SpatialPlanetData data) {
+        Entity entity = cems.get(data.entityID);
+        //csms.setupMonitor(entity);
+        csms.setupPlanetLikeBody(entity, data);
     }
 
     private void handlePositionDataMessage(Connection connection, Network.PositionData data) {

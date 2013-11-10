@@ -1,0 +1,17 @@
+/* C is in this range: [1,0)
+*  C higher -> more resolution close at the near plane, less far
+*  C lower -> more resolution at the far plane, less near
+*  z is the view-space z value for the pixel in question
+*  zn is the position of the near-clip plane
+*  zf is the position of the far-clip plane
+*  returns gl_gl_FragDepth
+*/
+float computeLogDepthBuffer(in float z, in float zn, in float zf) {
+        const float C = 1.0;
+        return (log(C * z + 1.0) / log(C * zf + 1.0));
+}
+
+float convertLogDepthBufferToZ(in float depth, in float zn, in float zf) {
+        const float C = 1.0;
+        return ( exp( depth * log( C * zf + 1.0 ) ) - 1.0 ) / C;
+}
