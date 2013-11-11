@@ -145,7 +145,7 @@ public class Utility {
         if (oceanMaterial == null) {
             oceanMaterial = assetManager.loadMaterial("Materials/Ocean.j3m");
         }
-        //planet.createOcean(oceanMaterial);
+        planet.createOcean(oceanMaterial);
         
         // create atmosphere
         Material atmosphereMaterial = new Material(assetManager, "JmePlanet/MatDefs/Atmosphere.j3md");
@@ -155,7 +155,7 @@ public class Utility {
         atmosphereMaterial.setColor("Specular", new ColorRGBA(0.7f,0.7f,1f,1f));
         atmosphereMaterial.setFloat("Shininess", 3.0f);
         
-        //planet.createAtmosphere(atmosphereMaterial, atmosphereRadius);
+        planet.createAtmosphere(atmosphereMaterial, atmosphereRadius);
 
         return planet;
     }

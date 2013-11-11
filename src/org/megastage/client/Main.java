@@ -9,6 +9,7 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
 import jmeplanet.PlanetAppState;
+import jmeplanet.test.Utility;
 import org.megastage.util.Globals;
 import org.megastage.util.LogFormat;
 
@@ -50,9 +51,9 @@ public class Main extends SimpleApplication {
         systemNode.addLight(sun);
         
         // Add sky
-        //Node sceneNode = new Node("Scene");
-        //sceneNode.attachChild(Utility.createSkyBox(assetManager, "Textures/blue-glow-1024.dds"));
-        //systemNode.attachChild(sceneNode);
+        Node sceneNode = new Node("Scene");
+        sceneNode.attachChild(Utility.createSkyBox(assetManager, "Textures/blue-glow-1024.dds"));
+        systemNode.attachChild(sceneNode);
 
         // Add planet app state
         planetAppState = new PlanetAppState(systemNode, sun);

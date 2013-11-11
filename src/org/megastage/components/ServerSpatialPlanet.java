@@ -16,13 +16,11 @@ import org.jdom2.Element;
  */
 public class ServerSpatialPlanet extends BaseComponent {
     public float radius;
-    public int color;
+    public String generator;
 
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {
         radius = getFloatValue(element, "radius", 10.0f);
-
-        color = getIntegerValue(element, "color_rgba", 0xffffff00); 
-        //System.out.println(Integer.toHexString(color));
+        generator = getStringValue(element, "generator", "Earth");
     }
 }

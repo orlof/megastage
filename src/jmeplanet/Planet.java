@@ -140,7 +140,7 @@ public class Planet extends Node {
     
     public void setCameraPosition(Vector3f position) {
         // get vector between planet and camera
-        this.planetToCamera = position.subtract(this.getLocalTranslation());
+        this.planetToCamera = position.subtract(this.getWorldTranslation());
         // get distance to surface
         this.distanceToCamera = this.planetToCamera.length() - this.baseRadius;
         

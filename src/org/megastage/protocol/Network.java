@@ -97,18 +97,6 @@ public class Network {
         }
     }
 
-    static public class StarData {
-        public int entityID;
-        public Position position;
-
-        public static StarData create(Entity entity) {
-            StarData data = new StarData();
-            data.entityID = entity.getId();
-            data.position = entity.getComponent(Position.class);
-            return data;
-        }
-    }
-
     static public class OrbitData {
         public int entityID;
 
