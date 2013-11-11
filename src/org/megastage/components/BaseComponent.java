@@ -16,6 +16,16 @@ import org.jdom2.Element;
 public abstract class BaseComponent extends Component {
     public abstract void init(World world, Entity parent, Element element) throws Exception;
 
+    protected String getStringValue(Element config, String attrName, String defaultValue) {
+        Attribute attr = config.getAttribute(attrName);
+
+        if(attr != null) {
+            return attr.getValue();
+        }
+
+        return defaultValue;
+    }
+
     protected long getLongValue(Element config, String attrName, long defaultValue) {
         Attribute attr = config.getAttribute(attrName);
 

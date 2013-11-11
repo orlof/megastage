@@ -11,7 +11,6 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Quaternion;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
@@ -31,7 +30,6 @@ import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.components.ClientRaster;
 import org.megastage.components.ClientSpatial;
-import org.megastage.components.OrbitalRotation;
 import org.megastage.components.Position;
 import org.megastage.protocol.Network;
 
@@ -68,8 +66,8 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
                 //Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
 
                 ColorRGBA colorRGBA = new ColorRGBA();
-                //colorRGBA.fromIntRGBA(data.spatial.color);
-                mat.setColor("Color", ColorRGBA.White);
+                colorRGBA.fromIntRGBA(data.spatial.color);
+                mat.setColor("Color", colorRGBA);
                 geom.setMaterial(mat);
 
                 Node node = new Node(entity.toString());
@@ -95,8 +93,14 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
 
         // Add planet
         FractalDataSource planetDataSource = new FractalDataSource(4);
-        planetDataSource.setHeightScale(data.spatial.radius / 20f);
-        final Planet planet = Utility.createEarthLikePlanet(assetManager, data.spatial.radius, null, planetDataSource);
+        planetDataSource.setHeightScale(data.spatial.radius / 100f);
+        final Planet planet;
+        
+        if(data.spatial.generator.equalsIgnoreCase("Earth")) {
+            planet = Utility.createEarthLikePlanet(assetManager, data.spatial.radius, null, planetDataSource);
+        } else {
+            planet = Utility.createMoonLikePlanet(assetManager, data.spatial.radius, planetDataSource);
+        }
 
         entity.addComponent(new ClientSpatial(planet));
 

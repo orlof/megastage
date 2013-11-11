@@ -173,7 +173,6 @@ public class ClientNetworkSystem extends VoidEntitySystem {
 
     private void handleSpatialPlanetDataMessage(Connection connection, Network.SpatialPlanetData data) {
         Entity entity = cems.get(data.entityID);
-        //csms.setupMonitor(entity);
         csms.setupPlanetLikeBody(entity, data);
     }
 
