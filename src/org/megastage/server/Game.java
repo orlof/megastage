@@ -26,7 +26,7 @@ public class Game {
         world.setManager(new GroupManager());
         world.setManager(new TagManager());
 
-        world.setSystem(new ServerNetworkSystem());
+        world.setSystem(new ServerNetworkSystem(1000));
 
         world.setSystem(new OrbitalMovementSystem());
 
@@ -53,7 +53,6 @@ public class Game {
 
             world.process();
             
-            world.getSystem(ServerNetworkSystem.class).broadcastTimeData();
             Thread.sleep(100);
         }
     }
