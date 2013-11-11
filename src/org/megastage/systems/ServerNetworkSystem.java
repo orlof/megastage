@@ -18,7 +18,14 @@ import java.io.IOException;
 
 public class ServerNetworkSystem extends VoidEntitySystem {
     private Server server;
+    
+    private long timeOfLastSync;
+    private long interval;
 
+    public ServerNetworkSystem(long interval) {
+        this.interval = interval;
+    }
+    
     @Override
     protected void initialize() {
         server = new Server() {
@@ -43,11 +50,14 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     }
     
     @Override
-    protected void processSystem() {}
+    protected void processSystem() {
+        timeOfLastSync = Globals.time;
+        broadcastTimeData();
+    }
 
     @Override
     protected boolean checkProcessing() {
-        return false;
+        return (timeOfLastSync + interval) < Globals.time;
     }
 
     private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
@@ -77,7 +87,8 @@ public class ServerNetworkSystem extends VoidEntitySystem {
                     Network.SpatialPlanetData.create(entity),
                     Network.OrbitData.create(entity),
                     Network.MassData.create(entity),
-                    Network.PositionData.create(entity)
+                    Network.PositionData.create(entity),
+                    Network.OrbitalRotationData.create(entity)
                 };
             }
         });
@@ -89,6 +100,12 @@ public class ServerNetworkSystem extends VoidEntitySystem {
                     Network.MonitorData.create(entity),
                     Network.PositionData.create(entity)
                 };
+            }
+        });
+
+        unicastGroupData(connection, "keyboard", new PacketFactory() {
+            public Object create(Entity entity) {
+                return Network.KeyboardData.create(entity);
             }
         });
 
@@ -136,6 +153,11 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     public void broadcastTimeData() {
         Network.TimeData data = Network.TimeData.create();
         server.sendToAllUDP(data);
+    }
+
+    public void unicastTimeData(PlayerConnection connection) {
+        Network.TimeData data = Network.TimeData.create();
+        connection.sendUDP(data);
     }
 
     private void unicastGroupData(PlayerConnection connection, String group, PacketFactory factory) {

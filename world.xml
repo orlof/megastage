@@ -13,6 +13,7 @@
             <component type="GravityField"/>
             <component type="Orbit" orbital_distance="200000"/>
             <component type="ServerSpatialPlanet" radius="2000"/>
+            <component type="OrbitalRotation" period="1.0"/>
             <component type="Position"/>
             <group name="satellite"/>
             <entity>
@@ -22,6 +23,7 @@
                 <component type="Orbit" orbital_distance="10000"/>
                 <component type="ServerSpatialPlanet" radius="100"/>
                 <component type="Position"/>
+                <component type="OrbitalRotation" period="0.2"/>
                 <group name="satellite"/>
             </entity>
         </entity>

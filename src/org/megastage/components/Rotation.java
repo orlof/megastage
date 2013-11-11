@@ -46,17 +46,17 @@ public class Rotation extends BaseComponent {
 
     public void pitch(double degrees_up) {
         System.out.println("Rotation.pitch");
-        rotate(new Vector(1.0d, 0.0d, 0.0d), Math.toRadians(degrees_up));
+        rotate(Vector.UNIT_X, Math.toRadians(degrees_up));
     }
 
     public void roll(double degrees_cw) {
         System.out.println("Rotation.roll");
-        rotate(new Vector(0.0d, 0.0d, 1.0d), -Math.toRadians(degrees_cw));
+        rotate(Vector.UNIT_Z, -Math.toRadians(degrees_cw));
     }
 
     public void yaw(double degrees_right) {
         System.out.println("Rotation.yaw");
-        rotate(new Vector(0.0d, 1.0d, 0.0d), -Math.toRadians(degrees_right));
+        rotate(Vector.UNIT_Y, -Math.toRadians(degrees_right));
     }
 
     public void debug() {

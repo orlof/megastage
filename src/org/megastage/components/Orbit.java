@@ -23,12 +23,16 @@ public class Orbit extends BaseComponent {
     public void init(World world, Entity parent, Element element) throws DataConversionException {
         center = parent;
         distance = 1000.0 * getDoubleValue(element, "orbital_distance", 0.0);
+    
+        Log.info("Orbital period (h): " + getOrbitalPeriod(center.getComponent(Mass.class).mass) / 3600.0);
     }
 
-    public double getAngularSpeed(double mass) {
-        double period = 2.0d * Math.PI * Math.sqrt(Math.pow(distance, 3.0d) / (Globals.G * mass));
-        Log.info("center mass: " +mass+ "period " + period / 3600);
-        return 2.0d * Math.PI / period;        
+    public double getOrbitalPeriod(double centerMass) {
+        return (2.0 * Math.PI) / getAngularSpeed(centerMass);
+    }
+    
+    public double getAngularSpeed(double centerMass) {
+        return 1.0 / Math.sqrt(Math.pow(distance, 3.0) / (Globals.G * centerMass));
     }
     
     public Vector getLocalCoordinates(double time, double mass) {

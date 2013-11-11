@@ -12,6 +12,9 @@ import org.megastage.util.Globals;
 import org.megastage.components.ClientVideoMemory;
 
 import java.io.IOException;
+import org.megastage.client.controls.OrbitalRotationControl;
+import org.megastage.components.ClientSpatial;
+import org.megastage.components.OrbitalRotation;
 
 public class ClientNetworkSystem extends VoidEntitySystem {
     private Client client;
@@ -136,6 +139,9 @@ public class ClientNetworkSystem extends VoidEntitySystem {
             } else if(o instanceof Network.MassData) {
                 handleMassDataMessage(pc, (Network.MassData) o);
 
+            } else if(o instanceof Network.OrbitalRotationData) {
+                handleOrbitalRotationDataMessage(pc, (Network.OrbitalRotationData) o);
+
             } else {
                 Log.warn("Unknown message received");
             }
@@ -179,10 +185,6 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         cems.setComponent(data.entityID, data.mass);
     }
 
-/*    private void handleStarDataMessage(Connection connection, Network.StarData data) {
-        cems.setComponent(data.entityID, data.position);
-    }
-*/
     private void handleOrbitDataMessage(Connection connection, Network.OrbitData orbitData) {
         Orbit orbit = new Orbit();
         orbit.center = cems.get(orbitData.centerID);
@@ -191,7 +193,18 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         cems.setComponent(orbitData.entityID, orbit);
     }
     
+    private void handleOrbitalRotationDataMessage(Connection connection, Network.OrbitalRotationData data) {
+        Entity entity = cems.get(data.entityID);
+        
+        OrbitalRotation orbitalRotation = new OrbitalRotation();
+        orbitalRotation.angularSpeed = data.orbitalRotation.angularSpeed;
+        entity.addComponent(orbitalRotation);
+
+        ClientSpatial clientSpatial = entity.getComponent(ClientSpatial.class);
+        clientSpatial.node.addControl(new OrbitalRotationControl(entity));
+    }
+    
     private void handleTimeDataMessage(Connection connection, Network.TimeData data) {
-        Globals.time = data.time;
+        Globals.timeDiff = data.time - System.currentTimeMillis();
     }
 }

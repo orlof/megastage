@@ -3,8 +3,10 @@ package org.megastage.protocol;
 import com.artemis.Entity;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
+import org.megastage.components.OrbitalRotation;
 import org.megastage.components.Position;
 import org.megastage.components.ServerSpatialPlanet;
 import org.megastage.components.ServerSpatialSun;
@@ -33,6 +35,7 @@ public class Network {
         kryo.register(VirtualMonitor.class);
         kryo.register(ServerSpatialSun.class);
         kryo.register(ServerSpatialPlanet.class);
+        kryo.register(OrbitalRotation.class);
     }
 
     static public class Login {}
@@ -188,6 +191,19 @@ public class Network {
         public static KeyboardData create(Entity entity) {
             KeyboardData data = new KeyboardData();
             data.entityID = entity.getId();
+            return data;
+        }
+    }
+
+    public static class OrbitalRotationData {
+        public int entityID;
+        public OrbitalRotation orbitalRotation;
+
+        public static OrbitalRotationData create(Entity entity) {
+            OrbitalRotationData data = new OrbitalRotationData();
+            data.entityID = entity.getId();
+            data.orbitalRotation = entity.getComponent(OrbitalRotation.class);
+            Log.info(data.orbitalRotation.toString());
             return data;
         }
     }

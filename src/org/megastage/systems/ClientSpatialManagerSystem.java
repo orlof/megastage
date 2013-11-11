@@ -9,9 +9,9 @@ import com.artemis.systems.VoidEntitySystem;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
-import com.jme3.light.AmbientLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
@@ -23,8 +23,6 @@ import com.jme3.texture.Image;
 import com.jme3.texture.Texture2D;
 import com.jme3.texture.image.ImageRaster;
 import com.jme3.texture.plugins.AWTLoader;
-import com.jme3.util.TangentBinormalGenerator;
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.Callable;
 import jmeplanet.FractalDataSource;
@@ -33,6 +31,7 @@ import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.components.ClientRaster;
 import org.megastage.components.ClientSpatial;
+import org.megastage.components.OrbitalRotation;
 import org.megastage.components.Position;
 import org.megastage.protocol.Network;
 
@@ -94,19 +93,21 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
     void setupPlanetLikeBody(final Entity entity, final Network.SpatialPlanetData data) {
         Log.info("setupPlanetLikeBody");
 
+        // Add planet
+        FractalDataSource planetDataSource = new FractalDataSource(4);
+        planetDataSource.setHeightScale(data.spatial.radius / 20f);
+        final Planet planet = Utility.createEarthLikePlanet(assetManager, data.spatial.radius, null, planetDataSource);
+
+        entity.addComponent(new ClientSpatial(planet));
+
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
-                // Add planet
-                FractalDataSource planetDataSource = new FractalDataSource(4);
-                planetDataSource.setHeightScale(data.spatial.radius / 20f);
-                Planet planet = Utility.createEarthLikePlanet(assetManager, data.spatial.radius, null, planetDataSource);
                 planetAppState.addPlanet(planet);
                 systemNode.attachChild(planet);
 
-                entity.addComponent(new ClientSpatial(planet));
-
                 planet.addControl(new PositionControl(entity));
+//                planet.addControl(new OrbitalRotationControl(entity));
                 return null;
             }
         });
@@ -161,4 +162,6 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         protected void controlRender(RenderManager rm, ViewPort vp) {}
         
     }
+
+
 }

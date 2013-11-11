@@ -18,6 +18,7 @@ public class Globals {
     public static int clientPort = 0;
 
     public static long time = System.currentTimeMillis();
+    public static long timeDiff;
 
     public class Group {
         public static final String CELESTIAL = "celestial";

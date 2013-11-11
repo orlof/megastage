@@ -2,6 +2,8 @@ package org.megastage.util;
 
 import java.util.ArrayList;
 
+
+
 /**
  * Created with IntelliJ IDEA.
  * User: contko3
@@ -11,6 +13,9 @@ import java.util.ArrayList;
  */
 public class Vector {
     public static final Vector ZERO = new Vector();
+    public static Vector UNIT_X = new Vector(1.0d, 0.0d, 0.0d);
+    public static Vector UNIT_Y = new Vector(0.0d, 1.0d, 0.0d);
+    public static Vector UNIT_Z = new Vector(0.0d, 0.0d, 1.0d);
 
     public final double x, y, z;
 
@@ -77,8 +82,6 @@ public class Vector {
         return new Vector(x / scalar, y / scalar, z / scalar);
     }
 }
-
-
 class Ship {
     Vector position = new Vector();
 
