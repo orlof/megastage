@@ -1,37 +1,15 @@
 package org.megastage.client;
 
-import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
-import com.jme3.input.KeyInput;
-import com.jme3.input.RawInputListener;
-import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.controls.Trigger;
-import com.jme3.input.event.JoyAxisEvent;
-import com.jme3.input.event.JoyButtonEvent;
-import com.jme3.input.event.KeyInputEvent;
-import com.jme3.input.event.MouseButtonEvent;
-import com.jme3.input.event.MouseMotionEvent;
-import com.jme3.input.event.TouchEvent;
-import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
-import java.awt.event.KeyEvent;
-import java.util.HashMap;
-import jmeplanet.FractalDataSource;
-import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
-import jmeplanet.test.PlanetSimpleTest;
-import jmeplanet.test.Utility;
-import org.megastage.components.ClientSpatial;
-import org.megastage.systems.ClientNetworkSystem;
-import org.megastage.systems.ClientSpatialManagerSystem;
+import org.megastage.util.Globals;
 import org.megastage.util.LogFormat;
 
 /**
@@ -97,7 +75,7 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        Log.info(cam.getLocation().toString());
+        Globals.time = System.currentTimeMillis() + Globals.timeDiff;
     }
 
     @Override
