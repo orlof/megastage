@@ -1,16 +1,7 @@
-package org.megastage.components;
+package org.megastage.components.client;
 
 import com.artemis.Component;
-import com.jme3.material.Material;
-import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.shape.Quad;
-import com.jme3.texture.Image;
-import com.jme3.texture.Texture2D;
-import com.jme3.texture.image.ImageRaster;
-import com.jme3.texture.plugins.AWTLoader;
-import org.megastage.protocol.Network;
-import java.awt.image.BufferedImage;
+import org.megastage.components.MonitorData;
 
 /**
  * MegaStage
@@ -51,10 +42,10 @@ public class ClientVideoMemory extends Component {
     }
 
 
-    public void update(Network.MonitorData monitorData) {
-        updateVideo(monitorData.video);
-        updateFont(monitorData.font);
-        updatePalette(monitorData.palette);
+    public void update(MonitorData data) {
+        updateVideo(data.video.mem);
+        updateFont(data.font.mem);
+        updatePalette(data.palette.mem);
 
     }
 }

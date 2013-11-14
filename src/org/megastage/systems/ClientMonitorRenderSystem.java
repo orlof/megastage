@@ -7,8 +7,8 @@ import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.ColorRGBA;
-import org.megastage.components.ClientRaster;
-import org.megastage.components.ClientVideoMemory;
+import org.megastage.components.client.ClientRaster;
+import org.megastage.components.client.ClientVideoMemory;
 
 public class ClientMonitorRenderSystem extends EntityProcessingSystem {
     @Mapper ComponentMapper<ClientVideoMemory> videoMemoryMapper;

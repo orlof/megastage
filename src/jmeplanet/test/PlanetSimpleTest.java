@@ -33,8 +33,10 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.DirectionalLight;
+import com.jme3.light.PointLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Geometry;
@@ -96,10 +98,11 @@ public class PlanetSimpleTest extends SimpleApplication {
         //this.getCamera().lookAtDirection(new Vector3f(0.06276598f, 0.94458306f, -0.3222158f), Vector3f.UNIT_Y);
         
         // Add sun
-        //PointLight sun = new PointLight();
-        //sun.setPosition(new Vector3f(-100000f,0,180000f));
-        DirectionalLight sun = new DirectionalLight();
-        sun.setDirection(new Vector3f(-.1f, 0f, -1f));
+        PointLight sun = new PointLight();
+        sun.setPosition(new Vector3f(-100000f,0,180000f));
+        sun.setRadius(300000);
+        //DirectionalLight sun = new DirectionalLight();
+        //sun.setDirection(new Vector3f(-.1f, 0f, -1f));
         sun.setColor(new ColorRGBA(0.75f,0.75f,0.75f,1.0f));      
         rootNode.addLight(sun);
         
@@ -122,7 +125,7 @@ public class PlanetSimpleTest extends SimpleApplication {
         // Add planet
         FractalDataSource planetDataSource = new FractalDataSource(4);
         planetDataSource.setHeightScale(900f);
-        Planet planet = Utility.createEarthLikePlanet(getAssetManager(), 63710.0f, null, planetDataSource);
+        planet = Utility.createEarthLikePlanet(getAssetManager(), 63710.0f, null, planetDataSource);
         planetAppState.addPlanet(planet);
         rootNode.attachChild(planet);
         
@@ -136,6 +139,8 @@ public class PlanetSimpleTest extends SimpleApplication {
         
     }
     
+    Planet planet;
+    
     @Override
     public void simpleUpdate(float tpf) {        
         // slow camera down as we approach a planet
@@ -143,7 +148,9 @@ public class PlanetSimpleTest extends SimpleApplication {
         if (planet != null && planet.getPlanetToCamera() != null) {
             this.getFlyByCamera().setMoveSpeed(
                     FastMath.clamp(planet.getDistanceToCamera(), 100, 100000));
-        }     
+        }
+        
+        //this.planet.rotate(0,tpf/1000,0);
     }
     
     private ActionListener actionListener = new ActionListener(){

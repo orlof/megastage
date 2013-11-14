@@ -1,39 +1,90 @@
 <root>
-    <entity>
-        <component type="Identifier" name="Sun"/>
-        <component type="Position" x="0" y="0" z="0"/>
+    <entity name="Sun">
+        <component type="Position" x="0" y="0" z="200000"/>
         <component type="Mass" kg="1.989e28"/>
-        <component type="ServerSpatialSun" radius="50000" color_rgba="0xffffaaff"/>
+        <component type="server.SunGeometry" radius="40000" light_radius="2000000" color_rgba="0xffffaaff"/>
         <component type="GravityField"/>
-        <group name="star"/>
+        <group name="client"/>
         <!--component type="Appearance" radius_km="700000"/-->
-        <entity>
-            <component type="Identifier" name="Earth"/>
+        <entity name="Earth">
             <component type="Mass" kg="5.972e25"/>
             <component type="GravityField"/>
             <component type="Orbit" orbital_distance="200000"/>
-            <component type="ServerSpatialPlanet" radius="20000" generator="Earth"/>
+            <component type="server.PlanetGeometry" radius="10000" generator="Earth"/>
             <component type="OrbitalRotation" period="1.0"/>
             <component type="Position"/>
-            <group name="satellite"/>
-            <entity>
-                <component type="Identifier" name="Moon"/>
+            <group name="client"/>
+            <entity name="Moon">
                 <component type="Mass" kg="7.4e23"/>
                 <component type="GravityField"/>
-                <component type="Orbit" orbital_distance="100000"/>
-                <component type="ServerSpatialPlanet" radius="5000" generator="Moon"/>
-                <component type="Position"/>
+                <component type="Position" x="0" y="0" z="70000"/>
+                <component type="Orbit" orbital_distance="50000"/>
+                <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
                 <component type="OrbitalRotation" period="0.2"/>
-                <group name="satellite"/>
+                <group name="client"/>
+            </entity>
+        </entity>
+        <entity name="Water World">
+            <component type="Mass" kg="5.972e25"/>
+            <component type="GravityField"/>
+            <component type="Orbit" orbital_distance="400000"/>
+            <component type="server.PlanetGeometry" radius="5000" generator="Water"/>
+            <component type="OrbitalRotation" period="1.0"/>
+            <component type="Position"/>
+            <group name="client"/>
+            <entity name="Phobos">
+                <component type="Mass" kg="7.4e23"/>
+                <component type="GravityField"/>
+                <component type="Position" x="0" y="0" z="70000"/>
+                <component type="Orbit" orbital_distance="50000"/>
+                <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
+                <component type="OrbitalRotation" period="0.2"/>
+                <group name="client"/>
+            </entity>
+        </entity>
+        <entity name="Mars">
+            <component type="Mass" kg="5.972e25"/>
+            <component type="GravityField"/>
+            <component type="Orbit" orbital_distance="1000000"/>
+            <component type="server.PlanetGeometry" radius="10000" generator="Earth"/>
+            <component type="OrbitalRotation" period="1.0"/>
+            <component type="Position"/>
+            <group name="client"/>
+            <entity name="Deimos">
+                <component type="Mass" kg="7.4e23"/>
+                <component type="GravityField"/>
+                <component type="Position" x="0" y="0" z="70000"/>
+                <component type="Orbit" orbital_distance="50000"/>
+                <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
+                <component type="OrbitalRotation" period="0.2"/>
+                <group name="client"/>
+            </entity>
+        </entity>
+        <entity name="Jupiter">
+            <component type="Mass" kg="5.972e25"/>
+            <component type="GravityField"/>
+            <component type="Orbit" orbital_distance="2000000"/>
+            <component type="server.PlanetGeometry" radius="10000" generator="Earth"/>
+            <component type="OrbitalRotation" period="1.0"/>
+            <component type="Position"/>
+            <group name="client"/>
+            <entity name="Europa">
+                <component type="Mass" kg="7.4e23"/>
+                <component type="GravityField"/>
+                <component type="Position" x="0" y="0" z="70000"/>
+                <component type="Orbit" orbital_distance="50000"/>
+                <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
+                <component type="OrbitalRotation" period="0.2"/>
+                <group name="client"/>
             </entity>
         </entity>
     </entity>
 
-    <!--entity>
-        <component type="Identifier" name="Apollo 13"/>
+    <entity-template name="Apollo 13">
+        <component type="Owner"/>
         <component type="Position" x="0" y="0" z="100000"/>
         <component type="Rotation"/>
-        <component type="Velocity" x="0" y="0" z="0"/>
+        <!--component type="Velocity" x="0" y="0" z="0"/>
         <component type="Acceleration"/>
         <component type="Mass" radius_km="0.02" mass_kg="1000000"/>
         <entity>
@@ -44,7 +95,7 @@
             </entity>
             <entity>
                 <component type="dcpu.VirtualMonitor"/>
-                <component type="Position" x="-1500" y="-1000" z="0"/>
+                    <component type="Position" x="-1500" y="-1000" z="0"/>
                 <component type="ServerSpatialMonitor"/>
                 <group name="monitor"/>
             </entity>
@@ -71,7 +122,8 @@
         <entity>
             <component type="Gyroscope" x="0" y="0" z="1"/>
             <component type="SystemBus" address="4"/>
-        </entity>
-    </entity-->
+        </entity-->
+        <group name="client"/>
+    </entity-template>
 
 </root>

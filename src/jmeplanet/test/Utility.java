@@ -160,6 +160,29 @@ public class Utility {
         return planet;
     }
     
+    public static Planet createWaterPlanet(AssetManager assetManager, float radius, Material oceanMaterial) {
+        // create planet
+        Planet planet = new Planet("Planet", radius);
+        
+        // create ocean
+        if (oceanMaterial == null) {
+            oceanMaterial = assetManager.loadMaterial("Materials/Ocean.j3m");
+        }
+        planet.createOcean(oceanMaterial);
+        
+        // create atmosphere
+        Material atmosphereMaterial = new Material(assetManager, "JmePlanet/MatDefs/Atmosphere.j3md");
+        float atmosphereRadius = radius + (radius * .025f);
+        atmosphereMaterial.setColor("Ambient", new ColorRGBA(0.5f,0.5f,1f,1f));
+        atmosphereMaterial.setColor("Diffuse", new ColorRGBA(0.18867780436772762f, 0.4978442963618773f, 0.6616065586417131f,1.0f));
+        atmosphereMaterial.setColor("Specular", new ColorRGBA(0.7f,0.7f,1f,1f));
+        atmosphereMaterial.setFloat("Shininess", 3.0f);
+        
+        planet.createAtmosphere(atmosphereMaterial, atmosphereRadius);
+
+        return planet;
+    }
+    
     public static Planet createMoonLikePlanet(AssetManager assetManager, float radius, HeightDataSource dataSource) {
         
         float heightScale = dataSource.getHeightScale();

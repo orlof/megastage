@@ -2,15 +2,17 @@ package org.megastage.protocol;
 
 import com.artemis.Entity;
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.components.EntityComponent;
 import org.megastage.components.Mass;
+import org.megastage.components.MonitorData;
 import org.megastage.components.Orbit;
 import org.megastage.components.OrbitalRotation;
 import org.megastage.components.Position;
-import org.megastage.components.ServerSpatialPlanet;
-import org.megastage.components.ServerSpatialSun;
-import org.megastage.components.dcpu.VirtualMonitor;
+import org.megastage.components.server.PlanetGeometry;
+import org.megastage.components.server.SunGeometry;
+import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.Globals;
 
 /**
@@ -30,169 +32,71 @@ public class Network {
 
         kryo.register(char[].class);
         kryo.register(Object[].class);
-        kryo.register(Position.class);
+        kryo.register(EntityData.class);
         kryo.register(Mass.class);
-        kryo.register(VirtualMonitor.class);
-        kryo.register(ServerSpatialSun.class);
-        kryo.register(ServerSpatialPlanet.class);
+        kryo.register(MonitorData.class);
+        kryo.register(Orbit.class);
         kryo.register(OrbitalRotation.class);
+        kryo.register(Position.class);
+        kryo.register(PlanetGeometry.class);
+        kryo.register(SunGeometry.class);
     }
 
-    static public class Login {}
-    static public class LoginResponse {}
+    static public abstract class EventMessage implements Message {
+        public void receive(ClientNetworkSystem system, Connection pc) {}
+    }
+    
+    static public class Login extends EventMessage {}
+    static public class Logout extends EventMessage {}
+    
+    static public class LoginResponse extends EventMessage {
+        private final int id;
+        
+        public LoginResponse(int id) {
+            this.id = id;
+        }
 
-    static public class Logout {}
+        public void receive(ClientNetworkSystem system, Connection pc) {
+            system.playerShip = system.cems.get(id);
+        }
+    }
 
-    static public abstract class KeyEvent {
+    static public abstract class KeyEvent extends EventMessage {
         public int key;
     }
     static public class KeyPressed extends KeyEvent {}
     static public class KeyTyped extends KeyEvent {}
     static public class KeyReleased extends KeyEvent {}
 
-    static public class SpatialSunData {
-        public int entityID;
-        public ServerSpatialSun spatial;
-
-        public static SpatialSunData create(Entity entity) {
-            SpatialSunData data = new SpatialSunData();
-            data.entityID = entity.getId();
-            
-            data.spatial = entity.getComponent(ServerSpatialSun.class);
-            
-            return data;
-        }
+    static public class AnalogInput extends EventMessage {
+        public String name;
+        public float value;
+        public float tpf;
     }
-
-    static public class SpatialPlanetData {
+    
+    static public class EntityData implements Message {
         public int entityID;
-        public ServerSpatialPlanet spatial;
+        public EntityComponent component;
 
-        public static SpatialPlanetData create(Entity entity) {
-            SpatialPlanetData data = new SpatialPlanetData();
-            data.entityID = entity.getId();
-            
-            data.spatial = entity.getComponent(ServerSpatialPlanet.class);
-            
-            return data;
-        }
-    }
-
-    static public class SpatialMonitorData {
-        public int entityID;
-
-        public static SpatialMonitorData create(Entity entity) {
-            SpatialMonitorData data = new SpatialMonitorData();
-            data.entityID = entity.getId();
-            return data;
-        }
-    }
-
-    static public class UseData {
-        public int entityID;
-        public static UseData create(Entity entity) {
-            UseData data = new UseData();
-            data.entityID = entity.getId();
-            return data;
-        }
-    }
-
-    static public class OrbitData {
-        public int entityID;
-
-        public int centerID;
-        public double distance;
-
-        public static OrbitData create(Entity entity) {
-            OrbitData data = new OrbitData();
-            data.entityID = entity.getId();
-
-            Orbit orbit = entity.getComponent(Orbit.class);
-            data.centerID = orbit.center.getId();
-            data.distance = orbit.distance;
-
-            return data;
-        }
-    }
-
-    static public class PositionData {
-        public int entityID;
+        public EntityData() { /* required for Kryo */ }
         
-        public Position position;
-        
-        public static PositionData create(Entity entity) {
-            PositionData data = new PositionData();
-            data.entityID = entity.getId();
-            data.position = entity.getComponent(Position.class);
+        public EntityData(Entity entity, EntityComponent c) {
+            entityID = entity.getId();
+            component = c;
+        }
 
-            return data;
+        @Override
+        public void receive(ClientNetworkSystem system, Connection pc) {
+            component.receive(system, pc, system.cems.get(entityID));
         }
     }
     
-    static public class MassData {
-        public int entityID;
-        
-        public Mass mass;
-        
-        public static MassData create(Entity entity) {
-            MassData data = new MassData();
-            data.entityID = entity.getId();
-            data.mass = entity.getComponent(Mass.class);
+    static public class TimeData extends EventMessage {
+        public long time = Globals.time;
 
-            return data;
-        }
-    }
-    
-    static public class TimeData {
-        public long time;
-
-        public static TimeData create() {
-            TimeData data = new TimeData();
-            data.time = Globals.time;
-
-            return data;
-        }
-    }
-
-    static public class MonitorData {
-        public int entityID;
-        public char[] video;
-        public char[] font;
-        public char[] palette;
-
-        public static MonitorData create(Entity entity) {
-            MonitorData data = new MonitorData();
-            data.entityID = entity.getId();
-
-            VirtualMonitor virtualMonitor = entity.getComponent(VirtualMonitor.class);
-            data.video = virtualMonitor.video.mem;
-            data.font = virtualMonitor.font.mem;
-            data.palette = virtualMonitor.palette.mem;
-
-            return data;
-        }
-    }
-
-    static public class KeyboardData {
-        public int entityID;
-
-        public static KeyboardData create(Entity entity) {
-            KeyboardData data = new KeyboardData();
-            data.entityID = entity.getId();
-            return data;
-        }
-    }
-
-    public static class OrbitalRotationData {
-        public int entityID;
-        public OrbitalRotation orbitalRotation;
-
-        public static OrbitalRotationData create(Entity entity) {
-            OrbitalRotationData data = new OrbitalRotationData();
-            data.entityID = entity.getId();
-            data.orbitalRotation = entity.getComponent(OrbitalRotation.class);
-            Log.info(data.orbitalRotation.toString());
-            return data;
+        @Override
+        public void receive(ClientNetworkSystem system, Connection pc) {
+            Globals.timeDiff = time - System.currentTimeMillis();
         }
     }
 }

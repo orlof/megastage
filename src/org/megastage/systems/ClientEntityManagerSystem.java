@@ -44,6 +44,11 @@ public class ClientEntityManagerSystem extends VoidEntitySystem  {
         get(entityID).addComponent(t);
     }
 
+    public <T extends Component> void setComponent(Entity entity, T t) {
+        Log.info("Add component " + t.toString());
+        entity.addComponent(t);
+    }
+
     public int convert(int clientID) {
         return clientIDToServerID.get(clientID);
     }
