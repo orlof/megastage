@@ -21,11 +21,6 @@ public class Main {
         Log.setLogger(new LogFormat());
         Log.set(Log.LEVEL_DEBUG);
         
-        Object[] t = new Object[5];
-        if(t instanceof Object[]) {
-            System.out.println("TRUE");
-        }
-
         Element root = readConfig(args[0]);
         Game game = new Game(root);
         game.loopForever();

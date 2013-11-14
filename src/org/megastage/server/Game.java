@@ -25,22 +25,27 @@ public class Game {
 
         world.setManager(new GroupManager());
         world.setManager(new TagManager());
+        world.setManager(new TemplateManager());
 
-        world.setSystem(new ServerNetworkSystem(1000));
+        world.setSystem(new ServerNetworkSystem(100000));
 
-        world.setSystem(new OrbitalMovementSystem());
+        //world.setSystem(new OrbitalMovementSystem());
 
         //world.setSystem(new EngineAccelerationSystem());
         //world.setSystem(new GravityAccelerationSystem());
 
         //world.setSystem(new ShipMovementSystem());
 
-        world.setSystem(new DCPUSystem());
-        world.setSystem(new VirtualMonitorSenderSystem());
+        //world.setSystem(new DCPUSystem());
+        //world.setSystem(new VirtualMonitorSenderSystem());
 
         world.initialize();
 
         for(Element element: root.getChildren("entity")) {
+            EntityFactory.create(world, element, null);
+        }
+
+        for(Element element: root.getChildren("entity-template")) {
             EntityFactory.create(world, element, null);
         }
     }

@@ -2,9 +2,11 @@ package org.megastage.components;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector;
 
@@ -14,17 +16,16 @@ import org.megastage.util.Vector;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class Orbit extends BaseComponent {
-    public Entity center;
-
+public class Orbit extends EntityComponent {
+    public int center;
     public double distance;
 
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {
-        center = parent;
+        center = parent.getId();
         distance = 1000.0 * getDoubleValue(element, "orbital_distance", 0.0);
     
-        Log.info("Orbital period (h): " + getOrbitalPeriod(center.getComponent(Mass.class).mass) / 3600.0);
+        Log.info("Orbital period (h): " + getOrbitalPeriod(parent.getComponent(Mass.class).mass) / 3600.0);
     }
 
     public double getOrbitalPeriod(double centerMass) {

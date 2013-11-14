@@ -1,8 +1,10 @@
 package org.megastage.systems;
 
+import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.managers.GroupManager;
 import com.artemis.systems.VoidEntitySystem;
+import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -15,6 +17,11 @@ import org.megastage.protocol.PlayerConnection;
 import org.megastage.util.Globals;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import org.megastage.components.BaseComponent;
+import org.megastage.components.dcpu.VirtualMonitor;
+import org.megastage.components.server.BindTo;
+import org.megastage.server.TemplateManager;
 
 public class ServerNetworkSystem extends VoidEntitySystem {
     private Server server;
@@ -68,55 +75,43 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     private void handleLoginMessage(PlayerConnection connection, Network.Login packet) {
         connection.player = world.createEntity();
         connection.player.addToWorld();
+        
+        Entity ship = world.getManager(TemplateManager.class).create("Apollo 13");
+        ship.addToWorld();
+        
+        connection.player.addComponent(new BindTo(ship));
 
-        connection.sendTCP(new Network.LoginResponse());
+        connection.sendTCP(new Network.LoginResponse(ship.getId()));
 
-        unicastGroupData(connection, "star", new PacketFactory() {
-            public Object create(Entity entity) {
-                return new Object[] {
-                    Network.SpatialSunData.create(entity),
-                    Network.PositionData.create(entity),
-                    Network.MassData.create(entity)
-                };
+        ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("client");
+        Log.info("Sending intialization data for " + entities.size() + " entities.");
+
+        for(int i=0; i < entities.size(); i++) {
+            Entity entity = entities.get(i);
+            Log.debug("Initializing " + entity.toString());
+            
+            Bag<Component> components = entity.getComponents(new Bag<Component>());
+            ArrayList list = new ArrayList();
+
+            for(int j=0; j < components.size(); j++) {
+                BaseComponent comp = (BaseComponent) components.get(j);
+                Log.debug(" Component " + comp.toString());
+
+                Object trans = comp.create(entity);                
+                if(trans != null) {
+                    Log.debug("   Added");
+                    list.add(trans);
+                }
             }
-        });
 
-        unicastGroupData(connection, "satellite", new PacketFactory() {
-            public Object create(Entity entity) {
-                return new Object[] {
-                    Network.SpatialPlanetData.create(entity),
-                    Network.OrbitData.create(entity),
-                    Network.MassData.create(entity),
-                    Network.PositionData.create(entity),
-                    Network.OrbitalRotationData.create(entity)
-                };
+            if(!list.isEmpty()) {
+                connection.sendTCP(list.toArray());
             }
-        });
-
-        unicastGroupData(connection, "monitor", new PacketFactory() {
-            public Object create(Entity entity) {
-                return new Object[] {
-                    Network.SpatialMonitorData.create(entity),
-                    Network.MonitorData.create(entity),
-                    Network.PositionData.create(entity)
-                };
-            }
-        });
-
-        unicastGroupData(connection, "keyboard", new PacketFactory() {
-            public Object create(Entity entity) {
-                return Network.KeyboardData.create(entity);
-            }
-        });
-
-        unicastGroupData(connection, "keyboard", new PacketFactory() {
-            public Object create(Entity entity) {
-                return Network.KeyboardData.create(entity);
-            }
-        });
+        }
     }
 
-    private void handleUseMessage(PlayerConnection connection, Network.UseData packet) {
+    /*
+    private void handleUseMessage(PlayerConnection connection, UseData packet) {
         Entity item = world.getEntity(packet.entityID);
         Entity player = connection.player;
 
@@ -125,7 +120,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
 
         player.addComponent(comp);
     }
-
+*/
     private void handleKeyEventMessage(PlayerConnection connection, Network.KeyEvent packet) {
         ItemInUse item = connection.player.getComponent(ItemInUse.class);
         if(item == null) {
@@ -146,29 +141,13 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     }
 
     public void broadcastMonitorData(Entity entity) {
-        Network.MonitorData monitorData = Network.MonitorData.create(entity);
-        server.sendToAllUDP(monitorData);
+        VirtualMonitor mon = entity.getComponent(VirtualMonitor.class);
+        server.sendToAllUDP(mon.create(entity));
     }
     
     public void broadcastTimeData() {
-        Network.TimeData data = Network.TimeData.create();
+        Network.TimeData data = new Network.TimeData();
         server.sendToAllUDP(data);
-    }
-
-    public void unicastTimeData(PlayerConnection connection) {
-        Network.TimeData data = Network.TimeData.create();
-        connection.sendUDP(data);
-    }
-
-    private void unicastGroupData(PlayerConnection connection, String group, PacketFactory factory) {
-        ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities(group);
-        for(int i=0; i < entities.size(); i++) {
-            connection.sendTCP(factory.create(entities.get(i)));
-        }
-    }
-
-    private interface PacketFactory {
-        Object create(Entity entity);
     }
 
     private class ServerNetworkListener extends Listener {
@@ -190,9 +169,6 @@ public class ServerNetworkSystem extends VoidEntitySystem {
 
             } else if(o instanceof Network.Logout) {
                 handleLogoutMessage(pc, (Network.Logout) o);
-
-            } else if(o instanceof Network.UseData) {
-                handleUseMessage(pc, (Network.UseData) o);
 
             } else if(o instanceof Network.KeyEvent) {
                 handleKeyEventMessage(pc, (Network.KeyEvent) o);

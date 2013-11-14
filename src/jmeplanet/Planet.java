@@ -123,6 +123,19 @@ public class Planet extends Node {
         prepareTerrain();
     }
     
+    /**
+    * <code>Water World</code>
+    * @param name Name of the node
+    * @param baseRadius The radius of the planet
+    */
+    public Planet(String name, float baseRadius) {
+        super(name);
+        this.baseRadius = baseRadius;
+        
+        this.planetNode = new Node("PlanetNode");
+        this.attachChild(planetNode);
+    }
+    
     public void createOcean(Material material) {
         this.oceanMaterial = material;
         

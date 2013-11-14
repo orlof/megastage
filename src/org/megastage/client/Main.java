@@ -3,11 +3,14 @@ package org.megastage.client;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.light.DirectionalLight;
+import com.jme3.light.PointLight;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
+import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.util.Globals;
@@ -38,45 +41,40 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
-        getFlyByCamera().setMoveSpeed(50000);
-        
         Node systemNode = new Node("system");
-        systemNode.setLocalTranslation(0f, 0f, -210000f);
+        systemNode.setLocalTranslation(0f, 0f, -100000f);
         rootNode.attachChild(systemNode);
 
-        /** Must add a light to make the lit object visible! */
-        DirectionalLight sun = new DirectionalLight();
-        sun.setDirection(new Vector3f(-.1f, 0f, -1f));
-        sun.setColor(new ColorRGBA(0.75f, 0.75f, 0.75f, 1.0f));      
-        systemNode.addLight(sun);
-        
         // Add sky
         Node sceneNode = new Node("Scene");
         sceneNode.attachChild(Utility.createSkyBox(assetManager, "Textures/blue-glow-1024.dds"));
         systemNode.attachChild(sceneNode);
 
         // Add planet app state
-        planetAppState = new PlanetAppState(systemNode, sun);
+        planetAppState = new PlanetAppState(systemNode);
         stateManager.attach(planetAppState);
 
         // Add ECS app state
         artemisAppState = new ArtemisState();
         stateManager.attach(artemisAppState);
+
+        SpectatorModeInputManager in = new SpectatorModeInputManager(this);
+        in.init();
         
         //inputManager.addRawInputListener(new DCPURawInputListener(artemisAppState));
-
-        // Add planet
-        //FractalDataSource planetDataSource = new FractalDataSource(4);
-        //planetDataSource.setHeightScale(900f);
-        //Planet planet = Utility.createEarthLikePlanet(assetManager, 63710.0f, null, planetDataSource);
-        //planetAppState.addPlanet(planet);
-        //systemNode.attachChild(planet);
 
     }
 
     @Override
     public void simpleUpdate(float tpf) {
         Globals.time = System.currentTimeMillis() + Globals.timeDiff;
+
+        // slow camera down as we approach a planet
+        Planet planet = planetAppState.getNearestPlanet();
+        if (planet != null && planet.getPlanetToCamera() != null) {
+            this.getFlyByCamera().setMoveSpeed(
+                    FastMath.clamp(planet.getDistanceToCamera(), 100, 100000));
+        }
     }
 
     @Override

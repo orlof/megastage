@@ -25,6 +25,8 @@ import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.light.DirectionalLight;
+import com.jme3.light.Light;
+import com.jme3.light.PointLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
@@ -33,9 +35,11 @@ import com.jme3.post.filters.FogFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
+import com.jme3.shadow.AbstractShadowRenderer;
 import com.jme3.shadow.CompareMode;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
+import com.jme3.shadow.PointLightShadowRenderer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,18 +60,25 @@ public class PlanetAppState extends AbstractAppState {
     protected BloomFilter farBloom;
     
     protected Spatial scene;
-    protected DirectionalLight sun;
     protected ViewPort nearViewPort;
     protected ViewPort farViewPort;
     protected Camera nearCam;
     protected Camera farCam;
     
     protected boolean shadowsEnabled;
-    protected DirectionalLightShadowRenderer dlsr; 
+    
+    protected Light sun;
+    protected List<AbstractShadowRenderer> shadowRenderers = new ArrayList<>();
      
-    public PlanetAppState(Spatial scene, DirectionalLight sun) {
+    public PlanetAppState(Spatial scene, Light sun) {
         this.scene = scene;
+        this.planets = new ArrayList<Planet>();
+        
         this.sun = sun;
+    }
+    
+    public PlanetAppState(Spatial scene) {
+        this.scene = scene;
         this.planets = new ArrayList<Planet>(); 
     }
     
@@ -108,22 +119,48 @@ public class PlanetAppState extends AbstractAppState {
         farBloom.setExposureCutOff(0.1f);
         farBloom.setBloomIntensity(1.45f);
         farFilter.addFilter(farBloom);
-        
-        if (sun != null) {
-           
-            dlsr = new DirectionalLightShadowRenderer(app.getAssetManager(), 1024, 3);
-            dlsr.setLight(sun);
-            dlsr.setLambda(0.55f);
-            dlsr.setShadowIntensity(0.6f);
-            dlsr.setEdgeFilteringMode(EdgeFilteringMode.PCFPOISSON);
-            dlsr.setShadowCompareMode(CompareMode.Hardware);
-            dlsr.setShadowZExtend(100f);
-            if (shadowsEnabled) { 
-                nearViewPort.addProcessor(dlsr);
-            }
-        }        
+
+        if(sun != null) {
+            addShadow(sun);
+        }
     }
-            
+
+    public void addShadow(Light light) {
+        AbstractShadowRenderer sr = null;
+
+        if(sun instanceof PointLight) {
+            sr = addShadow((PointLight) sun);
+        } else if(sun instanceof DirectionalLight){
+            sr = addShadow((DirectionalLight) sun);
+        }
+
+        shadowRenderers.add(sr);
+
+        if (shadowsEnabled) { 
+            nearViewPort.addProcessor(sr);
+        }
+    }
+    
+    public PointLightShadowRenderer addShadow(PointLight light) {
+        PointLightShadowRenderer sr = new PointLightShadowRenderer(app.getAssetManager(), 1024);
+        sr.setLight(light);
+        sr.setShadowIntensity(0.6f);
+        sr.setEdgeFilteringMode(EdgeFilteringMode.PCFPOISSON);
+        sr.setShadowCompareMode(CompareMode.Hardware);
+        return sr;
+    }
+
+    public DirectionalLightShadowRenderer addShadow(DirectionalLight light) {
+        DirectionalLightShadowRenderer sr = new DirectionalLightShadowRenderer(app.getAssetManager(), 1024, 3);
+        sr.setLight(light);
+        sr.setLambda(0.55f);
+        sr.setShadowIntensity(0.6f);
+        sr.setEdgeFilteringMode(EdgeFilteringMode.PCFPOISSON);
+        sr.setShadowCompareMode(CompareMode.Hardware);
+        sr.setShadowZExtend(100f);
+        return sr;
+    }
+    
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
@@ -171,14 +208,12 @@ public class PlanetAppState extends AbstractAppState {
     
     public void setShadowsEnabled(boolean enabled) {
         this.shadowsEnabled = enabled;
-        
-        if (dlsr != null)
-        {
+
+        for(AbstractShadowRenderer shadowRenderer: shadowRenderers) {
             if (enabled) {
-                nearViewPort.addProcessor(dlsr);
-            }
-            else {
-                nearViewPort.removeProcessor(dlsr);
+                nearViewPort.addProcessor(shadowRenderer);
+            } else {
+                nearViewPort.removeProcessor(shadowRenderer);
             }
         }
     }

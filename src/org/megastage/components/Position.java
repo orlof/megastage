@@ -2,9 +2,14 @@ package org.megastage.components;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.client.controls.OrbitalRotationControl;
+import org.megastage.client.controls.PositionControl;
+import org.megastage.components.client.ClientSpatial;
+import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.Vector;
 
 /**
@@ -13,14 +18,22 @@ import org.megastage.util.Vector;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class Position extends BaseComponent {
+public class Position extends EntityComponent {
     public long x, y, z;
 
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {
-        x = getLongValue(element, "x", 0);
-        y = getLongValue(element, "y", 0);
-        z = getLongValue(element, "z", 0);
+        x = 1000 * getLongValue(element, "x", 0);
+        y = 1000 * getLongValue(element, "y", 0);
+        z = 1000 * getLongValue(element, "z", 0);
+    }
+
+    @Override
+    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
+        system.cems.setComponent(entity, this);
+
+        ClientSpatial clientSpatial = system.cems.getComponent(entity, ClientSpatial.class);
+        clientSpatial.addControl(new PositionControl(entity));
     }
 
     public void add(Vector vector) {
