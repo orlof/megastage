@@ -27,6 +27,7 @@ import jmeplanet.FractalDataSource;
 import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
+import org.megastage.client.controls.PositionControl;
 import org.megastage.components.client.ClientRaster;
 import org.megastage.components.client.ClientSpatial;
 import org.megastage.components.server.MonitorGeometry;
@@ -42,65 +43,70 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
     private final SimpleApplication app;
 
     private final AssetManager assetManager;
-    private final PlanetAppState planetAppState;
-    private final Node systemNode;
+    public final Node systemNode;
     private ClientEntityManagerSystem cems;
     
     public ClientSpatialManagerSystem(SimpleApplication app) {
         this.app = app;
         assetManager = app.getAssetManager();
         systemNode = (Node) app.getRootNode().getChild("system");
-        planetAppState = app.getStateManager().getState(PlanetAppState.class);
     }
 
     @Override
     protected void initialize() {
         cems = world.getSystem(ClientEntityManagerSystem.class);
     }
+
+    private ClientSpatial addSpatialComponent(Entity entity, Node node) {
+        node.setName(entity.toString());
+ 
+        ClientSpatial cs = cems.getComponent(entity, ClientSpatial.class);
+        cs.node = node;
+
+        node.addControl(new PositionControl(entity));
+        //node.addControl(new RotationControl(entity));
+        
+        return cs;
+    }
     
     public void setupSunLikeBody(final Entity entity, final SunGeometry data) {
         Log.info("setupSunLikeBody");
+        
+        final ClientSpatial cs = addSpatialComponent(entity, new Node());
 
         Sphere mesh = new Sphere(32, 32, data.radius);
-
         Geometry geom = new Geometry(entity.toString(), mesh);
-
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        //Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
 
         ColorRGBA colorRGBA = new ColorRGBA();
         colorRGBA.fromIntRGBA(data.color);
         mat.setColor("Color", colorRGBA);
         geom.setMaterial(mat);
 
-        final Node node = new Node(entity.toString());
-        node.attachChild(geom);
+        cs.node.attachChild(geom);
 
         final PointLight light = new PointLight();
         light.setColor(colorRGBA);
         light.setRadius(data.lightRadius);
 
-        app.enqueue(new Callable() {
+        Callable callable = new Callable() {
             @Override
             public Object call() throws Exception {
                 app.getRootNode().addLight(light);
         
                 LightNode lightNode = new LightNode(entity.toString() + " Sun Light", light);
-                node.attachChild(lightNode);
+                cs.node.attachChild(lightNode);
                 
-                systemNode.attachChild(node);
+                systemNode.attachChild(cs.node);
                 app.getStateManager().getState(PlanetAppState.class).addShadow(light);
-
-                ClientSpatial cs = cems.getComponent(entity, ClientSpatial.class);
-                cs.setNode(node);
-
                 return null;
             }
-        });
-        
+        };
+        app.enqueue(callable);
     }
 
     private Planet createPlanet(PlanetGeometry data) {
+        Log.info("" + data.toString());
         if(data.generator.equalsIgnoreCase("Earth")) {
             FractalDataSource planetDataSource = new FractalDataSource(4);
             planetDataSource.setHeightScale(data.radius / 100f);
@@ -113,28 +119,25 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
             return Utility.createWaterPlanet(assetManager, data.radius, null);
         } 
 
-        return null;
+        throw new RuntimeException("Unknown planet generator: " + data.generator);
     }
     
-    public void setupPlanetLikeBody(final Entity entity, PlanetGeometry data) {
-        Log.info("setupPlanetLikeBody");
-
-        // Add planet
-        final Planet planet = createPlanet(data);
+    public void setupPlanetLikeBody(Entity entity, PlanetGeometry data) {
+        Entity parent = cems.get(data.center);
+                
+        final ClientSpatial parentSpatial = cems.getComponent(parent, ClientSpatial.class);
         
-        if(planet == null) {
-            Log.error("Unknown planet generator: " + data.generator);
-            return;
-        }
-
-        ClientSpatial cs = cems.getComponent(entity, ClientSpatial.class);
-        cs.setNode(planet);
+        // Add planet
+        Node n = new Node(entity.toString());
+        n.attachChild(createPlanet(data));
+        final ClientSpatial cs = addSpatialComponent(entity, n);
 
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
-                planetAppState.addPlanet(planet);
-                systemNode.attachChild(planet);
+                Log.info("attach to " + parentSpatial.toString());
+                parentSpatial.node.attachChild(cs.node);
+                app.getStateManager().getState(PlanetAppState.class).addPlanet((Planet) cs.node.getChild(0));
                 return null;
             }
         });
@@ -159,8 +162,7 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         Node node = new Node(entity.toString());
         node.attachChild(geom);
 
-        ClientSpatial cs = cems.getComponent(entity, ClientSpatial.class);
-        cs.setNode(node);
+        ClientSpatial cs = addSpatialComponent(entity, new Node());
         
         ClientRaster rasterComponent = cems.getComponent(entity, ClientRaster.class);
         rasterComponent.raster = raster;
@@ -169,7 +171,4 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
     @Override
     protected void processSystem() {
     }
-
-
-
 }

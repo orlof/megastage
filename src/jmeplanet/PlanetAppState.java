@@ -72,14 +72,14 @@ public class PlanetAppState extends AbstractAppState {
      
     public PlanetAppState(Spatial scene, Light sun) {
         this.scene = scene;
-        this.planets = new ArrayList<Planet>();
+        this.planets = new ArrayList<>();
         
         this.sun = sun;
     }
     
     public PlanetAppState(Spatial scene) {
         this.scene = scene;
-        this.planets = new ArrayList<Planet>(); 
+        this.planets = new ArrayList<>(); 
     }
     
     @Override

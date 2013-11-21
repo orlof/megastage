@@ -34,4 +34,8 @@ public class SunGeometry extends EntityComponent {
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
         system.csms.setupSunLikeBody(entity, this);
     }
+    
+    public String toString() {
+        return "SunGeometry(" + radius + ", " + color + ", " + lightRadius + ")";
+    }
 }

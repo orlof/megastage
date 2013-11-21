@@ -45,7 +45,7 @@ public class ClientEntityManagerSystem extends VoidEntitySystem  {
     }
 
     public <T extends Component> void setComponent(Entity entity, T t) {
-        Log.info("Add component " + t.toString());
+        Log.info(entity.getId() + " <- setComponent(" + t.toString() + ")");
         entity.addComponent(t);
     }
 
@@ -59,13 +59,13 @@ public class ClientEntityManagerSystem extends VoidEntitySystem  {
         serverIDToClientEntity.put(serverEntityID, entity);
         clientIDToServerID.put(entity.getId(), serverEntityID);
 
-        Log.info("Created new entity " + entity.toString());
+        Log.info("Created new entity " + serverEntityID + " -> " + entity.toString());
         
         return entity;
     }
 
     private <T extends Component> T createComponent(Entity entity, Class<T> type) {
-        Log.info("CreateComponent " + type.toString());
+        Log.info(entity.getId() + " <- CreateComponent(" + type.toString() + ")");
         T component = null;
         
         try {

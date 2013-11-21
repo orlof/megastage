@@ -27,7 +27,7 @@ public class Game {
         world.setManager(new TagManager());
         world.setManager(new TemplateManager());
 
-        world.setSystem(new ServerNetworkSystem(100000));
+        world.setSystem(new ServerNetworkSystem(10000));
 
         //world.setSystem(new OrbitalMovementSystem());
 
@@ -46,7 +46,7 @@ public class Game {
         }
 
         for(Element element: root.getChildren("entity-template")) {
-            EntityFactory.create(world, element, null);
+            world.getManager(TemplateManager.class).addTemplate(element);
         }
     }
 

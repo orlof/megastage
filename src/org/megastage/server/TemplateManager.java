@@ -27,6 +27,9 @@ public class TemplateManager extends Manager {
 
     public Entity create(String name) {
         Element element = templates.get(name);
+        if(element == null) {
+            throw new RuntimeException("No template: " + name + " in " + templates.toString());
+        }
         return EntityFactory.create(world, element, null);
     }    
 }

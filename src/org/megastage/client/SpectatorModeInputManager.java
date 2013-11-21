@@ -37,6 +37,10 @@ public class SpectatorModeInputManager implements AnalogListener {
         in.addMapping("DOWN", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
         in.addMapping("LEFT", new MouseAxisTrigger(MouseInput.AXIS_X, true));
         in.addMapping("RIGHT", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        
+        in.addListener(this, new String[] { 
+            "FORWARD", "BACK", "CCW", "CW", "UP", "DOWN", "LEFT", "RIGHT"
+        });
     }
 
     @Override

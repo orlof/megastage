@@ -24,8 +24,12 @@ public class Orbit extends EntityComponent {
     public void init(World world, Entity parent, Element element) throws DataConversionException {
         center = parent.getId();
         distance = 1000.0 * getDoubleValue(element, "orbital_distance", 0.0);
-    
-        Log.info("Orbital period (h): " + getOrbitalPeriod(parent.getComponent(Mass.class).mass) / 3600.0);
+    }
+
+    @Override
+    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
+        center = system.cems.get(center).getId();
+        system.cems.setComponent(entity, this);
     }
 
     public double getOrbitalPeriod(double centerMass) {
@@ -43,5 +47,9 @@ public class Orbit extends EntityComponent {
                 0.0d,
                 distance * Math.cos(angle)
         );
+    }
+
+    public String toString() {
+        return "Orbit(" + center + ", " + distance + ")";
     }
 }

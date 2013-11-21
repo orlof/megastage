@@ -14,4 +14,8 @@ import org.jdom2.Element;
 public class GravityField extends BaseComponent {
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {}
+    
+    public String toString() {
+        return "GravityField()";
+    }
 }

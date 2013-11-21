@@ -18,4 +18,8 @@ public class Identifier extends BaseComponent {
     }
     
     public String name;
+
+    public String toString() {
+        return "Identifier(" + name + ")";
+    }
 }
