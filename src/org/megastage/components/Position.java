@@ -6,10 +6,10 @@ import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.client.controls.OrbitalRotationControl;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.components.client.ClientSpatial;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.Globals;
 import org.megastage.util.Vector;
 
 /**
@@ -31,9 +31,6 @@ public class Position extends EntityComponent {
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
         system.cems.setComponent(entity, this);
-
-        ClientSpatial clientSpatial = system.cems.getComponent(entity, ClientSpatial.class);
-        clientSpatial.addControl(new PositionControl(entity));
     }
 
     public void add(Vector vector) {
@@ -47,7 +44,7 @@ public class Position extends EntityComponent {
     }
     
     public Vector3f getAsVector() {
-        return new Vector3f(x / 1000.0f, y / 1000.0f, z / 1000.0f);
+        return new Vector3f((float) (x / Globals.scale), (float) (y / Globals.scale), (float) (z / Globals.scale));
     }
     
     public String toString() {

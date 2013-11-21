@@ -18,17 +18,25 @@ import org.megastage.systems.ClientNetworkSystem;
  * @author Teppo
  */
 public class PlanetGeometry extends EntityComponent {
+    public int center;
     public float radius;
     public String generator;
 
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {
+        center = parent.getId();
+
         radius = getFloatValue(element, "radius", 10.0f);
         generator = getStringValue(element, "generator", "Earth");
     }
 
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
+        // center = system.cems.get(center).getId();
         system.csms.setupPlanetLikeBody(entity, this);
+    }
+    
+    public String toString() {
+        return "PlanetGeometry(center=" + center + ", generator='" + generator + "', radius=" + radius + ")";
     }
 }

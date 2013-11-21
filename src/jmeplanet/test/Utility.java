@@ -106,7 +106,6 @@ public class Utility {
     }
     
     public static Planet createEarthLikePlanet(AssetManager assetManager, float radius, Material oceanMaterial, HeightDataSource dataSource) {
-               
         float heightScale = dataSource.getHeightScale();
         
         // Prepare planet material

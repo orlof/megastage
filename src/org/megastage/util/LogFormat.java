@@ -14,15 +14,21 @@ import java.util.Date;
  */
 public class LogFormat extends Logger {
     
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss.S");
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss.SSS");
     
     public void log(int level, String category, String message, Throwable ex) {
+        StackTraceElement caller = Thread.currentThread().getStackTrace()[3];
+        
         StringBuilder builder = new StringBuilder(256);
         builder.append(sdf.format(new Date()));
         builder.append(" ");
         builder.append(level);
         builder.append(" [");
-        builder.append(category);
+        
+        String className = caller.getClassName();
+        className = className.substring(className.lastIndexOf(".")+1);
+        
+        builder.append(className + "." + caller.getMethodName());
         builder.append("] ");
         builder.append(message);
         

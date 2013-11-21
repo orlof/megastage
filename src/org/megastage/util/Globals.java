@@ -1,6 +1,6 @@
 package org.megastage.util;
 
-import java.util.HashMap;
+import com.artemis.Entity;
 
 /**
  * MegaStage
@@ -9,6 +9,9 @@ import java.util.HashMap;
  * Time: 20:50
  */
 public class Globals {
+    public static Entity fixedEntity = null;
+    public static double scale = 1000.0;
+    
     public static double G = 6.67384e-11;
     public static String networkInterface = "localhost";
 

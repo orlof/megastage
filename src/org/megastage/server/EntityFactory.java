@@ -29,13 +29,13 @@ public class EntityFactory {
 
         try {
             for(Element e: element.getChildren("component")) {
-                Log.debug("Add Component of type " + e.getAttributeValue("type"));
-
                 Class clazz = Class.forName("org.megastage.components." + e.getAttributeValue("type"));
                 BaseComponent comp = (BaseComponent) clazz.newInstance();
 
                 comp.init(world, parent, e);
                 entity.addComponent(comp);
+
+                Log.debug("Add Component: " + comp.toString());
             }
 
             for(Element e: element.getChildren("group")) {

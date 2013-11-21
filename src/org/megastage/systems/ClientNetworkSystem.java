@@ -18,8 +18,6 @@ public class ClientNetworkSystem extends VoidEntitySystem {
     public ClientEntityManagerSystem cems;
     public ClientSpatialManagerSystem csms;
 
-    public Entity playerShip;
-
     @Override
     protected void initialize() {
         this.cems = world.getSystem(ClientEntityManagerSystem.class);
@@ -99,7 +97,7 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         }
         
         public void handlePacket(Connection pc, Object o) {
-            Log.info("Received: " + o.getClass().getName());
+            Log.info("Received: " + o.toString());
             
             if(o instanceof Message) {
                 ((Message) o).receive(ClientNetworkSystem.this, pc);

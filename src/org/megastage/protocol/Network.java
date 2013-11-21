@@ -8,8 +8,9 @@ import org.megastage.components.EntityComponent;
 import org.megastage.components.Mass;
 import org.megastage.components.MonitorData;
 import org.megastage.components.Orbit;
-import org.megastage.components.OrbitalRotation;
+import org.megastage.components.FixedRotation;
 import org.megastage.components.Position;
+import org.megastage.components.Rotation;
 import org.megastage.components.server.PlanetGeometry;
 import org.megastage.components.server.SunGeometry;
 import org.megastage.systems.ClientNetworkSystem;
@@ -36,8 +37,9 @@ public class Network {
         kryo.register(Mass.class);
         kryo.register(MonitorData.class);
         kryo.register(Orbit.class);
-        kryo.register(OrbitalRotation.class);
+        kryo.register(FixedRotation.class);
         kryo.register(Position.class);
+        kryo.register(Rotation.class);
         kryo.register(PlanetGeometry.class);
         kryo.register(SunGeometry.class);
     }
@@ -50,14 +52,19 @@ public class Network {
     static public class Logout extends EventMessage {}
     
     static public class LoginResponse extends EventMessage {
-        private final int id;
+        private int id = 0;
         
+        public LoginResponse() { /* Kryonet */ }
         public LoginResponse(int id) {
             this.id = id;
         }
 
         public void receive(ClientNetworkSystem system, Connection pc) {
-            system.playerShip = system.cems.get(id);
+            Globals.fixedEntity = system.cems.get(id);
+        }
+        
+        public String toString() {
+            return "LoginResponse(" + id + ")";
         }
     }
 
@@ -87,7 +94,12 @@ public class Network {
 
         @Override
         public void receive(ClientNetworkSystem system, Connection pc) {
-            component.receive(system, pc, system.cems.get(entityID));
+            Entity entity = system.cems.get(entityID);
+            component.receive(system, pc, entity);
+        }
+        
+        public String toString() {
+            return "EntityData(" + entityID + ", " + component.toString() + ")";
         }
     }
     
