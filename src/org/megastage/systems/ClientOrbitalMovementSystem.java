@@ -47,5 +47,6 @@ public class ClientOrbitalMovementSystem extends EntityProcessingSystem {
         position.y = Math.round(localPosition.y);
         position.z = Math.round(localPosition.z);
         
+        Log.info(entity.toString() + "Updated position " + position.toString());
     }
 }

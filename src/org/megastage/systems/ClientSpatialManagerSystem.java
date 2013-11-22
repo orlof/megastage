@@ -28,6 +28,7 @@ import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.PositionControl;
+import org.megastage.client.controls.RotationControl;
 import org.megastage.components.client.ClientRaster;
 import org.megastage.components.client.ClientSpatial;
 import org.megastage.components.server.MonitorGeometry;
@@ -64,7 +65,7 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         cs.node = node;
 
         node.addControl(new PositionControl(entity));
-        //node.addControl(new RotationControl(entity));
+        node.addControl(new RotationControl(entity));
         
         return cs;
     }
