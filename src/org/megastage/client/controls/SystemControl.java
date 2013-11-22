@@ -25,7 +25,7 @@ public class SystemControl extends AbstractControl {
             Log.error("No fixed entity");
             
             spatial.setLocalTranslation(Vector3f.ZERO);
-            spatial.setLocalRotation(Quaternion.ZERO);            
+            spatial.setLocalRotation(Quaternion.IDENTITY);            
             return;
         }
 
@@ -37,6 +37,7 @@ public class SystemControl extends AbstractControl {
         }
         Log.info(Globals.fixedEntity.getId() + " <- " + spatial.getLocalTranslation().toString());
 
+        /*
         Rotation rotation = Globals.fixedEntity.getComponent(Rotation.class);
         if(rotation == null) {
             spatial.setLocalRotation(Quaternion.ZERO);            
@@ -49,6 +50,7 @@ public class SystemControl extends AbstractControl {
             }
         }
         Log.info(Globals.fixedEntity.getId() + " <- " + spatial.getLocalRotation().toString());
+        */
     }
 
     @Override

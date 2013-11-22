@@ -67,6 +67,8 @@ public class Main extends SimpleApplication {
     public void simpleUpdate(float tpf) {
         Globals.time = System.currentTimeMillis() + Globals.timeDiff;
 
+        Log.info("CAM" + cam.getLocation().toString());
+        
         // slow camera down as we approach a planet
         Planet planet = planetAppState.getNearestPlanet();
         if (planet != null && planet.getPlanetToCamera() != null) {
