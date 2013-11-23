@@ -14,6 +14,7 @@ import org.megastage.systems.ClientFixedRotationSystem;
 import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.systems.ClientOrbitalMovementSystem;
 import org.megastage.systems.ClientSpatialManagerSystem;
+import org.megastage.systems.OrbitalMovementSystem;
 
 /**
  *
@@ -31,7 +32,7 @@ public class ArtemisState extends AbstractAppState {
         //world.setSystem(new ClientKeyboardSystem());
         
         //world.setSystem(new ClientMonitorRenderSystem());
-        world.setSystem(new ClientOrbitalMovementSystem());
+        world.setSystem(new OrbitalMovementSystem());
         world.setSystem(new ClientFixedRotationSystem());
 
         world.setSystem(new ClientNetworkSystem(), true);

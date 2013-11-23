@@ -1,7 +1,9 @@
 package org.megastage.client;
 
 import com.esotericsoftware.minlog.Log;
+import com.jme3.app.DebugKeysAppState;
 import com.jme3.app.SimpleApplication;
+import com.jme3.app.StatsAppState;
 import com.jme3.math.FastMath;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Node;
@@ -26,7 +28,7 @@ public class Main extends SimpleApplication {
         Log.set(Log.LEVEL_DEBUG);
 
         AppSettings settings = new AppSettings(true);
-        settings.setResolution(1024, 768);
+        settings.setResolution(320, 200);
         Main app = new Main();
         
         app.setSettings(settings);
@@ -35,9 +37,17 @@ public class Main extends SimpleApplication {
     }
     private PlanetAppState planetAppState;
     private ArtemisState artemisAppState;
+    private SpectatorCamera spectatorCam;
+    
+    public Main() {
+        super( new StatsAppState(), new DebugKeysAppState(), new SpectatorCamAppState() );
+    }
     
     @Override
     public void simpleInitApp() {
+        spectatorCam = new SpectatorCamera(cam);
+        stateManager.getState(SpectatorCamAppState.class).setCamera(spectatorCam);
+
         Node systemNode = new Node("system");
         // systemNode.setLocalTranslation(0f, 0f, -100000f);
         systemNode.addControl(new SystemControl());
@@ -50,14 +60,15 @@ public class Main extends SimpleApplication {
 
         // Add planet app state
         planetAppState = new PlanetAppState(systemNode);
+        planetAppState.setShadowsEnabled(false);
         stateManager.attach(planetAppState);
 
         // Add ECS app state
         artemisAppState = new ArtemisState();
         stateManager.attach(artemisAppState);
         
-        SpectatorModeInputManager in = new SpectatorModeInputManager(this);
-        in.init();
+        //SpectatorModeInputManager in = new SpectatorModeInputManager(this);
+        //in.init();
         
         //inputManager.addRawInputListener(new DCPURawInputListener(artemisAppState));
 
@@ -67,12 +78,12 @@ public class Main extends SimpleApplication {
     public void simpleUpdate(float tpf) {
         Globals.time = System.currentTimeMillis() + Globals.timeDiff;
 
-        Log.info("CAM" + cam.getLocation().toString());
+        Log.trace("Camera coords: " + cam.getLocation().toString());
         
         // slow camera down as we approach a planet
         Planet planet = planetAppState.getNearestPlanet();
         if (planet != null && planet.getPlanetToCamera() != null) {
-            this.getFlyByCamera().setMoveSpeed(
+            this.spectatorCam.setMoveSpeed(
                     FastMath.clamp(planet.getDistanceToCamera(), 100, 100000));
         }
     }

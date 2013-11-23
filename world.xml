@@ -7,12 +7,12 @@
         <group name="client"/>
         <!--component type="Appearance" radius_km="700000"/-->
         <entity name="Earth">
-            <component type="Mass" kg="5.972e33"/>
+            <component type="Mass" kg="5.972e32"/>
             <component type="GravityField"/>
-            <!--component type="Orbit" orbital_distance="200000"/-->
+            <component type="Orbit" orbital_distance="200000"/>
             <component type="Rotation"/>
             <component type="server.PlanetGeometry" radius="10000" generator="Earth"/>
-            <component type="FixedRotation" period_y="0.001">
+            <component type="FixedRotation" period_y="0.001"/>
             <component type="Position" x="100000" y="0" z="0"/>
             <group name="client"/>
             <entity name="Moon">
@@ -20,9 +20,9 @@
                 <component type="GravityField"/>
                 <component type="Position" x="0" y="0" z="70000"/>
                 <component type="Rotation"/>
-                <!--component type="Orbit" orbital_distance="50000"/-->
+                <component type="Orbit" orbital_distance="20000"/>
                 <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
-                <component type="FixedRotation" period_y="0.001"/>
+                <component type="FixedRotation" period_y="-0.001"/>
                 <group name="client"/>
             </entity>
         </entity>
