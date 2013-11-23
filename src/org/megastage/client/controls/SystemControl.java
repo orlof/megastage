@@ -22,7 +22,7 @@ public class SystemControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(Globals.fixedEntity == null) {
-            Log.error("No fixed entity");
+            Log.warn("No fixed entity");
             
             spatial.setLocalTranslation(Vector3f.ZERO);
             spatial.setLocalRotation(Quaternion.IDENTITY);            

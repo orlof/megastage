@@ -22,9 +22,9 @@ public class RotationControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        Log.info("============== ROTATION " + entity.toString() + "==============");
-        Log.info("Spatial is " + spatial.getName());
-        Log.info("Spatial is child of " + spatial.getParent().getName());
+        if(Log.TRACE) Log.trace("============== ROTATION " + entity.toString() + "==============");
+        if(Log.TRACE) Log.trace("Spatial is " + spatial.getName());
+        if(Log.TRACE) Log.trace("Spatial is child of " + spatial.getParent().getName());
         Rotation rotation = entity.getComponent(Rotation.class);
         if(rotation != null) {
             if(Globals.fixedEntity == entity) {
@@ -33,8 +33,8 @@ public class RotationControl extends AbstractControl {
                 Quaternion q = new Quaternion().fromAngles(0, rotation.y, 0);
                 spatial.setLocalRotation(q);
             }
-            Log.info("Local" + spatial.getLocalRotation().toString());
-            Log.info("World" + spatial.getWorldRotation().toString());
+            if(Log.TRACE) Log.trace("Local" + spatial.getLocalRotation().toString());
+            if(Log.TRACE) Log.trace("World" + spatial.getWorldRotation().toString());
         }
     }
 

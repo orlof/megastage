@@ -31,22 +31,31 @@ public class ClientOrbitalMovementSystem extends EntityProcessingSystem {
     @Override
     protected void process(Entity entity) {
         double time = Globals.time / 1000.0d;
-
+        
         Orbit orbit = ORBIT.get(entity);
+        
         Entity center = world.getEntity(orbit.center);
-        
-        Log.info(entity.toString() + " is orbiting around " + center.toString());
-        
         Mass centerMass = MASS.get(center);        
-        Vector localPosition = orbit.getLocalCoordinates(time, centerMass.mass);
+        Vector localSum = orbit.getLocalCoordinates(time, centerMass.mass);
         
-        Log.info(entity.getId() + " <- Orbit"  + localPosition.toString());
-        
+        while(!isInFixedPosition(center)) {
+            orbit = ORBIT.get(center);
+            center = world.getEntity(orbit.center);
+            centerMass = MASS.get(center);        
+            localSum = localSum.add(orbit.getLocalCoordinates(time, centerMass.mass));
+        }
+
+        Position fixedStar = POSITION.get(center);
+
         Position position = POSITION.get(entity);
-        position.x = Math.round(localPosition.x);
-        position.y = Math.round(localPosition.y);
-        position.z = Math.round(localPosition.z);
-        
-        Log.info(entity.toString() + "Updated position " + position.toString());
+        position.x = Math.round(localSum.x) + fixedStar.x;
+        position.y = fixedStar.y;
+        position.z = Math.round(localSum.z) + fixedStar.z;
+        Log.info(position.toString());
     }
+
+    private boolean isInFixedPosition(Entity center) {
+        return !ORBIT.has(center);
+    }
+
 }

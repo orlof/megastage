@@ -124,9 +124,9 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
     }
     
     public void setupPlanetLikeBody(Entity entity, PlanetGeometry data) {
-        Entity parent = cems.get(data.center);
+        //Entity parent = cems.get(data.center);
                 
-        final ClientSpatial parentSpatial = cems.getComponent(parent, ClientSpatial.class);
+        //final ClientSpatial parentSpatial = cems.getComponent(parent, ClientSpatial.class);
         
         // Add planet
         Node n = new Node(entity.toString());
@@ -136,8 +136,7 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
-                Log.info("attach to " + parentSpatial.toString());
-                parentSpatial.node.attachChild(cs.node);
+                systemNode.attachChild(cs.node);
                 app.getStateManager().getState(PlanetAppState.class).addPlanet((Planet) cs.node.getChild(0));
                 return null;
             }
