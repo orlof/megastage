@@ -13,7 +13,7 @@ import org.megastage.systems.ClientNetworkSystem;
  * Time: 20:58
  */
 public class Rotation extends EntityComponent {
-    public float x, y, z, w;
+    public double x=0.0, y=0.0, z=0.0, w=1.0;
 
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {

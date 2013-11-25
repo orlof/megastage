@@ -6,51 +6,37 @@ package org.megastage.client.controls;
 
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
-import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.util.Globals;
 
-public class SystemControl extends AbstractControl {
+public class SystemRotationControl extends AbstractControl {
     
-    public SystemControl() {
+    public SystemRotationControl() {
     }
 
     @Override
     protected void controlUpdate(float tpf) {
         if(Globals.fixedEntity == null) {
             Log.warn("No fixed entity");
-            
-            spatial.setLocalTranslation(Vector3f.ZERO);
             spatial.setLocalRotation(Quaternion.IDENTITY);            
             return;
         }
 
-        Position position = Globals.fixedEntity.getComponent(Position.class);
-        if(position == null) {
-            spatial.setLocalTranslation(Vector3f.ZERO);
-        } else {
-            spatial.setLocalTranslation(position.getAsVector().negate());
-        }
-        Log.info(Globals.fixedEntity.getId() + " <- " + spatial.getLocalTranslation().toString());
-
-        /*
         Rotation rotation = Globals.fixedEntity.getComponent(Rotation.class);
         if(rotation == null) {
-            spatial.setLocalRotation(Quaternion.ZERO);            
+            spatial.setLocalRotation(Quaternion.IDENTITY);            
         } else {
-            Quaternion q = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w).inverse();
+            Quaternion q = new Quaternion((float) rotation.x, (float) rotation.y, (float) rotation.z, (float) rotation.w).inverse();
             if(q != null) {
                 spatial.setLocalRotation(q);
             } else {
                 Log.info("Warning: setting non invertable rotation");
             }
         }
-        Log.info(Globals.fixedEntity.getId() + " <- " + spatial.getLocalRotation().toString());
-        */
+        Log.debug(Globals.fixedEntity.getId() + " <- " + spatial.getLocalRotation().toString());
     }
 
     @Override

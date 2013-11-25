@@ -11,7 +11,8 @@ import com.jme3.system.AppSettings;
 import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
-import org.megastage.client.controls.SystemControl;
+import org.megastage.client.controls.SystemPositionControl;
+import org.megastage.client.controls.SystemRotationControl;
 import org.megastage.util.Globals;
 import org.megastage.util.LogFormat;
 
@@ -45,10 +46,13 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
+        Node systemRotNode = new Node("system_rot");
+        systemRotNode.addControl(new SystemRotationControl());
+        rootNode.attachChild(systemRotNode);
+        
         Node systemNode = new Node("system");
-        // systemNode.setLocalTranslation(0f, 0f, -100000f);
-        systemNode.addControl(new SystemControl());
-        rootNode.attachChild(systemNode);
+        systemNode.addControl(new SystemPositionControl());
+        systemRotNode.attachChild(systemNode);
 
         // Add sky
         Node sceneNode = new Node("Scene");

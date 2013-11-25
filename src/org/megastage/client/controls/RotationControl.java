@@ -30,7 +30,7 @@ public class RotationControl extends AbstractControl {
             if(Globals.fixedEntity == entity) {
                 spatial.setLocalRotation(Quaternion.IDENTITY);
             } else {
-                Quaternion q = new Quaternion().fromAngles(0, rotation.y, 0);
+                Quaternion q = new Quaternion().fromAngles(0, (float) rotation.y, 0);
                 spatial.setLocalRotation(q);
             }
             if(Log.TRACE) Log.trace("Local" + spatial.getLocalRotation().toString());
