@@ -36,7 +36,7 @@ public class SpectatorCamAppState extends AbstractAppState {
         if (app.getInputManager() != null) {
         
             if (spectatorCam == null) {
-                spectatorCam = new SpectatorCamera(app.getCamera());
+                throw new RuntimeException("Camera is not initilized");
             }
             
             spectatorCam.registerWithInput(app.getInputManager());            
