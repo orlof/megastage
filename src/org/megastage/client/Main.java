@@ -28,7 +28,7 @@ public class Main extends SimpleApplication {
         Log.set(Log.LEVEL_DEBUG);
 
         AppSettings settings = new AppSettings(true);
-        settings.setResolution(320, 200);
+        settings.setResolution(640, 400);
         Main app = new Main();
         
         app.setSettings(settings);
@@ -45,9 +45,6 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
-        spectatorCam = new SpectatorCamera(cam);
-        stateManager.getState(SpectatorCamAppState.class).setCamera(spectatorCam);
-
         Node systemNode = new Node("system");
         // systemNode.setLocalTranslation(0f, 0f, -100000f);
         systemNode.addControl(new SystemControl());
@@ -67,6 +64,9 @@ public class Main extends SimpleApplication {
         artemisAppState = new ArtemisState();
         stateManager.attach(artemisAppState);
         
+        spectatorCam = new SpectatorCamera(cam, artemisAppState);
+        stateManager.getState(SpectatorCamAppState.class).setCamera(spectatorCam);
+
         //SpectatorModeInputManager in = new SpectatorModeInputManager(this);
         //in.init();
         

@@ -5,7 +5,6 @@
 package org.megastage.client;
 
 import com.esotericsoftware.minlog.Log;
-import com.jme3.collision.MotionAllowedListener;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
@@ -14,6 +13,8 @@ import com.jme3.math.Matrix3f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
+import org.megastage.components.Position;
+import org.megastage.util.Globals;
 
 /**
  * A first person view camera controller.
@@ -45,21 +46,18 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
     protected Camera cam;
     protected float rotationSpeed = 1f;
     protected float moveSpeed = 3f;
-    protected MotionAllowedListener motionAllowed = null;
     protected boolean enabled = true;
-    protected boolean invertY = false;
+    protected boolean invertY = true;
     protected InputManager inputManager;
+    private final ArtemisState artemis;
     
     /**
      * Creates a new FlyByCamera to control the given Camera object.
      * @param cam
      */
-    public SpectatorCamera(Camera cam){
+    public SpectatorCamera(Camera cam, ArtemisState artemis){
         this.cam = cam;
-    }
-
-    public void setMotionAllowedListener(MotionAllowedListener listener){
-        this.motionAllowed = listener;
+        this.artemis = artemis;
     }
 
     /**
@@ -180,7 +178,7 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
 
     protected void moveCamera(float value, boolean sideways){
         Vector3f vel = new Vector3f();
-        Vector3f pos = cam.getLocation().clone();
+        //Vector3f pos = cam.getLocation().clone();
 
         if (sideways){
             cam.getLeft(vel);
@@ -189,14 +187,12 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         }
         vel.multLocal(value * moveSpeed);
 
-        if (motionAllowed != null) {
-            motionAllowed.checkMotionAllowed(pos, vel);
-        } else {
-            
-            pos.addLocal(vel);
-        }
+        Position pos = Globals.fixedEntity.getComponent(Position.class);
+        pos.x += 1000 * vel.x;
+        pos.y += 1000 * vel.y;
+        pos.z += 1000 * vel.z;
 
-        cam.setLocation(pos);
+        //cam.setLocation(pos);
     }
 
     public void onAnalog(String name, float value, float tpf) {
