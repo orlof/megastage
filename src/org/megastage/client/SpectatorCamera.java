@@ -10,11 +10,13 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.*;
 import com.jme3.math.Matrix3f;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import org.megastage.components.Position;
+import org.megastage.components.Rotation;
 import org.megastage.util.Globals;
+import org.megastage.util.Quaternion;
+import org.megastage.util.Vector;
 
 /**
  * A first person view camera controller.
@@ -157,65 +159,123 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         inputManager.setCursorVisible(false);
     }
 
-    protected void rotateCamera(float value, Vector3f axis){
-        Matrix3f mat = new Matrix3f();
-        mat.fromAngleNormalAxis(rotationSpeed * value, axis);
+    protected void rotateCamera(float value, Vector axis) {
+        Log.info("rotate " + value + " " + axis.toString());
+        
+        Rotation r = Globals.fixedEntity.getComponent(Rotation.class);
+        Quaternion q = new Quaternion(r.w, r.x, r.y, r.z);
 
-        Vector3f up = cam.getUp();
-        Vector3f left = cam.getLeft();
-        Vector3f dir = cam.getDirection();
+        // rotate axis to global coordinate system
+        Vector globalAxis = axis.multiply(q);
 
-        mat.mult(up, up);
-        mat.mult(left, left);
-        mat.mult(dir, dir);
+        // rotation increment in global coordinate system
+        Quaternion globalRotation = new Quaternion(globalAxis, value);
 
-        Quaternion q = new Quaternion();
-        q.fromAxes(left, up, dir);
-        q.normalizeLocal();
-
-        cam.setAxes(q);
+        // quaternion for the new coordinate system
+        Quaternion res = globalRotation.multiply(q);
+        r.x = res.x;
+        r.y = res.y;
+        r.z = res.z;
+        r.w = res.w;
     }
+    
+//    protected void rotateCamera(float value, Vector3f axis) {
+//        Matrix3f mat = new Matrix3f();
+//        mat.fromAngleNormalAxis(rotationSpeed * value, axis);
+//
+//        Vector3f up = cam.getUp();
+//        Vector3f left = cam.getLeft();
+//        Vector3f dir = cam.getDirection();
+//
+//        mat.mult(up, up);
+//        mat.mult(left, left);
+//        mat.mult(dir, dir);
+//
+//        Quaternion q = new Quaternion();
+//        q.fromAxes(left, up, dir);
+//        q.normalizeLocal();
+//
+//        cam.setAxes(q);
+//    }
 
-    protected void moveCamera(float value, boolean sideways){
-        Vector3f vel = new Vector3f();
-        //Vector3f pos = cam.getLocation().clone();
+    protected void moveCamera(float value, boolean sideways) {
+        Rotation r = Globals.fixedEntity.getComponent(Rotation.class);
+        Quaternion q = new Quaternion(r.w, r.x, r.y, r.z);
 
-        if (sideways){
-            cam.getLeft(vel);
-        }else{
-            cam.getDirection(vel);
-        }
-        vel.multLocal(value * moveSpeed);
-
+        Vector fwd = new Vector(0.0, 0.0, -1.0);
+        Vector myFwd = fwd.multiply(q);
+        
+        Vector vel = myFwd.multiply(value * moveSpeed);
+        
         Position pos = Globals.fixedEntity.getComponent(Position.class);
         pos.x += 1000 * vel.x;
         pos.y += 1000 * vel.y;
         pos.z += 1000 * vel.z;
-
-        //cam.setLocation(pos);
     }
+    
+//    protected void moveCamera(float value, boolean sideways) {
+//        Vector3f vel = new Vector3f();
+//        //Vector3f pos = cam.getLocation().clone();
+//
+//        if (sideways){
+//            cam.getLeft(vel);
+//        }else{
+//            cam.getDirection(vel);
+//        }
+//        vel.multLocal(value * moveSpeed);
+//
+//        Position pos = Globals.fixedEntity.getComponent(Position.class);
+//        pos.x += 1000 * vel.x;
+//        pos.y += 1000 * vel.y;
+//        pos.z += 1000 * vel.z;
+//
+//        //cam.setLocation(pos);
+//    }
 
+    private static final Vector VECTOR_UP = new Vector(0.0, 1.0, 0.0);
+    private static final Vector VECTOR_LEFT = new Vector(1.0, 0.0, 0.0);
+    private static final Vector VECTOR_FORWARD = new Vector(0.0, 0.0, -1.0);
+    
     public void onAnalog(String name, float value, float tpf) {
         if (!enabled)
             return;
 
         if (name.equals("SPECCAM_Left")) {
-            rotateCamera(value, cam.getUp());
+            rotateCamera(value, VECTOR_UP);
+            //rotateCamera(value, cam.getUp());
         }else if (name.equals("SPECCAM_Right")) {
-            rotateCamera(-value, cam.getUp());
+            rotateCamera(-value, VECTOR_UP);
         }else if (name.equals("SPECCAM_Up")) {
-            rotateCamera(-value * (invertY ? -1 : 1), cam.getLeft());
+            rotateCamera(-value * (invertY ? -1 : 1), VECTOR_LEFT);
         }else if (name.equals("SPECCAM_Down")){
-            rotateCamera(value * (invertY ? -1 : 1), cam.getLeft());
+            rotateCamera(value * (invertY ? -1 : 1), VECTOR_LEFT);
         }else if (name.equals("SPECCAM_RollLeft")) {
-            rotateCamera(value, cam.getDirection());
+            rotateCamera(value, VECTOR_FORWARD);
         }else if (name.equals("SPECCAM_RollRight")){
-            rotateCamera(-value, cam.getDirection());
+            rotateCamera(-value, VECTOR_FORWARD);
         }else if (name.equals("SPECCAM_Forward")){
             moveCamera(value, false);
         }else if (name.equals("SPECCAM_Backward")){
             moveCamera(-value, false);
         }
+
+//        if (name.equals("SPECCAM_Left")) {
+//            rotateCamera(value, cam.getUp());
+//        }else if (name.equals("SPECCAM_Right")) {
+//            rotateCamera(-value, cam.getUp());
+//        }else if (name.equals("SPECCAM_Up")) {
+//            rotateCamera(-value * (invertY ? -1 : 1), cam.getLeft());
+//        }else if (name.equals("SPECCAM_Down")){
+//            rotateCamera(value * (invertY ? -1 : 1), cam.getLeft());
+//        }else if (name.equals("SPECCAM_RollLeft")) {
+//            rotateCamera(value, cam.getDirection());
+//        }else if (name.equals("SPECCAM_RollRight")){
+//            rotateCamera(-value, cam.getDirection());
+//        }else if (name.equals("SPECCAM_Forward")){
+//            moveCamera(value, false);
+//        }else if (name.equals("SPECCAM_Backward")){
+//            moveCamera(-value, false);
+//        }
     }
 
     public void onAction(String name, boolean value, float tpf) {

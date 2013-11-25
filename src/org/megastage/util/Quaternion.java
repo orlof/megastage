@@ -16,7 +16,7 @@ package org.megastage.util;
  *************************************************************************/
 
 public class Quaternion {
-    final double w, x, y, z;
+    public final double w, x, y, z;
 
     public Quaternion() {
         this.w = 1.0d;
@@ -110,5 +110,11 @@ public class Quaternion {
     public Quaternion divide(Quaternion b) {
         Quaternion a = this;
         return a.inverse().multiply(b);
+    }
+    
+    public Quaternion localRotation(Vector axis, double radians_angle) {
+        Vector globalAxis = axis.multiply(this);
+        Quaternion rotation = new Quaternion(globalAxis, radians_angle);
+        return rotation.multiply(this);
     }
 }
