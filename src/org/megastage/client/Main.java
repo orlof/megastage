@@ -92,21 +92,6 @@ public class Main extends SimpleApplication {
 
         CubesTestAssets.registerBlocks();
  
-        //This is your terrain, it contains the whole
-        //block world and offers methods to modify it
-        BlockTerrainControl blockTerrain = new BlockTerrainControl(CubesTestAssets.getSettings(this), new Vector3Int(10, 1, 10));
- 
-        //To set a block, just specify the location and the block object
-        //(Existing blocks will be replaced)
-        blockTerrain.setBlockArea(new Vector3Int(0,0,0), new Vector3Int(10,1,10), Block_Wood.class);
-        
-        //The terrain is a jME-Control, you can add it
-        //to a node of the scenegraph to display it
-        Node terrainNode = new Node();
-        terrainNode.addControl(blockTerrain);
-        terrainNode.setLocalTranslation(-15, -5, -15);
-        terrainNode.setShadowMode(ShadowMode.CastAndReceive);
-        rootNode.attachChild(terrainNode);
  
     }
 
