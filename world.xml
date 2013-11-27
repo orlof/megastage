@@ -7,7 +7,7 @@
         <group name="client"/>
         <!--component type="Appearance" radius_km="700000"/-->
         <entity name="Earth">
-            <component type="Mass" kg="5.972e32"/>
+            <component type="Mass" kg="5.972e25"/>
             <component type="GravityField"/>
             <component type="Orbit" orbital_distance="200000"/>
             <component type="Rotation"/>
@@ -80,6 +80,13 @@
                 <group name="client"/>
             </entity>
         </entity-->
+    </entity>
+
+    <entity name="Borg Ship">
+        <component type="Position" x="0" y="0" z="100000"/>
+        <component type="Rotation"/>
+        <component type="server.ShipGeometry" hull="cube" size="10"/>
+        <group name="client"/>
     </entity>
 
     <entity-template name="Apollo 13">

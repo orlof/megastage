@@ -12,6 +12,7 @@ import org.megastage.components.FixedRotation;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.components.server.PlanetGeometry;
+import org.megastage.components.server.ShipGeometry;
 import org.megastage.components.server.SunGeometry;
 import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.Globals;
@@ -42,6 +43,7 @@ public class Network {
         kryo.register(Rotation.class);
         kryo.register(PlanetGeometry.class);
         kryo.register(SunGeometry.class);
+        kryo.register(ShipGeometry.class);
     }
 
     static public abstract class EventMessage implements Message {

@@ -36,7 +36,7 @@ public class SystemRotationControl extends AbstractControl {
                 Log.info("Warning: setting non invertable rotation");
             }
         }
-        Log.debug(Globals.fixedEntity.getId() + " <- " + spatial.getLocalRotation().toString());
+        //Log.debug(Globals.fixedEntity.getId() + " <- " + spatial.getLocalRotation().toString());
     }
 
     @Override

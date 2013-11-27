@@ -6,12 +6,17 @@ package org.megastage.systems;
 
 import com.artemis.Entity;
 import com.artemis.systems.VoidEntitySystem;
+import com.cubes.BlockTerrainControl;
+import com.cubes.Vector3Int;
+import com.cubes.test.CubesTestAssets;
+import com.cubes.test.blocks.Block_Wood;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.LightNode;
 import com.jme3.scene.Node;
@@ -33,6 +38,7 @@ import org.megastage.components.client.ClientRaster;
 import org.megastage.components.client.ClientSpatial;
 import org.megastage.components.server.MonitorGeometry;
 import org.megastage.components.server.PlanetGeometry;
+import org.megastage.components.server.ShipGeometry;
 import org.megastage.components.server.SunGeometry;
 
 /**
@@ -148,6 +154,35 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         
     }
     
+    public void setupShip(Entity entity, ShipGeometry data) {
+        Vector3Int size = new Vector3Int(data.size, data.size, data.size);
+        
+        //This is your ship, it is a whole /block world and offers methods to modify it
+        //for simplicity all ships are rendered as floor plate only
+        BlockTerrainControl shipBlockControl = new BlockTerrainControl(CubesTestAssets.getSettings(app), size);
+ 
+        shipBlockControl.setBlockArea(new Vector3Int(0,0,0), size, Block_Wood.class);
+        
+        Node shipNode = new Node(entity.toString());
+        shipNode.addControl(shipBlockControl);
+        shipNode.setLocalTranslation(
+                -(int) (1.5 * size.getX()),
+                -(int) (1.5 * size.getY()),
+                -(int) (1.5 * size.getZ()));
+        shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
+
+        final ClientSpatial cs = addSpatialComponent(entity, shipNode);
+
+        app.enqueue(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX " + cs.toString());
+                systemNode.attachChild(cs.node);
+                return null;
+            }
+        });
+     }
+
     public void setupMonitor(Entity entity, MonitorGeometry data) {
         Log.info("setupMonitor");
 
@@ -175,4 +210,5 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
     @Override
     protected void processSystem() {
     }
+
 }
