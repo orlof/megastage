@@ -160,9 +160,12 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
     }
 
     protected void rotateCamera(float value, Vector axis) {
+        if(Globals.fixedEntity == null) return;
         Log.info("rotate " + value + " " + axis.toString());
         
         Rotation r = Globals.fixedEntity.getComponent(Rotation.class);
+        if(r == null) return;
+
         Quaternion q = new Quaternion(r.w, r.x, r.y, r.z);
 
         // rotate axis to global coordinate system
@@ -199,11 +202,14 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
 //    }
 
     protected void moveCamera(float value, boolean sideways) {
+        if(Globals.fixedEntity == null) return;
+
         Rotation r = Globals.fixedEntity.getComponent(Rotation.class);
+        if(r == null) return;
+
         Quaternion q = new Quaternion(r.w, r.x, r.y, r.z);
 
-        Vector fwd = new Vector(0.0, 0.0, -1.0);
-        Vector myFwd = fwd.multiply(q);
+        Vector myFwd = VECTOR_FORWARD.multiply(q);
         
         Vector vel = myFwd.multiply(value * moveSpeed);
         
@@ -258,24 +264,6 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         }else if (name.equals("SPECCAM_Backward")){
             moveCamera(-value, false);
         }
-
-//        if (name.equals("SPECCAM_Left")) {
-//            rotateCamera(value, cam.getUp());
-//        }else if (name.equals("SPECCAM_Right")) {
-//            rotateCamera(-value, cam.getUp());
-//        }else if (name.equals("SPECCAM_Up")) {
-//            rotateCamera(-value * (invertY ? -1 : 1), cam.getLeft());
-//        }else if (name.equals("SPECCAM_Down")){
-//            rotateCamera(value * (invertY ? -1 : 1), cam.getLeft());
-//        }else if (name.equals("SPECCAM_RollLeft")) {
-//            rotateCamera(value, cam.getDirection());
-//        }else if (name.equals("SPECCAM_RollRight")){
-//            rotateCamera(-value, cam.getDirection());
-//        }else if (name.equals("SPECCAM_Forward")){
-//            moveCamera(value, false);
-//        }else if (name.equals("SPECCAM_Backward")){
-//            moveCamera(-value, false);
-//        }
     }
 
     public void onAction(String name, boolean value, float tpf) {

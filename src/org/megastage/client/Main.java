@@ -1,11 +1,22 @@
 package org.megastage.client;
 
+import com.cubes.BlockTerrainControl;
+import com.cubes.CubesSettings;
+import com.cubes.Vector3Int;
+import com.cubes.test.CubesTestAssets;
+import com.cubes.test.blocks.Block_Brick;
+import com.cubes.test.blocks.Block_Grass;
+import com.cubes.test.blocks.Block_Stone;
+import com.cubes.test.blocks.Block_Wood;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.DebugKeysAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.StatsAppState;
+import com.jme3.material.RenderState;
 import com.jme3.math.FastMath;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
 import jmeplanet.Planet;
@@ -36,6 +47,7 @@ public class Main extends SimpleApplication {
         app.showSettings = false;
         app.start();
     }
+
     private PlanetAppState planetAppState;
     private ArtemisState artemisAppState;
     private SpectatorCamera spectatorCam;
@@ -46,6 +58,8 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
+        cam.setLocation(new Vector3f(0, 0, 0));
+
         Node systemRotNode = new Node("system_rot");
         systemRotNode.addControl(new SystemRotationControl());
         rootNode.attachChild(systemRotNode);
@@ -57,7 +71,7 @@ public class Main extends SimpleApplication {
         // Add sky
         Node sceneNode = new Node("Scene");
         sceneNode.attachChild(Utility.createSkyBox(assetManager, "Textures/blue-glow-1024.dds"));
-        systemNode.attachChild(sceneNode);
+        systemRotNode.attachChild(sceneNode);
 
         // Add planet app state
         planetAppState = new PlanetAppState(systemNode);
@@ -76,6 +90,24 @@ public class Main extends SimpleApplication {
         
         //inputManager.addRawInputListener(new DCPURawInputListener(artemisAppState));
 
+        CubesTestAssets.registerBlocks();
+ 
+        //This is your terrain, it contains the whole
+        //block world and offers methods to modify it
+        BlockTerrainControl blockTerrain = new BlockTerrainControl(CubesTestAssets.getSettings(this), new Vector3Int(10, 1, 10));
+ 
+        //To set a block, just specify the location and the block object
+        //(Existing blocks will be replaced)
+        blockTerrain.setBlockArea(new Vector3Int(0,0,0), new Vector3Int(10,1,10), Block_Wood.class);
+        
+        //The terrain is a jME-Control, you can add it
+        //to a node of the scenegraph to display it
+        Node terrainNode = new Node();
+        terrainNode.addControl(blockTerrain);
+        terrainNode.setLocalTranslation(-15, -5, -15);
+        terrainNode.setShadowMode(ShadowMode.CastAndReceive);
+        rootNode.attachChild(terrainNode);
+ 
     }
 
     @Override

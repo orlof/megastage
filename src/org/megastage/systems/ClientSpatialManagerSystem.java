@@ -97,9 +97,12 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         
                 LightNode lightNode = new LightNode(entity.toString() + " Sun Light", light);
                 cs.node.attachChild(lightNode);
-                
+
                 systemNode.attachChild(cs.node);
-                app.getStateManager().getState(PlanetAppState.class).addShadow(light);
+
+                PlanetAppState appState = app.getStateManager().getState(PlanetAppState.class);
+                if(appState != null) appState.addShadow(light);
+                
                 return null;
             }
         };
@@ -137,7 +140,8 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
             @Override
             public Object call() throws Exception {
                 systemNode.attachChild(cs.node);
-                app.getStateManager().getState(PlanetAppState.class).addPlanet((Planet) cs.node.getChild(0));
+                PlanetAppState appState = app.getStateManager().getState(PlanetAppState.class);
+                if(appState != null) appState.addPlanet((Planet) cs.node.getChild(0));
                 return null;
             }
         });
