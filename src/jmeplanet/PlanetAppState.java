@@ -22,6 +22,7 @@ THE SOFTWARE.
 package jmeplanet;
 
 import com.jme3.app.Application;
+import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.light.DirectionalLight;
@@ -85,26 +86,33 @@ public class PlanetAppState extends AbstractAppState {
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
-        
         this.app = app;
+        
+        // Init 1st viewport (far)
         farViewPort = app.getViewPort();
         farCam = app.getCamera();
-        
+
+        // Init 2nd viewport (near)
         nearCam = this.farCam.clone();
-        nearCam.setFrustumPerspective(45f, (float)nearCam.getWidth()/nearCam.getHeight(), 1f, 310f);
-        farCam.setFrustumPerspective(45f, (float)farCam.getWidth()/farCam.getHeight(), 300f, 1e7f);
+
+        float aspect = (float) farCam.getWidth() / farCam.getHeight();
+        nearCam.setFrustumPerspective(45f, aspect, 1, 310);
+        //nearCam.setFrustumPerspective(45f, aspect, 1f, 1e7f);
+        farCam.setFrustumPerspective(45f, aspect, 300, 1e7f);
+//        farCam.setFrustumPerspective(45f, aspect, 1f, 1e7f);
         
-        nearCam.setViewPort(0f, 1f, 0.0f, 1.0f);
+        nearCam.setViewPort(0f, 1f, 0f, 1f);
         nearViewPort = this.app.getRenderManager().createMainView("NearView", nearCam);
         nearViewPort.setBackgroundColor(ColorRGBA.BlackNoAlpha);
         nearViewPort.setClearFlags(false, true, true);
-        nearViewPort.attachScene(this.scene);
+        nearViewPort.attachScene(((SimpleApplication) app).getRootNode());
+        //nearViewPort.attachScene(scene);
         
         nearFilter=new FilterPostProcessor(app.getAssetManager());
         nearViewPort.addProcessor(nearFilter);
                
         nearFog = new FogFilter();
-        //nearFilter.addFilter(nearFog);
+        nearFilter.addFilter(nearFog);
 
         farFilter=new FilterPostProcessor(app.getAssetManager());
         farViewPort.addProcessor(farFilter);
@@ -121,7 +129,7 @@ public class PlanetAppState extends AbstractAppState {
         farFilter.addFilter(farBloom);
 
         if(sun != null) {
-            addShadow(sun);
+            //addShadow(sun);
         }
     }
 
@@ -137,7 +145,7 @@ public class PlanetAppState extends AbstractAppState {
         shadowRenderers.add(sr);
 
         if (shadowsEnabled) { 
-            nearViewPort.addProcessor(sr);
+//            nearViewPort.addProcessor(sr);
         }
     }
     
@@ -171,6 +179,8 @@ public class PlanetAppState extends AbstractAppState {
         
         nearCam.setLocation(farCam.getLocation());
         nearCam.setRotation(farCam.getRotation());
+        
+//        System.out.println(nearCam.getLocation());
         
         this.nearestPlanet = findNearestPlanet();
         
