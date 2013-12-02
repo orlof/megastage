@@ -9,6 +9,7 @@ import org.jdom2.Element;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.components.client.ClientSpatial;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector;
 
@@ -44,7 +45,7 @@ public class Position extends EntityComponent {
     }
     
     public Vector3f getAsVector() {
-        return new Vector3f((float) (x / Globals.scale), (float) (y / Globals.scale), (float) (z / Globals.scale));
+        return new Vector3f((float) (x / ClientGlobals.scale), (float) (y / ClientGlobals.scale), (float) (z / ClientGlobals.scale));
     }
     
     public String toString() {

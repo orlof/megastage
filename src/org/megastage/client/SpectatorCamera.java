@@ -9,14 +9,13 @@ import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.*;
-import com.jme3.math.Matrix3f;
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
-import org.megastage.util.Globals;
+import org.megastage.util.ClientGlobals;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector;
+
 
 /**
  * A first person view camera controller.
@@ -49,7 +48,7 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
     protected float rotationSpeed = 1f;
     protected float moveSpeed = 3f;
     protected boolean enabled = true;
-    protected boolean invertY = true;
+    protected boolean invertY = false;
     protected InputManager inputManager;
     private final ArtemisState artemis;
     
@@ -159,23 +158,56 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         inputManager.setCursorVisible(false);
     }
 
+//    protected void rotateCamera(float value, Vector3f axis) {
+//        if(ClientGlobals.fixedEntity == null) return;
+//        Log.debug("rotate " + value + " " + axis.toString());
+//        
+//        Rotation r = ClientGlobals.fixedEntity.getComponent(Rotation.class);
+//        if(r == null) return;
+//
+//        Quaternion q = new Quaternion((float) r.x, (float) r.y, (float) r.z, (float) r.w);
+//        Vector3f up = q.mult(Vector3f.UNIT_Y);
+//        Vector3f left = q.mult(Vector3f.UNIT_X);
+//        Vector3f dir = q.mult(Vector3f.UNIT_Z.negate());
+//
+//        value = -value;
+//
+//        Matrix3f mat = new Matrix3f();
+//        mat.fromAngleNormalAxis(value, axis);
+//
+//        mat.mult(up, up);
+//        mat.mult(left, left);
+//        mat.mult(dir, dir);
+//
+//        Quaternion res = new Quaternion();
+//        q.fromAxes(left, up, dir);
+//        q.normalizeLocal();
+//
+//        r.x = res.getX();
+//        r.y = res.getY();
+//        r.z = res.getZ();
+//        r.w = res.getW();
+//    }
+
     protected void rotateCamera(float value, Vector axis) {
-        if(Globals.fixedEntity == null) return;
-        Log.info("rotate " + value + " " + axis.toString());
+        if(ClientGlobals.fixedEntity == null) return;
+        Log.debug("rotate " + value + " " + axis.toString());
         
-        Rotation r = Globals.fixedEntity.getComponent(Rotation.class);
+        Rotation r = ClientGlobals.fixedEntity.getComponent(Rotation.class);
         if(r == null) return;
 
-        Quaternion q = new Quaternion(r.w, r.x, r.y, r.z);
+        Quaternion fixedEntityRotation = new Quaternion(r.w, r.x, r.y, r.z);
 
-        // rotate axis to global coordinate system
-        Vector globalAxis = axis.multiply(q);
+        // rotate rotation axis by fixedEntity rotation
+        Vector fixedEntityAxis = axis.multiply(fixedEntityRotation);
+        //Log.info("axis  " + axis.toString());
+        //Log.info("faxis " + fixedEntityAxis.toString());
 
         // rotation increment in global coordinate system
-        Quaternion globalRotation = new Quaternion(globalAxis, value);
+        Quaternion globalRotation = new Quaternion(fixedEntityAxis, value);
 
         // quaternion for the new coordinate system
-        Quaternion res = globalRotation.multiply(q);
+        Quaternion res = globalRotation.multiply(fixedEntityRotation).normalize();
         r.x = res.x;
         r.y = res.y;
         r.z = res.z;
@@ -202,9 +234,9 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
 //    }
 
     protected void moveCamera(float value, boolean sideways) {
-        if(Globals.fixedEntity == null) return;
+        if(ClientGlobals.fixedEntity == null) return;
 
-        Rotation r = Globals.fixedEntity.getComponent(Rotation.class);
+        Rotation r = ClientGlobals.fixedEntity.getComponent(Rotation.class);
         if(r == null) return;
 
         Quaternion q = new Quaternion(r.w, r.x, r.y, r.z);
@@ -213,7 +245,7 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         
         Vector vel = myFwd.multiply(value * moveSpeed);
         
-        Position pos = Globals.fixedEntity.getComponent(Position.class);
+        Position pos = ClientGlobals.fixedEntity.getComponent(Position.class);
         pos.x += 1000 * vel.x;
         pos.y += 1000 * vel.y;
         pos.z += 1000 * vel.z;
@@ -239,7 +271,7 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
 //    }
 
     private static final Vector VECTOR_UP = new Vector(0.0, 1.0, 0.0);
-    private static final Vector VECTOR_LEFT = new Vector(1.0, 0.0, 0.0);
+    private static final Vector VECTOR_RIGHT = new Vector(1.0, 0.0, 0.0);
     private static final Vector VECTOR_FORWARD = new Vector(0.0, 0.0, -1.0);
     
     public void onAnalog(String name, float value, float tpf) {
@@ -252,13 +284,13 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         }else if (name.equals("SPECCAM_Right")) {
             rotateCamera(-value, VECTOR_UP);
         }else if (name.equals("SPECCAM_Up")) {
-            rotateCamera(-value * (invertY ? -1 : 1), VECTOR_LEFT);
+            rotateCamera(value * (invertY ? -1 : 1), VECTOR_RIGHT);
         }else if (name.equals("SPECCAM_Down")){
-            rotateCamera(value * (invertY ? -1 : 1), VECTOR_LEFT);
+            rotateCamera(-value * (invertY ? -1 : 1), VECTOR_RIGHT);
         }else if (name.equals("SPECCAM_RollLeft")) {
-            rotateCamera(value, VECTOR_FORWARD);
-        }else if (name.equals("SPECCAM_RollRight")){
             rotateCamera(-value, VECTOR_FORWARD);
+        }else if (name.equals("SPECCAM_RollRight")){
+            rotateCamera(value, VECTOR_FORWARD);
         }else if (name.equals("SPECCAM_Forward")){
             moveCamera(value, false);
         }else if (name.equals("SPECCAM_Backward")){

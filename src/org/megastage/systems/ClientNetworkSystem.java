@@ -31,7 +31,7 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         kryoThread.start();
 
         try {
-            client.connect(5000, Globals.serverHost, Globals.serverPort, Globals.serverPort+1);
+            client.connect(5000, Network.serverHost, Network.serverPort, Network.serverPort+1);
         } catch (IOException e) {
             e.printStackTrace();
         }
