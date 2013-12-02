@@ -50,7 +50,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         server.addListener(new ServerNetworkListener());
 
         try {
-            server.bind(Globals.serverPort, Globals.serverPort + 1);
+            server.bind(Network.serverPort, Network.serverPort + 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,6 +68,10 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     }
 
     private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
+        BindTo bindTo = connection.player.getComponent(BindTo.class);
+        if(bindTo != null) {
+            world.deleteEntity(bindTo.ship);
+        }
         world.deleteEntity(connection.player);
         connection.close();
     }

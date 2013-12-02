@@ -27,6 +27,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Node;
+import org.megastage.util.ClientGlobals;
 
 /**
  * Quad
@@ -50,7 +51,7 @@ public class Planet extends Node {
     protected HeightDataSource dataSource;
     // Number of planer quads per patch. This value directly controls the 
     // complexity of the geometry generated.
-    protected int quads = 32;
+    protected int quads = ClientGlobals.gfxQuality.PLANET_PLANAR_QUADS_PER_PATCH;
     // Minimal depth for spliting. The planet will start at this depth
     // no matter the distance from camera
     protected int minDepth = 1;

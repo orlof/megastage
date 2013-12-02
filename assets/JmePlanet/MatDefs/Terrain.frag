@@ -57,7 +57,7 @@ vec4 generateTerrainColor(float height) {
     vec4 color;
     color = vec4(0.0,0.0,0.0,1.0);
 
-    float slope = 1 - clamp(dot(normalize(vNormal), normalize(m_PatchCenter + positionObjectSpace.xyz)), 0.0, 1.0);
+    float slope = 1.0 - clamp(dot(normalize(vNormal), normalize(m_PatchCenter + positionObjectSpace.xyz)), 0.0, 1.0);
 
     float regionMin = 0.0;
     float regionMax = 0.0;

@@ -11,6 +11,7 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Rotation;
+import org.megastage.util.ClientGlobals;
 import org.megastage.util.Globals;
 
 public class RotationControl extends AbstractControl {
@@ -27,7 +28,7 @@ public class RotationControl extends AbstractControl {
         if(Log.TRACE) Log.trace("Spatial is child of " + spatial.getParent().getName());
         Rotation rotation = entity.getComponent(Rotation.class);
         if(rotation != null) {
-            if(Globals.fixedEntity == entity) {
+            if(ClientGlobals.fixedEntity == entity) {
                 spatial.setLocalRotation(Quaternion.IDENTITY);
             } else {
                 Quaternion q = new Quaternion().fromAngles(0, (float) rotation.y, 0);

@@ -15,6 +15,7 @@ import org.megastage.components.server.PlanetGeometry;
 import org.megastage.components.server.ShipGeometry;
 import org.megastage.components.server.SunGeometry;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 import org.megastage.util.Globals;
 
 /**
@@ -25,6 +26,13 @@ import org.megastage.util.Globals;
  * To change this template use File | Settings | File Templates.
  */
 public class Network {
+    public static String networkInterface = "localhost";
+
+    public static String serverHost = "localhost";
+    public static int serverPort = 12358;
+
+    public static int clientPort = 0;
+
     static public void register(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
 
@@ -62,7 +70,8 @@ public class Network {
         }
 
         public void receive(ClientNetworkSystem system, Connection pc) {
-            Globals.fixedEntity = system.cems.get(id);
+            Entity entity = system.cems.get(id);
+            system.csms.changeFixedEntity(entity);
         }
         
         public String toString() {
@@ -110,7 +119,7 @@ public class Network {
 
         @Override
         public void receive(ClientNetworkSystem system, Connection pc) {
-            Globals.timeDiff = time - System.currentTimeMillis();
+            ClientGlobals.timeDiff = time - System.currentTimeMillis();
         }
     }
 }
