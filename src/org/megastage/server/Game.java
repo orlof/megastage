@@ -36,8 +36,8 @@ public class Game {
 
         //world.setSystem(new ShipMovementSystem());
 
-        //world.setSystem(new DCPUSystem());
-        //world.setSystem(new VirtualMonitorSenderSystem());
+        world.setSystem(new DCPUSystem());
+        world.setSystem(new VirtualMonitorSenderSystem());
 
         world.initialize();
 

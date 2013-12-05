@@ -86,10 +86,10 @@ public class Main extends SimpleApplication {
         
         //inputManager.addRawInputListener(new DCPURawInputListener(artemisAppState));
 
-        CubesTestAssets.registerBlocks();
         ClientGlobals.cubesSettings = new CubesSettings(this);
         ClientGlobals.cubesSettings.setBlockMaterial(CubesTestAssets.getSettings(this).getBlockMaterial());
         ClientGlobals.cubesSettings.setBlockSize(2);
+        CubesTestAssets.registerBlocks();
      }
 
     @Override

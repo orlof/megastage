@@ -11,6 +11,7 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import org.megastage.systems.ClientFixedRotationSystem;
+import org.megastage.systems.ClientMonitorRenderSystem;
 import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.systems.ClientOrbitalMovementSystem;
 import org.megastage.systems.ClientSpatialManagerSystem;
@@ -31,7 +32,7 @@ public class ArtemisState extends AbstractAppState {
         world.setSystem(new ClientEntityManagerSystem(), true);
         //world.setSystem(new ClientKeyboardSystem());
         
-        //world.setSystem(new ClientMonitorRenderSystem());
+        world.setSystem(new ClientMonitorRenderSystem());
         world.setSystem(new OrbitalMovementSystem());
         world.setSystem(new ClientFixedRotationSystem());
 

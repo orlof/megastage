@@ -5,9 +5,7 @@
 package org.megastage.components;
 
 import com.artemis.Entity;
-import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
-import org.jdom2.Element;
 import org.megastage.components.client.ClientVideoMemory;
 import org.megastage.components.dcpu.LEMUtil;
 import org.megastage.systems.ClientNetworkSystem;

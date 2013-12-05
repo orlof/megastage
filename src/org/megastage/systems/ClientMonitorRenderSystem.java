@@ -9,6 +9,7 @@ import com.esotericsoftware.minlog.Log;
 import com.jme3.math.ColorRGBA;
 import org.megastage.components.client.ClientRaster;
 import org.megastage.components.client.ClientVideoMemory;
+import org.megastage.util.ClientGlobals;
 
 public class ClientMonitorRenderSystem extends EntityProcessingSystem {
     @Mapper ComponentMapper<ClientVideoMemory> videoMemoryMapper;
@@ -22,8 +23,12 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
     protected void process(Entity entity) {
         ClientVideoMemory videoMemory = videoMemoryMapper.get(entity);
 
-        long time = System.currentTimeMillis() / 16L;
-        boolean blink = time / 20L % 2L == 0L;
+        boolean blink = true;
+        
+        if(ClientGlobals.gfxQuality.ENABLE_LEM_BLINKING) {
+            long time = System.currentTimeMillis() / 16L;
+            blink = time / 20L % 2L == 0L;
+        }
         
         if(videoMemory.isDirty || blink != videoMemory.blink) {
             videoMemory.isDirty = false;
@@ -65,6 +70,7 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
                             //TODO optimize
                             ColorRGBA c = new ColorRGBA();
                             c.fromIntARGB(bit);
+                            //c.fromIntARGB(0x33555555);
                             rasterComponent.raster.setPixel(col*4+x, row*8+y, c);
                         }
                     }

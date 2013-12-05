@@ -1,6 +1,7 @@
 package org.megastage.components.client;
 
 import com.artemis.Component;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.MonitorData;
 
 /**
@@ -41,9 +42,12 @@ public class ClientVideoMemory extends Component {
         isDirty = true;
     }
 
-
     public void update(MonitorData data) {
-        updateVideo(data.video.mem);
+        Log.debug("video   [" + ((int) data.videoAddr) + "] " + data.video.toString());
+        Log.debug("font    [" + ((int) data.fontAddr) + "] " + data.font.toString());
+        Log.debug("palette [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
+
+        updateVideo(data.videoAddr == 0 ? null: data.video.mem);
         updateFont(data.font.mem);
         updatePalette(data.palette.mem);
 

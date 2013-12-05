@@ -30,8 +30,7 @@ public class PositionControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(Log.TRACE) Log.trace("============== POSITION " + entity.toString() + "==============");
-        if(Log.TRACE) Log.trace("Spatial is " + spatial.getName());
-        if(Log.TRACE) Log.trace("Spatial is child of " + spatial.getParent().getName());
+        if(Log.TRACE) Log.trace("Parent: " + spatial.getParent().getName());
         Position position = entity.getComponent(Position.class);
         if(position != null) {
             if(ClientGlobals.fixedEntity == entity) {
@@ -39,11 +38,10 @@ public class PositionControl extends AbstractControl {
             } else {
                 Vector3f vpos = position.getAsVector();
                 spatial.setLocalTranslation(vpos);
-            }
-            
-            if(Log.TRACE) Log.trace("Local" + spatial.getLocalTranslation().toString());
-            if(Log.TRACE) Log.trace("World" + spatial.getWorldTranslation().toString());            
+            }            
         }
+        if(Log.TRACE) Log.trace("Local" + spatial.getLocalTranslation().toString());
+        if(Log.TRACE) Log.trace("World" + spatial.getWorldTranslation().toString());            
     }
 
     @Override

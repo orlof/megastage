@@ -70,7 +70,8 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
         BindTo bindTo = connection.player.getComponent(BindTo.class);
         if(bindTo != null) {
-            world.deleteEntity(bindTo.ship);
+            Entity e = world.getEntity(bindTo.entityID);
+            world.deleteEntity(e);
         }
         world.deleteEntity(connection.player);
         connection.close();
@@ -83,7 +84,10 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         Entity ship = world.getManager(TemplateManager.class).create("Apollo 13");
         ship.addToWorld();
         
-        connection.player.addComponent(new BindTo(ship));
+        BindTo bind = new BindTo();
+        bind.entityID = ship.getId();
+        
+        connection.player.addComponent(bind);
 
         connection.sendTCP(new Network.LoginResponse(ship.getId()));
 

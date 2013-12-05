@@ -30,8 +30,9 @@ public class ClientGlobals {
         public static int SPHERE_RADIAL_SAMPLES = 32;
         public static int PLANET_PLANAR_QUADS_PER_PATCH = 32;
         public static boolean PLANET_SHADOWS_ENABLED = true;
-        public static int SCREEN_WIDTH = 1024;
-        public static int SCREEN_HEIGHT = 768;
+        public static int SCREEN_WIDTH = 800;
+        public static int SCREEN_HEIGHT = 600;
+        public static boolean ENABLE_LEM_BLINKING = true;
     }
     
     public static class GFXLowQuality extends GFXQuality {
@@ -41,6 +42,7 @@ public class ClientGlobals {
         public static boolean Z4 = PLANET_SHADOWS_ENABLED = false;
         public static int Z5 = SCREEN_WIDTH = 320;
         public static int Z6 = SCREEN_HEIGHT = 200;
+        public static boolean Z7 = ENABLE_LEM_BLINKING = false;
     }
     
 }

@@ -17,20 +17,18 @@ import org.megastage.systems.ClientNetworkSystem;
  *
  * @author Teppo
  */
-public class ShipGeometry extends EntityComponent {
-    public String hull;
+public class VoidGeometry extends EntityComponent {
 
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {
-        hull = getStringValue(element, "hull", "cube");
     }
 
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        system.csms.setupShip(entity, this);
+        system.csms.setupNode(entity, this);
     }
     
     public String toString() {
-        return "ShipGeometry(hull='" + hull + "')";
+        return "VoidGeometry()";
     }
 }

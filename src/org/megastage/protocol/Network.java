@@ -11,12 +11,16 @@ import org.megastage.components.Orbit;
 import org.megastage.components.FixedRotation;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
+import org.megastage.components.server.BindTo;
+import org.megastage.components.server.MonitorGeometry;
 import org.megastage.components.server.PlanetGeometry;
 import org.megastage.components.server.ShipGeometry;
 import org.megastage.components.server.SunGeometry;
+import org.megastage.components.server.VoidGeometry;
 import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
 import org.megastage.util.Globals;
+import org.megastage.util.RAM;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,6 +56,10 @@ public class Network {
         kryo.register(PlanetGeometry.class);
         kryo.register(SunGeometry.class);
         kryo.register(ShipGeometry.class);
+        kryo.register(MonitorGeometry.class);
+        kryo.register(RAM.class);
+        kryo.register(BindTo.class);
+        kryo.register(VoidGeometry.class);
     }
 
     static public abstract class EventMessage implements Message {
