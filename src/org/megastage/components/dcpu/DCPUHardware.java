@@ -2,6 +2,7 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
@@ -35,6 +36,7 @@ public abstract class DCPUHardware extends BaseComponent {
     }
 
     public void query() {
+        Log.info("hwq " + getClass().getName());
         this.dcpu.registers[0] = (char) (this.type & 0xFFFF);
         this.dcpu.registers[1] = (char) (this.type >> 16 & 0xFFFF);
         this.dcpu.registers[2] = (char) (this.revision & 0xFFFF);

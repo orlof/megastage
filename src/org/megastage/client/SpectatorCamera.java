@@ -9,6 +9,7 @@ import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.*;
+import com.jme3.math.FastMath;
 import com.jme3.renderer.Camera;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
@@ -41,6 +42,9 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
             "SPECCAM_Forward",
             "SPECCAM_Backward",
 
+            "SPECCAM_ZoomIn",
+            "SPECCAM_ZoomOut",
+            
             "SPECCAM_InvertY"
         };
 
@@ -50,7 +54,6 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
     protected boolean enabled = true;
     protected boolean invertY = false;
     protected InputManager inputManager;
-    private final ArtemisState artemis;
     
     /**
      * Creates a new FlyByCamera to control the given Camera object.
@@ -58,7 +61,6 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
      */
     public SpectatorCamera(Camera cam, ArtemisState artemis){
         this.cam = cam;
-        this.artemis = artemis;
     }
 
     /**
@@ -133,6 +135,9 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         inputManager.addMapping("SPECCAM_Forward", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("SPECCAM_Backward", new KeyTrigger(KeyInput.KEY_S));
 
+        inputManager.addMapping("SPECCAM_ZoomIn", new MouseAxisTrigger(2, false));
+        inputManager.addMapping("SPECCAM_ZoomOut", new MouseAxisTrigger(2, true));
+        
         inputManager.addListener(this, mappings);
         inputManager.setCursorVisible(false);
     }
@@ -157,37 +162,6 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         inputManager.removeListener(this);
         inputManager.setCursorVisible(false);
     }
-
-//    protected void rotateCamera(float value, Vector3f axis) {
-//        if(ClientGlobals.fixedEntity == null) return;
-//        Log.debug("rotate " + value + " " + axis.toString());
-//        
-//        Rotation r = ClientGlobals.fixedEntity.getComponent(Rotation.class);
-//        if(r == null) return;
-//
-//        Quaternion q = new Quaternion((float) r.x, (float) r.y, (float) r.z, (float) r.w);
-//        Vector3f up = q.mult(Vector3f.UNIT_Y);
-//        Vector3f left = q.mult(Vector3f.UNIT_X);
-//        Vector3f dir = q.mult(Vector3f.UNIT_Z.negate());
-//
-//        value = -value;
-//
-//        Matrix3f mat = new Matrix3f();
-//        mat.fromAngleNormalAxis(value, axis);
-//
-//        mat.mult(up, up);
-//        mat.mult(left, left);
-//        mat.mult(dir, dir);
-//
-//        Quaternion res = new Quaternion();
-//        q.fromAxes(left, up, dir);
-//        q.normalizeLocal();
-//
-//        r.x = res.getX();
-//        r.y = res.getY();
-//        r.z = res.getZ();
-//        r.w = res.getW();
-//    }
 
     protected void rotateCamera(float value, Vector axis) {
         if(ClientGlobals.fixedEntity == null) return;
@@ -214,25 +188,6 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         r.w = res.w;
     }
     
-//    protected void rotateCamera(float value, Vector3f axis) {
-//        Matrix3f mat = new Matrix3f();
-//        mat.fromAngleNormalAxis(rotationSpeed * value, axis);
-//
-//        Vector3f up = cam.getUp();
-//        Vector3f left = cam.getLeft();
-//        Vector3f dir = cam.getDirection();
-//
-//        mat.mult(up, up);
-//        mat.mult(left, left);
-//        mat.mult(dir, dir);
-//
-//        Quaternion q = new Quaternion();
-//        q.fromAxes(left, up, dir);
-//        q.normalizeLocal();
-//
-//        cam.setAxes(q);
-//    }
-
     protected void moveCamera(float value, boolean sideways) {
         if(ClientGlobals.fixedEntity == null) return;
 
@@ -250,25 +205,27 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         pos.y += 1000 * vel.y;
         pos.z += 1000 * vel.z;
     }
-    
-//    protected void moveCamera(float value, boolean sideways) {
-//        Vector3f vel = new Vector3f();
-//        //Vector3f pos = cam.getLocation().clone();
-//
-//        if (sideways){
-//            cam.getLeft(vel);
-//        }else{
-//            cam.getDirection(vel);
-//        }
-//        vel.multLocal(value * moveSpeed);
-//
-//        Position pos = Globals.fixedEntity.getComponent(Position.class);
-//        pos.x += 1000 * vel.x;
-//        pos.y += 1000 * vel.y;
-//        pos.z += 1000 * vel.z;
-//
-//        //cam.setLocation(pos);
-//    }
+
+        private void zoomCamera(float value){
+        // derive fovY value
+        float h = cam.getFrustumTop();
+        float w = cam.getFrustumRight();
+        float aspect = w / h;
+
+        float near = cam.getFrustumNear();
+
+        float fovY = FastMath.atan(h / near)
+                  / (FastMath.DEG_TO_RAD * .5f);
+        fovY += value;
+
+        h = FastMath.tan( fovY * FastMath.DEG_TO_RAD * .5f) * near;
+        w = h * aspect;
+
+        cam.setFrustumTop(h);
+        cam.setFrustumBottom(-h);
+        cam.setFrustumLeft(-w);
+        cam.setFrustumRight(w);
+    }
 
     private static final Vector VECTOR_UP = new Vector(0.0, 1.0, 0.0);
     private static final Vector VECTOR_RIGHT = new Vector(1.0, 0.0, 0.0);
@@ -295,6 +252,10 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
             moveCamera(value, false);
         }else if (name.equals("SPECCAM_Backward")){
             moveCamera(-value, false);
+        }else if (name.equals("SPECCAM_ZoomIn")){
+            zoomCamera(value);
+        }else if (name.equals("SPECCAM_ZoomOut")){
+            zoomCamera(-value);
         }
     }
 

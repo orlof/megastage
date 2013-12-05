@@ -5,6 +5,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.MonitorData;
 import org.megastage.components.dcpu.LEMUtil;
 import org.megastage.components.dcpu.VirtualMonitor;
@@ -34,8 +35,11 @@ public class VirtualMonitorSenderSystem extends EntityProcessingSystem {
                 data.palette.update(mon.dcpu.ram, data.paletteAddr, 16);
 
         if(videoChanged || fontChanged || paletteChanged) {
+            Log.debug("video   " + (videoChanged ? "*": " ") + " [" + ((int) data.videoAddr) + "] " + data.video.toString());
+            Log.debug("font    " + (fontChanged ? "*": " ") + " [" + ((int) data.fontAddr) + "] " + data.font.toString());
+            Log.debug("palette " + (paletteChanged ? "*": " ") + " [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
+
             world.getSystem(ServerNetworkSystem.class).broadcastMonitorData(entity);
         }
-
     }
 }

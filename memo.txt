@@ -15,3 +15,6 @@
 1600km
 1800km
 2000km
+
+Move cems to ClientGlobals
+Move csms to ClientGlobals

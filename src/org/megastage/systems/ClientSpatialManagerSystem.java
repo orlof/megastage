@@ -7,9 +7,7 @@ package org.megastage.systems;
 import com.artemis.Entity;
 import com.artemis.systems.VoidEntitySystem;
 import com.cubes.BlockTerrainControl;
-import com.cubes.CubesSettings;
 import com.cubes.Vector3Int;
-import com.cubes.test.CubesTestAssets;
 import com.cubes.test.blocks.Block_Wood;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
@@ -17,11 +15,9 @@ import com.jme3.asset.AssetManager;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.LightNode;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.texture.Image;
@@ -36,14 +32,15 @@ import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RotationControl;
+import org.megastage.client.controls.Rotator;
 import org.megastage.components.client.ClientRaster;
 import org.megastage.components.client.ClientSpatial;
 import org.megastage.components.server.MonitorGeometry;
 import org.megastage.components.server.PlanetGeometry;
 import org.megastage.components.server.ShipGeometry;
 import org.megastage.components.server.SunGeometry;
+import org.megastage.components.server.VoidGeometry;
 import org.megastage.util.ClientGlobals;
-import org.megastage.util.Globals;
 
 /**
  *
@@ -167,22 +164,22 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         switch (data.hull) {
             case "floor":
                 {
-                    shipBlockControl.setBlockArea(new Vector3Int(0,0,0), new Vector3Int(10,1,10), Block_Wood.class);
+                    shipBlockControl.setBlockArea(new Vector3Int(0,0,0), new Vector3Int(16,1,16), Block_Wood.class);
                     break;
                 }
             case "cube":
                 {
-                    shipBlockControl.setBlockArea(new Vector3Int(0,0,0), new Vector3Int(10,10,10), Block_Wood.class);
+                    shipBlockControl.setBlockArea(new Vector3Int(0,0,0), new Vector3Int(16,16,16), Block_Wood.class);
                     break;
                 }
         }
 
-        Node shipNode = new Node(entity.toString());
+        Node shipNode = new Node("main");
         shipNode.addControl(shipBlockControl);
-        shipNode.setLocalTranslation(-data.size, -6f, -2f * data.size);
+        shipNode.setLocalTranslation(-16, -16f, -96);
         //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 
-        Node shipAnchor = new Node(entity.toString() + " anchor");
+        Node shipAnchor = new Node(entity.toString());
         shipAnchor.attachChild(shipNode);
         
         final ClientSpatial cs = addSpatialComponent(entity, shipAnchor);
@@ -190,27 +187,8 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         attachNode(entity);
     }
 
-    public void attachNode(final Entity entity) {
-        app.enqueue(new Callable() {
-            @Override
-            public Object call() throws Exception {
-                if(entity == ClientGlobals.fixedEntity) {
-                    Log.info("Setting fixedEntity " + entity.toString());
-                    updFixedEntity(entity);
-                } else {
-                    Log.info("Adding node " + entity.toString());
-                    ClientSpatial cs = entity.getComponent(ClientSpatial.class);
-                    ClientGlobals.sysMovNode.attachChild(cs.node);
-                }
-                return null;
-            }
-        });
-    }
-    
-    public void setupMonitor(Entity entity, MonitorGeometry data) {
-        Log.info("setupMonitor");
-
-        Geometry geom = new Geometry(entity.toString(), new Quad(3,2, true));
+    public void setupMonitor(final Entity entity, final MonitorGeometry data) {
+        Geometry geom = new Geometry(entity.toString(), new Quad(28, 20, true));
         
         BufferedImage img = new BufferedImage(128, 96, BufferedImage.TYPE_INT_ARGB);
         Image img2 = new AWTLoader().load(img, false);
@@ -225,10 +203,18 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         Node node = new Node(entity.toString());
         node.attachChild(geom);
 
-        ClientSpatial cs = addSpatialComponent(entity, new Node());
+        ClientSpatial cs = cems.getComponent(entity, ClientSpatial.class);
+        cs.node = node;
         
         ClientRaster rasterComponent = cems.getComponent(entity, ClientRaster.class);
         rasterComponent.raster = raster;
+        
+        //node.addControl(new Rotator());
+        node.addControl(new PositionControl(entity));
+
+        //ClientGlobals.rootNode.attachChild(node);
+        
+        node.setLocalTranslation(2, 2, 0);
     }
 
     private void updFixedEntity(Entity entity) {
@@ -249,10 +235,8 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
 
         ClientSpatial cs = entity.getComponent(ClientSpatial.class);
         if(cs != null) {
-            Log.info("ATTACH FIXED_NODE!!!!!!!!!!!!!!!!!!!");
             ClientGlobals.sysMovNode.detachChild(cs.node);
             ClientGlobals.rootNode.attachChild(cs.node);
-            Log.info("ATTACH FIXED_NODE READY!!!!!!!!!!!!!!!!!!!" + cs.node.toString());
         } else {
             Log.debug("There is no spatial for new fixed entity!");           
         }
@@ -268,8 +252,62 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         });
     }
     
+    public void attachNode(final Entity entity) {
+        app.enqueue(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                if(entity == ClientGlobals.fixedEntity) {
+                    Log.info("Setting fixedEntity " + entity.toString());
+                    updFixedEntity(entity);
+                } else {
+                    Log.info("Adding node " + entity.toString());
+                    ClientSpatial cs = entity.getComponent(ClientSpatial.class);
+                    ClientGlobals.sysMovNode.attachChild(cs.node);
+                }
+                return null;
+            }
+        });
+    }
+    
     @Override
     protected void processSystem() {
+    }
+
+    public void attachChild(final Entity parent, final Entity child) {
+        app.enqueue(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                ClientSpatial pcs = parent.getComponent(ClientSpatial.class);
+
+                Node pn = (Node) pcs.node.getChild("main");
+                if(pn == null) {
+                    pn = pcs.node;
+                }
+                
+                ClientSpatial c = child.getComponent(ClientSpatial.class);
+                if(c == null) {
+                    return null;
+                }
+                
+                Log.info("Attach " + pcs + " to " + c);
+                Log.info("Nodes " + pn.getName() + " to " + c.node.getName());
+
+                detachFromParent(c.node);
+                pn.attachChild(c.node);
+                return null;
+            }
+        });
+    }
+
+    private void detachFromParent(Node node) {
+        Node parent = node.getParent();
+        if(parent != null) {
+            parent.detachChild(node);
+        }
+    }
+
+    public void setupNode(Entity entity, VoidGeometry aThis) {
+         ClientSpatial cs = addSpatialComponent(entity, new Node());       
     }
 
 }
