@@ -11,6 +11,7 @@ import org.megastage.util.Globals;
 
 import java.io.IOException;
 import org.megastage.protocol.Message;
+import org.megastage.util.Vector;
 
 public class ClientNetworkSystem extends VoidEntitySystem {
     private Client client;
@@ -70,7 +71,8 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         client.sendTCP(msg);
     }
 
-    public void sendAnalogInput(String name, float value, float tpf) {
+    public void sendUserCmd(Vector vel) {
+        client.sendUDP(vel);
     }
 
 

@@ -23,7 +23,10 @@ import org.megastage.components.Position;
 import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.server.BindTo;
 import org.megastage.components.server.ShipGeometry;
+import org.megastage.protocol.LoginResponse;
 import org.megastage.server.TemplateManager;
+import org.megastage.util.ClientGlobals;
+import org.megastage.util.Vector;
 
 public class ServerNetworkSystem extends VoidEntitySystem {
     private Server server;
@@ -96,11 +99,11 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         ShipGeometry sg = ship.getComponent(ShipGeometry.class);
         
         Position pos = connection.player.getComponent(Position.class);
-        pos.x = 2 * sg.entry_x;
-        pos.y = 2 * sg.entry_y;
-        pos.z = 2 * sg.entry_z;
+        pos.x = 2000 * sg.entry_x;
+        pos.y = 2000 * sg.entry_y;
+        pos.z = 2000 * sg.entry_z;
         
-        connection.sendTCP(new Network.LoginResponse(connection.player.getId()));
+        connection.sendTCP(new LoginResponse(connection.player.getId()));
 
         ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("client");
         Log.info("Sending intialization data for " + entities.size() + " entities.");
@@ -172,6 +175,15 @@ public class ServerNetworkSystem extends VoidEntitySystem {
             connection.sendTCP(list.toArray());
         }
     }
+    
+    private void handleUserCmd(PlayerConnection connection, Vector v) {
+        Position pos = connection.player.getComponent(Position.class);
+        pos.x += 1000 * v.x;
+        pos.y += 1000 * v.y;
+        pos.z += 1000 * v.z;
+
+        connection.sendUDP(pos.create(connection.player));
+    }
 
     private class ServerNetworkListener extends Listener {
         @Override
@@ -195,6 +207,9 @@ public class ServerNetworkSystem extends VoidEntitySystem {
 
             } else if(o instanceof Network.KeyEvent) {
                 handleKeyEventMessage(pc, (Network.KeyEvent) o);
+            
+            } else if(o instanceof Vector) {
+                handleUserCmd(pc, (Vector) o);
             }
         }
     }

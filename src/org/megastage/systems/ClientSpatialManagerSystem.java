@@ -254,4 +254,9 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         Node shipNode = getNode(shipEntity);
         ClientGlobals.fixedNode.attachChild(shipNode);
     }
+
+    public void setupPlayer(Entity entity) {
+        ClientGlobals.playerNode.addControl(new PositionControl(entity));
+        ClientGlobals.playerNode.addControl(new RotationControl(entity));
+    }
 }

@@ -12,12 +12,12 @@ import com.jme3.app.state.AppStateManager;
  *  @author    Original author: Paul Speed
  *             Modified by: Orlof
  */
-public class SpectatorCamAppState extends AbstractAppState {
+public class SpectatorAppState extends AbstractAppState {
 
     private Application app;
     private SpectatorCamera spectatorCam;
 
-    public SpectatorCamAppState() {
+    public SpectatorAppState() {
     }    
 
     public SpectatorCamera getCamera() {

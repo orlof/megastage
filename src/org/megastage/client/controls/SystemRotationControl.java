@@ -28,14 +28,11 @@ public class SystemRotationControl extends AbstractControl {
         Rotation rotation = ClientGlobals.shipEntity.getComponent(Rotation.class);
         if(rotation == null) {
             spatial.setLocalRotation(Quaternion.IDENTITY);            
+            ClientGlobals.sceneNode.setLocalRotation(Quaternion.IDENTITY);
         } else {
             Quaternion q = new Quaternion((float) rotation.x, (float) rotation.y, (float) rotation.z, (float) rotation.w);
-            if(q == null) {
-                Log.info("Warning: setting non invertable rotation");
-            } else {
-                spatial.setLocalRotation(q.inverse());
-                ClientGlobals.sceneNode.setLocalRotation(q);
-            }
+            spatial.setLocalRotation(q.inverse());
+            ClientGlobals.sceneNode.setLocalRotation(q);
         }
     }
 

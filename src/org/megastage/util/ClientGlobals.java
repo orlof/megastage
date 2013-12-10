@@ -3,6 +3,7 @@ package org.megastage.util;
 import com.artemis.Entity;
 import com.cubes.CubesSettings;
 import com.jme3.scene.Node;
+import org.megastage.systems.ClientNetworkSystem;
 
 /**
  * MegaStage
@@ -11,6 +12,8 @@ import com.jme3.scene.Node;
  * Time: 20:50
  */
 public class ClientGlobals {
+    public static ClientNetworkSystem network;
+    
     public static Entity playerEntity;
     public static Entity shipEntity;
     
