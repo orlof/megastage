@@ -188,7 +188,7 @@ public class SpaceMonkey extends SimpleApplication implements ActionListener {
         
         // Add planet app state
         planetAppState = new PlanetAppState(rootNode, sun);
-        planetAppState.setShadowsEnabled(true);
+        //planetAppState.setShadowsEnabled(true);
         stateManager.attach(planetAppState);
 
         // Add planet

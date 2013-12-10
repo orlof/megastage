@@ -36,7 +36,6 @@ public abstract class DCPUHardware extends BaseComponent {
     }
 
     public void query() {
-        Log.info("hwq " + getClass().getName());
         this.dcpu.registers[0] = (char) (this.type & 0xFFFF);
         this.dcpu.registers[1] = (char) (this.type >> 16 & 0xFFFF);
         this.dcpu.registers[2] = (char) (this.revision & 0xFFFF);

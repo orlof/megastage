@@ -1,5 +1,6 @@
 package org.megastage.client;
 
+import com.esotericsoftware.minlog.Log;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;

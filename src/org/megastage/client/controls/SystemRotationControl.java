@@ -20,13 +20,12 @@ public class SystemRotationControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        if(ClientGlobals.fixedEntity == null) {
-            Log.warn("No fixed entity");
+        if(ClientGlobals.shipEntity == null) {
             spatial.setLocalRotation(Quaternion.IDENTITY);            
             return;
         }
 
-        Rotation rotation = ClientGlobals.fixedEntity.getComponent(Rotation.class);
+        Rotation rotation = ClientGlobals.shipEntity.getComponent(Rotation.class);
         if(rotation == null) {
             spatial.setLocalRotation(Quaternion.IDENTITY);            
         } else {
@@ -36,14 +35,6 @@ public class SystemRotationControl extends AbstractControl {
             } else {
                 spatial.setLocalRotation(q.inverse());
                 ClientGlobals.sceneNode.setLocalRotation(q);
-//                Vector3f[] axis = new Vector3f[3];
-//                axis[0] = new Vector3f(0f,0f,0f);
-//                axis[1] = new Vector3f(0f,0f,0f);
-//                axis[2] = new Vector3f(0f,0f,0f);
-//                q.toAxes(axis);
-//                Log.info("x " + axis[0].toString());
-//                Log.info("y " + axis[1].toString());
-//                Log.info("z " + axis[2].toString());
             }
         }
     }

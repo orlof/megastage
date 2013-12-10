@@ -29,23 +29,18 @@ import org.megastage.util.Vector;
  *  - WASD keys for moving forward/backward and strafing
  *  - QZ keys raise or lower the camera
  */
-public class SpectatorCamera implements AnalogListener, ActionListener {
+public class WalkCamera implements AnalogListener, ActionListener {
 
     private static String[] mappings = new String[]{
-            "SPECCAM_Left",
-            "SPECCAM_Right",
-            "SPECCAM_Up",
-            "SPECCAM_Down",
+            "WALKCAM_Left",
+            "WALKCAM_Right",
+            "WALKCAM_Up",
+            "WALKCAM_Down",
 
-            "SPECCAM_RollLeft",
-            "SPECCAM_RollRight",
-            "SPECCAM_Forward",
-            "SPECCAM_Backward",
+            "WALKCAM_Forward",
+            "WALKCAM_Backward",
 
-            "SPECCAM_ZoomIn",
-            "SPECCAM_ZoomOut",
-            
-            "SPECCAM_InvertY"
+            "WALKCAM_InvertY"
         };
 
     protected Camera cam;
@@ -59,7 +54,7 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
      * Creates a new FlyByCamera to control the given Camera object.
      * @param cam
      */
-    public SpectatorCamera(Camera cam){
+    public WalkCamera(Camera cam){
         this.cam = cam;
     }
 
@@ -124,20 +119,15 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         this.inputManager = inputManager;
         
         // both mouse and button - rotation of cam
-        inputManager.addMapping("SPECCAM_Left", new MouseAxisTrigger(MouseInput.AXIS_X, true));
-        inputManager.addMapping("SPECCAM_Right", new MouseAxisTrigger(MouseInput.AXIS_X, false));
-        inputManager.addMapping("SPECCAM_Up", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
-        inputManager.addMapping("SPECCAM_Down", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
+        inputManager.addMapping("WALKCAM_Left", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        inputManager.addMapping("WALKCAM_Right", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        inputManager.addMapping("WALKCAM_Up", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
+        inputManager.addMapping("WALKCAM_Down", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
 
         // keyboard only WASD for movement and WZ for rise/lower height
-        inputManager.addMapping("SPECCAM_RollLeft", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("SPECCAM_RollRight", new KeyTrigger(KeyInput.KEY_D));
-        inputManager.addMapping("SPECCAM_Forward", new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("SPECCAM_Backward", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("WALKCAM_Forward", new KeyTrigger(KeyInput.KEY_W));
+        inputManager.addMapping("WALKCAM_Backward", new KeyTrigger(KeyInput.KEY_S));
 
-        inputManager.addMapping("SPECCAM_ZoomIn", new MouseAxisTrigger(2, false));
-        inputManager.addMapping("SPECCAM_ZoomOut", new MouseAxisTrigger(2, true));
-        
         inputManager.addListener(this, mappings);
         inputManager.setCursorVisible(false);
     }
@@ -164,10 +154,9 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
     }
 
     protected void rotateCamera(float value, Vector axis) {
-        if(ClientGlobals.shipEntity == null) return;
         Log.debug("rotate " + value + " " + axis.toString());
         
-        Rotation r = ClientGlobals.shipEntity.getComponent(Rotation.class);
+        Rotation r = ClientGlobals.playerEntity.getComponent(Rotation.class);
         if(r == null) return;
 
         Quaternion fixedEntityRotation = new Quaternion(r.w, r.x, r.y, r.z);
@@ -235,26 +224,26 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         if (!enabled)
             return;
 
-        if (name.equals("SPECCAM_Left")) {
+        if (name.equals("WALKCAM_Left")) {
             rotateCamera(value, VECTOR_UP);
             //rotateCamera(value, cam.getUp());
-        }else if (name.equals("SPECCAM_Right")) {
+        }else if (name.equals("WALKCAM_Right")) {
             rotateCamera(-value, VECTOR_UP);
-        }else if (name.equals("SPECCAM_Up")) {
+        }else if (name.equals("WALKCAM_Up")) {
             rotateCamera(value * (invertY ? -1 : 1), VECTOR_RIGHT);
-        }else if (name.equals("SPECCAM_Down")){
+        }else if (name.equals("WALKCAM_Down")){
             rotateCamera(-value * (invertY ? -1 : 1), VECTOR_RIGHT);
-        }else if (name.equals("SPECCAM_RollLeft")) {
+        }else if (name.equals("WALKCAM_RollLeft")) {
             rotateCamera(-value, VECTOR_FORWARD);
-        }else if (name.equals("SPECCAM_RollRight")){
+        }else if (name.equals("WALKCAM_RollRight")){
             rotateCamera(value, VECTOR_FORWARD);
-        }else if (name.equals("SPECCAM_Forward")){
+        }else if (name.equals("WALKCAM_Forward")){
             moveCamera(value, false);
-        }else if (name.equals("SPECCAM_Backward")){
+        }else if (name.equals("WALKCAM_Backward")){
             moveCamera(-value, false);
-        }else if (name.equals("SPECCAM_ZoomIn")){
+        }else if (name.equals("WALKCAM_ZoomIn")){
             zoomCamera(value);
-        }else if (name.equals("SPECCAM_ZoomOut")){
+        }else if (name.equals("WALKCAM_ZoomOut")){
             zoomCamera(-value);
         }
     }
@@ -263,7 +252,7 @@ public class SpectatorCamera implements AnalogListener, ActionListener {
         if (!enabled)
             return;
 
-        if (name.equals("SPECCAM_InvertY")) {
+        if (name.equals("WALKCAM_InvertY")) {
             // Toggle on the up.
             if( !value ) {  
                 invertY = !invertY;

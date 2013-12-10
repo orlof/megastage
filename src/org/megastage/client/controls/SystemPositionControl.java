@@ -11,28 +11,27 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Position;
 import org.megastage.util.ClientGlobals;
-import org.megastage.util.Globals;
 
 public class SystemPositionControl extends AbstractControl {
-    
+
     public SystemPositionControl() {
     }
 
     @Override
     protected void controlUpdate(float tpf) {
-        if(ClientGlobals.fixedEntity == null) {
-            Log.warn("No fixed entity");
+        if(ClientGlobals.shipEntity == null) {
             spatial.setLocalTranslation(Vector3f.ZERO);
             return;
         }
 
-        Position position = ClientGlobals.fixedEntity.getComponent(Position.class);
+        Position position = ClientGlobals.shipEntity.getComponent(Position.class);
         if(position == null) {
             spatial.setLocalTranslation(Vector3f.ZERO);
         } else {
             spatial.setLocalTranslation(position.getAsVector().negate());
         }
-        Log.debug(ClientGlobals.fixedEntity.getId() + " <- " + spatial.getLocalTranslation().toString());
+        Log.trace("System Local " + spatial.getLocalTranslation().toString());
+        Log.trace("System World " + spatial.getWorldTranslation().toString());            
     }
 
     @Override

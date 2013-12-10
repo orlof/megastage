@@ -19,8 +19,10 @@ import org.megastage.util.Globals;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.megastage.components.BaseComponent;
+import org.megastage.components.Position;
 import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.server.BindTo;
+import org.megastage.components.server.ShipGeometry;
 import org.megastage.server.TemplateManager;
 
 public class ServerNetworkSystem extends VoidEntitySystem {
@@ -78,43 +80,34 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     }
 
     private void handleLoginMessage(PlayerConnection connection, Network.Login packet) {
-        connection.player = world.createEntity();
+        // create player
+        connection.player = world.getManager(TemplateManager.class).create("Player");
         connection.player.addToWorld();
         
+        // create ship
         Entity ship = world.getManager(TemplateManager.class).create("Apollo 13");
         ship.addToWorld();
         
+        // bind player to ship
         BindTo bind = new BindTo();
         bind.entityID = ship.getId();
-        
         connection.player.addComponent(bind);
 
-        connection.sendTCP(new Network.LoginResponse(ship.getId()));
+        ShipGeometry sg = ship.getComponent(ShipGeometry.class);
+        
+        Position pos = connection.player.getComponent(Position.class);
+        pos.x = 2 * sg.entry_x;
+        pos.y = 2 * sg.entry_y;
+        pos.z = 2 * sg.entry_z;
+        
+        connection.sendTCP(new Network.LoginResponse(connection.player.getId()));
 
         ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("client");
         Log.info("Sending intialization data for " + entities.size() + " entities.");
 
         for(int i=0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
-            Log.debug("Initializing " + entity.toString());
-            
-            Bag<Component> components = entity.getComponents(new Bag<Component>());
-            ArrayList list = new ArrayList();
-
-            for(int j=0; j < components.size(); j++) {
-                BaseComponent comp = (BaseComponent) components.get(j);
-                Log.debug(" Component " + comp.toString());
-
-                Object trans = comp.create(entity);                
-                if(trans != null) {
-                    Log.debug("   Added");
-                    list.add(trans);
-                }
-            }
-
-            if(!list.isEmpty()) {
-                connection.sendTCP(list.toArray());
-            }
+            sendComponents(connection, entity);
         }
     }
 
@@ -156,6 +149,28 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     public void broadcastTimeData() {
         Network.TimeData data = new Network.TimeData();
         server.sendToAllUDP(data);
+    }
+
+    private void sendComponents(PlayerConnection connection, Entity entity) {
+        Log.debug("Sending components for " + entity.toString());
+
+        Bag<Component> components = entity.getComponents(new Bag<Component>());
+        ArrayList list = new ArrayList();
+
+        for(int j=0; j < components.size(); j++) {
+            BaseComponent comp = (BaseComponent) components.get(j);
+            Log.debug(" Component " + comp.toString());
+
+            Object trans = comp.create(entity);                
+            if(trans != null) {
+                Log.debug("   Added");
+                list.add(trans);
+            }
+        }
+
+        if(!list.isEmpty()) {
+            connection.sendTCP(list.toArray());
+        }
     }
 
     private class ServerNetworkListener extends Listener {
