@@ -4,6 +4,8 @@ import com.artemis.Entity;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
+import org.megastage.client.controls.PositionControl;
+import org.megastage.client.controls.RotationControl;
 import org.megastage.components.EntityComponent;
 import org.megastage.components.Mass;
 import org.megastage.components.MonitorData;
@@ -21,6 +23,7 @@ import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
 import org.megastage.util.Globals;
 import org.megastage.util.RAM;
+import org.megastage.util.Vector;
 
 /**
  * Created with IntelliJ IDEA.
@@ -60,6 +63,8 @@ public class Network {
         kryo.register(RAM.class);
         kryo.register(BindTo.class);
         kryo.register(VoidGeometry.class);
+        kryo.register(Vector.class);
+        kryo.register(LoginResponse.class);
     }
 
     static public abstract class EventMessage implements Message {
@@ -70,25 +75,6 @@ public class Network {
     static public class Login extends EventMessage {}
     static public class Logout extends EventMessage {}
     
-    static public class LoginResponse extends EventMessage {
-        private int id = 0;
-        
-        public LoginResponse() { /* Kryonet */ }
-        public LoginResponse(int id) {
-            this.id = id;
-        }
-
-        @Override
-        public void receive(ClientNetworkSystem system, Connection pc) {
-            Entity entity = system.cems.get(id);
-            ClientGlobals.playerEntity = entity;
-        }
-        
-        public String toString() {
-            return "LoginResponse(" + id + ")";
-        }
-    }
-
     static public abstract class KeyEvent extends EventMessage {
         public int key;
     }

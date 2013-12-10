@@ -5,7 +5,7 @@
         <component type="server.SunGeometry" radius="40000" light_radius="2000000" color_rgba="0xffffaaff"/>
         <component type="GravityField"/>
         <group name="client"/>
-        <entity name="Earth">
+        <!--entity name="Earth">
             <component type="Mass" kg="5.972e25"/>
             <component type="GravityField"/>
             <component type="Orbit" orbital_distance="200000"/>
@@ -14,7 +14,7 @@
             <component type="FixedRotation" period_y="0.1"/>
             <component type="Position" x="100000" y="0" z="0"/>
             <group name="client"/>
-            <!--entity name="Moon">
+            <entity name="Moon">
                 <component type="Mass" kg="7.4e23"/>
                 <component type="GravityField"/>
                 <component type="Position" x="0" y="0" z="70000"/>
@@ -23,8 +23,8 @@
                 <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
                 <component type="FixedRotation" period_y="-0.001"/>
                 <group name="client"/>
-            </entity-->
-        </entity>
+            </entity>
+        </entity-->
         <!--entity name="Water World">
             <component type="Mass" kg="5.972e25"/>
             <component type="GravityField"/>
@@ -98,7 +98,7 @@
     <entity-template name="Apollo 13">
         <component type="Position" x="0" y="0" z="100000"/>
         <component type="Rotation"/>
-        <component type="server.ShipGeometry" size="16" entry_x="8" entry_y="1" entry_z="8"/>
+        <component type="server.ShipGeometry" size="16" entry_x="8" entry_y="2" entry_z="32"/>
         <!--component type="Velocity" x="0" y="0" z="0"/>
         <component type="Acceleration"/>
         <component type="Mass" radius_km="0.02" mass_kg="1000000"/-->
@@ -117,7 +117,7 @@
             <entity name="Generic Keyboard">
                 <component type="dcpu.VirtualKeyboard"/>
             </entity>
-            <!--entity>
+            <!---entity>
                 <component type="dcpu.Engine" x="0" y="0" z="10"/>
                 <component type="Rotation"/>
             </entity>

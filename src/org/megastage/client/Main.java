@@ -9,11 +9,15 @@ import com.jme3.app.StatsAppState;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
+import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
+import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.system.AppSettings;
 import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
+import org.megastage.client.controls.PositionControl;
+import org.megastage.client.controls.RotationControl;
 import org.megastage.client.controls.SystemPositionControl;
 import org.megastage.client.controls.SystemRotationControl;
 import org.megastage.util.ClientGlobals;
@@ -30,7 +34,7 @@ public class Main extends SimpleApplication {
     
     public static void main(String[] args) {
         Log.setLogger(new LogFormat());
-        Log.set(Log.LEVEL_INFO);
+        Log.set(Log.LEVEL_TRACE);
 
         AppSettings settings = new AppSettings(true);
         settings.setResolution(ClientGlobals.gfxQuality.SCREEN_WIDTH, ClientGlobals.gfxQuality.SCREEN_HEIGHT);
@@ -43,22 +47,26 @@ public class Main extends SimpleApplication {
 
     private PlanetAppState planetAppState;
     private ArtemisState artemisAppState;
-    //private SpectatorCamera spectatorCam;
     
     public Main() {
-        super();
-        //super( new StatsAppState(), new DebugKeysAppState()/*, new SpectatorCamAppState() */);
+        super( new StatsAppState(), new DebugKeysAppState());
     }
     
     @Override
     public void simpleInitApp() {
-        flyCam.setEnabled(true);
-        flyCam.setMoveSpeed(25);
+        WalkAppState walkCamAppState = new WalkAppState();
+        walkCamAppState.setEnabled(true);
+        stateManager.attach(walkCamAppState);
+
+        CameraNode camNode = new CameraNode("Camera 1", cam);
+        camNode.setControlDir(ControlDirection.SpatialToCamera);
+        ClientGlobals.playerNode.attachChild(camNode);
         
         ClientGlobals.rootNode = rootNode;
-        //cam.setLocation(new Vector3f(16, 6, 60));
+        cam.setLocation(new Vector3f(16, 6, 60));
 
         ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
+        
         ClientGlobals.rootNode.attachChild(ClientGlobals.fixedNode);
         
         ClientGlobals.sysRotNode.addControl(new SystemRotationControl());
@@ -82,8 +90,6 @@ public class Main extends SimpleApplication {
         artemisAppState = new ArtemisState();
         stateManager.attach(artemisAppState);
         
-        //spectatorCam = new SpectatorCamera(cam);
-        //stateManager.getState(SpectatorCamAppState.class).setCamera(spectatorCam);
 
         //SpectatorModeInputManager in = new SpectatorModeInputManager(this);
         //in.init();
@@ -101,15 +107,19 @@ public class Main extends SimpleApplication {
         Globals.time = System.currentTimeMillis() + ClientGlobals.timeDiff;
 
         Log.trace("Camera coords: " + cam.getLocation().toString());
+        if(Log.TRACE) {
+            float[] eulerAngles = cam.getRotation().toAngles(null);
+            Log.trace("Camera(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
+        }
         
         // slow camera down as we approach a planet
-        Planet planet = planetAppState.getNearestPlanet();
-        if (planet != null && planet.getPlanetToCamera() != null) {
-            //this.spectatorCam.setMoveSpeed(
-            //        FastMath.clamp(planet.getDistanceToCamera(), 100, 100000));
-        } else {
-            //this.spectatorCam.setMoveSpeed(100000);
-        }
+//        Planet planet = planetAppState.getNearestPlanet();
+//        if (planet != null && planet.getPlanetToCamera() != null) {
+//            this.spectatorCam.setMoveSpeed(
+//                    FastMath.clamp(planet.getDistanceToCamera(), 100, 100000));
+//        } else {
+//            this.spectatorCam.setMoveSpeed(100000);
+//        }
     }
 
     @Override
