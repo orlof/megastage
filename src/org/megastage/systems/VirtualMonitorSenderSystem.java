@@ -35,9 +35,9 @@ public class VirtualMonitorSenderSystem extends EntityProcessingSystem {
                 data.palette.update(mon.dcpu.ram, data.paletteAddr, 16);
 
         if(videoChanged || fontChanged || paletteChanged) {
-            Log.debug("video   " + (videoChanged ? "*": " ") + " [" + ((int) data.videoAddr) + "] " + data.video.toString());
-            Log.debug("font    " + (fontChanged ? "*": " ") + " [" + ((int) data.fontAddr) + "] " + data.font.toString());
-            Log.debug("palette " + (paletteChanged ? "*": " ") + " [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
+            Log.trace("video   " + (videoChanged ? "*": " ") + " [" + ((int) data.videoAddr) + "] " + data.video.toString());
+            Log.trace("font    " + (fontChanged ? "*": " ") + " [" + ((int) data.fontAddr) + "] " + data.font.toString());
+            Log.trace("palette " + (paletteChanged ? "*": " ") + " [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
 
             world.getSystem(ServerNetworkSystem.class).broadcastMonitorData(entity);
         }

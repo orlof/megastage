@@ -205,12 +205,10 @@ public class DCPU extends BaseComponent {
                         }
                         break;
                     case 16: //HWN
-                        Log.info("HWN " + hardware.size());
                         cycles++;
                         set(aaddr, (char) hardware.size());
                         break;
                     case 17: //HWQ
-                        Log.info("HWQ " + hardware.get(a).toString());
                         cycles += 3;
                         synchronized (hardware) {
                             if ((a >= 0) && (a < hardware.size())) {

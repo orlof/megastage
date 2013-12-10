@@ -63,6 +63,7 @@ public class Network {
     }
 
     static public abstract class EventMessage implements Message {
+        @Override
         public void receive(ClientNetworkSystem system, Connection pc) {}
     }
     
@@ -77,9 +78,10 @@ public class Network {
             this.id = id;
         }
 
+        @Override
         public void receive(ClientNetworkSystem system, Connection pc) {
             Entity entity = system.cems.get(id);
-            system.csms.changeFixedEntity(entity);
+            ClientGlobals.playerEntity = entity;
         }
         
         public String toString() {

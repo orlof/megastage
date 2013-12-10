@@ -1,10 +1,7 @@
 package org.megastage.client;
 
-import com.cubes.BlockTerrainControl;
 import com.cubes.CubesSettings;
-import com.cubes.Vector3Int;
 import com.cubes.test.CubesTestAssets;
-import com.cubes.test.blocks.Block_Wood;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.DebugKeysAppState;
 import com.jme3.app.SimpleApplication;
@@ -13,7 +10,6 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
@@ -47,19 +43,27 @@ public class Main extends SimpleApplication {
 
     private PlanetAppState planetAppState;
     private ArtemisState artemisAppState;
-    private SpectatorCamera spectatorCam;
+    //private SpectatorCamera spectatorCam;
     
     public Main() {
-        super( new StatsAppState(), new DebugKeysAppState(), new SpectatorCamAppState() );
+        super();
+        //super( new StatsAppState(), new DebugKeysAppState()/*, new SpectatorCamAppState() */);
     }
     
     @Override
     public void simpleInitApp() {
+        flyCam.setEnabled(true);
+        flyCam.setMoveSpeed(25);
+        
         ClientGlobals.rootNode = rootNode;
-        cam.setLocation(new Vector3f(0, 0, 0));
+        //cam.setLocation(new Vector3f(16, 6, 60));
 
+        ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
+        ClientGlobals.rootNode.attachChild(ClientGlobals.fixedNode);
+        
         ClientGlobals.sysRotNode.addControl(new SystemRotationControl());
         ClientGlobals.sysMovNode.addControl(new SystemPositionControl());
+        
         rootNode.attachChild(ClientGlobals.sysRotNode);
 
         ClientGlobals.sysRotNode.attachChild(ClientGlobals.sysMovNode);
@@ -71,15 +75,15 @@ public class Main extends SimpleApplication {
 
         // Add planet app state
         planetAppState = new PlanetAppState(null);
-        planetAppState.setShadowsEnabled(ClientGlobals.gfxQuality.PLANET_SHADOWS_ENABLED);
+        //planetAppState.setShadowsEnabled(ClientGlobals.gfxQuality.PLANET_SHADOWS_ENABLED);
         stateManager.attach(planetAppState);
 
         // Add ECS app state
         artemisAppState = new ArtemisState();
         stateManager.attach(artemisAppState);
         
-        spectatorCam = new SpectatorCamera(cam, artemisAppState);
-        stateManager.getState(SpectatorCamAppState.class).setCamera(spectatorCam);
+        //spectatorCam = new SpectatorCamera(cam);
+        //stateManager.getState(SpectatorCamAppState.class).setCamera(spectatorCam);
 
         //SpectatorModeInputManager in = new SpectatorModeInputManager(this);
         //in.init();
@@ -101,10 +105,10 @@ public class Main extends SimpleApplication {
         // slow camera down as we approach a planet
         Planet planet = planetAppState.getNearestPlanet();
         if (planet != null && planet.getPlanetToCamera() != null) {
-            this.spectatorCam.setMoveSpeed(
-                    FastMath.clamp(planet.getDistanceToCamera(), 100, 100000));
+            //this.spectatorCam.setMoveSpeed(
+            //        FastMath.clamp(planet.getDistanceToCamera(), 100, 100000));
         } else {
-            this.spectatorCam.setMoveSpeed(100000);
+            //this.spectatorCam.setMoveSpeed(100000);
         }
     }
 

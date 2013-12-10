@@ -11,9 +11,7 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Position;
-import org.megastage.components.server.ShipGeometry;
 import org.megastage.util.ClientGlobals;
-import org.megastage.util.Globals;
 
 /**
  *
@@ -33,12 +31,13 @@ public class PositionControl extends AbstractControl {
         if(Log.TRACE) Log.trace("Parent: " + spatial.getParent().getName());
         Position position = entity.getComponent(Position.class);
         if(position != null) {
-            if(ClientGlobals.fixedEntity == entity) {
+            if(ClientGlobals.shipEntity == entity) {
                 spatial.setLocalTranslation(0,0,0);
             } else {
                 Vector3f vpos = position.getAsVector();
                 spatial.setLocalTranslation(vpos);
             }            
+            if(Log.TRACE) Log.trace(position.toString());
         }
         if(Log.TRACE) Log.trace("Local" + spatial.getLocalTranslation().toString());
         if(Log.TRACE) Log.trace("World" + spatial.getWorldTranslation().toString());            

@@ -27,7 +27,7 @@ public class RotationControl extends AbstractControl {
         if(Log.TRACE) Log.trace("Parent: " + spatial.getParent().getName());
         Rotation rotation = entity.getComponent(Rotation.class);
         if(rotation != null) {
-            if(ClientGlobals.fixedEntity == entity) {
+            if(ClientGlobals.shipEntity == entity) {
                 spatial.setLocalRotation(Quaternion.IDENTITY);
             } else {
                 Quaternion q = new Quaternion().fromAngles(0, (float) rotation.y, 0);

@@ -25,7 +25,6 @@ public class EntityFactory {
         entity.addComponent(id);
 
         Log.info(entity.toString());
-        if(parent != null) Log.debug("Parent[" + parent.getId() + "]");
 
         try {
             for(Element e: element.getChildren("component")) {

@@ -25,7 +25,7 @@ public class VoidGeometry extends EntityComponent {
 
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        system.csms.setupNode(entity, this);
+        system.csms.setupVoidNode(entity, this);
     }
     
     public String toString() {

@@ -11,6 +11,7 @@ import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
 import org.megastage.protocol.Network;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 
 /**
  *
@@ -19,10 +20,6 @@ import org.megastage.systems.ClientNetworkSystem;
 public class BindTo extends EntityComponent {
     public int entityID; 
     
-//    public BindTo(Entity entity) {
-//        this.entityID = entity.getId();
-//    }
-
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {
         entityID = parent.getId();
@@ -36,7 +33,15 @@ public class BindTo extends EntityComponent {
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
         Entity parent = system.cems.get(entityID);
-        system.csms.attachChild(parent, entity);
+
+        if(ClientGlobals.playerEntity == entity) {
+            system.csms.changeShip(parent);
+        } else {
+            system.csms.bindTo(parent, entity);
+        }
     }
 
+    public String toString() {
+        return "BindTo(serverID=" + entityID + ")";
+    }
 }

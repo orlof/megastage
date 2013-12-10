@@ -6,11 +6,8 @@ import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.client.controls.PositionControl;
-import org.megastage.components.client.ClientSpatial;
 import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
-import org.megastage.util.Globals;
 import org.megastage.util.Vector;
 
 /**
