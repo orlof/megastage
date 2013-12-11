@@ -13,11 +13,8 @@ import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.system.AppSettings;
-import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
-import org.megastage.client.controls.PositionControl;
-import org.megastage.client.controls.RotationControl;
 import org.megastage.client.controls.SystemPositionControl;
 import org.megastage.client.controls.SystemRotationControl;
 import org.megastage.util.ClientGlobals;
@@ -34,7 +31,7 @@ public class Main extends SimpleApplication {
     
     public static void main(String[] args) {
         Log.setLogger(new LogFormat());
-        Log.set(Log.LEVEL_TRACE);
+        Log.set(Log.LEVEL_INFO);
 
         AppSettings settings = new AppSettings(true);
         settings.setResolution(ClientGlobals.gfxQuality.SCREEN_WIDTH, ClientGlobals.gfxQuality.SCREEN_HEIGHT);

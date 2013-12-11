@@ -65,13 +65,9 @@ public class Network {
         kryo.register(VoidGeometry.class);
         kryo.register(Vector.class);
         kryo.register(LoginResponse.class);
+        kryo.register(UserCommand.class);
     }
 
-    static public abstract class EventMessage implements Message {
-        @Override
-        public void receive(ClientNetworkSystem system, Connection pc) {}
-    }
-    
     static public class Login extends EventMessage {}
     static public class Logout extends EventMessage {}
     
@@ -82,12 +78,6 @@ public class Network {
     static public class KeyTyped extends KeyEvent {}
     static public class KeyReleased extends KeyEvent {}
 
-    static public class AnalogInput extends EventMessage {
-        public String name;
-        public float value;
-        public float tpf;
-    }
-    
     static public class EntityData implements Message {
         public int entityID;
         public EntityComponent component;

@@ -98,7 +98,7 @@
     <entity-template name="Apollo 13">
         <component type="Position" x="0" y="0" z="100000"/>
         <component type="Rotation"/>
-        <component type="server.ShipGeometry" size="16" entry_x="8" entry_y="2" entry_z="32"/>
+        <component type="server.ShipGeometry" size="16" entry_x="8" entry_y="2" entry_z="8"/>
         <!--component type="Velocity" x="0" y="0" z="0"/>
         <component type="Acceleration"/>
         <component type="Mass" radius_km="0.02" mass_kg="1000000"/-->

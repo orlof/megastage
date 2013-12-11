@@ -9,11 +9,12 @@ import com.esotericsoftware.kryonet.Connection;
 import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
 
-public class LoginResponse extends Network.EventMessage {
+public class LoginResponse extends EventMessage {
     private int id = 0;
 
-    public LoginResponse() { /* Kryonet */ }
+    public LoginResponse() {}
     public LoginResponse(int id) {
+        this();
         this.id = id;
     }
 

@@ -11,10 +11,11 @@ import com.jme3.input.MouseInput;
 import com.jme3.input.controls.*;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
+import org.megastage.protocol.UserCommand;
 import org.megastage.util.ClientGlobals;
-import org.megastage.util.Vector;
 
 
 /**
@@ -38,6 +39,8 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
 
             "WALK_MoveForward",
             "WALK_MoveBackward",
+            "WALK_MoveLeft",
+            "WALK_MoveRight",
 
             "WALK_InvertY"
         };
@@ -45,7 +48,7 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
     protected float rotationSpeed = 1f;
     protected float moveSpeed = 3f;
     protected boolean enabled = true;
-    protected boolean invertY = false;
+    protected boolean invertY = true;
     protected InputManager inputManager;
     
     /**
@@ -117,6 +120,8 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
         // keyboard only WASD for movement and WZ for rise/lower height
         inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
+        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_D));
 
         inputManager.addListener(this, mappings);
         inputManager.setCursorVisible(false);
@@ -152,9 +157,10 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
                 (float) playerRotation.z, (float) playerRotation.w);
 
         float[] eulerAngles = playerQuaternion.toAngles(null);
-        eulerAngles[2] = FastMath.clamp(eulerAngles[2] + value, -FastMath.HALF_PI, FastMath.HALF_PI);
+        eulerAngles[0] = FastMath.clamp(eulerAngles[0] + value, -FastMath.HALF_PI, FastMath.HALF_PI);
+        eulerAngles[2] = 0f;
         
-        playerQuaternion.fromAngles(eulerAngles);
+        playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
 
         playerRotation.x = playerQuaternion.getX();
         playerRotation.y = playerQuaternion.getY();
@@ -171,9 +177,10 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
                 (float) playerRotation.z, (float) playerRotation.w);
 
         float[] eulerAngles = playerQuaternion.toAngles(null);
-        eulerAngles[0] = (eulerAngles[0] + value) % FastMath.TWO_PI;
+        eulerAngles[1] = (eulerAngles[1] + value) % FastMath.TWO_PI;
+        eulerAngles[2] = 0f;
         
-        playerQuaternion.fromAngles(eulerAngles);
+        playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
 
         playerRotation.x = playerQuaternion.getX();
         playerRotation.y = playerQuaternion.getY();
@@ -181,7 +188,7 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
         playerRotation.w = playerQuaternion.getW();
     }
     
-    protected void move(float value) {
+    protected void move(float value, boolean sideways) {
         Rotation playerRotation = ClientGlobals.playerEntity.getComponent(Rotation.class);
         if(playerRotation == null) return;
 
@@ -190,9 +197,15 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
                 (float) playerRotation.z, (float) playerRotation.w);
 
         float[] eulerAngles = playerQuaternion.toAngles(null);
-        eulerAngles[1] = 0f;
+        eulerAngles[0] = 0f;
+        if(sideways) eulerAngles[1] += FastMath.HALF_PI;
         eulerAngles[2] = 0f;
-        playerQuaternion.fromAngles(eulerAngles);
+        playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
+        
+        Vector3f playerMovement = new Vector3f(0, 0, value * moveSpeed);
+        playerQuaternion.multLocal(playerMovement);
+        
+        ClientGlobals.network.sendUserCmd(new UserCommand(playerMovement.x, playerMovement.z));
     }
 
     @Override
@@ -214,10 +227,16 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
                 lookUp(-value * (invertY ? -1 : 1));
                 break;
             case "WALK_MoveForward":
-                move(value);
+                move(value, false);
                 break;
             case "WALK_MoveBackward":
-                move(-value);
+                move(-value, false);
+                break;
+            case "WALK_MoveLeft":
+                move(value, true);
+                break;
+            case "WALK_MoveRight":
+                move(-value, true);
                 break;
         }
     }
