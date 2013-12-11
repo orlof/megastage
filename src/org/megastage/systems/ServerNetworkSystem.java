@@ -24,6 +24,7 @@ import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.server.BindTo;
 import org.megastage.components.server.ShipGeometry;
 import org.megastage.protocol.LoginResponse;
+import org.megastage.protocol.UserCommand;
 import org.megastage.server.TemplateManager;
 import org.megastage.util.ClientGlobals;
 import org.megastage.util.Vector;
@@ -176,11 +177,10 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         }
     }
     
-    private void handleUserCmd(PlayerConnection connection, Vector v) {
+    private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
         Position pos = connection.player.getComponent(Position.class);
-        pos.x += 1000 * v.x;
-        pos.y += 1000 * v.y;
-        pos.z += 1000 * v.z;
+        pos.x += 1000 * cmd.x;
+        pos.z += 1000 * cmd.z;
 
         connection.sendUDP(pos.create(connection.player));
     }
@@ -208,8 +208,8 @@ public class ServerNetworkSystem extends VoidEntitySystem {
             } else if(o instanceof Network.KeyEvent) {
                 handleKeyEventMessage(pc, (Network.KeyEvent) o);
             
-            } else if(o instanceof Vector) {
-                handleUserCmd(pc, (Vector) o);
+            } else if(o instanceof UserCommand) {
+                handleUserCmd(pc, (UserCommand) o);
             }
         }
     }

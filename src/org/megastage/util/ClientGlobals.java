@@ -27,7 +27,7 @@ public class ClientGlobals {
     public static final Node fixedNode = new Node("fixed_node");
     public static final Node playerNode = new Node("player");
 
-    public static GFXQuality gfxQuality = new GFXLowQuality();
+    public static GFXQuality gfxQuality = new GFXQuality();
     public static double scale = 1000.0;
     public static CubesSettings cubesSettings;
     
