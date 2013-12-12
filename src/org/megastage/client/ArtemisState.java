@@ -6,6 +6,7 @@ package org.megastage.client;
 
 import org.megastage.systems.ClientEntityManagerSystem;
 import com.artemis.World;
+import com.esotericsoftware.minlog.Log;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
@@ -37,8 +38,8 @@ public class ArtemisState extends AbstractAppState {
         world.setSystem(new OrbitalMovementSystem());
         world.setSystem(new ClientFixedRotationSystem());
 
-        ClientGlobals.network = new ClientNetworkSystem();
-        world.setSystem(ClientGlobals.network, true);
+        ClientGlobals.network = new ClientNetworkSystem(20);
+        world.setSystem(ClientGlobals.network);
 
         world.initialize();
 
@@ -48,6 +49,10 @@ public class ArtemisState extends AbstractAppState {
 
     @Override
     public void update(float tpf) {
+        world.setDelta(tpf);
+
+        ClientGlobals.time = System.currentTimeMillis() + ClientGlobals.timeDiff;
+        
         world.process();
     }
 

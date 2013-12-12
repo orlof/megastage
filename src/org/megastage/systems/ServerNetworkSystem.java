@@ -178,9 +178,10 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     }
     
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
+        if(connection.player == null) return;
         Position pos = connection.player.getComponent(Position.class);
-        pos.x += 1000 * cmd.x;
-        pos.z += 1000 * cmd.z;
+        pos.x += 1000 * cmd.dx;
+        pos.z += 1000 * cmd.dz;
 
         connection.sendUDP(pos.create(connection.player));
     }

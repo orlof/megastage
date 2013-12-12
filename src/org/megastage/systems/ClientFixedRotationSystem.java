@@ -5,6 +5,8 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import org.megastage.components.FixedRotation;
 import org.megastage.components.Rotation;
 
@@ -27,10 +29,13 @@ public class ClientFixedRotationSystem extends EntityProcessingSystem {
     protected void process(Entity entity) {
         FixedRotation fr = FIXED_ROTATION.get(entity);
         
+        Quaternion rotation = new Quaternion().fromAngles((float) fr.getX(), (float) fr.getY(), (float) fr.getZ()).normalizeLocal();
+
         Rotation r = ROTATION.get(entity);
-        r.x = (float) fr.getX();
-        r.y = (float) fr.getY();
-        r.z = (float) fr.getZ();
+        r.x = rotation.getX();
+        r.y = rotation.getY();
+        r.z = rotation.getZ();
+        r.w = rotation.getW();
     }
 
 }
