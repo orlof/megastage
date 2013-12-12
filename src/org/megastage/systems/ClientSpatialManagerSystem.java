@@ -148,12 +148,12 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         final Node node = createUserNode(entity);
         node.attachChild(createPlanet(data));
 
-        PlanetAppState appState = app.getStateManager().getState(PlanetAppState.class);
-        if(appState != null) appState.addPlanet((Planet) node.getChild(0));
-
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
+                PlanetAppState appState = app.getStateManager().getState(PlanetAppState.class);
+                if(appState != null) appState.addPlanet((Planet) node.getChild(0));
+
                 if(node.getParent() == null) {
                     ClientGlobals.sysMovNode.attachChild(node);
                 }
@@ -180,6 +180,7 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
 
         final Node node = createUserNode(entity);
         node.attachChild(shipNode);
+        shipNode.setLocalTranslation(-data.size, -1, -data.size);
         
         app.enqueue(new Callable() {
             @Override

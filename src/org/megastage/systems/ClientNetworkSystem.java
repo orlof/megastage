@@ -31,7 +31,6 @@ public class ClientNetworkSystem extends EntitySystem {
     
     @Override
     protected boolean checkProcessing() {
-        Log.info(""+ClientGlobals.time);
         if(ClientGlobals.time >= acc) {
                 acc = ClientGlobals.time + interval;
                 return true;
@@ -75,12 +74,10 @@ public class ClientNetworkSystem extends EntitySystem {
     }
 	
     protected void processSystem() {
-        if(userCommand.count > 0) {
-            client.sendUDP(userCommand);
-            userCommand.dx = 0f;
-            userCommand.dz = 0f;
-            Log.info("User command count: " + userCommand.count);
-            userCommand.count = 0;
+        if(ClientGlobals.userCommand.count > 0) {
+            Log.info(ClientGlobals.userCommand.toString());
+            client.sendUDP(ClientGlobals.userCommand);
+            ClientGlobals.userCommand.reset();
         }
     }
 
@@ -112,14 +109,6 @@ public class ClientNetworkSystem extends EntitySystem {
         client.sendTCP(msg);
     }
 
-    private final UserCommand userCommand = new UserCommand();
-    public void sendUserCmd(UserCommand cmd) {
-        userCommand.dx += cmd.dx;
-        userCommand.dz += cmd.dz;
-        userCommand.count += 1;
-    }
-
-
     private class ClientNetworkListener extends Listener {
         @Override
         public void connected(Connection connection) {
@@ -143,7 +132,7 @@ public class ClientNetworkSystem extends EntitySystem {
         }
         
         public void handlePacket(Connection pc, Object o) {
-            Log.info("Received: " + o.toString());
+            Log.debug("Received: " + o.toString());
             
             if(o instanceof Message) {
                 ((Message) o).receive(ClientNetworkSystem.this, pc);

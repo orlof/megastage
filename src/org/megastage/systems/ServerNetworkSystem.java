@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Position;
+import org.megastage.components.Rotation;
 import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.server.BindTo;
 import org.megastage.components.server.ShipGeometry;
@@ -27,6 +28,7 @@ import org.megastage.protocol.LoginResponse;
 import org.megastage.protocol.UserCommand;
 import org.megastage.server.TemplateManager;
 import org.megastage.util.ClientGlobals;
+import org.megastage.util.Quaternion;
 import org.megastage.util.Vector;
 
 public class ServerNetworkSystem extends VoidEntitySystem {
@@ -42,6 +44,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     @Override
     protected void initialize() {
         server = new Server() {
+            @Override
             protected Connection newConnection () {
                 // By providing our own connection implementation, we can store per
                 // connection state without a connection ID to state look up.
@@ -179,11 +182,50 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
         if(connection.player == null) return;
+        
         Position pos = connection.player.getComponent(Position.class);
-        pos.x += 1000 * cmd.dx;
-        pos.z += 1000 * cmd.dz;
+        pos.x += 1000 * cmd.xMove;
+        pos.z += 1000 * cmd.zMove;
 
         connection.sendUDP(pos.create(connection.player));
+        
+        BindTo bindTo = connection.player.getComponent(BindTo.class);
+        Entity ship = world.getEntity(bindTo.entityID);
+        
+        Rotation shipRotation = ship.getComponent(Rotation.class);
+        Quaternion shipRotationQuaternion = shipRotation.getQuaternion();
+        
+        Vector vel = new Vector(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
+        
+        vel = vel.multiply(50000000);
+        
+        Position shipPos = ship.getComponent(Position.class);
+        shipPos.x += vel.x;
+        shipPos.y += vel.y;
+        shipPos.z += vel.z;
+
+        connection.sendUDP(shipPos.create(ship));
+        
+        // rotate rotation axis by fixedEntity rotation
+        Vector yAxis = new Vector(0, 1, 0).multiply(shipRotationQuaternion);
+        Quaternion yRotation = new Quaternion(yAxis, cmd.shipYaw);
+        
+        Vector zAxis = new Vector(0, 0, 1).multiply(shipRotationQuaternion);
+        Quaternion zRotation = new Quaternion(zAxis, cmd.shipRoll);
+
+        Vector xAxis = new Vector(1, 0, 0).multiply(shipRotationQuaternion);
+        Quaternion xRotation = new Quaternion(xAxis, cmd.shipPitch);
+
+        shipRotationQuaternion = yRotation.multiply(shipRotationQuaternion).normalize();
+        shipRotationQuaternion = zRotation.multiply(shipRotationQuaternion).normalize();
+        shipRotationQuaternion = xRotation.multiply(shipRotationQuaternion).normalize();
+        
+        shipRotation.x = shipRotationQuaternion.x;
+        shipRotation.y = shipRotationQuaternion.y;
+        shipRotation.z = shipRotationQuaternion.z;
+        shipRotation.w = shipRotationQuaternion.w;
+
+        connection.sendUDP(shipRotation.create(ship));
     }
 
     private class ServerNetworkListener extends Listener {

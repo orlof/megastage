@@ -3,6 +3,7 @@ package org.megastage.util;
 import com.artemis.Entity;
 import com.cubes.CubesSettings;
 import com.jme3.scene.Node;
+import org.megastage.protocol.UserCommand;
 import org.megastage.systems.ClientNetworkSystem;
 
 /**
@@ -27,9 +28,10 @@ public class ClientGlobals {
     public static final Node fixedNode = new Node("fixed_node");
     public static final Node playerNode = new Node("player");
 
-    public static GFXQuality gfxQuality = new GFXQuality();
+    public static GFXQuality gfxQuality = new GFXLowQuality();
     public static double scale = 1000.0;
     public static CubesSettings cubesSettings;
+    public static final UserCommand userCommand = new UserCommand();
     
     public static class GFXQuality {
         public static int SPHERE_Z_SAMPLES = 32;
@@ -42,12 +44,12 @@ public class ClientGlobals {
     }
     
     public static class GFXLowQuality extends GFXQuality {
-        public static int Z1 = SPHERE_Z_SAMPLES = 8;
-        public static int Z2 = SPHERE_RADIAL_SAMPLES = 8;
-        public static int Z3 = PLANET_PLANAR_QUADS_PER_PATCH = 8;
+        public static int Z1 = SPHERE_Z_SAMPLES = 6;
+        public static int Z2 = SPHERE_RADIAL_SAMPLES = 6;
+        public static int Z3 = PLANET_PLANAR_QUADS_PER_PATCH = 4;
         public static boolean Z8 = PLANET_FAR_FILTER_ENABLED = false;
-        public static int Z5 = SCREEN_WIDTH = 320;
-        public static int Z6 = SCREEN_HEIGHT = 200;
+        public static int Z5 = SCREEN_WIDTH = 640;
+        public static int Z6 = SCREEN_HEIGHT = 400;
         public static boolean Z7 = ENABLE_LEM_BLINKING = false;
     }
     

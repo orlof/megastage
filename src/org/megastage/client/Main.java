@@ -3,9 +3,7 @@ package org.megastage.client;
 import com.cubes.CubesSettings;
 import com.cubes.test.CubesTestAssets;
 import com.esotericsoftware.minlog.Log;
-import com.jme3.app.DebugKeysAppState;
 import com.jme3.app.SimpleApplication;
-import com.jme3.app.StatsAppState;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -46,7 +44,7 @@ public class Main extends SimpleApplication {
     private ArtemisState artemisAppState;
     
     public Main() {
-        super( new StatsAppState(), new DebugKeysAppState());
+        super(null);
     }
     
     @Override

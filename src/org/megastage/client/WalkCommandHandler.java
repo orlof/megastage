@@ -31,61 +31,57 @@ import org.megastage.util.ClientGlobals;
  */
 public class WalkCommandHandler implements AnalogListener, ActionListener {
 
-    private static String[] mappings = new String[]{
-            "WALK_LookLeft",
-            "WALK_LookRight",
-            "WALK_LookUp",
-            "WALK_LookDown",
+    private static String[] mappings = new String[] {
+        "WALK_LookLeft",
+        "WALK_LookRight",
+        "WALK_LookUp",
+        "WALK_LookDown",
 
-            "WALK_MoveForward",
-            "WALK_MoveBackward",
-            "WALK_MoveLeft",
-            "WALK_MoveRight",
+        "WALK_MoveForward",
+        "WALK_MoveBackward",
+        "WALK_MoveLeft",
+        "WALK_MoveRight",
 
-            "WALK_InvertY"
-        };
+        "WALK_InvertY",
+
+        "SHIP_MoveForward",
+        "SHIP_MoveBackward",
+        "SHIP_MoveUp",
+        "SHIP_MoveDown",
+        "SHIP_MoveLeft",
+        "SHIP_MoveRight",
+
+        "SHIP_PitchUp",
+        "SHIP_PitchDown",
+        "SHIP_RollCW",
+        "SHIP_RollCCW",
+        "SHIP_YawLeft",
+        "SHIP_YawRight",
+    };
 
     protected float rotationSpeed = 1f;
-    protected float moveSpeed = 3f;
+    protected float walkSpeed = 3f;
+    protected float shipSpeed = 10000f;
     protected boolean enabled = true;
     protected boolean invertY = true;
     protected InputManager inputManager;
     
-    /**
-     * Sets the move speed. The speed is given in world units per second.
-     * @param moveSpeed
-     */
-    public void setMoveSpeed(float moveSpeed){
-        this.moveSpeed = moveSpeed;
+    public void setWalkSpeed(float walkSpeed){
+        this.walkSpeed = walkSpeed;
     }
     
-    /**
-     * Gets the move speed. The speed is given in world units per second.
-     * @return moveSpeed
-     */
-    public float getMoveSpeed(){
-        return moveSpeed;
+    public float getWalkSpeed(){
+        return walkSpeed;
     }
 
-    /**
-     * Sets the rotation speed.
-     * @param rotationSpeed
-     */
     public void setRotationSpeed(float rotationSpeed){
         this.rotationSpeed = rotationSpeed;
     }
     
-    /**
-     * Gets the move speed. The speed is given in world units per second.
-     * @return rotationSpeed
-     */
     public float getRotationSpeed(){
         return rotationSpeed;
     }
     
-    /**
-     * @param enable If false, the camera will ignore input.
-     */
     public void setEnabled(boolean enable){
         if (enabled && !enable){
             if (inputManager!= null){
@@ -95,19 +91,10 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
         enabled = enable;
     }
 
-    /**
-     * @return If enabled
-     * @see FlyByCamera#setEnabled(boolean)
-     */
     public boolean isEnabled(){
         return enabled;
     }
 
-    /**
-     * Registers the FlyByCamera to receive input events from the provided
-     * Dispatcher.
-     * @param inputManager
-     */
     public void registerWithInput(InputManager inputManager){
         this.inputManager = inputManager;
         
@@ -118,10 +105,24 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
         inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
 
         // keyboard only WASD for movement and WZ for rise/lower height
-        inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_D));
+        inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_UP));
+        inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_DOWN));
+        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_LEFT));
+        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_RIGHT));
+
+        inputManager.addMapping("SHIP_MoveForward", new KeyTrigger(KeyInput.KEY_W));
+        inputManager.addMapping("SHIP_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("SHIP_MoveUp", new KeyTrigger(KeyInput.KEY_Q));
+        inputManager.addMapping("SHIP_MoveDown", new KeyTrigger(KeyInput.KEY_Z));
+        inputManager.addMapping("SHIP_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
+        inputManager.addMapping("SHIP_MoveRight", new KeyTrigger(KeyInput.KEY_D));
+        
+        inputManager.addMapping("SHIP_PitchUp", new KeyTrigger(KeyInput.KEY_I));
+        inputManager.addMapping("SHIP_PitchDown", new KeyTrigger(KeyInput.KEY_K));
+        inputManager.addMapping("SHIP_RollCW", new KeyTrigger(KeyInput.KEY_L));
+        inputManager.addMapping("SHIP_RollCCW", new KeyTrigger(KeyInput.KEY_J));
+        inputManager.addMapping("SHIP_YawLeft", new KeyTrigger(KeyInput.KEY_U));
+        inputManager.addMapping("SHIP_YawRight", new KeyTrigger(KeyInput.KEY_O));
 
         inputManager.addListener(this, mappings);
         inputManager.setCursorVisible(false);
@@ -148,6 +149,88 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
         inputManager.setCursorVisible(false);
     }
 
+    @Override
+    public void onAnalog(String name, float value, float tpf) {
+        if (!enabled)
+            return;
+        
+        switch (name) {
+            case "WALK_LookLeft":
+                lookLeft(value);
+                break;
+            case "WALK_LookRight":
+                lookLeft(-value);
+                break;
+            case "WALK_LookUp":
+                lookUp(value * (invertY ? -1 : 1));
+                break;
+            case "WALK_LookDown":
+                lookUp(-value * (invertY ? -1 : 1));
+                break;
+            case "WALK_MoveForward":
+                move(value, false);
+                break;
+            case "WALK_MoveBackward":
+                move(-value, false);
+                break;
+            case "WALK_MoveLeft":
+                move(value, true);
+                break;
+            case "WALK_MoveRight":
+                move(-value, true);
+                break;
+            case "SHIP_MoveForward":
+                moveShip(0, 0, value);
+                break;
+            case "SHIP_MoveBackward":
+                moveShip(0, 0, -value);
+                break;
+            case "SHIP_MoveUp":
+                moveShip(0, value, 0);
+                break;
+            case "SHIP_MoveDown":
+                moveShip(0, -value, 0);
+                break;
+            case "SHIP_MoveLeft":
+                moveShip(-value, 0, 0);
+                break;
+            case "SHIP_MoveRight":
+                moveShip(value, 0, 0);
+                break;
+            case "SHIP_PitchUp":
+                pitch(value);
+                break;
+            case "SHIP_PitchDown":
+                pitch(-value);
+                break;
+            case "SHIP_RollCW":
+                roll(-value);
+                break;
+            case "SHIP_RollCCW":
+                roll(value);
+                break;
+            case "SHIP_YawLeft":
+                yaw(value);
+                break;
+            case "SHIP_YawRight":
+                yaw(-value);
+                break;
+        }
+    }
+
+    @Override
+    public void onAction(String name, boolean value, float tpf) {
+        if (!enabled)
+            return;
+
+        if (name.equals("WALK_InvertY")) {
+            // Toggle on the up.
+            if( !value ) {  
+                invertY = !invertY;
+            }
+        }        
+    }
+
     protected void lookUp(float value) {
         Rotation playerRotation = ClientGlobals.playerEntity.getComponent(Rotation.class);
         if(playerRotation == null) return;
@@ -157,7 +240,7 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
                 (float) playerRotation.z, (float) playerRotation.w);
 
         float[] eulerAngles = playerQuaternion.toAngles(null);
-        eulerAngles[0] = FastMath.clamp(eulerAngles[0] + value, -FastMath.HALF_PI, FastMath.HALF_PI);
+        eulerAngles[0] = FastMath.clamp(eulerAngles[0] + value, -0.9f * FastMath.HALF_PI, 0.9f * FastMath.HALF_PI);
         eulerAngles[2] = 0f;
         
         playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
@@ -202,56 +285,26 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
         eulerAngles[2] = 0f;
         playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
         
-        Vector3f playerMovement = new Vector3f(0, 0, value * moveSpeed);
+        Vector3f playerMovement = new Vector3f(0, 0, value * walkSpeed);
         playerQuaternion.multLocal(playerMovement);
         
-        ClientGlobals.network.sendUserCmd(new UserCommand(playerMovement.x, playerMovement.z));
+        ClientGlobals.userCommand.move(playerMovement.x, playerMovement.z);
     }
 
-    @Override
-    public void onAnalog(String name, float value, float tpf) {
-        if (!enabled)
-            return;
-        
-        switch (name) {
-            case "WALK_LookLeft":
-                lookLeft(value);
-                break;
-            case "WALK_LookRight":
-                lookLeft(-value);
-                break;
-            case "WALK_LookUp":
-                lookUp(value * (invertY ? -1 : 1));
-                break;
-            case "WALK_LookDown":
-                lookUp(-value * (invertY ? -1 : 1));
-                break;
-            case "WALK_MoveForward":
-                move(value, false);
-                break;
-            case "WALK_MoveBackward":
-                move(-value, false);
-                break;
-            case "WALK_MoveLeft":
-                move(value, true);
-                break;
-            case "WALK_MoveRight":
-                move(-value, true);
-                break;
-        }
+    private void moveShip(float x, float y, float z) {
+        ClientGlobals.userCommand.shipMove(x, y, z);
     }
 
-    @Override
-    public void onAction(String name, boolean value, float tpf) {
-        if (!enabled)
-            return;
+    private void pitch(float value) {
+        ClientGlobals.userCommand.shipPitch(value);
+    }
 
-        if (name.equals("WALK_InvertY")) {
-            // Toggle on the up.
-            if( !value ) {  
-                invertY = !invertY;
-            }
-        }        
+    private void roll(float value) {
+        ClientGlobals.userCommand.shipRoll(value);
+    }
+
+    private void yaw(float value) {
+        ClientGlobals.userCommand.shipYaw(value);
     }
 
 }
