@@ -41,12 +41,12 @@ public class EngineAccelerationSystem extends EntityProcessingSystem {
             Vector acceleration = force.divide(shipMass);
 
             // rotate acceleration into global coordinate system
-            Quaternion orientation = ROTATION.get(entity).getOrientation();
+            // Quaternion orientation = ROTATION.get(entity).getOrientation();
 
             // convert speed change from local to global -space
-            Vector globalAcceleration = acceleration.multiply(orientation);
+            //Vector globalAcceleration = acceleration.multiply(orientation);
 
-            ACCELERATION.get(engine.ship).add(globalAcceleration);
+            //ACCELERATION.get(engine.ship).add(globalAcceleration);
         }
     }
 }

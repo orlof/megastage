@@ -14,9 +14,25 @@ import org.jdom2.Element;
  * Time: 20:11
  */
 public abstract class BaseComponent extends Component {
-    public abstract void init(World world, Entity parent, Element element) throws Exception;
+    public void init(World world, Entity parent, Element element) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
-    protected long getLongValue(Element config, String attrName, long defaultValue) {
+    public Object create(Entity entity) { 
+        return null; 
+    }
+    
+    protected static String getStringValue(Element config, String attrName, String defaultValue) {
+        Attribute attr = config.getAttribute(attrName);
+
+        if(attr != null) {
+            return attr.getValue();
+        }
+
+        return defaultValue;
+    }
+
+    protected static long getLongValue(Element config, String attrName, long defaultValue) {
         Attribute attr = config.getAttribute(attrName);
 
         try {
@@ -30,7 +46,7 @@ public abstract class BaseComponent extends Component {
         return defaultValue;
     }
 
-    protected int getIntegerValue(Element config, String attrName, int defaultValue) {
+    protected static int getIntegerValue(Element config, String attrName, int defaultValue) {
         Attribute attr = config.getAttribute(attrName);
 
         if(attr != null) {
@@ -46,7 +62,7 @@ public abstract class BaseComponent extends Component {
         return defaultValue;
     }
 
-    protected double getDoubleValue(Element config, String attrName, double defaultValue) {
+    protected static double getDoubleValue(Element config, String attrName, double defaultValue) {
         Attribute attr = config.getAttribute(attrName);
 
         try {
@@ -60,7 +76,7 @@ public abstract class BaseComponent extends Component {
         return defaultValue;
     }
 
-    protected float getFloatValue(Element config, String attrName, float defaultValue) {
+    protected static float getFloatValue(Element config, String attrName, float defaultValue) {
         Attribute attr = config.getAttribute(attrName);
 
         try {

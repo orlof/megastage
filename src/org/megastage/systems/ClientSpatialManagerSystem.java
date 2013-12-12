@@ -6,32 +6,40 @@ package org.megastage.systems;
 
 import com.artemis.Entity;
 import com.artemis.systems.VoidEntitySystem;
+import com.cubes.BlockTerrainControl;
+import com.cubes.Vector3Int;
+import com.cubes.test.blocks.Block_Wood;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
-import com.jme3.light.AmbientLight;
-import com.jme3.light.DirectionalLight;
+import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.LightNode;
 import com.jme3.scene.Node;
-import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture2D;
 import com.jme3.texture.image.ImageRaster;
 import com.jme3.texture.plugins.AWTLoader;
-import com.jme3.util.TangentBinormalGenerator;
 import java.awt.image.BufferedImage;
-import org.megastage.components.ClientRaster;
-import org.megastage.components.ClientSpatial;
-import org.megastage.components.ClientVideoMemory;
-import org.megastage.components.Position;
-import org.megastage.protocol.Network;
+import java.util.HashMap;
+import java.util.concurrent.Callable;
+import jmeplanet.FractalDataSource;
+import jmeplanet.Planet;
+import jmeplanet.PlanetAppState;
+import jmeplanet.test.Utility;
+import org.megastage.client.controls.PositionControl;
+import org.megastage.client.controls.RotationControl;
+import org.megastage.components.client.ClientRaster;
+import org.megastage.components.server.MonitorGeometry;
+import org.megastage.components.server.PlanetGeometry;
+import org.megastage.components.server.ShipGeometry;
+import org.megastage.components.server.SunGeometry;
+import org.megastage.components.server.VoidGeometry;
+import org.megastage.util.ClientGlobals;
 
 /**
  *
@@ -39,73 +47,154 @@ import org.megastage.protocol.Network;
  */
 public class ClientSpatialManagerSystem extends VoidEntitySystem {
 
-    private AssetManager assetManager;
-    private Node rootNode;
-    private Node worldNode;
-    private Node shipNode;
+    private final SimpleApplication app;
+    private final AssetManager assetManager;
+    private ClientEntityManagerSystem cems;
+    private HashMap<Integer, Node> nodes = new HashMap<>();
     
     public ClientSpatialManagerSystem(SimpleApplication app) {
+        this.app = app;
         assetManager = app.getAssetManager();
-        rootNode = app.getRootNode();
+    }
+
+    @Override
+    protected void initialize() {
+        cems = world.getSystem(ClientEntityManagerSystem.class);
+    }
+
+    private Node getNode(Entity entity) {
+        int id = entity.getId();
+        Node node = nodes.get(id);
+ 
+        if(node == null) {
+            node = new Node(entity.toString());
+            nodes.put(id, node);
+        }
         
-        app.getFlyByCamera().setMoveSpeed(50000);
-        
-        //AmbientLight ambient = new AmbientLight();
-        //ambient.setColor(ColorRGBA.White);
-        //rootNode.addLight(ambient);
-        
-        /** Must add a light to make the lit object visible! */
-        DirectionalLight sun = new DirectionalLight();
-        sun.setDirection(new Vector3f(1,0,0).normalizeLocal());
-        sun.setColor(ColorRGBA.White);
-        rootNode.addLight(sun);
-        
-        worldNode = new Node("world");
-        // worldNode.setLocalTranslation(0, 0, -4000000f);
-        worldNode.setLocalTranslation(0, 0, -210000f);
-        rootNode.attachChild(worldNode);
-        
-        shipNode = new Node("ship");
-        rootNode.attachChild(shipNode);
+        return node;
     }
     
-   void setupSphere(Entity entity, Network.SpatialSphereData data) {
-        Log.info("setupSphere");
+    public void changeShip(final Entity shipEntity) {
+        app.enqueue(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                leaveShip();
+                enterShip(shipEntity);
+                return null;
+            }
+        });
+    }
+    
+    public void bindTo(final Entity parentEntity, final Entity childEntity) {
+        app.enqueue(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                Node parentNode = getNode(parentEntity);
+                Node childNode = getNode(childEntity);
+                parentNode.attachChild(childNode);
+                Log.info("Attach " + parentNode.getName() + " <- " + childNode.getName());
+                return null;
+            }
+        });
+    }
+    
+    private Node createUserNode(Entity entity) {
+        // DON'T use for system nodes
+        Node node = getNode(entity);
+ 
+        node.addControl(new PositionControl(entity));
+        node.addControl(new RotationControl(entity));
 
-        Sphere mesh = new Sphere(data.spatial.zSamples, data.spatial.radialSamples, data.spatial.radius);
-        //Sphere mesh = new Sphere(data.spatial.zSamples, data.spatial.radialSamples, 1000000f);
-        mesh.setTextureMode(Sphere.TextureMode.Projected); // better quality on spheres
-
+        return node;
+     }
+    
+    public void setupSunLikeBody(final Entity entity, final SunGeometry data) {
+        Sphere mesh = new Sphere(
+                ClientGlobals.gfxQuality.SPHERE_Z_SAMPLES,
+                ClientGlobals.gfxQuality.SPHERE_RADIAL_SAMPLES, 
+                data.radius);
+        
         Geometry geom = new Geometry(entity.toString(), mesh);
-        TangentBinormalGenerator.generate(mesh);
-        
-        //Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        
-        mat.setTexture("DiffuseMap", assetManager.loadTexture("Textures/Terrain/Pond/Pond.jpg"));
-        mat.setTexture("NormalMap", assetManager.loadTexture("Textures/Terrain/Pond/Pond_normal.png"));
-        mat.setBoolean("UseMaterialColors",true);    
-        mat.setColor("Diffuse",ColorRGBA.White);
-        mat.setColor("Specular",ColorRGBA.White);
-        mat.setFloat("Shininess", 64f);  // [0,128]
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+
+        ColorRGBA colorRGBA = new ColorRGBA();
+        colorRGBA.fromIntRGBA(data.color);
+        mat.setColor("Color", colorRGBA);
         geom.setMaterial(mat);
-        
-        //ColorRGBA colorRGBA = new ColorRGBA();
-        //colorRGBA.fromIntRGBA(data.spatial.color);
-        //mat.setColor("Color", colorRGBA);
-        //geom.setMaterial(mat);
-        
-        worldNode.attachChild(geom);
 
-        entity.addComponent(new ClientSpatial(geom));
+        final Node node = createUserNode(entity);
+        node.attachChild(geom);
 
-        geom.addControl(new PositionControl(entity));
+        final PointLight light = new PointLight();
+        light.setColor(colorRGBA);
+        light.setRadius(data.lightRadius);
+
+        LightNode lightNode = new LightNode(entity.toString() + " Sun Light", light);
+        node.attachChild(lightNode);
+
+        Callable callable = new Callable() {
+            @Override
+            public Object call() throws Exception {
+                ClientGlobals.rootNode.addLight(light);
+                ClientGlobals.sysMovNode.attachChild(node);
+                return null;
+            }
+        };
+        app.enqueue(callable);
+    }
+
+    public void setupPlanetLikeBody(Entity entity, PlanetGeometry data) {
+        // Add planet
+        final Node node = createUserNode(entity);
+        node.attachChild(createPlanet(data));
+
+        app.enqueue(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                PlanetAppState appState = app.getStateManager().getState(PlanetAppState.class);
+                if(appState != null) appState.addPlanet((Planet) node.getChild(0));
+
+                if(node.getParent() == null) {
+                    ClientGlobals.sysMovNode.attachChild(node);
+                }
+                return null;
+            }
+        });
     }
     
-    public void setupMonitor(Entity entity, Network.SpatialMonitorData data) {
-        Log.info("setupMonitor");
+    public void setupVoidNode(Entity entity, VoidGeometry data) {
+        // Add planet
+        final Node node = createUserNode(entity);
+    }
+    
+    public void setupShip(Entity entity, ShipGeometry data) {
+        int chunkSize = data.size / 16 + 1;
+        
+        BlockTerrainControl shipBlockControl = new BlockTerrainControl(ClientGlobals.cubesSettings, new Vector3Int(chunkSize, chunkSize, chunkSize));
 
-        Geometry geom = new Geometry(entity.toString(), new Quad(3,2, true));
+        shipBlockControl.setBlockArea(new Vector3Int(0,0,0), new Vector3Int(data.size, 1, data.size), Block_Wood.class);
+
+        Node shipNode = new Node("main");
+        shipNode.addControl(shipBlockControl);
+        //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
+
+        final Node node = createUserNode(entity);
+        node.attachChild(shipNode);
+        shipNode.setLocalTranslation(-data.size, -1, -data.size);
+        
+        app.enqueue(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                if(node.getParent() == null) {
+                    ClientGlobals.sysMovNode.attachChild(node);
+                }
+                return null;
+            }
+        });
+    }
+
+    public void setupMonitor(final Entity entity, final MonitorGeometry data) {
+        Geometry geom = new Geometry(entity.toString(), new Quad(8, 6, true));
         
         BufferedImage img = new BufferedImage(128, 96, BufferedImage.TYPE_INT_ARGB);
         Image img2 = new AWTLoader().load(img, false);
@@ -117,37 +206,58 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         mat.setTexture("ColorMap", tex);
         geom.setMaterial(mat);
         
-        shipNode.attachChild(geom);
-        
-        entity.addComponent(new ClientSpatial(geom));
-        
-        ClientRaster rasterComponent = new ClientRaster();
+        final Node node = createUserNode(entity);
+        node.attachChild(geom);
+
+        ClientRaster rasterComponent = cems.getComponent(entity, ClientRaster.class);
         rasterComponent.raster = raster;
-        entity.addComponent(rasterComponent);
-        
-        geom.addControl(new PositionControl(entity));
+    }
+
+    private Planet createPlanet(PlanetGeometry data) {
+        Log.info(data.toString());
+        if(data.generator.equalsIgnoreCase("Earth")) {
+            FractalDataSource planetDataSource = new FractalDataSource(4);
+            planetDataSource.setHeightScale(data.radius / 100f);
+            return Utility.createEarthLikePlanet(assetManager, data.radius, null, planetDataSource);
+        } else if(data.generator.equalsIgnoreCase("Moon")) {
+            FractalDataSource planetDataSource = new FractalDataSource(4);
+            planetDataSource.setHeightScale(data.radius / 20f);
+            return Utility.createMoonLikePlanet(assetManager, data.radius, planetDataSource);
+        } else if(data.generator.equalsIgnoreCase("Water")) {
+            return Utility.createWaterPlanet(assetManager, data.radius, null);
+        } 
+
+        throw new RuntimeException("Unknown planet generator: " + data.generator);
     }
 
     @Override
     protected void processSystem() {
     }
 
-    class PositionControl extends AbstractControl {
-        private final Entity entity;
-        public PositionControl(Entity entity) {
-            this.entity = entity;
-        }
+    private void leaveShip() {
+        Entity shipEntity = ClientGlobals.shipEntity;
         
-        @Override
-        protected void controlUpdate(float tpf) {
-            Position position = entity.getComponent(Position.class);
-//            if(position != null) {
-                spatial.setLocalTranslation(position.getAsVector());
-//            }
-        }
+        if(shipEntity != null) {
+            Log.debug(shipEntity.toString());
 
-        @Override
-        protected void controlRender(RenderManager rm, ViewPort vp) {}
-        
+            ClientGlobals.shipEntity = null;
+
+            Node shipNode = getNode(shipEntity);
+            ClientGlobals.sysMovNode.attachChild(shipNode);
+        }
+    }
+    
+    private void enterShip(Entity shipEntity) {
+        Log.debug(shipEntity.toString());
+
+        ClientGlobals.shipEntity = shipEntity;
+
+        Node shipNode = getNode(shipEntity);
+        ClientGlobals.fixedNode.attachChild(shipNode);
+    }
+
+    public void setupPlayer(Entity entity) {
+        ClientGlobals.playerNode.addControl(new PositionControl(entity));
+        ClientGlobals.playerNode.addControl(new RotationControl(entity));
     }
 }

@@ -10,7 +10,6 @@ import org.megastage.components.Orbit;
 import org.megastage.components.Position;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector;
-import com.esotericsoftware.minlog.Log;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,33 +32,28 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
         double time = Globals.time / 1000.0d;
         
         Orbit orbit = ORBIT.get(entity);
-        Mass centerMass = MASS.get(orbit.center);        
+        Entity center = world.getEntity(orbit.center);
+        
+        Mass centerMass = MASS.get(center);        
         Vector localSum = orbit.getLocalCoordinates(time, centerMass.mass);
         
-        while(!isOrbitAroundFixedPosition(orbit)) {
-            orbit = getCentersOrbit(orbit);
-            centerMass = MASS.get(orbit.center);        
+        while(!isOrbitAroundFixedPosition(center)) {
+            orbit = ORBIT.get(center);
+            center = world.getEntity(orbit.center);
+            centerMass = MASS.get(center);        
             localSum = localSum.add(orbit.getLocalCoordinates(time, centerMass.mass));
         }
 
-        Position fixedStar = getCentersFixedPosition(orbit);
+        Position fixedStar = POSITION.get(center);
 
         Position position = POSITION.get(entity);
         position.x = Math.round(localSum.x) + fixedStar.x;
         position.y = fixedStar.y;
         position.z = Math.round(localSum.z) + fixedStar.z;
-        Log.info(position.toString());
+        
     }
 
-    private Position getCentersFixedPosition(Orbit orbit) {
-        return POSITION.get(orbit.center);
-    }
-
-    private Orbit getCentersOrbit(Orbit orbit) {
-        return ORBIT.get(orbit.center);
-    }
-
-    private boolean isOrbitAroundFixedPosition(Orbit orbit) {
-        return !ORBIT.has(orbit.center);
+    private boolean isOrbitAroundFixedPosition(Entity center) {
+        return !ORBIT.has(center);
     }
 }

@@ -7,6 +7,7 @@ import com.artemis.managers.TagManager;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
+import org.megastage.components.Identifier;
 
 
 /**
@@ -18,19 +19,22 @@ import org.megastage.components.BaseComponent;
 public class EntityFactory {
     public static Entity create(World world, Element element, Entity parent) {
         Entity entity = world.createEntity();
+        
+        Identifier id = new Identifier();
+        id.name = element.getAttributeValue("name");
+        entity.addComponent(id);
 
         Log.info(entity.toString());
-        if(parent != null) Log.debug("Parent[" + parent.getId() + "]");
 
         try {
             for(Element e: element.getChildren("component")) {
-                Log.debug("Add Component of type " + e.getAttributeValue("type"));
-
                 Class clazz = Class.forName("org.megastage.components." + e.getAttributeValue("type"));
                 BaseComponent comp = (BaseComponent) clazz.newInstance();
 
                 comp.init(world, parent, e);
                 entity.addComponent(comp);
+
+                Log.debug("Add Component: " + comp.toString());
             }
 
             for(Element e: element.getChildren("group")) {

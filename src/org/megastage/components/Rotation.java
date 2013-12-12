@@ -2,10 +2,10 @@ package org.megastage.components;
 
 import com.artemis.Entity;
 import com.artemis.World;
-import org.jdom2.DataConversionException;
+import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
+import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.Quaternion;
-import org.megastage.util.Vector;
 
 /**
  * MegaStage
@@ -13,60 +13,23 @@ import org.megastage.util.Vector;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class Rotation extends BaseComponent {
-    Entity parent;
-    Quaternion total = new Quaternion();
+public class Rotation extends EntityComponent {
+    public double x=0.0, y=0.0, z=0.0, w=1.0;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
-        this.parent = parent;
+    public void init(World world, Entity parent, Element element) throws Exception {
+    }
+    
+    @Override
+    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
+        system.cems.setComponent(entity, this);
+    }
+    
+    public String toString() {
+        return "Rotation(" + x + ", " + y + ", " + z + ", " + w + ")";
     }
 
-    public Quaternion getOrientation() {
-        if(parent == null) return total;
-
-        Rotation parentRotation = parent.getComponent(Rotation.class);
-        if(parentRotation == null) return total;
-
-        return total.multiply(parentRotation.getOrientation());
+    public Quaternion getQuaternion() {
+        return new Quaternion(w, x, y, z);
     }
-
-    public void rotate(Vector axis, double radians_angle) {
-        // rotate axis to global coordinate system
-        Vector globalAxis = axis.multiply(getOrientation());
-
-        // rotation increment in global coordinate system
-        Quaternion globalRotation = new Quaternion(globalAxis, radians_angle);
-
-        // quaternion for the new coordinate system
-        total = globalRotation.multiply(total);
-
-        debug();
-    }
-
-    public void pitch(double degrees_up) {
-        System.out.println("Rotation.pitch");
-        rotate(new Vector(1.0d, 0.0d, 0.0d), Math.toRadians(degrees_up));
-    }
-
-    public void roll(double degrees_cw) {
-        System.out.println("Rotation.roll");
-        rotate(new Vector(0.0d, 0.0d, 1.0d), -Math.toRadians(degrees_cw));
-    }
-
-    public void yaw(double degrees_right) {
-        System.out.println("Rotation.yaw");
-        rotate(new Vector(0.0d, 1.0d, 0.0d), -Math.toRadians(degrees_right));
-    }
-
-    public void debug() {
-        Vector x = new Vector(1.0d, 0.0d, 0.0d).multiply(getOrientation());
-        System.out.println("x = " + x);
-        Vector y = new Vector(0.0d, 1.0d, 0.0d).multiply(getOrientation());
-        System.out.println("y = " + y);
-        Vector z = new Vector(0.0d, 0.0d, 1.0d).multiply(getOrientation());
-        System.out.println("z = " + z);
-    }
-
-
 }

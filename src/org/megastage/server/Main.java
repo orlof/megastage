@@ -19,13 +19,8 @@ import org.megastage.util.LogFormat;
 public class Main {
     public static void main(String args[]) throws Exception {
         Log.setLogger(new LogFormat());
-        Log.set(Log.LEVEL_DEBUG);
+        Log.set(Log.LEVEL_INFO);
         
-        Object[] t = new Object[5];
-        if(t instanceof Object[]) {
-            System.out.println("TRUE");
-        }
-
         Element root = readConfig(args[0]);
         Game game = new Game(root);
         game.loopForever();
