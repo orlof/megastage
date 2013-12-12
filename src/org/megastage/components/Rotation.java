@@ -5,6 +5,7 @@ import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.Quaternion;
 
 /**
  * MegaStage
@@ -28,4 +29,7 @@ public class Rotation extends EntityComponent {
         return "Rotation(" + x + ", " + y + ", " + z + ", " + w + ")";
     }
 
+    public Quaternion getQuaternion() {
+        return new Quaternion(w, x, y, z);
+    }
 }
