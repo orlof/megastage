@@ -5,17 +5,18 @@
 package org.megastage.protocol;
 
 public class UserCommand {
-    public double x, z;
+    public double dx, dz;
+    public int count;
 
     public UserCommand() {}
     public UserCommand(double x, double z) {
         this();
-        this.x = x;
-        this.z = z;
+        this.dx = x;
+        this.dz = z;
     }
 
     public String toString() {
-        return "UserCommand(x="+x+", z="+z+")";
+        return "UserCommand(dx="+dx+", dz="+dz+")";
     }
 }
 

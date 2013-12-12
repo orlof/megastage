@@ -1,24 +1,43 @@
 package org.megastage.systems;
 
+import com.artemis.Aspect;
 import com.artemis.Entity;
-import com.artemis.systems.VoidEntitySystem;
+import com.artemis.EntitySystem;
+import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.protocol.Network;
-import org.megastage.util.Globals;
 
 import java.io.IOException;
 import org.megastage.protocol.Message;
 import org.megastage.protocol.UserCommand;
-import org.megastage.util.Vector;
+import org.megastage.util.ClientGlobals;
 
-public class ClientNetworkSystem extends VoidEntitySystem {
+public class ClientNetworkSystem extends EntitySystem {
     private Client client;
 
     public ClientEntityManagerSystem cems;
     public ClientSpatialManagerSystem csms;
+
+    public ClientNetworkSystem(long interval) {
+        super(Aspect.getEmpty());
+        this.interval = interval;
+    }
+
+    private long interval;
+    private long acc;
+    
+    @Override
+    protected boolean checkProcessing() {
+        Log.info(""+ClientGlobals.time);
+        if(ClientGlobals.time >= acc) {
+                acc = ClientGlobals.time + interval;
+                return true;
+        }
+        return false;
+    }
 
     @Override
     protected void initialize() {
@@ -38,11 +57,32 @@ public class ClientNetworkSystem extends VoidEntitySystem {
             e.printStackTrace();
         }
 
-        client.addListener(new ClientNetworkListener());
+        client.addListener(new ClientNetworkListener());        
+        client.updateReturnTripTime();
+        while(client.getReturnTripTime() == -1) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+            }
+        }
+        Log.info("RTT: "+ client.getReturnTripTime());
+        ClientGlobals.timeDiff -= client.getReturnTripTime();
     }
 
     @Override
-    protected void processSystem() {}
+    protected final void processEntities(ImmutableBag<Entity> entities) {
+        processSystem();
+    }
+	
+    protected void processSystem() {
+        if(userCommand.count > 0) {
+            client.sendUDP(userCommand);
+            userCommand.dx = 0f;
+            userCommand.dz = 0f;
+            Log.info("User command count: " + userCommand.count);
+            userCommand.count = 0;
+        }
+    }
 
     public void sendKeyTyped(int key) {
         Network.KeyEvent keyEvent = new Network.KeyTyped();
@@ -72,8 +112,11 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         client.sendTCP(msg);
     }
 
+    private final UserCommand userCommand = new UserCommand();
     public void sendUserCmd(UserCommand cmd) {
-        client.sendUDP(cmd);
+        userCommand.dx += cmd.dx;
+        userCommand.dz += cmd.dz;
+        userCommand.count += 1;
     }
 
 
