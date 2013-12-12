@@ -1,0 +1,30 @@
+MaterialDef Fade {
+
+    MaterialParameters {
+        Int NumSamples
+        Int NumSamplesDepth
+        Texture2D Texture
+        Texture2D DepthTexture
+        Vector4 FogColor;
+        Float FogDensity;
+        Float FogDistance;
+
+        // Use to turn on the Logarithmic Depth Buffer
+        Boolean LogarithmicDepthBuffer
+    }
+
+    Technique {
+        VertexShader GLSL100:   Common/MatDefs/Post/Post.vert
+        FragmentShader GLSL100: LogDepthBuffer/MatDefs/Post/Fog.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            FrustumNearFar
+        }
+
+        Defines {
+            LOGARITHIMIC_DEPTH_BUFFER : LogarithmicDepthBuffer   
+        }
+
+    }
+}

@@ -25,10 +25,11 @@ public class Game {
 
         world.setManager(new GroupManager());
         world.setManager(new TagManager());
+        world.setManager(new TemplateManager());
 
-        world.setSystem(new ServerNetworkSystem());
+        world.setSystem(new ServerNetworkSystem(10000));
 
-        world.setSystem(new OrbitalMovementSystem());
+        //world.setSystem(new OrbitalMovementSystem());
 
         //world.setSystem(new EngineAccelerationSystem());
         //world.setSystem(new GravityAccelerationSystem());
@@ -43,6 +44,10 @@ public class Game {
         for(Element element: root.getChildren("entity")) {
             EntityFactory.create(world, element, null);
         }
+
+        for(Element element: root.getChildren("entity-template")) {
+            world.getManager(TemplateManager.class).addTemplate(element);
+        }
     }
 
     public void loopForever() throws InterruptedException {
@@ -53,7 +58,6 @@ public class Game {
 
             world.process();
             
-            world.getSystem(ServerNetworkSystem.class).broadcastTimeData();
             Thread.sleep(100);
         }
     }

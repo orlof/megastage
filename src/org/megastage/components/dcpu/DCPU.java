@@ -67,7 +67,7 @@ public class DCPU extends BaseComponent {
             e.printStackTrace();
         }
 
-        startupTime = Globals.time;
+        startupTime = Globals.time + 2500;
         nextHardwareTick = Globals.time + HARDWARE_TICK_INTERVAL;
     }
 
@@ -94,6 +94,8 @@ public class DCPU extends BaseComponent {
 
     public void run_ticks() {
         long uptime = Globals.time - startupTime;
+        if(uptime < 0) return;
+        
         long cycleTarget = uptime * KHZ;
 
         Log.trace((cycleTarget-cycles) + " cycles in batch");
@@ -122,7 +124,6 @@ public class DCPU extends BaseComponent {
 
     public void tick() {
         cycles++;
-
         if (isOnFire) {
             int pos = (int) (Math.random() * 0x10000) & 0xFFFF;
             char val = (char) ((int) (Math.random() * 0x10000) & 0xFFFF);

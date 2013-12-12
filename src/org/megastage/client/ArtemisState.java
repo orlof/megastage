@@ -11,10 +11,13 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import org.megastage.systems.ClientFixedRotationSystem;
 import org.megastage.systems.ClientMonitorRenderSystem;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.systems.ClientOrbitalMovementSystem;
 import org.megastage.systems.ClientSpatialManagerSystem;
 import org.megastage.systems.OrbitalMovementSystem;
+import org.megastage.util.ClientGlobals;
 
 /**
  *
@@ -33,17 +36,23 @@ public class ArtemisState extends AbstractAppState {
         
         world.setSystem(new ClientMonitorRenderSystem());
         world.setSystem(new OrbitalMovementSystem());
+        world.setSystem(new ClientFixedRotationSystem());
 
-        world.setSystem(new ClientNetworkSystem(), true);
+        ClientGlobals.network = new ClientNetworkSystem(20);
+        world.setSystem(ClientGlobals.network);
 
         world.initialize();
 
-        world.getSystem(ClientNetworkSystem.class).sendLogin();
+        ClientGlobals.network.sendLogin();
         //world.getSystem(ClientNetworkSystem.class).sendUseEntity();
     }
 
     @Override
     public void update(float tpf) {
+        world.setDelta(tpf);
+
+        ClientGlobals.time = System.currentTimeMillis() + ClientGlobals.timeDiff;
+        
         world.process();
     }
 

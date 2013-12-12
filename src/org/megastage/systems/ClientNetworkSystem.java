@@ -1,23 +1,42 @@
 package org.megastage.systems;
 
+import com.artemis.Aspect;
 import com.artemis.Entity;
-import com.artemis.systems.VoidEntitySystem;
+import com.artemis.EntitySystem;
+import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
-import org.megastage.components.Orbit;
 import org.megastage.protocol.Network;
-import org.megastage.util.Globals;
-import org.megastage.components.ClientVideoMemory;
 
 import java.io.IOException;
+import org.megastage.protocol.Message;
+import org.megastage.protocol.UserCommand;
+import org.megastage.util.ClientGlobals;
 
-public class ClientNetworkSystem extends VoidEntitySystem {
+public class ClientNetworkSystem extends EntitySystem {
     private Client client;
 
-    private ClientEntityManagerSystem cems;
-    private ClientSpatialManagerSystem csms;
+    public ClientEntityManagerSystem cems;
+    public ClientSpatialManagerSystem csms;
+
+    public ClientNetworkSystem(long interval) {
+        super(Aspect.getEmpty());
+        this.interval = interval;
+    }
+
+    private long interval;
+    private long acc;
+    
+    @Override
+    protected boolean checkProcessing() {
+        if(ClientGlobals.time >= acc) {
+                acc = ClientGlobals.time + interval;
+                return true;
+        }
+        return false;
+    }
 
     @Override
     protected void initialize() {
@@ -32,16 +51,35 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         kryoThread.start();
 
         try {
-            client.connect(5000, Globals.serverHost, Globals.serverPort, Globals.serverPort+1);
+            client.connect(5000, Network.serverHost, Network.serverPort, Network.serverPort+1);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        client.addListener(new ClientNetworkListener());
+        client.addListener(new ClientNetworkListener());        
+        client.updateReturnTripTime();
+        while(client.getReturnTripTime() == -1) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+            }
+        }
+        Log.info("RTT: "+ client.getReturnTripTime());
+        ClientGlobals.timeDiff -= client.getReturnTripTime();
     }
 
     @Override
-    protected void processSystem() {}
+    protected final void processEntities(ImmutableBag<Entity> entities) {
+        processSystem();
+    }
+	
+    protected void processSystem() {
+        if(ClientGlobals.userCommand.count > 0) {
+            Log.info(ClientGlobals.userCommand.toString());
+            client.sendUDP(ClientGlobals.userCommand);
+            ClientGlobals.userCommand.reset();
+        }
+    }
 
     public void sendKeyTyped(int key) {
         Network.KeyEvent keyEvent = new Network.KeyTyped();
@@ -61,12 +99,6 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         client.sendUDP(keyEvent);
     }
 
-    public void sendUse(int entityID) {
-        Network.UseData use = new Network.UseData();
-        use.entityID = cems.convert(entityID);
-        client.sendUDP(use);
-    }
-
     public void sendLogin() {
         Network.Login msg = new Network.Login();
         client.sendTCP(msg);
@@ -76,7 +108,6 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         Network.Logout msg = new Network.Logout();
         client.sendTCP(msg);
     }
-
 
     private class ClientNetworkListener extends Listener {
         @Override
@@ -101,88 +132,14 @@ public class ClientNetworkSystem extends VoidEntitySystem {
         }
         
         public void handlePacket(Connection pc, Object o) {
-            Log.info("Received: " + o.getClass().getName());
-
-            if(o instanceof Network.LoginResponse) {
-                // nothing to do - for now
-
-            //} else if(o instanceof Network.StarData) {
-            //    handleStarDataMessage(pc, (Network.StarData) o);
-
-            } else if(o instanceof Network.TimeData) {
-                handleTimeDataMessage(pc, (Network.TimeData) o);
-
-            } else if(o instanceof Network.OrbitData) {
-                handleOrbitDataMessage(pc, (Network.OrbitData) o);
-
-            } else if(o instanceof Network.MonitorData) {
-                handleMonitorDataMessage(pc, (Network.MonitorData) o);
-
-            } else if(o instanceof Network.KeyboardData) {
-                handleKeyboardDataMessage(pc, (Network.KeyboardData) o);
-
-            } else if(o instanceof Network.PositionData) {
-                handlePositionDataMessage(pc, (Network.PositionData) o);
-
-            } else if(o instanceof Network.SpatialMonitorData) {
-                handleSpatialMonitorDataMessage(pc, (Network.SpatialMonitorData) o);
-
-            } else if(o instanceof Network.SpatialSphereData) {
-                handleSpatialSphereDataMessage(pc, (Network.SpatialSphereData) o);
-
-            } else if(o instanceof Network.MassData) {
-                handleMassDataMessage(pc, (Network.MassData) o);
-
+            Log.debug("Received: " + o.toString());
+            
+            if(o instanceof Message) {
+                ((Message) o).receive(ClientNetworkSystem.this, pc);
             } else {
-                Log.warn("Unknown message received");
+                Log.warn("Unknown message type");
             }
+            
         }
-    }
-
-    private void handleKeyboardDataMessage(Connection pc, Network.KeyboardData keyboardData) {
-        Network.UseData use = new Network.UseData();
-        use.entityID = keyboardData.entityID;
-        client.sendUDP(use);
-    }
-
-    private void handleMonitorDataMessage(Connection connection, Network.MonitorData data) {
-        ClientVideoMemory videoMemory = cems.getComponent(data.entityID, ClientVideoMemory.class);
-        videoMemory.update(data);
-    }
-
-    private void handleSpatialMonitorDataMessage(Connection connection, Network.SpatialMonitorData data) {
-        Entity entity = cems.get(data.entityID);
-        //csms.setupMonitor(entity);
-        csms.setupMonitor(entity, data);
-    }
-
-    private void handleSpatialSphereDataMessage(Connection connection, Network.SpatialSphereData data) {
-        Entity entity = cems.get(data.entityID);
-        //csms.setupMonitor(entity);
-        csms.setupSphere(entity, data);
-    }
-
-    private void handlePositionDataMessage(Connection connection, Network.PositionData data) {
-        cems.setComponent(data.entityID, data.position);
-    }
-
-    private void handleMassDataMessage(Connection connection, Network.MassData data) {
-        cems.setComponent(data.entityID, data.mass);
-    }
-
-/*    private void handleStarDataMessage(Connection connection, Network.StarData data) {
-        cems.setComponent(data.entityID, data.position);
-    }
-*/
-    private void handleOrbitDataMessage(Connection connection, Network.OrbitData orbitData) {
-        Orbit orbit = new Orbit();
-        orbit.center = cems.get(orbitData.centerID);
-        orbit.distance = orbitData.distance;
-
-        cems.setComponent(orbitData.entityID, orbit);
-    }
-    
-    private void handleTimeDataMessage(Connection connection, Network.TimeData data) {
-        Globals.time = data.time;
     }
 }

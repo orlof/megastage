@@ -2,19 +2,13 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.util.RAM;
+import org.megastage.components.MonitorData;
 
 public class VirtualMonitor extends DCPUHardware {
-    public char videoAddr = 0x8000;
-    public RAM video = new RAM(LEMUtil.defaultVideo);
-
-    public char fontAddr = 0x0000;
-    public RAM font = new RAM(LEMUtil.defaultFont);
-
-    public char paletteAddr = 0x0000;
-    public RAM palette = new RAM(LEMUtil.defaultPalette);
+    public MonitorData data = new MonitorData();
 
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {
@@ -24,17 +18,21 @@ public class VirtualMonitor extends DCPUHardware {
 
         super.init(world, parent, element);
     }
+    
+    public Object create(Entity entity) {
+        return data.create(entity);
+    }
 
     public void interrupt() {
         char a = dcpu.registers[0];
         char b = dcpu.registers[1];
 
         if (a == 0) {
-            videoAddr = b;
+            data.videoAddr = b;
         } else if (a == 1) {
-            fontAddr = b;
+            data.fontAddr = b;
         } else if (a == 2) {
-            paletteAddr = b;
+            data.paletteAddr = b;
         } else if (a == 3) {
 //            borderColor = (dcpu.registers[1] & 0xF);
         } else if (a == 4) {
