@@ -13,13 +13,11 @@ Download and install the distribution package. It should work in Windows and Lin
 
 Start server by going to installation directory and typing
 
-    bin\server.bat (in Windows) or
-    bin/server.sh (in Linux)
+    java -cp Megastage.jar org.megastage.server.Main world.xml
 
 Next start client by typing
 
-    bin\client.bat (in Windows) or
-    bin/client.sh (in Linux)
+    java -jar Megastage.jar
  
 In the future there should be multiplayer support but its not there yet.
 
