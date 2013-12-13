@@ -40,7 +40,7 @@ public class ClientEntityManagerSystem extends VoidEntitySystem  {
     }
 
     public <T extends Component> void setComponent(int entityID, T t) {
-        Log.info("Add component " + t.toString());
+        Log.debug("Add component " + t.toString());
         get(entityID).addComponent(t);
     }
 
