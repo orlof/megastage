@@ -130,12 +130,10 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     }
 */
     private void handleKeyEventMessage(PlayerConnection connection, Network.KeyEvent packet) {
-        ItemInUse item = connection.player.getComponent(ItemInUse.class);
-        if(item == null) {
-            return;
-        }
+        ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("keyboard");
+        Entity entity = entities.get(0);
 
-        VirtualKeyboard kbd = item.entity.getComponent(VirtualKeyboard.class);
+        VirtualKeyboard kbd = entity.getComponent(VirtualKeyboard.class);
 
         if(packet instanceof Network.KeyTyped) {
             kbd.keyTyped(packet.key);

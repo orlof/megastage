@@ -21,6 +21,7 @@ public class PlanetGeometry extends EntityComponent {
     public int center;
     public float radius;
     public String generator;
+    public String color;
 
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {
@@ -28,6 +29,7 @@ public class PlanetGeometry extends EntityComponent {
 
         radius = getFloatValue(element, "radius", 10.0f);
         generator = getStringValue(element, "generator", "Earth");
+        color = getStringValue(element, "color", "red");
     }
 
     @Override
