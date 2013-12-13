@@ -29,6 +29,10 @@ public class WalkAppState extends AbstractAppState {
         this.walkCommandHandler.registerWithInput(app.getInputManager());
     }
             
+    public void toggleDCPUState() {
+        walkCommandHandler.toggleDCPU();
+    }
+    
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);

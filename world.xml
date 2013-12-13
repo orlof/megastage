@@ -1,29 +1,29 @@
 <root>
     <entity name="Sun">
         <component type="Position" x="0" y="0" z="0"/>
-        <component type="Mass" kg="1.989e30"/>
-        <component type="server.SunGeometry" radius="40000" light_radius="2000000" color_rgba="0xffffaaff"/>
+        <component type="Mass" kg="1.989e31"/>
+        <component type="server.SunGeometry" radius="40000" light_radius="2000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
         <component type="GravityField"/>
         <group name="client"/>
         <entity name="Earth">
-            <component type="Mass" kg="5.972e28"/>
+            <component type="Mass" kg="5.972e31"/>
             <component type="GravityField"/>
-            <component type="Orbit" orbital_distance="200000"/>
+            <component type="Orbit" orbital_distance="120000"/>
             <component type="Rotation"/>
-            <component type="server.PlanetGeometry" radius="5000" generator="Earth"/>
-            <!--component type="FixedRotation" period_y="0.1"/-->
+            <component type="server.PlanetGeometry" radius="5000" generator="Earth" color="Blue"/>
+            <component type="FixedRotation" period_y="0.01"/>
             <component type="Position" x="0" y="0" z="0"/>
             <group name="client"/>
-            <!--entity name="Moon">
+            <entity name="Moon">
                 <component type="Mass" kg="7.4e23"/>
                 <component type="GravityField"/>
                 <component type="Position" x="0" y="0" z="0"/>
                 <component type="Rotation"/>
-                <component type="Orbit" orbital_distance="20000"/>
-                <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
+                <component type="Orbit" orbital_distance="30000"/>
+                <component type="server.PlanetGeometry" radius="2000" generator="Moon" color="Brown"/>
                 <component type="FixedRotation" period_y="-0.001"/>
                 <group name="client"/>
-            </entity-->
+            </entity>
         </entity>
         <!--entity name="Water World">
             <component type="Mass" kg="5.972e25"/>
@@ -116,6 +116,7 @@
             </entity>
             <entity name="Generic Keyboard">
                 <component type="dcpu.VirtualKeyboard"/>
+                <group name="keyboard"/>
             </entity>
             <!---entity>
                 <component type="dcpu.Engine" x="0" y="0" z="10"/>

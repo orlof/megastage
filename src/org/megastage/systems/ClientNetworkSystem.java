@@ -8,9 +8,11 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
+import com.jme3.scene.Node;
 import org.megastage.protocol.Network;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import org.megastage.protocol.Message;
 import org.megastage.protocol.UserCommand;
 import org.megastage.util.ClientGlobals;
@@ -131,13 +133,19 @@ public class ClientNetworkSystem extends EntitySystem {
             }
         }
         
-        public void handlePacket(Connection pc, Object o) {
+        public void handlePacket(final Connection pc, final Object o) {
             Log.debug("Received: " + o.toString());
             
             if(o instanceof Message) {
-                ((Message) o).receive(ClientNetworkSystem.this, pc);
+                ClientGlobals.app.enqueue(new Callable() {
+                    @Override
+                    public Object call() throws Exception {
+                        ((Message) o).receive(ClientNetworkSystem.this, pc);
+                        return null;
+                    }
+                });
             } else {
-                Log.warn("Unknown message type");
+                Log.warn("Unknown message type: " + o.getClass().getSimpleName());
             }
             
         }

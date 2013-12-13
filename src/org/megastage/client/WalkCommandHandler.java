@@ -31,7 +31,11 @@ import org.megastage.util.ClientGlobals;
  */
 public class WalkCommandHandler implements AnalogListener, ActionListener {
 
-    private static String[] mappings = new String[] {
+    private static String[] dcpuMappings = new String[] {
+        "DCPU_Exit"
+    };
+
+    private static String[] walkMappings = new String[] {
         "WALK_LookLeft",
         "WALK_LookRight",
         "WALK_LookUp",
@@ -43,6 +47,8 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
         "WALK_MoveRight",
 
         "WALK_InvertY",
+        "DCPU_Enter",
+        "TEST",
 
         "SHIP_MoveForward",
         "SHIP_MoveBackward",
@@ -59,6 +65,8 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
         "SHIP_YawRight",
     };
 
+    private String[] currentMappings = walkMappings;
+        
     protected float rotationSpeed = 1f;
     protected float walkSpeed = 3f;
     protected float shipSpeed = 10000f;
@@ -97,54 +105,22 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
 
     public void registerWithInput(InputManager inputManager){
         this.inputManager = inputManager;
+ 
+        enableWalkMappings();
         
-        // both mouse and button - rotation of cam
-        inputManager.addMapping("WALK_LookLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
-        inputManager.addMapping("WALK_LookRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
-        inputManager.addMapping("WALK_LookUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
-        inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
-
-        // keyboard only WASD for movement and WZ for rise/lower height
-        inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_UP));
-        inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_DOWN));
-        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_LEFT));
-        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_RIGHT));
-
-        inputManager.addMapping("SHIP_MoveForward", new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("SHIP_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("SHIP_MoveUp", new KeyTrigger(KeyInput.KEY_Q));
-        inputManager.addMapping("SHIP_MoveDown", new KeyTrigger(KeyInput.KEY_Z));
-        inputManager.addMapping("SHIP_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("SHIP_MoveRight", new KeyTrigger(KeyInput.KEY_D));
-        
-        inputManager.addMapping("SHIP_PitchUp", new KeyTrigger(KeyInput.KEY_I));
-        inputManager.addMapping("SHIP_PitchDown", new KeyTrigger(KeyInput.KEY_K));
-        inputManager.addMapping("SHIP_RollCW", new KeyTrigger(KeyInput.KEY_L));
-        inputManager.addMapping("SHIP_RollCCW", new KeyTrigger(KeyInput.KEY_J));
-        inputManager.addMapping("SHIP_YawLeft", new KeyTrigger(KeyInput.KEY_U));
-        inputManager.addMapping("SHIP_YawRight", new KeyTrigger(KeyInput.KEY_O));
-
-        inputManager.addListener(this, mappings);
+        inputManager.addListener(this, walkMappings);
         inputManager.setCursorVisible(false);
     }
 
-    /**
-     * Registers the FlyByCamera to receive input events from the provided
-     * Dispatcher.
-     * @param inputManager
-     */
     public void unregisterInput(){
     
         if (inputManager == null) {
             return;
         }
+        
+        disableWalkMappings();
+        disableDCPUMappings();
     
-        for (String s : mappings) {
-            if (inputManager.hasMapping(s)) {
-                inputManager.deleteMapping( s );
-            }
-        }
-
         inputManager.removeListener(this);
         inputManager.setCursorVisible(false);
     }
@@ -222,13 +198,30 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
     public void onAction(String name, boolean value, float tpf) {
         if (!enabled)
             return;
-
-        if (name.equals("WALK_InvertY")) {
-            // Toggle on the up.
-            if( !value ) {  
-                invertY = !invertY;
-            }
-        }        
+        switch (name) {
+            case "WALK_InvertY":
+                // Toggle on the up.
+                if( !value ) {  
+                    invertY = !invertY;
+                }
+                break;
+            case "DCPU_Enter":
+                // Toggle on the up.
+                if( !value ) {  
+                    toggleDCPU();
+                }        
+                break;
+            case "DCPU_Exit":
+                // Toggle on the up.
+                if( !value ) {  
+                    toggleDCPU();
+                }        
+                break;
+            case "TEST":
+                // Toggle on the up.
+                Log.info("SPACE");
+                break;
+        }
     }
 
     protected void lookUp(float value) {
@@ -307,4 +300,75 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
         ClientGlobals.userCommand.shipYaw(value);
     }
 
+    private boolean dcpu = false;
+    private DCPURawInputListener dcpuListener = new DCPURawInputListener();
+
+    void toggleDCPU() {
+        dcpu = !dcpu;
+        if(dcpu) {
+            disableWalkMappings();
+            enableDCPUMappings();
+            inputManager.removeListener(this);
+            inputManager.addRawInputListener(dcpuListener);
+            inputManager.addListener(this, dcpuMappings);
+        } else {
+            inputManager.removeRawInputListener(dcpuListener);
+            inputManager.removeListener(this);
+            inputManager.addListener(this, walkMappings);
+            disableDCPUMappings();
+            enableWalkMappings();
+        }
+    }
+
+    private void enableWalkMappings() {
+       // both mouse and button - rotation of cam
+        inputManager.addMapping("WALK_LookLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        inputManager.addMapping("WALK_LookRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        inputManager.addMapping("WALK_LookUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
+        inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
+
+        // keyboard only WASD for movement and WZ for rise/lower height
+        inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_UP));
+        inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_DOWN));
+        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_LEFT));
+        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_RIGHT));
+
+        inputManager.addMapping("SHIP_MoveForward", new KeyTrigger(KeyInput.KEY_W));
+        inputManager.addMapping("SHIP_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("SHIP_MoveUp", new KeyTrigger(KeyInput.KEY_Q));
+        inputManager.addMapping("SHIP_MoveDown", new KeyTrigger(KeyInput.KEY_Z));
+        inputManager.addMapping("SHIP_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
+        inputManager.addMapping("SHIP_MoveRight", new KeyTrigger(KeyInput.KEY_D));
+        
+        inputManager.addMapping("SHIP_PitchUp", new KeyTrigger(KeyInput.KEY_I));
+        inputManager.addMapping("SHIP_PitchDown", new KeyTrigger(KeyInput.KEY_K));
+        inputManager.addMapping("SHIP_RollCW", new KeyTrigger(KeyInput.KEY_L));
+        inputManager.addMapping("SHIP_RollCCW", new KeyTrigger(KeyInput.KEY_J));
+        inputManager.addMapping("SHIP_YawLeft", new KeyTrigger(KeyInput.KEY_U));
+        inputManager.addMapping("SHIP_YawRight", new KeyTrigger(KeyInput.KEY_O));
+
+        inputManager.addMapping("DCPU_Enter", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping("TEST", new KeyTrigger(KeyInput.KEY_SPACE));
+     }
+
+     private void enableDCPUMappings() {
+         inputManager.addMapping("DCPU_Exit", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+     }
+    
+    public void disableWalkMappings() {
+        for (String s : walkMappings) {
+            if (inputManager.hasMapping(s)) {
+                inputManager.deleteMapping( s );
+            }
+        }
+    }
+
+    public void disableDCPUMappings() {
+        for (String s : dcpuMappings) {
+            if (inputManager.hasMapping(s)) {
+                inputManager.deleteMapping( s );
+            }
+        }
+    }
+    
 }

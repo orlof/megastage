@@ -5,7 +5,6 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
-import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import org.megastage.components.FixedRotation;
 import org.megastage.components.Rotation;
@@ -25,7 +24,6 @@ public class ClientFixedRotationSystem extends EntityProcessingSystem {
         super(Aspect.getAspectForAll(Rotation.class, FixedRotation.class));
     }
 
-    @Override
     protected void process(Entity entity) {
         FixedRotation fr = FIXED_ROTATION.get(entity);
         
@@ -37,5 +35,4 @@ public class ClientFixedRotationSystem extends EntityProcessingSystem {
         r.z = rotation.getZ();
         r.w = rotation.getW();
     }
-
 }
