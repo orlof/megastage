@@ -14,14 +14,10 @@ import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
 import java.util.HashMap;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 
 public class DCPURawInputListener implements RawInputListener {
-    ArtemisState world = null;
     HashMap<Integer, Character> pressed = new HashMap<>();
-
-    public DCPURawInputListener(ArtemisState s) {
-        this.world = s;
-    }
 
     @Override
     public void beginInput() {}
@@ -92,9 +88,9 @@ public class DCPURawInputListener implements RawInputListener {
 
         pressed.put(keyCode, keyChar);
         Log.debug("KeyPressed(keyChar=" + Integer.toHexString(keyChar) + ")");
-        world.world.getSystem(ClientNetworkSystem.class).sendKeyPressed(keyChar);
+        ClientGlobals.network.sendKeyPressed(keyChar);
         Log.debug("KeyTyped(keyChar=" + Integer.toHexString(keyChar) + ")");
-        world.world.getSystem(ClientNetworkSystem.class).sendKeyTyped(keyChar);
+        ClientGlobals.network.sendKeyTyped(keyChar);
         return true;
     }
 
@@ -104,7 +100,7 @@ public class DCPURawInputListener implements RawInputListener {
 
         if(keyChar != null) {
             Log.debug("KeyReleased(keyChar=" + Integer.toHexString(keyChar) + ")");
-            world.world.getSystem(ClientNetworkSystem.class).sendKeyReleased(keyChar);
+            ClientGlobals.network.sendKeyReleased(keyChar);
         }
 
         return true;

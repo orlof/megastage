@@ -22,11 +22,11 @@ public class FixedRotation extends EntityComponent {
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {
         period_x = 3600.0 * getDoubleValue(element, "period_x", 0.0);
-        speed_x = ((2.0 * Math.PI) / (1000.0 * period_x));
+        speed_x = period_x == 0.0 ? 0.0: ((2.0 * Math.PI) / (1000.0 * period_x));
         period_y = 3600.0 * getDoubleValue(element, "period_y", 0.0);
-        speed_y = ((2.0 * Math.PI) / (1000.0 * period_y));
+        speed_y = period_y == 0.0 ? 0.0: ((2.0 * Math.PI) / (1000.0 * period_y));
         period_z = 3600.0 * getDoubleValue(element, "period_z", 0.0);
-        speed_z = ((2.0 * Math.PI) / (1000.0 * period_z));
+        speed_z = period_z == 0.0 ? 0.0: ((2.0 * Math.PI) / (1000.0 * period_z));
     }
 
     public double getX() {
@@ -37,5 +37,20 @@ public class FixedRotation extends EntityComponent {
     }
     public double getZ() {
         return (Globals.time * speed_z)  % (2.0 * Math.PI);
+    }
+    
+    public String toString() {
+        StringBuilder sb = new StringBuilder(100);
+        sb.append("FixedRotation(");
+        sb.append("period_x=").append(period_x);
+        sb.append(", period_y=").append(period_y);
+        sb.append(", period_z=").append(period_z);
+
+        sb.append(", speed_x=").append(speed_x);
+        sb.append(", speed_y=").append(speed_y);
+        sb.append(", speed_z=").append(speed_z);
+        sb.append(")");
+        
+        return sb.toString();
     }
 }

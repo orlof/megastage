@@ -3,6 +3,7 @@ package org.megastage.util;
 import com.artemis.Entity;
 import com.cubes.CubesSettings;
 import com.jme3.scene.Node;
+import org.megastage.client.Main;
 import org.megastage.protocol.UserCommand;
 import org.megastage.systems.ClientNetworkSystem;
 
@@ -28,10 +29,11 @@ public class ClientGlobals {
     public static final Node fixedNode = new Node("fixed_node");
     public static final Node playerNode = new Node("player");
 
-    public static GFXQuality gfxQuality = new GFXLowQuality();
+    public static GFXQuality gfxQuality = new GFXQuality();
     public static double scale = 1000.0;
     public static CubesSettings cubesSettings;
     public static final UserCommand userCommand = new UserCommand();
+    public static Main app;
     
     public static class GFXQuality {
         public static int SPHERE_Z_SAMPLES = 32;
