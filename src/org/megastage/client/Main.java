@@ -47,7 +47,7 @@ public class Main extends SimpleApplication {
     private ArtemisState artemisAppState;
     
     public Main() {
-        super(new DebugKeysAppState());
+        super(null);
     }
     
     @Override
