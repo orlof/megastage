@@ -11,7 +11,7 @@ INSTRUCTIONS
 
 Download distribution package megastage.zip behind the following link. It should work in Windows and Linux if you have recent enough (?) java installed.
 
-    https://github.com/orlof/megastage/releases
+https://github.com/orlof/megastage/releases
 
 Start server by going to installation directory and typing:
 
@@ -52,7 +52,7 @@ Flight model will be radically different as soon as I get the velocity vectors, 
 
 One more thing you can do: If you press the left mouse button, the game will change to use-item-mode. As you can see, there is only one item on board: the DCPU. DCPU currently boots up with fixed boot disk that happens to contain Admiral 
 
-    https://github.com/orlof/dcpu-admiral
+https://github.com/orlof/dcpu-admiral
 
 In the future the DCPU boot disk can be freely changed and DCPU will have control to all ship systems including engines, gyroscopes, positioning systems, weapons, radars...
 
