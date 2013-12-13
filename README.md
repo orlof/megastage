@@ -1,4 +1,4 @@
-Megastage
+Megastage 0.1
 =========
 <i>Random ECS experiments inspired by DCPU</i>
 
