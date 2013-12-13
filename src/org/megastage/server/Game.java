@@ -25,18 +25,16 @@ public class Game {
 
         world.setManager(new GroupManager());
         world.setManager(new TagManager());
+        world.setManager(new TemplateManager());
 
-        world.setSystem(new ServerNetworkSystem());
-        world.setSystem(new ServerRemoteInitializationSystem());
+        world.setSystem(new ServerNetworkSystem(10000));
 
-        world.setSystem(new OrbitalMovementSystem());
-        world.setSystem(new CoordinateTransformSystem());
+        //world.setSystem(new OrbitalMovementSystem());
 
-        // world.setSystem(new ZeroAccelerationSystem());
-        world.setSystem(new EngineAccelerationSystem());
-        world.setSystem(new GravityAccelerationSystem());
+        //world.setSystem(new EngineAccelerationSystem());
+        //world.setSystem(new GravityAccelerationSystem());
 
-        world.setSystem(new ShipMovementSystem());
+        //world.setSystem(new ShipMovementSystem());
 
         world.setSystem(new DCPUSystem());
         world.setSystem(new VirtualMonitorSenderSystem());
@@ -46,15 +44,20 @@ public class Game {
         for(Element element: root.getChildren("entity")) {
             EntityFactory.create(world, element, null);
         }
+
+        for(Element element: root.getChildren("entity-template")) {
+            world.getManager(TemplateManager.class).addTemplate(element);
+        }
     }
 
     public void loopForever() throws InterruptedException {
         while (true) {
             long ctime = System.currentTimeMillis();
-            world.setDelta(ctime - Globals.time);
+            world.setDelta((ctime - Globals.time) / 1000.0f);
             Globals.time = ctime;
 
             world.process();
+            
             Thread.sleep(100);
         }
     }

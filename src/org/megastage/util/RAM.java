@@ -10,7 +10,7 @@ import java.util.Arrays;
  * To change this template use File | Settings | File Templates.
  */
 public class RAM {
-    public char[] mem = new char[0];
+    public char[] mem;
 
     public RAM() {}
 
@@ -42,5 +42,21 @@ public class RAM {
 
         return true;
     }
+    
+    public String toString() {
+        return getHex(mem);
+    }
 
+    static final String HEXES = "0123456789ABCDEF";
+    public static String getHex( char[] raw ) {
+        final StringBuilder hex = new StringBuilder( 4 * raw.length + 1);
+        for (char c : raw ) {
+            hex.append(HEXES.charAt((c & 0xF000) >> 12));
+            hex.append(HEXES.charAt((c & 0x0F00) >> 8));
+            hex.append(HEXES.charAt((c & 0x00F0) >> 4));
+            hex.append(HEXES.charAt((c & 0x000F)));
+            hex.append(" ");
+        }
+        return hex.toString();
+    }
 }

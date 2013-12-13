@@ -1,171 +1,258 @@
 package org.megastage.systems;
 
-import com.artemis.*;
-import com.artemis.annotations.Mapper;
+import com.artemis.Component;
+import com.artemis.Entity;
 import com.artemis.managers.GroupManager;
-import com.artemis.managers.TagManager;
 import com.artemis.systems.VoidEntitySystem;
 import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
-import org.megastage.components.dcpu.VirtualMonitor;
-import org.megastage.util.Globals;
-import org.megastage.util.Network;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Server;
+import com.esotericsoftware.minlog.Log;
+import org.megastage.components.ItemInUse;
 import org.megastage.components.dcpu.VirtualKeyboard;
-import org.megastage.util.NetworkListener;
-import org.megastage.util.application.Log;
+import org.megastage.protocol.Network;
+import org.megastage.protocol.PlayerConnection;
+import org.megastage.util.Globals;
 
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.util.logging.Logger;
+import java.io.IOException;
+import java.util.ArrayList;
+import org.megastage.components.BaseComponent;
+import org.megastage.components.Position;
+import org.megastage.components.Rotation;
+import org.megastage.components.dcpu.VirtualMonitor;
+import org.megastage.components.server.BindTo;
+import org.megastage.components.server.ShipGeometry;
+import org.megastage.protocol.LoginResponse;
+import org.megastage.protocol.UserCommand;
+import org.megastage.server.TemplateManager;
+import org.megastage.util.ClientGlobals;
+import org.megastage.util.Quaternion;
+import org.megastage.util.Vector;
 
-public class ServerNetworkSystem extends VoidEntitySystem implements NetworkListener {
-    private final static Logger LOG = Logger.getLogger(ServerNetworkSystem.class.getName());
+public class ServerNetworkSystem extends VoidEntitySystem {
+    private Server server;
     
-    @Mapper ComponentMapper<VirtualKeyboard> virtualKeyboardMapper;
+    private long timeOfLastSync;
+    private long interval;
 
-    private Network network;
-
-    public ServerNetworkSystem() {
-        super();
-        network = new Network(this, Globals.serverPort);
+    public ServerNetworkSystem(long interval) {
+        this.interval = interval;
     }
+    
+    @Override
+    protected void initialize() {
+        server = new Server() {
+            @Override
+            protected Connection newConnection () {
+                // By providing our own connection implementation, we can store per
+                // connection state without a connection ID to state look up.
+                return new PlayerConnection();
+            }
+        };
 
+        Network.register(server);
+
+        new Thread(server).start();
+
+        server.addListener(new ServerNetworkListener());
+
+        try {
+            server.bind(Network.serverPort, Network.serverPort + 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     @Override
     protected void processSystem() {
-        network.tick();        
+        timeOfLastSync = Globals.time;
+        broadcastTimeData();
     }
 
     @Override
     protected boolean checkProcessing() {
-        return true;
+        return (timeOfLastSync + interval) < Globals.time;
     }
 
-    public void sendMemory(int messageID, Entity entity, char[] data) {
-        LOG.finer(entity.toString());
-
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[2*data.length + 8]); // 2*384 + 4 + 4 = 776
-        buffer.putInt(messageID);
-        buffer.putInt(entity.getId());
-
-        for(char c: data) {
-            buffer.putChar(c);
+    private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
+        BindTo bindTo = connection.player.getComponent(BindTo.class);
+        if(bindTo != null) {
+            Entity e = world.getEntity(bindTo.entityID);
+            world.deleteEntity(e);
         }
-
-        network.broadcast(buffer);
+        world.deleteEntity(connection.player);
+        connection.close();
     }
 
-    public void sendMemory(SocketAddress remote, int messageID, Entity entity, char[] data) {
-        LOG.finer(entity.toString() + " to remote " + remote.toString());
-
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[2*data.length + 8]); // 2*384 + 4 + 4 = 776
-        buffer.putInt(messageID);
-        buffer.putInt(entity.getId());
-
-        for(char c: data) {
-            buffer.putChar(c);
-        }
-
-        network.unicast(remote, buffer);
-    }
-
-    private void sendStartUse(Entity entity) {
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[8]);
-        buffer.putInt(Globals.Message.START_USE);
-        buffer.putInt(entity.getId());
-
-        network.broadcast(buffer);
-    }
-
-    public void handleMessage(SocketAddress remote, ByteBuffer buf) {
-        LOG.fine(buf.remaining() + " bytes from " + remote.toString());
-        int msgID = buf.getInt();
-
-        switch(msgID) {
-            case Globals.Message.LOGIN:
-                handleLoginMessage(remote);
-                break;
-            case Globals.Message.LOGOUT:
-                handleLogoutMessage(remote);
-                break;
-            case Globals.Message.USE_ENTITY:
-                handleUseEntityMessage(remote);
-                break;
-            case Globals.Message.REQUEST_ENTITY_DATA:
-                handleRequestEntityDataMessage(remote, buf.getInt());
-                break;
-            case Globals.Message.KEY_TYPED:
-            case Globals.Message.KEY_PRESSED:
-            case Globals.Message.KEY_RELEASED:
-                handleKeyMessage(remote, buf.getInt(), msgID);
-                break;
-            default:
-                LOG.warning("Unknown message type: " + msgID);
-        }
-    }
-
-    private void handleKeyMessage(SocketAddress remote, int key, int messageType) {
-        String tag = Globals.Tag.IN_USE + remote.toString();
-        Entity entity = world.getManager(TagManager.class).getEntity(tag);
-
-        if(entity != null) {
-            VirtualKeyboard kbd = virtualKeyboardMapper.get(entity);
-            switch(messageType) {
-                case Globals.Message.KEY_TYPED:
-                    kbd.keyTyped(key);
-                    break;
-                case Globals.Message.KEY_PRESSED:
-                    kbd.keyPressed(key);
-                    break;
-                case Globals.Message.KEY_RELEASED:
-                    kbd.keyReleased(key);
-                    break;
-            }
-        }
-    }
-
-    private void handleUseEntityMessage(SocketAddress remote) {
-        GroupManager groupManager = world.getManager(GroupManager.class);
-        ImmutableBag<Entity> groupCanUse = groupManager.getEntities(Globals.Group.CAN_USE);
-
-        // TODO replace with position based search
-        Entity entity = groupCanUse.get(0);
-
-        String tag = Globals.Tag.IN_USE + remote.toString();
-
-        world.getManager(TagManager.class).register(tag, entity);
+    private void handleLoginMessage(PlayerConnection connection, Network.Login packet) {
+        // create player
+        connection.player = world.getManager(TemplateManager.class).create("Player");
+        connection.player.addToWorld();
         
-        // sendEntityDataMessage(remote, entity.getId());
-    }
+        // create ship
+        Entity ship = world.getManager(TemplateManager.class).create("Apollo 13");
+        ship.addToWorld();
+        
+        // bind player to ship
+        BindTo bind = new BindTo();
+        bind.entityID = ship.getId();
+        connection.player.addComponent(bind);
 
-    private void handleRequestEntityDataMessage(SocketAddress remote, int entityID) {
-        sendEntityDataMessage(remote, entityID);
-    }
+        ShipGeometry sg = ship.getComponent(ShipGeometry.class);
+        
+        Position pos = connection.player.getComponent(Position.class);
+        pos.x = 2000 * sg.entry_x;
+        pos.y = 2000 * sg.entry_y;
+        pos.z = 2000 * sg.entry_z;
+        
+        connection.sendTCP(new LoginResponse(connection.player.getId()));
 
-    private void sendEntityDataMessage(SocketAddress remote, int entityID) {
-        Entity entity = world.getEntity(entityID);
-        Bag<Component> bag = entity.getComponents(new Bag<Component>());
-        for(int i=0; i < bag.size(); i++) {
-            Component component = bag.get(i);
-            if(component instanceof VirtualMonitor) {
-                VirtualMonitor mon = (VirtualMonitor) component;
-                sendVirtualMonitorData(remote, entity, mon);
-            }
+        ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("client");
+        Log.info("Sending intialization data for " + entities.size() + " entities.");
+
+        for(int i=0; i < entities.size(); i++) {
+            Entity entity = entities.get(i);
+            sendComponents(connection, entity);
         }
     }
 
-    private void handleLoginMessage(SocketAddress remote) {
-        network.addRemote(remote);
+    /*
+    private void handleUseMessage(PlayerConnection connection, UseData packet) {
+        Entity item = world.getEntity(packet.entityID);
+        Entity player = connection.player;
 
-        world.getSystem(ServerRemoteInitializationSystem.class).initializeClient(remote);
+        ItemInUse comp = new ItemInUse();
+        comp.entity = item;
+
+        player.addComponent(comp);
+    }
+*/
+    private void handleKeyEventMessage(PlayerConnection connection, Network.KeyEvent packet) {
+        ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("keyboard");
+        Entity entity = entities.get(0);
+
+        VirtualKeyboard kbd = entity.getComponent(VirtualKeyboard.class);
+
+        if(packet instanceof Network.KeyTyped) {
+            kbd.keyTyped(packet.key);
+
+        } else if(packet instanceof Network.KeyPressed) {
+            kbd.keyPressed(packet.key);
+
+        } else if(packet instanceof Network.KeyReleased) {
+            kbd.keyReleased(packet.key);
+        }
     }
 
-    private void handleLogoutMessage(SocketAddress c) {
-        network.removeRemote(c);
+    public void broadcastMonitorData(Entity entity) {
+        VirtualMonitor mon = entity.getComponent(VirtualMonitor.class);
+        server.sendToAllUDP(mon.create(entity));
+    }
+    
+    public void broadcastTimeData() {
+        Network.TimeData data = new Network.TimeData();
+        server.sendToAllUDP(data);
     }
 
-    public void sendVirtualMonitorData(SocketAddress remote, Entity entity, VirtualMonitor mon) {
-        sendMemory(remote, Globals.Message.VIDEO_RAM, entity, mon.videoRAM.mem);
-        sendMemory(remote, Globals.Message.FONT_RAM, entity, mon.fontRAM.mem);
-        sendMemory(remote, Globals.Message.PALETTE_RAM, entity, mon.paletteRAM.mem);
+    private void sendComponents(PlayerConnection connection, Entity entity) {
+        Log.debug("Sending components for " + entity.toString());
+
+        Bag<Component> components = entity.getComponents(new Bag<Component>());
+        ArrayList list = new ArrayList();
+
+        for(int j=0; j < components.size(); j++) {
+            BaseComponent comp = (BaseComponent) components.get(j);
+            Log.debug(" Component " + comp.toString());
+
+            Object trans = comp.create(entity);                
+            if(trans != null) {
+                Log.debug("   Added");
+                list.add(trans);
+            }
+        }
+
+        if(!list.isEmpty()) {
+            connection.sendTCP(list.toArray());
+        }
+    }
+    
+    private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
+        if(connection.player == null) return;
+        
+        Position pos = connection.player.getComponent(Position.class);
+        pos.x += 1000 * cmd.xMove;
+        pos.z += 1000 * cmd.zMove;
+
+        connection.sendUDP(pos.create(connection.player));
+        
+        BindTo bindTo = connection.player.getComponent(BindTo.class);
+        Entity ship = world.getEntity(bindTo.entityID);
+        
+        Rotation shipRotation = ship.getComponent(Rotation.class);
+        Quaternion shipRotationQuaternion = shipRotation.getQuaternion();
+        
+        Vector vel = new Vector(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
+        
+        vel = vel.multiply(50000000);
+        
+        Position shipPos = ship.getComponent(Position.class);
+        shipPos.x += vel.x;
+        shipPos.y += vel.y;
+        shipPos.z += vel.z;
+
+        connection.sendUDP(shipPos.create(ship));
+        
+        // rotate rotation axis by fixedEntity rotation
+        Vector yAxis = new Vector(0, 1, 0).multiply(shipRotationQuaternion);
+        Quaternion yRotation = new Quaternion(yAxis, cmd.shipYaw);
+        
+        Vector zAxis = new Vector(0, 0, 1).multiply(shipRotationQuaternion);
+        Quaternion zRotation = new Quaternion(zAxis, cmd.shipRoll);
+
+        Vector xAxis = new Vector(1, 0, 0).multiply(shipRotationQuaternion);
+        Quaternion xRotation = new Quaternion(xAxis, cmd.shipPitch);
+
+        shipRotationQuaternion = yRotation.multiply(shipRotationQuaternion).normalize();
+        shipRotationQuaternion = zRotation.multiply(shipRotationQuaternion).normalize();
+        shipRotationQuaternion = xRotation.multiply(shipRotationQuaternion).normalize();
+        
+        shipRotation.x = shipRotationQuaternion.x;
+        shipRotation.y = shipRotationQuaternion.y;
+        shipRotation.z = shipRotationQuaternion.z;
+        shipRotation.w = shipRotationQuaternion.w;
+
+        connection.sendUDP(shipRotation.create(ship));
+    }
+
+    private class ServerNetworkListener extends Listener {
+        @Override
+        public void connected(Connection connection) {
+        }
+
+        @Override
+        public void disconnected(Connection connection) {
+        }
+
+        @Override
+        public void received(Connection connection, Object o) {
+            Log.info("Received: " + o.getClass().getName());
+            PlayerConnection pc = (PlayerConnection) connection;
+
+            if(o instanceof Network.Login) {
+                handleLoginMessage(pc, (Network.Login) o);
+
+            } else if(o instanceof Network.Logout) {
+                handleLogoutMessage(pc, (Network.Logout) o);
+
+            } else if(o instanceof Network.KeyEvent) {
+                handleKeyEventMessage(pc, (Network.KeyEvent) o);
+            
+            } else if(o instanceof UserCommand) {
+                handleUserCmd(pc, (UserCommand) o);
+            }
+        }
     }
 }
+
