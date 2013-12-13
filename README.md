@@ -23,11 +23,11 @@ Next start client by typing
     ./client.sh (linux)
     client.bat (windows)
  
-In the future there will be multiplayer support but its not there yet.
+In the future there will be multiplayer support but currently server supports only single client connection per server start.
 
 After starting the client, a first person view should open on your screen. Imagine yourself standing on a starship bridge and don't mind that the whole starship is represented by a wooden "floor" :-)
 
-- Yes - all ships are a independent block-worlds that can be modified in the future versions.
+Yes - all ships are a independent block-worlds that can be modified in the future versions.
 
 Your first person view is always anchored to some ship (or to planet in the future) that will fix your coordinate system (Ship floor is always in the bottom of your screen). Ships have artificial gravity and that should make the 1st person perspective more playable.
 
