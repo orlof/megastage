@@ -1,5 +1,5 @@
-Megastage 0.1
-=========
+Megastage v0.1
+==============
 <i>Random ECS experiments inspired by DCPU</i>
 
 
@@ -39,12 +39,12 @@ Currently there are no physics involved - you can walk outside the ship floor, y
 
 You can move your character with arrow keys. To pilot the ship, you can use following key controls:
 
-  Q / Z: Up / Down
-  W / S: Forward / Backward
-  A / D: Left / Right
-  I / K: Pitch Up / Down
-  J / L: Roll CCW / CW
-  U / O: Yaw Left / Right
+    Q / Z: Up / Down
+    W / S: Forward / Backward
+    A / D: Left / Right
+    I / K: Pitch Up / Down
+    J / L: Roll CCW / CW
+    U / O: Yaw Left / Right
 
 (hmmm. I just realized that I may have messed some of the controls inversed - never mind)
 
