@@ -17,39 +17,24 @@ import org.megastage.util.Vector;
  * To change this template use File | Settings | File Templates.
  */
 public class ShipMovementSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<LocalAcceleration> localAccelerationMapper;
-    @Mapper ComponentMapper<GlobalAcceleration> globalAccelerationMapper;
-
     @Mapper ComponentMapper<Position> positionMapper;
-    @Mapper ComponentMapper<Heading> headingMapper;
-    @Mapper ComponentMapper<Velocity> shipVelocityMapper;
+    @Mapper ComponentMapper<Velocity> velocityMapper;
+    @Mapper ComponentMapper<Acceleration> accelerationMapper;
 
     public ShipMovementSystem() {
-        super(Aspect.getAspectForAll(Position.class, LocalAcceleration.class, GlobalAcceleration.class));
+        super(Aspect.getAspectForAll(Position.class, Velocity.class, Acceleration.class));
     }
 
     @Override
     protected void process(Entity entity) {
-        Velocity velocity = shipVelocityMapper.get(entity);
-
-        // update velocity by gravitational effect
-        GlobalAcceleration globalAcceleration = globalAccelerationMapper.get(entity);
-        Vector velocityChange = globalAcceleration.getVelocityChange(world.delta);
-        velocity.add(velocityChange);
-
-        globalAcceleration.set(Vector.ZERO);
-
-        // update velocity by ship's engine effect
-        Quaternion shipHeading = headingMapper.get(entity).getGlobalRotation();
-
-        LocalAcceleration localAcceleration = localAccelerationMapper.get(entity);
-        velocityChange = localAcceleration.getVelocityChange(shipHeading, world.delta);
-        velocity.add(velocityChange);
-
-        localAcceleration.set(Vector.ZERO);
-
-        // update position by velocity
+        Velocity velocity = velocityMapper.get(entity);
+        Acceleration acceleration = accelerationMapper.get(entity);
         Position position = positionMapper.get(entity);
-        position.add(velocity.vector);
+
+        position.move(velocity, world.delta / 2.0f);
+        velocity.accelerate(acceleration, world.delta);
+        position.move(velocity, world.delta / 2.0f);
+
+        acceleration.set(Vector.ZERO);
     }
 }

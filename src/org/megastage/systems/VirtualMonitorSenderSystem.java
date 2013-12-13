@@ -5,16 +5,12 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
-import org.megastage.util.Globals;
+import com.esotericsoftware.minlog.Log;
+import org.megastage.components.MonitorData;
+import org.megastage.components.dcpu.LEMUtil;
 import org.megastage.components.dcpu.VirtualMonitor;
-import org.megastage.util.application.Log;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class VirtualMonitorSenderSystem extends EntityProcessingSystem {
-    private final static Logger LOG = Logger.getLogger(VirtualMonitorSenderSystem.class.getName());
-
     @Mapper ComponentMapper<VirtualMonitor> virtualMonitorMapper;
 
     public VirtualMonitorSenderSystem() {
@@ -23,33 +19,27 @@ public class VirtualMonitorSenderSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity entity) {
-        LOG.finer(entity.toString());
-
         VirtualMonitor mon = virtualMonitorMapper.get(entity);
+        MonitorData data = mon.data;
 
-        boolean changed = mon.videoRAMAddr == 0 ?
-                mon.videoRAM.update(VirtualMonitor.EMPTY, (char) 0, 384):
-                mon.videoRAM.update(mon.dcpu.ram, mon.videoRAMAddr, 384);
+        boolean videoChanged = data.videoAddr == 0 ?
+                data.video.update(LEMUtil.defaultVideo):
+                data.video.update(mon.dcpu.ram, data.videoAddr, 384);
 
-        if(changed) {
-            world.getSystem(ServerNetworkSystem.class).sendMemory(Globals.Message.VIDEO_RAM, entity, mon.videoRAM.mem);
+        boolean fontChanged = data.fontAddr == 0 ?
+                data.font.update(LEMUtil.defaultFont):
+                data.font.update(mon.dcpu.ram, data.fontAddr, 256);
+
+        boolean paletteChanged = data.paletteAddr == 0 ?
+                data.palette.update(LEMUtil.defaultPalette):
+                data.palette.update(mon.dcpu.ram, data.paletteAddr, 16);
+
+        if(videoChanged || fontChanged || paletteChanged) {
+            Log.trace("video   " + (videoChanged ? "*": " ") + " [" + ((int) data.videoAddr) + "] " + data.video.toString());
+            Log.trace("font    " + (fontChanged ? "*": " ") + " [" + ((int) data.fontAddr) + "] " + data.font.toString());
+            Log.trace("palette " + (paletteChanged ? "*": " ") + " [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
+
+            world.getSystem(ServerNetworkSystem.class).broadcastMonitorData(entity);
         }
-        
-        changed = mon.fontRAMAddr == 0 ?
-                mon.fontRAM.update(VirtualMonitor.defaultFont):
-                mon.fontRAM.update(mon.dcpu.ram, mon.fontRAMAddr, 256);
-
-        if(changed) {
-            world.getSystem(ServerNetworkSystem.class).sendMemory(Globals.Message.FONT_RAM, entity, mon.fontRAM.mem);
-        }
-
-        changed = mon.paletteRAMAddr == 0 ?
-                mon.paletteRAM.update(VirtualMonitor.defaultPalette):
-                mon.paletteRAM.update(mon.dcpu.ram, mon.paletteRAMAddr, 16);
-
-        if(changed) {
-            world.getSystem(ServerNetworkSystem.class).sendMemory(Globals.Message.PALETTE_RAM, entity, mon.paletteRAM.mem);
-        }
-
     }
 }

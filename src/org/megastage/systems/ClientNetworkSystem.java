@@ -1,155 +1,153 @@
 package org.megastage.systems;
 
-import com.artemis.ComponentMapper;
+import com.artemis.Aspect;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
-import com.artemis.systems.VoidEntitySystem;
-import org.megastage.util.Globals;
-import org.megastage.util.Network;
-import org.megastage.components.client.VirtualMonitorView;
-import org.megastage.util.NetworkListener;
+import com.artemis.EntitySystem;
+import com.artemis.utils.ImmutableBag;
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.minlog.Log;
+import com.jme3.scene.Node;
+import org.megastage.protocol.Network;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.logging.Logger;
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import org.megastage.protocol.Message;
+import org.megastage.protocol.UserCommand;
+import org.megastage.util.ClientGlobals;
 
-public class ClientNetworkSystem extends VoidEntitySystem implements NetworkListener {
-    private final static Logger LOG = Logger.getLogger(ClientNetworkSystem.class.getName());
+public class ClientNetworkSystem extends EntitySystem {
+    private Client client;
 
-    private Network network;
+    public ClientEntityManagerSystem cems;
+    public ClientSpatialManagerSystem csms;
 
-    public ClientNetworkSystem() {
-        super();
-
-        network = new Network(this, Globals.clientPort);
-        // add server as the only remote
-        network.addRemote(new InetSocketAddress(Globals.serverHost, Globals.serverPort));
+    public ClientNetworkSystem(long interval) {
+        super(Aspect.getEmpty());
+        this.interval = interval;
     }
 
-    @Override
-    protected void processSystem() {
-        network.tick();
-    }
-
+    private long interval;
+    private long acc;
+    
     @Override
     protected boolean checkProcessing() {
-        return true;
+        if(ClientGlobals.time >= acc) {
+                acc = ClientGlobals.time + interval;
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void initialize() {
+        this.cems = world.getSystem(ClientEntityManagerSystem.class);
+        this.csms = world.getSystem(ClientSpatialManagerSystem.class);
+
+        client = new Client();
+        Network.register(client);
+
+        Thread kryoThread = new Thread(client);
+        kryoThread.setDaemon(true);
+        kryoThread.start();
+
+        try {
+            client.connect(5000, Network.serverHost, Network.serverPort, Network.serverPort+1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        client.addListener(new ClientNetworkListener());        
+        client.updateReturnTripTime();
+        while(client.getReturnTripTime() == -1) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+            }
+        }
+        Log.info("RTT: "+ client.getReturnTripTime());
+        ClientGlobals.timeDiff -= client.getReturnTripTime();
+    }
+
+    @Override
+    protected final void processEntities(ImmutableBag<Entity> entities) {
+        processSystem();
+    }
+	
+    protected void processSystem() {
+        if(ClientGlobals.userCommand.count > 0) {
+            Log.info(ClientGlobals.userCommand.toString());
+            client.sendUDP(ClientGlobals.userCommand);
+            ClientGlobals.userCommand.reset();
+        }
     }
 
     public void sendKeyTyped(int key) {
-        LOG.finer("");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
-        buf.putInt(Globals.Message.KEY_TYPED);
-        buf.putInt(key);
-        network.broadcast(buf);
+        Network.KeyEvent keyEvent = new Network.KeyTyped();
+        keyEvent.key = key;
+        client.sendUDP(keyEvent);
     }
 
     public void sendKeyPressed(int key) {
-        LOG.finer("");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
-        buf.putInt(Globals.Message.KEY_PRESSED);
-        buf.putInt(key);
-        network.broadcast(buf);
+        Network.KeyEvent keyEvent = new Network.KeyPressed();
+        keyEvent.key = key;
+        client.sendUDP(keyEvent);
     }
 
     public void sendKeyReleased(int key) {
-        LOG.finer("");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
-        buf.putInt(Globals.Message.KEY_RELEASED);
-        buf.putInt(key);
-        network.broadcast(buf);
-    }
-
-    public void sendUseEntity() {
-        LOG.finer("");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[4]);
-        buf.putInt(Globals.Message.USE_ENTITY);
-        network.broadcast(buf);
-    }
-
-    public void sendRequestEntityData(int entityID) {
-        LOG.finer("");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[8]);
-        buf.putInt(Globals.Message.REQUEST_ENTITY_DATA);
-        buf.putInt(entityID);
-        network.broadcast(buf);
+        Network.KeyEvent keyEvent = new Network.KeyReleased();
+        keyEvent.key = key;
+        client.sendUDP(keyEvent);
     }
 
     public void sendLogin() {
-        LOG.info("");
-
-        ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
-        buf.putInt(Globals.Message.LOGIN);
-        network.broadcast(buf);
+        Network.Login msg = new Network.Login();
+        client.sendTCP(msg);
     }
 
     public void sendLogout() {
-        LOG.finer("");
-        ByteBuffer buf = ByteBuffer.wrap(new byte[10]);
-        buf.putInt(Globals.Message.LOGOUT);
-        network.broadcast(buf);
+        Network.Logout msg = new Network.Logout();
+        client.sendTCP(msg);
     }
 
-    HashMap<Integer, Entity> serverIDToClientEntity = new HashMap<Integer, Entity>();
-    HashMap<Integer, Integer> clientToServer = new HashMap<Integer, Integer>();
-    
-    public void handleMessage(SocketAddress remote, ByteBuffer buf) {
-        int msgID = buf.getInt();
-
-        switch(msgID) {
-            case Globals.Message.VIDEO_RAM:
-            case Globals.Message.FONT_RAM:
-            case Globals.Message.PALETTE_RAM:
-                handleRAMMessage(msgID, buf);
-                break;
-            default:
-                LOG.warning("Unknown message type: " + msgID);
-        }
-    }
-
-    @Mapper
-    ComponentMapper<VirtualMonitorView> viewMapper;
-    private void handleRAMMessage(int msgID, ByteBuffer buf) {
-        LOG.fine("" + msgID);
-
-        int serverID = buf.getInt();
-
-        Entity entity = serverIDToClientEntity.get(serverID);
-
-        if(entity == null) {
-            entity = world.createEntity();
-
-            VirtualMonitorView mon = new VirtualMonitorView();
-            entity.addComponent(mon);
-
-            // sendRequestEntityData(serverID);
-
-            world.getSystem(ClientRenderSystem.class).panel.image = mon.img;
-
-            world.addEntity(entity);
-            serverIDToClientEntity.put(serverID, entity);
-            clientToServer.put(entity.getId(), serverID);
+    private class ClientNetworkListener extends Listener {
+        @Override
+        public void connected(Connection connection) {
+            Log.info("Connected to server: " + connection.toString());
         }
 
-        VirtualMonitorView monitor = viewMapper.get(entity);
+        @Override
+        public void disconnected(Connection connection) {
+            Log.info("Disconnected from server: " + connection.toString());
+        }
+
+        @Override
+        public void received(Connection pc, Object o) {
+            if(o instanceof Object[]) {
+                for(Object packet: (Object[]) o) {
+                    handlePacket(pc, packet);
+                }
+            } else {
+                handlePacket(pc, o);
+            }
+        }
         
-        char[] mem = new char[buf.remaining()/2];
-        for(int i=0; i < mem.length; i++) {
-            mem[i] = buf.getChar();
-        }
-
-        switch(msgID) {
-            case Globals.Message.VIDEO_RAM:
-                monitor.updateVideo(mem);
-                break;
-            case Globals.Message.FONT_RAM:
-                monitor.updateFont(mem);
-                break;
-            case Globals.Message.PALETTE_RAM:
-                monitor.updatePalette(mem);
-                break;
+        public void handlePacket(final Connection pc, final Object o) {
+            Log.debug("Received: " + o.toString());
+            
+            if(o instanceof Message) {
+                ClientGlobals.app.enqueue(new Callable() {
+                    @Override
+                    public Object call() throws Exception {
+                        ((Message) o).receive(ClientNetworkSystem.this, pc);
+                        return null;
+                    }
+                });
+            } else {
+                Log.warn("Unknown message type: " + o.getClass().getSimpleName());
+            }
+            
         }
     }
 }

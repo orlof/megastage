@@ -3,15 +3,15 @@ package org.megastage.util;
 import java.util.ArrayList;
 
 /**
- * Created with IntelliJ IDEA.
- * User: contko3
- * Date: 8/14/13
- * Time: 8:35 AM
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: contko3 Date: 8/14/13 Time: 8:35 AM To
+ * change this template use File | Settings | File Templates.
  */
 public class Vector {
-    public static final Vector ZERO = new Vector();
 
+    public static final Vector ZERO = new Vector();
+    public static Vector UNIT_X = new Vector(1.0d, 0.0d, 0.0d);
+    public static Vector UNIT_Y = new Vector(0.0d, 1.0d, 0.0d);
+    public static Vector UNIT_Z = new Vector(0.0d, 0.0d, 1.0d);
     public final double x, y, z;
 
     public Vector() {
@@ -50,9 +50,9 @@ public class Vector {
     // return the vector norm
     public Vector normalize(double tolerance) {
         double mag2 = x * x + y * y + z * z;
-        if(Math.abs(mag2 - 1.0) > tolerance) {
+        if (Math.abs(mag2 - 1.0) > tolerance) {
             double mag = Math.sqrt(mag2);
-            return new Vector(x /mag, y /mag, z /mag);
+            return new Vector(x / mag, y / mag, z / mag);
         }
         return this;
     }
@@ -73,26 +73,17 @@ public class Vector {
         return new Vector(x * scalar, y * scalar, z * scalar);
     }
 
-    public static void main(String[] args) throws Exception {
-        Heading h1 = new Heading();
-        Heading h2 = new Heading(h1);
-
-        h1.pitch(90);
-        h2.debug();
-        h2.yaw(90);
+    public Vector divide(double scalar) {
+        return new Vector(x / scalar, y / scalar, z / scalar);
     }
 }
 
-
 class Ship {
+
     Vector position = new Vector();
-
-    Heading heading = new Heading();
     Vector velocity = new Vector();
-
     double mass = 1.0d;
     double momentOfInertia = 1.0d;
-
     ArrayList<Gyro> gyros = new ArrayList<Gyro>();
 
     public Ship() {
@@ -107,15 +98,15 @@ class Ship {
     }
 
     public void tickGyros(double dt) {
-        for(Gyro gyro: gyros) {
+        for (Gyro gyro : gyros) {
             double angle = dt * gyro.power / momentOfInertia;
-            heading.rotate(gyro.axis, angle);
+            //heading.rotate(gyro.axis, angle);
         }
     }
 }
 
-
 class Gyro {
+
     Vector axis;
     double power = 1.0d;
 

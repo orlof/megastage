@@ -1,14 +1,13 @@
 package org.megastage.server;
 
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import org.megastage.util.LogFormat;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,10 +17,10 @@ import java.util.logging.Logger;
  * To change this template use File | Settings | File Templates.
  */
 public class Main {
-    public static final String version = "DEV";
-
     public static void main(String args[]) throws Exception {
-        LogManager.getLogManager().readConfiguration(new FileInputStream("server_logging.properties"));
+        Log.setLogger(new LogFormat());
+        Log.set(Log.LEVEL_INFO);
+        
         Element root = readConfig(args[0]);
         Game game = new Game(root);
         game.loopForever();
@@ -30,5 +29,4 @@ public class Main {
     public static Element readConfig(String fileName) throws JDOMException, IOException {
         return new SAXBuilder().build(new File(fileName)).getRootElement();
     }
-
 }

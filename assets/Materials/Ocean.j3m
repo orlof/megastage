@@ -1,0 +1,23 @@
+Material Ocean : Common/MatDefs/Light/Lighting.j3md {
+     MaterialParameters {
+        UseMaterialColors : true
+        Specular : 0.0 0.6 0.8 1.0
+        Diffuse : 0.0 0.4 0.8 1.0
+        Ambient : 0.0 0.4 0.4 1.0
+        Shininess : 1.5
+        Minnaert : true
+        WardIso : false
+        LATC : false
+        HighQuality : false
+        VTangent : false
+        SeparateTexCoord : false
+        VertexLighting : false
+        PackedNormalParallax : false
+        ParallaxHeight : 0.0
+        SteepParallax : false
+        DiffuseMap : Flip Repeat Textures/ocean.jpg
+        UseAlpha : false
+     }
+    AdditionalRenderState {
+    }
+}

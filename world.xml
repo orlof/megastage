@@ -1,47 +1,134 @@
 <root>
-    <entity>
-        <component type="Identifier" name="Sun"/>
+    <entity name="Sun">
         <component type="Position" x="0" y="0" z="0"/>
-        <component type="Physical" radius_km="700000" mass_kg="1.989e30"/>
-        <group name="celestial"/>
-        <entity>
-            <component type="Identifier" name="Earth"/>
-            <component type="Orbit" orbital_distance_km="150000000"/>
-            <component type="LocalPosition"/>
+        <component type="Mass" kg="1.989e31"/>
+        <component type="server.SunGeometry" radius="40000" light_radius="2000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
+        <component type="GravityField"/>
+        <group name="client"/>
+        <entity name="Earth">
+            <component type="Mass" kg="5.972e31"/>
+            <component type="GravityField"/>
+            <component type="Orbit" orbital_distance="120000"/>
+            <component type="Rotation"/>
+            <component type="server.PlanetGeometry" radius="5000" generator="Earth" color="Blue"/>
+            <component type="FixedRotation" period_y="0.01"/>
             <component type="Position" x="0" y="0" z="0"/>
-            <component type="Physical" radius_km="6300" mass_kg="5.972e24"/>
-            <group name="celestial"/>
-            <entity>
-                <component type="Identifier" name="Moon"/>
-                <component type="Orbit" orbital_distance_km="384000"/>
-                <component type="LocalPosition"/>
+            <group name="client"/>
+            <entity name="Moon">
+                <component type="Mass" kg="7.4e23"/>
+                <component type="GravityField"/>
                 <component type="Position" x="0" y="0" z="0"/>
-                <component type="Physical" radius_km="1700" mass_kg="7.34767309e22"/>
-                <group name="celestial"/>
+                <component type="Rotation"/>
+                <component type="Orbit" orbital_distance="30000"/>
+                <component type="server.PlanetGeometry" radius="2000" generator="Moon" color="Brown"/>
+                <component type="FixedRotation" period_y="-0.001"/>
+                <group name="client"/>
             </entity>
         </entity>
+        <!--entity name="Water World">
+            <component type="Mass" kg="5.972e25"/>
+            <component type="GravityField"/>
+            <component type="Orbit" orbital_distance="400000"/>
+            <component type="server.PlanetGeometry" radius="5000" generator="Water"/>
+            <component type="FixedRotation" period_y="1.0"/>
+            <component type="Position"/>
+            <group name="client"/>
+            <entity name="Phobos">
+                <component type="Mass" kg="7.4e23"/>
+                <component type="GravityField"/>
+                <component type="Position" x="0" y="0" z="70000"/>
+                <component type="Orbit" orbital_distance="50000"/>
+                <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
+                <component type="FixedRotation" period_y="0.2"/>
+                <group name="client"/>
+            </entity>
+        </entity>
+        <entity name="Mars">
+            <component type="Mass" kg="5.972e25"/>
+            <component type="GravityField"/>
+            <component type="Orbit" orbital_distance="1000000"/>
+            <component type="server.PlanetGeometry" radius="10000" generator="Earth"/>
+            <component type="FixedRotation" period_y="1.0"/>
+            <component type="Position"/>
+            <group name="client"/>
+            <entity name="Deimos">
+                <component type="Mass" kg="7.4e23"/>
+                <component type="GravityField"/>
+                <component type="Position" x="0" y="0" z="70000"/>
+                <component type="Orbit" orbital_distance="50000"/>
+                <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
+                <component type="FixedRotation" period_y="0.2"/>
+                <group name="client"/>
+            </entity>
+        </entity>
+        <entity name="Jupiter">
+            <component type="Mass" kg="5.972e25"/>
+            <component type="GravityField"/>
+            <component type="Orbit" orbital_distance="2000000"/>
+            <component type="server.PlanetGeometry" radius="10000" generator="Earth"/>
+            <component type="FixedRotation" period_y="1.0"/>
+            <component type="Position"/>
+            <group name="client"/>
+            <entity name="Europa">
+                <component type="Mass" kg="7.4e23"/>
+                <component type="GravityField"/>
+                <component type="Position" x="0" y="0" z="70000"/>
+                <component type="Orbit" orbital_distance="50000"/>
+                <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
+                <component type="FixedRotation" period_y="0.2"/>
+                <group name="client"/>
+            </entity>
+        </entity-->
     </entity>
 
-    <entity>
-        <component type="Identifier" name="Apollo 13"/>
+    <!--entity name="Borg Ship">
+        <component type="Position" x="0" y="0" z="100000"/>
+        <component type="Rotation"/>
+        <component type="server.ShipGeometry" hull="cube"/>
+        <group name="client"/>
+    </entity-->
+
+    <entity-template name="Player">
         <component type="Position" x="0" y="0" z="0"/>
-        <component type="Heading"/>
-        <component type="ShipVelocity" x="0" y="0" z="0"/>
-        <component type="ShipGlobalAcceleration"/>
-        <component type="ShipLocalAcceleration"/>
-        <component type="Physical" radius_km="0.02" mass_kg="1000000"/>
-        <entity>
+        <component type="Rotation"/>
+        <component type="server.VoidGeometry"/>
+        <group name="client"/>
+    </entity-template>
+
+    <entity-template name="Apollo 13">
+        <component type="Position" x="0" y="0" z="-100000"/>
+        <component type="Rotation"/>
+        <component type="server.ShipGeometry" size="16" entry_x="0" entry_y="2" entry_z="0"/>
+        <!--component type="Velocity" x="0" y="0" z="0"/>
+        <component type="Acceleration"/>
+        <component type="Mass" radius_km="0.02" mass_kg="1000000"/-->
+        <entity name="DCPU">
+            <group name="client"/>
+            <component type="server.VoidGeometry"/>
+            <component type="server.BindTo"/>
             <component type="dcpu.DCPU" bootrom="admiral.bin"/>
-            <entity>
-                <component type="dcpu.VirtualKeyboard"/>
-                <group name="can_use"/>
-            </entity>
-            <entity>
+            <entity name="LEM">
+                <component type="Position" x="-4" y="0" z="-16"/>
                 <component type="dcpu.VirtualMonitor"/>
+                <component type="server.MonitorGeometry"/>
+                <component type="server.BindTo"/>
+                <group name="client"/>
+            </entity>
+            <entity name="Generic Keyboard">
+                <component type="dcpu.VirtualKeyboard"/>
+                <group name="keyboard"/>
+            </entity>
+            <!---entity>
+                <component type="dcpu.Engine" x="0" y="0" z="10"/>
+                <component type="Rotation"/>
             </entity>
             <entity>
-                <component type="HWEngineController" x="0" y="0" z="10"/>
+                <component type="dcpu.Engine" x="0" y="0" z="-1"/>
+                <component type="Rotation"/>
             </entity>
+            <entity>
+                <component type="dcpu.PPS"/>
+            </entity-->
         </entity>
         <!--entity>
             <component type="Engine" x="0" y="0" z="-1"/>
@@ -54,11 +141,8 @@
         <entity>
             <component type="Gyroscope" x="0" y="0" z="1"/>
             <component type="SystemBus" address="4"/>
-        </entity>
-        <entity>
-            <component type="PulsarPositioningSystem"/>
-            <component type="SystemBus" address="5"/>
         </entity-->
-    </entity>
+        <group name="client"/>
+    </entity-template>
 
 </root>

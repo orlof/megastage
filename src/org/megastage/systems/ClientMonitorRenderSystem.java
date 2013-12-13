@@ -5,40 +5,50 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
-import org.megastage.client.Game;
-import org.megastage.components.client.VirtualMonitorView;
+import com.esotericsoftware.minlog.Log;
+import com.jme3.math.ColorRGBA;
+import org.megastage.components.client.ClientRaster;
+import org.megastage.components.client.ClientVideoMemory;
+import org.megastage.util.ClientGlobals;
 
 public class ClientMonitorRenderSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<VirtualMonitorView> viewMapper;
+    @Mapper ComponentMapper<ClientVideoMemory> videoMemoryMapper;
+    @Mapper ComponentMapper<ClientRaster> rasterComponentMapper;
 
     public ClientMonitorRenderSystem() {
-        super(Aspect.getAspectForAll(VirtualMonitorView.class));
+        super(Aspect.getAspectForAll(ClientVideoMemory.class, ClientRaster.class));
     }
 
     @Override
     protected void process(Entity entity) {
-        VirtualMonitorView view = viewMapper.get(entity);
+        ClientVideoMemory videoMemory = videoMemoryMapper.get(entity);
 
-        long time = System.currentTimeMillis() / 16L;
-        boolean blink = time / 20L % 2L == 0L;
+        boolean blink = true;
         
-        if(view.isDirty || blink != view.blink) {
-            view.isDirty = false;
-            view.blink = blink;
-            render(view, blink);
+        if(ClientGlobals.gfxQuality.ENABLE_LEM_BLINKING) {
+            long time = System.currentTimeMillis() / 16L;
+            blink = time / 20L % 2L == 0L;
+        }
+        
+        if(videoMemory.isDirty || blink != videoMemory.blink) {
+            videoMemory.isDirty = false;
+            videoMemory.blink = blink;
+            
+            ClientRaster rasterComponent = rasterComponentMapper.get(entity);
+            render(videoMemory, blink, rasterComponent);
         }
     }
 
-    public void render(VirtualMonitorView view, boolean blink) {
+    public void render(ClientVideoMemory videoMemory, boolean blink, ClientRaster rasterComponent) {
         try {
             for (int row = 0; row < 12; row++) {
                 for (int col = 0; col < 32; col++) {
-                    int dat = view.screenMemRam[col + row * 32];
+                    int dat = videoMemory.screenMemRam[col + row * 32];
                     int charValue = dat & 0x7F;
                     int charOffsetInFontMemory = charValue * 2;
 
-                    int colorForeground = view.paletteMemRam[dat >> 12];
-                    int colorBackground = view.paletteMemRam[dat >> 8 & 0xF];
+                    int colorForeground = videoMemory.paletteMemRam[dat >> 12];
+                    int colorBackground = videoMemory.paletteMemRam[dat >> 8 & 0xF];
 
                     if (blink && ((dat & 0x80) > 0)) {
                         colorForeground = colorBackground;
@@ -53,11 +63,15 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
                         word1 = 00001001 /
                                 00000000
                         */
-                        int bits = view.fontMemRam[charOffsetInFontMemory + (x >> 1)] >> (x + 1 & 0x1) * 8 & 0xFF;
+                        int bits = videoMemory.fontMemRam[charOffsetInFontMemory + (x >> 1)] >> (x + 1 & 0x1) * 8 & 0xFF;
                         for (int y = 0; y < 8; y++) {
                             int bit = (bits >> y & 0x1) == 1 ? colorForeground: colorBackground;
                             //view.pixels[(pixelOffs + x + y * 128)] = bit;
-                            view.img.setRGB(col*4+x, row*8+y, bit);
+                            //TODO optimize
+                            ColorRGBA c = new ColorRGBA();
+                            c.fromIntARGB(bit);
+                            //c.fromIntARGB(0x33555555);
+                            rasterComponent.raster.setPixel(col*4+x, row*8+y, c);
                         }
                     }
                 }

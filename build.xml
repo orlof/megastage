@@ -1,205 +1,76 @@
-<?xml version="1.0"?>
-<!--
-  =============================================================================
-    Master build file for Empire Remake.
-
-    This script should be started with the following command line :
-
-        ant <target>
-
-  =============================================================================
--->
-
-<project name="Megastage" default="jar" basedir=".">
-
-    <description>
-        Build file for Megastage
-    </description>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="BasicGameTemplate" default="default" basedir=".">
+    <description>Builds, tests, and runs the project BasicGameTemplate.</description>
+    <import file="nbproject/build-impl.xml"/>
 
     <!--
-      ===============================================================================
-        Miscellaneous settings
-      ===============================================================================
+
+    There exist several targets which are by default empty and which can be 
+    used for execution of your tasks. These targets are usually executed 
+    before and after some main targets. They are: 
+
+      -pre-init:                 called before initialization of project properties
+      -post-init:                called after initialization of project properties
+      -pre-compile:              called before javac compilation
+      -post-compile:             called after javac compilation
+      -pre-compile-single:       called before javac compilation of single file
+      -post-compile-single:      called after javac compilation of single file
+      -pre-compile-test:         called before javac compilation of JUnit tests
+      -post-compile-test:        called after javac compilation of JUnit tests
+      -pre-compile-test-single:  called before javac compilation of single JUnit test
+      -post-compile-test-single: called after javac compilation of single JUunit test
+      -pre-jar:                  called before JAR building
+      -post-jar:                 called after JAR building
+      -post-clean:               called after cleaning build products
+
+    (Targets beginning with '-' are not intended to be called on their own.)
+
+    Example of inserting an obfuscator after compilation could look like this:
+
+        <target name="-post-compile">
+            <obfuscate>
+                <fileset dir="${build.classes.dir}"/>
+            </obfuscate>
+        </target>
+
+    For list of available properties check the imported 
+    nbproject/build-impl.xml file. 
+
+
+    Another way to customize the build is by overriding existing main targets.
+    The targets of interest are: 
+
+      -init-macrodef-javac:     defines macro for javac compilation
+      -init-macrodef-junit:     defines macro for junit execution
+      -init-macrodef-debug:     defines macro for class debugging
+      -init-macrodef-java:      defines macro for class execution
+      -do-jar-with-manifest:    JAR building (if you are using a manifest)
+      -do-jar-without-manifest: JAR building (if you are not using a manifest)
+      run:                      execution of project 
+      -javadoc-build:           Javadoc generation
+      test-report:              JUnit report generation
+
+    An example of overriding the target for project execution could look like this:
+
+        <target name="run" depends="BasicGameTemplate-impl.jar">
+            <exec dir="bin" executable="launcher.exe">
+                <arg file="${dist.jar}"/>
+            </exec>
+        </target>
+
+    Notice that the overridden target depends on the jar target and not only on 
+    the compile target as the regular run target does. Again, for a list of available 
+    properties which you can use, check the target you are overriding in the
+    nbproject/build-impl.xml file. 
+
     -->
-    <!-- Global project properties -->
-    <property name="project.name.text" value="megastage"/>
-    <property name="project.name.file" value="megastage"/>
-    <property name="project.version" value="1.0"/>
-
-    <!-- Compiler settings -->
-    <property name="compiler.debug" value="on"/>
-    <property name="compiler.optimize" value="off"/>
-    <property name="compiler.deprecation" value="on"/>
-
-    <!--
-       ========================================================================
-         Set the properties related to the source tree
-       ========================================================================
-    -->
-    <!-- Source locations for the build -->
-    <property name="build.dir"     value="${basedir}/build"/>
-    <property name="libs.dir"      value="${basedir}/lib"/>
-    <property name="src.dir"       value="${basedir}/src"/>
-    <property name="resources.dir" value="${basedir}/resources"/>
-    <property name="classes.dir"   value="${basedir}/classes"/>
-
-    <!-- Name of deliverable -->
-    <property name="final.jar.name" value="${basedir}/megastage.jar"/>
-    <property name="final.zip.name" value="${basedir}/${project.name.file}-${project.version}.zip"/>
-
-    <patternset id="libs">
-        <include name="libs/*.jar"/>
-    </patternset>
-
-
-    <!--
-      ========================================================================
-        Initialize the build. Must be called by all targets
-      ========================================================================
-    -->
-    <target name="init">
-
-        <tstamp/>
-
-        <echo message="--------- ${project.name.text} ${project.version} ---------"/>
-        <echo message=""/>
-
-        <echo message="java.class.path = ${java.class.path}"/>
-        <echo message="os.name         = ${os.name}" />
-        <echo message="java.home       = ${java.home}"/>
-        <echo message="basedir         = ${basedir}"/>
-        <echo message="target          = ${final.zip.name}"/>
-        <echo message=""/>
-
-    </target>
-
-    <path id="libs.classpath">
-        <fileset dir="${libs.dir}" includes="*.jar" />
-    </path>
-
-    <!--
-      ========================================================================
-        Prepare the output directory by copying the source files into it
-      ========================================================================
-    -->
-    <target name="prepare" depends="clean">
-
-        <!-- Copy source files to source distribution.
-        -->
-        <mkdir dir="${classes.dir}"/>
-
-        <copy todir="${classes.dir}">
-            <fileset dir="${resources.dir}">
-                <include name="**/*.properties"/>
-                <include name="**/*.xml"/>
-                <include name="**/*.png"/>
-                <include name="**/*.jpg"/>
-            </fileset>
-        </copy>
-
-    </target>
-
-    <!--
-       ========================================================================
-         Compiles the source directory
-       ========================================================================
-    -->
-    <target name="compile" depends="prepare">
-
-        <javac srcdir="${src.dir}"
-               destdir="${classes.dir}"
-               debug="${compiler.debug}"
-               deprecation="${compiler.deprecation}"
-               optimize="${compiler.optimize}"
-               nowarn="true"
-               source="1.7"
-               target="1.7"
-               encoding="ISO-8859-1"
-               includeantruntime="false">
-
-            <classpath>
-                <fileset dir="${libs.dir}">
-                    <include name="*.jar"/>
-                </fileset>
-            </classpath>
-
-        </javac>
-    </target>
-
-    <!--
-       ========================================================================
-         Create the runtime jar file
-       ========================================================================
-    -->
-    <!--target name="jar" depends="clean,compile" -->
-    <target name="jar" depends="compile">
-        <pathconvert property="manifest.classpath" pathsep=" ">
-            <chainedmapper>
-                <mapper type="flatten"/>
-                <mapper type="glob" from="*" to="lib/*"/>
-            </chainedmapper>
-            <path id="manifest.classpath">
-                <fileset dir="${libs.dir}" includes="*.jar" />
-            </path>
-        </pathconvert>
-
-
-        <jar jarfile="${final.jar.name}" basedir="${classes.dir}">
-            <manifest>
-                <attribute name="Product-Title" value="${project.name.text}"/>
-                <attribute name="Product-Version" value="${project.version}"/>
-
-                <attribute name="Build-By" value="${user.name}"/>
-
-                <attribute name="Main-Class" value="org.megastage.client.Main"/>
-                <attribute name="Class-Path" value="${manifest.classpath}"/>
-            </manifest>
-        </jar>
-    </target>
-
-    <target name="dist" depends="jar" description="">
-        <delete dir="${build.dir}" />
-        <mkdir dir="${build.dir}" />
-        <copy todir="${build.dir}/">
-            <fileset dir="${basedir}" includes="lib/*.jar" />
-            <fileset file="${final.jar.name}" />
-        </copy>
-    </target>
-
-    <!--
-       ========================================================================
-         Generates zip of the project
-       ========================================================================
-    -->
-    <target name="zip" depends="dist">
-
-        <zip zipfile="${final.zip.name}" basedir="${build.dir}">
-        </zip>
-
-    </target>
-
-    <!--
-       ========================================================================
-         Remove all build generated files
-       ========================================================================
-    -->
-    <target name="clean" depends="init">
-
-        <!-- Remove the out directory -->
-        <delete dir="${build.dir}"/>
-        <delete dir="${classes.dir}"/>
-        <delete file="${final.jar.name}"/>
-        <delete file="${final.zip.name}"/>
-
-        <!-- Deletes all files ending with '~' -->
-        <delete>
-            <fileset dir="." includes="**/*~" defaultexcludes="no"/>
-        </delete>
-
-        <delete>
-            <fileset dir="." includes="**/*.bak" defaultexcludes="no"/>
-        </delete>
-
-    </target>
-
+    
 </project>
