@@ -27,6 +27,8 @@ import com.jme3.texture.plugins.AWTLoader;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jmeplanet.FractalDataSource;
 import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
@@ -108,58 +110,83 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         return node;
      }
     
-    public void setupSunLikeBody(final Entity entity, final SunGeometry data) {
+    private Geometry createSphere(float radius, ColorRGBA color) {
         Sphere mesh = new Sphere(
                 ClientGlobals.gfxQuality.SPHERE_Z_SAMPLES,
                 ClientGlobals.gfxQuality.SPHERE_RADIAL_SAMPLES, 
-                data.radius);
+                radius);
         
-        Geometry geom = new Geometry(entity.toString(), mesh);
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Geometry geom = new Geometry();
+        geom.setMesh(mesh);
 
-        ColorRGBA colorRGBA = new ColorRGBA();
-        colorRGBA.fromIntRGBA(data.color);
-        mat.setColor("Color", colorRGBA);
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", color);
         geom.setMaterial(mat);
 
+        return geom;
+    }
+    
+    public void setupSunLikeBody(final Entity entity, final SunGeometry data) {
+        ColorRGBA colorRGBA = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
+
         final Node node = createUserNode(entity);
-        node.attachChild(geom);
+        node.attachChild(createSphere(data.radius, colorRGBA));
 
         final PointLight light = new PointLight();
         light.setColor(colorRGBA);
         light.setRadius(data.lightRadius);
 
-        LightNode lightNode = new LightNode(entity.toString() + " Sun Light", light);
+        LightNode lightNode = new LightNode(entity.toString() + " LightNode", light);
         node.attachChild(lightNode);
 
-        Callable callable = new Callable() {
+        app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
                 ClientGlobals.rootNode.addLight(light);
                 ClientGlobals.sysMovNode.attachChild(node);
                 return null;
             }
-        };
-        app.enqueue(callable);
+        });
     }
 
     public void setupPlanetLikeBody(Entity entity, PlanetGeometry data) {
         // Add planet
         final Node node = createUserNode(entity);
-        node.attachChild(createPlanet(data));
+        
+        if(ClientGlobals.gfxQuality.ENABLE_PLANETS) {
+            node.attachChild(createPlanet(data));
 
-        app.enqueue(new Callable() {
-            @Override
-            public Object call() throws Exception {
-                PlanetAppState appState = app.getStateManager().getState(PlanetAppState.class);
-                if(appState != null) appState.addPlanet((Planet) node.getChild(0));
+            app.enqueue(new Callable() {
+                @Override
+                public Object call() throws Exception {
+                    PlanetAppState appState = app.getStateManager().getState(PlanetAppState.class);
+                    if(appState != null) appState.addPlanet((Planet) node.getChild(0));
 
-                if(node.getParent() == null) {
-                    ClientGlobals.sysMovNode.attachChild(node);
+                    if(node.getParent() == null) {
+                        ClientGlobals.sysMovNode.attachChild(node);
+                    }
+                    return null;
                 }
-                return null;
+            });
+        } else {
+            ColorRGBA color = null;
+            try {
+                color = (ColorRGBA) ColorRGBA.class.getDeclaredField(data.color).get(null);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-        });
+            
+            node.attachChild(createSphere(data.radius, color));
+            app.enqueue(new Callable() {
+                @Override
+                public Object call() throws Exception {
+                    if(node.getParent() == null) {
+                        ClientGlobals.sysMovNode.attachChild(node);
+                    }
+                    return null;
+                }
+            });
+        }
     }
     
     public void setupVoidNode(Entity entity, VoidGeometry data) {

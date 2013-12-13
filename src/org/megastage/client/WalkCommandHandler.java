@@ -308,9 +308,13 @@ public class WalkCommandHandler implements AnalogListener, ActionListener {
         if(dcpu) {
             disableWalkMappings();
             enableDCPUMappings();
+            inputManager.removeListener(this);
             inputManager.addRawInputListener(dcpuListener);
+            inputManager.addListener(this, dcpuMappings);
         } else {
             inputManager.removeRawInputListener(dcpuListener);
+            inputManager.removeListener(this);
+            inputManager.addListener(this, walkMappings);
             disableDCPUMappings();
             enableWalkMappings();
         }

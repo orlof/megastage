@@ -43,6 +43,7 @@ public class ClientGlobals {
         public static int SCREEN_WIDTH = 800;
         public static int SCREEN_HEIGHT = 600;
         public static boolean ENABLE_LEM_BLINKING = true;
+        public static boolean ENABLE_PLANETS = true;
     }
     
     public static class GFXLowQuality extends GFXQuality {
@@ -53,7 +54,18 @@ public class ClientGlobals {
         public static int Z5 = SCREEN_WIDTH = 640;
         public static int Z6 = SCREEN_HEIGHT = 400;
         public static boolean Z7 = ENABLE_LEM_BLINKING = false;
+        public static boolean Z9 = ENABLE_PLANETS = true;
     }
     
+    public static class GFXVeryLowQuality extends GFXQuality {
+        public static int Z1 = SPHERE_Z_SAMPLES = 16;
+        public static int Z2 = SPHERE_RADIAL_SAMPLES = 16;
+        public static boolean Z9 = ENABLE_PLANETS = false;
+        public static int Z3 = PLANET_PLANAR_QUADS_PER_PATCH = 4;
+        public static boolean Z8 = PLANET_FAR_FILTER_ENABLED = true;
+        public static int Z5 = SCREEN_WIDTH = 640;
+        public static int Z6 = SCREEN_HEIGHT = 400;
+        public static boolean Z7 = ENABLE_LEM_BLINKING = false;
+    }    
 }
 
