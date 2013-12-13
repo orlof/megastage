@@ -77,7 +77,7 @@ public class ClientNetworkSystem extends EntitySystem {
 	
     protected void processSystem() {
         if(ClientGlobals.userCommand.count > 0) {
-            Log.info(ClientGlobals.userCommand.toString());
+            Log.debug(ClientGlobals.userCommand.toString());
             client.sendUDP(ClientGlobals.userCommand);
             ClientGlobals.userCommand.reset();
         }

@@ -237,7 +237,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
 
         @Override
         public void received(Connection connection, Object o) {
-            Log.info("Received: " + o.getClass().getName());
+            Log.debug("Received: " + o.getClass().getName());
             PlayerConnection pc = (PlayerConnection) connection;
 
             if(o instanceof Network.Login) {
