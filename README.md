@@ -33,7 +33,7 @@ Your first person view is always anchored to some ship (or to planet in the futu
 
 ...yes - very far in my wish list there is also the possibility that artificial gravity could fail and your first person view would rotate around any axis...
 
-In front of you, you should see a Sun like star - the main source of energy in future versions of the game. By looking around with mouse you should be able to find a planet orbiting the star and moon orbiting the planet. Behind you there is a big live DCPU LEM screen. Sorry to say, but I broke the planet graphics and now there is a major flickering ruining the immersion. It will be fixed in the future. Planets and moons show more and more details the closer you get. Landing and planetal buildings should be possible in the future.
+In front of you, you should see a Sun like star - the main source of energy in future versions of the game. By looking around with mouse you should be able to find a planet orbiting the star and moon orbiting the planet. All celestial movement is like 100x faster in this demo than it should be. Sorry to say, but I broke the planet graphics and now there is a major flickering ruining the immersion. It will be fixed in the future. Planets and moons show more and more details the closer you get. Landing and planetal buildings should be possible in the future.
 
 Currently there are no physics involved - you can walk outside the ship floor, you can fly through stars and planets. That will be fixed in the future.
 
@@ -50,7 +50,7 @@ You can move your character with arrow keys. To pilot the ship, you can use foll
 
 Flight model will be radically different as soon as I get the velocity vectors, engines, thrust, gyroscopes etc... implemented.
 
-One more thing you can do: If you press the left mouse button, the game will change to use-item-mode. As you can see, there is only one item on board: the DCPU. DCPU currently boots up with fixed boot disk that happens to contain Admiral 
+One more thing you can do: Behind you there is a big live DCPU LEM screen. If you press the left mouse button, the game will change to use-item-mode. As you can see, there is only one item on board: the DCPU. DCPU currently boots up with fixed boot disk that happens to contain Admiral 
 
 https://github.com/orlof/dcpu-admiral
 
