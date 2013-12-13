@@ -3,9 +3,9 @@ Megastage v0.1
 <i>Random ECS experiments inspired by DCPU</i>
 
 
-Few months ago I start to learn 3d programming. My progress has been painfully slow and results are not that good, but it has been a wonderful learning experience and my plan is to continue my exploration.
+Few months ago I decided to start learning 3d programming. Progress in my learning project: Megastage, has been painfully slow and results are not that good, but it has been a wonderful learning experience and my plan is to continue the journey.
 
-In December 2013 I released 0.1 version of my software. Not to impress anyone else, but to pace my work have to feeling to accomplish something. This version is only a proof of concept type things - it has no game in it. Following instructions contain a lot of "future version" references that should give some light to the direction of my development efforts. 
+In December 2013 I released 0.1 version of Megastage. It is only a technology demo, not ment to impress anyone, but to pace my own work and give me the feeling that I have accomplished something. This version is only a proof of concept type things - it has no game in it. Following instructions contain a lot of "future version" references that should give some light to the direction of my development efforts. 
 
 INSTRUCTIONS
 
@@ -29,7 +29,7 @@ After starting the client, a first person view should open on your screen. Imagi
 
 Yes - all ships are a independent block-worlds that can be modified in the future versions.
 
-Your first person view is always anchored to some ship (or to planet in the future) that will fix your coordinate system (Ship floor is always in the bottom of your screen). Ships have artificial gravity and that should make the 1st person perspective more playable.
+Your first person view is always anchored to some ship (or to planet in the future) that will fix your coordinate system (Ship floor is always in the bottom of your screen). Ships have artificial gravity to make the 1st person perspective more playable.
 
 ...yes - very far in my wish list there is also the possibility that artificial gravity could fail and your first person view would rotate around any axis...
 
