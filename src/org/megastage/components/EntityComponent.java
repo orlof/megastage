@@ -8,6 +8,7 @@ import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.protocol.Network;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 
 /**
  *
@@ -20,6 +21,6 @@ public abstract class EntityComponent extends BaseComponent {
     }
     
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        system.cems.setComponent(entity, this);
+        ClientGlobals.artemis.setComponent(entity, this);
     }
 }

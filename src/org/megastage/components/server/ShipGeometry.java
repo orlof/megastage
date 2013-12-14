@@ -10,6 +10,7 @@ import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 
 
     
@@ -35,8 +36,8 @@ public class ShipGeometry extends EntityComponent {
 
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        system.cems.setComponent(entity, this);
-        system.csms.setupShip(entity, this);
+        ClientGlobals.artemis.setComponent(entity, this);
+        ClientGlobals.spatialManager.setupShip(entity, this);
     }
     
     public String toString() {

@@ -91,7 +91,7 @@ public class Network {
 
         @Override
         public void receive(ClientNetworkSystem system, Connection pc) {
-            Entity entity = system.cems.get(entityID);
+            Entity entity = ClientGlobals.artemis.get(entityID);
             component.receive(system, pc, entity);
         }
         

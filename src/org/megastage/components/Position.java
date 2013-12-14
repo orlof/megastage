@@ -28,7 +28,7 @@ public class Position extends EntityComponent {
 
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        system.cems.setComponent(entity, this);
+        ClientGlobals.artemis.setComponent(entity, this);
     }
 
     public void add(Vector vector) {

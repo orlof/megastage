@@ -7,6 +7,7 @@ import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector;
 
@@ -28,8 +29,8 @@ public class Orbit extends EntityComponent {
 
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        center = system.cems.get(center).getId();
-        system.cems.setComponent(entity, this);
+        center = ClientGlobals.artemis.get(center).getId();
+        ClientGlobals.artemis.setComponent(entity, this);
     }
 
     public double getOrbitalPeriod(double centerMass) {

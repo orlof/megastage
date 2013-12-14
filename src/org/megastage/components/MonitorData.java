@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Connection;
 import org.megastage.components.client.ClientVideoMemory;
 import org.megastage.components.dcpu.LEMUtil;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 import org.megastage.util.RAM;
 
 public class MonitorData extends EntityComponent {
@@ -23,7 +24,7 @@ public class MonitorData extends EntityComponent {
 
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        ClientVideoMemory videoMemory = system.cems.getComponent(entity, ClientVideoMemory.class);
+        ClientVideoMemory videoMemory = ClientGlobals.artemis.getComponent(entity, ClientVideoMemory.class);
         videoMemory.update(this);
     }
 

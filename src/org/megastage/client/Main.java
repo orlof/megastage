@@ -52,10 +52,11 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
-        WalkAppState walkCamAppState = new WalkAppState();
-        walkCamAppState.setEnabled(true);
-        stateManager.attach(walkCamAppState);
+        ClientGlobals.cmdHandler = new CommandHandler();
+        ClientGlobals.cmdHandler.registerWithInput(inputManager);
 
+        ClientGlobals.spatialManager = new SpatialManager(this);
+        
         CameraNode camNode = new CameraNode("Camera 1", cam);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         ClientGlobals.playerNode.attachChild(camNode);
@@ -85,15 +86,9 @@ public class Main extends SimpleApplication {
         stateManager.attach(planetAppState);
 
         // Add ECS app state
-        artemisAppState = new ArtemisState();
-        stateManager.attach(artemisAppState);
+        ClientGlobals.artemis = new ArtemisState();
+        stateManager.attach(ClientGlobals.artemis);
         
-
-        //SpectatorModeInputManager in = new SpectatorModeInputManager(this);
-        //in.init();
-        
-        //inputManager.addRawInputListener(new DCPURawInputListener(artemisAppState));
-
         ClientGlobals.cubesSettings = new CubesSettings(this);
         ClientGlobals.cubesSettings.setBlockMaterial(CubesTestAssets.getSettings(this).getBlockMaterial());
         ClientGlobals.cubesSettings.setBlockSize(2);

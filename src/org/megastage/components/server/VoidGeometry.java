@@ -10,6 +10,7 @@ import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 
 
     
@@ -25,7 +26,7 @@ public class VoidGeometry extends EntityComponent {
 
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        system.csms.setupVoidNode(entity, this);
+        ClientGlobals.spatialManager.setupVoidNode(entity, this);
     }
     
     public String toString() {
