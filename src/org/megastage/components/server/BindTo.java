@@ -32,12 +32,12 @@ public class BindTo extends EntityComponent {
 
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        Entity parent = system.cems.get(entityID);
+        Entity parent = ClientGlobals.artemis.get(entityID);
 
         if(ClientGlobals.playerEntity == entity) {
-            system.csms.changeShip(parent);
+            ClientGlobals.spatialManager.changeShip(parent);
         } else {
-            system.csms.bindTo(parent, entity);
+            ClientGlobals.spatialManager.bindTo(parent, entity);
         }
     }
 

@@ -29,7 +29,7 @@ import org.megastage.util.ClientGlobals;
  *  - WASD keys for moving forward/backward and strafing
  *  - QZ keys raise or lower the camera
  */
-public class WalkCommandHandler implements AnalogListener, ActionListener {
+public class CommandHandler implements AnalogListener, ActionListener {
 
     private static String[] dcpuMappings = new String[] {
         "DCPU_Exit"

@@ -3,7 +3,10 @@ package org.megastage.util;
 import com.artemis.Entity;
 import com.cubes.CubesSettings;
 import com.jme3.scene.Node;
+import org.megastage.client.ArtemisState;
 import org.megastage.client.Main;
+import org.megastage.client.CommandHandler;
+import org.megastage.client.SpatialManager;
 import org.megastage.protocol.UserCommand;
 import org.megastage.systems.ClientNetworkSystem;
 
@@ -34,6 +37,9 @@ public class ClientGlobals {
     public static CubesSettings cubesSettings;
     public static final UserCommand userCommand = new UserCommand();
     public static Main app;
+    public static CommandHandler cmdHandler;
+    public static SpatialManager spatialManager;
+    public static ArtemisState artemis;
     
     public static class GFXQuality {
         public static int SPHERE_Z_SAMPLES = 32;

@@ -26,9 +26,9 @@ public class LoginResponse extends EventMessage {
     public void receive(ClientNetworkSystem system, Connection pc) {
         ClientGlobals.timeDiff += time - System.currentTimeMillis();
         Log.info("Timediff: " + ClientGlobals.timeDiff);
-        Entity entity = system.cems.get(id);
+        Entity entity = ClientGlobals.artemis.get(id);
         ClientGlobals.playerEntity = entity;
-        system.csms.setupPlayer(entity);
+        ClientGlobals.spatialManager.setupPlayer(entity);
     }
 
     public String toString() {

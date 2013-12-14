@@ -8,20 +8,15 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
-import com.jme3.scene.Node;
 import org.megastage.protocol.Network;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import org.megastage.protocol.Message;
-import org.megastage.protocol.UserCommand;
 import org.megastage.util.ClientGlobals;
 
 public class ClientNetworkSystem extends EntitySystem {
     private Client client;
-
-    public ClientEntityManagerSystem cems;
-    public ClientSpatialManagerSystem csms;
 
     public ClientNetworkSystem(long interval) {
         super(Aspect.getEmpty());
@@ -42,9 +37,6 @@ public class ClientNetworkSystem extends EntitySystem {
 
     @Override
     protected void initialize() {
-        this.cems = world.getSystem(ClientEntityManagerSystem.class);
-        this.csms = world.getSystem(ClientSpatialManagerSystem.class);
-
         client = new Client();
         Network.register(client);
 

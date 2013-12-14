@@ -10,6 +10,7 @@ import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 
 
     
@@ -34,8 +35,8 @@ public class PlanetGeometry extends EntityComponent {
 
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        // center = system.cems.get(center).getId();
-        system.csms.setupPlanetLikeBody(entity, this);
+        // center = ClientGlobals.artemis.get(center).getId();
+        ClientGlobals.spatialManager.setupPlanetLikeBody(entity, this);
     }
     
     public String toString() {

@@ -11,6 +11,7 @@ import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
 import org.megastage.protocol.Network;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 
 
     
@@ -35,7 +36,7 @@ public class SunGeometry extends EntityComponent {
 
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        system.csms.setupSunLikeBody(entity, this);
+        ClientGlobals.spatialManager.setupSunLikeBody(entity, this);
     }
     
     public String toString() {

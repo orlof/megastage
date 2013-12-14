@@ -2,10 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.megastage.systems;
+package org.megastage.client;
 
 import com.artemis.Entity;
-import com.artemis.systems.VoidEntitySystem;
 import com.cubes.BlockTerrainControl;
 import com.cubes.Vector3Int;
 import com.cubes.test.blocks.Block_Wood;
@@ -27,8 +26,6 @@ import com.jme3.texture.plugins.AWTLoader;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import jmeplanet.FractalDataSource;
 import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
@@ -47,21 +44,16 @@ import org.megastage.util.ClientGlobals;
  *
  * @author Teppo
  */
-public class ClientSpatialManagerSystem extends VoidEntitySystem {
+public class SpatialManager {
 
     private final SimpleApplication app;
     private final AssetManager assetManager;
-    private ClientEntityManagerSystem cems;
+
     private HashMap<Integer, Node> nodes = new HashMap<>();
     
-    public ClientSpatialManagerSystem(SimpleApplication app) {
+    public SpatialManager(SimpleApplication app) {
         this.app = app;
         assetManager = app.getAssetManager();
-    }
-
-    @Override
-    protected void initialize() {
-        cems = world.getSystem(ClientEntityManagerSystem.class);
     }
 
     private Node getNode(Entity entity) {
@@ -110,7 +102,7 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         return node;
      }
     
-    private Geometry createSphere(float radius, ColorRGBA color) {
+    private Geometry createSphere(float radius, ColorRGBA color, boolean shaded) {
         Sphere mesh = new Sphere(
                 ClientGlobals.gfxQuality.SPHERE_Z_SAMPLES,
                 ClientGlobals.gfxQuality.SPHERE_RADIAL_SAMPLES, 
@@ -119,9 +111,20 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         Geometry geom = new Geometry();
         geom.setMesh(mesh);
 
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", color);
-        geom.setMaterial(mat);
+        if(shaded) {
+            Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+            mat.setTexture("DiffuseMap", assetManager.loadTexture("Textures/rock.jpg")); // with Lighting.j3md
+            //TangentBinormalGenerator.generate(mesh);
+            //mat.setTexture("NormalMap", assetManager.loadTexture("Textures/rock.jpg")); // with Lighting.j3md
+            mat.setBoolean("UseMaterialColors",true);  // Set some parameters, e.g. blue.
+            mat.setColor("Ambient", color);   // ... color of this object
+            mat.setColor("Diffuse", color);   // ... color of light being reflected
+            geom.setMaterial(mat);               // Use new material on this Geometry.
+        } else {
+            Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+            mat.setColor("Color", color);
+            geom.setMaterial(mat);
+        }
 
         return geom;
     }
@@ -130,7 +133,7 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         ColorRGBA colorRGBA = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
 
         final Node node = createUserNode(entity);
-        node.attachChild(createSphere(data.radius, colorRGBA));
+        node.attachChild(createSphere(data.radius, colorRGBA, false));
 
         final PointLight light = new PointLight();
         light.setColor(colorRGBA);
@@ -176,7 +179,7 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
                 ex.printStackTrace();
             }
             
-            node.attachChild(createSphere(data.radius, color));
+            node.attachChild(createSphere(data.radius, color, true));
             app.enqueue(new Callable() {
                 @Override
                 public Object call() throws Exception {
@@ -236,7 +239,7 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         final Node node = createUserNode(entity);
         node.attachChild(geom);
 
-        ClientRaster rasterComponent = cems.getComponent(entity, ClientRaster.class);
+        ClientRaster rasterComponent = ClientGlobals.artemis.getComponent(entity, ClientRaster.class);
         rasterComponent.raster = raster;
     }
 
@@ -255,10 +258,6 @@ public class ClientSpatialManagerSystem extends VoidEntitySystem {
         } 
 
         throw new RuntimeException("Unknown planet generator: " + data.generator);
-    }
-
-    @Override
-    protected void processSystem() {
     }
 
     private void leaveShip() {

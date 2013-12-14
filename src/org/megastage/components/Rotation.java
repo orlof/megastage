@@ -5,6 +5,7 @@ import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 import org.megastage.util.Quaternion;
 
 /**
@@ -22,7 +23,7 @@ public class Rotation extends EntityComponent {
     
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        system.cems.setComponent(entity, this);
+        ClientGlobals.artemis.setComponent(entity, this);
     }
     
     public String toString() {

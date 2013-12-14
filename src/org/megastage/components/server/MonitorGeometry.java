@@ -10,6 +10,7 @@ import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 
 
     
@@ -28,6 +29,6 @@ public class MonitorGeometry extends EntityComponent {
 
     @Override
     public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        system.csms.setupMonitor(entity, this);
+        ClientGlobals.spatialManager.setupMonitor(entity, this);
     }
 }
