@@ -1,11 +1,10 @@
 package org.megastage.protocol;
 
 import com.artemis.Entity;
+import com.artemis.utils.Bag;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
-import org.megastage.client.controls.PositionControl;
-import org.megastage.client.controls.RotationControl;
 import org.megastage.components.EntityComponent;
 import org.megastage.components.Mass;
 import org.megastage.components.MonitorData;
@@ -19,7 +18,6 @@ import org.megastage.components.server.PlanetGeometry;
 import org.megastage.components.server.ShipGeometry;
 import org.megastage.components.server.SunGeometry;
 import org.megastage.components.server.VoidGeometry;
-import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
 import org.megastage.util.Globals;
 import org.megastage.util.RAM;
@@ -50,6 +48,7 @@ public class Network {
         kryo.register(char[].class);
         kryo.register(Object[].class);
         kryo.register(EntityData.class);
+        kryo.register(Bag.class);
         kryo.register(Mass.class);
         kryo.register(MonitorData.class);
         kryo.register(Orbit.class);
@@ -79,33 +78,26 @@ public class Network {
     static public class KeyReleased extends KeyEvent {}
 
     static public class EntityData implements Message {
-        public int entityID;
+        public int owner;
         public EntityComponent component;
 
         public EntityData() { /* required for Kryo */ }
         
         public EntityData(Entity entity, EntityComponent c) {
-            entityID = entity.getId();
+            owner = entity.getId();
             component = c;
         }
 
         @Override
-        public void receive(ClientNetworkSystem system, Connection pc) {
-            Entity entity = ClientGlobals.artemis.get(entityID);
-            component.receive(system, pc, entity);
+        public void receive(Connection pc) {
+            Entity entity = ClientGlobals.artemis.toClientEntity(owner);
+            owner = entity.getId();
+            
+            component.receive(pc, entity);
         }
         
         public String toString() {
-            return "EntityData(" + entityID + ", " + component.toString() + ")";
-        }
-    }
-    
-    static public class TimeData extends EventMessage {
-        public long time = Globals.time;
-
-        @Override
-        public void receive(ClientNetworkSystem system, Connection pc) {
-            ClientGlobals.timeDiff = time - System.currentTimeMillis();
+            return "EntityData(" + owner + ", " + component.toString() + ")";
         }
     }
 }

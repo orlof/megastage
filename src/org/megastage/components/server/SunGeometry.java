@@ -7,6 +7,7 @@ package org.megastage.components.server;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
+import java.util.concurrent.Callable;
 import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
 import org.megastage.protocol.Network;
@@ -17,7 +18,7 @@ import org.megastage.util.ClientGlobals;
     
 /**
  *
- * @author Teppo
+ * @author Orlof
  */
 public class SunGeometry extends EntityComponent {
     public float radius;
@@ -35,7 +36,7 @@ public class SunGeometry extends EntityComponent {
     }
 
     @Override
-    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
+    public void receive(Connection pc, Entity entity) {
         ClientGlobals.spatialManager.setupSunLikeBody(entity, this);
     }
     

@@ -3,7 +3,6 @@ package org.megastage.client;
 import com.cubes.CubesSettings;
 import com.cubes.test.CubesTestAssets;
 import com.esotericsoftware.minlog.Log;
-import com.jme3.app.DebugKeysAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
@@ -17,7 +16,6 @@ import jmeplanet.test.Utility;
 import org.megastage.client.controls.SystemPositionControl;
 import org.megastage.client.controls.SystemRotationControl;
 import org.megastage.util.ClientGlobals;
-import org.megastage.util.Globals;
 import org.megastage.util.LogFormat;
 
 /**
@@ -97,7 +95,7 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        Globals.time = System.currentTimeMillis() + ClientGlobals.timeDiff;
+        ClientGlobals.time = System.currentTimeMillis() + ClientGlobals.timeDiff;
 
         Log.trace("Camera coords: " + cam.getLocation().toString());
         if(Log.TRACE) {

@@ -2,12 +2,9 @@ package org.megastage.components;
 
 import com.artemis.Entity;
 import com.artemis.World;
-import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import static org.megastage.components.BaseComponent.getDoubleValue;
-import org.megastage.systems.ClientNetworkSystem;
-import org.megastage.util.Globals;
 
 /**
  * MegaStage
@@ -29,14 +26,14 @@ public class FixedRotation extends EntityComponent {
         speed_z = period_z == 0.0 ? 0.0: ((2.0 * Math.PI) / (1000.0 * period_z));
     }
 
-    public double getX() {
-        return (Globals.time * speed_x)  % (2.0 * Math.PI);
+    public double getX(long time) {
+        return (time * speed_x)  % (2.0 * Math.PI);
     }
-    public double getY() {
-        return (Globals.time * speed_y)  % (2.0 * Math.PI);
+    public double getY(long time) {
+        return (time * speed_y)  % (2.0 * Math.PI);
     }
-    public double getZ() {
-        return (Globals.time * speed_z)  % (2.0 * Math.PI);
+    public double getZ(long time) {
+        return (time * speed_z)  % (2.0 * Math.PI);
     }
     
     public String toString() {

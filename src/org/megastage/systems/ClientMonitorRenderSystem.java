@@ -3,8 +3,10 @@ package org.megastage.systems;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
+import com.artemis.EntitySystem;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
+import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.ColorRGBA;
 import org.megastage.components.client.ClientRaster;
@@ -19,7 +21,6 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
         super(Aspect.getAspectForAll(ClientVideoMemory.class, ClientRaster.class));
     }
 
-    @Override
     protected void process(Entity entity) {
         ClientVideoMemory videoMemory = videoMemoryMapper.get(entity);
 

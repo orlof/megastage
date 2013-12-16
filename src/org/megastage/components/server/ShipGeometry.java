@@ -7,16 +7,16 @@ package org.megastage.components.server;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
+import java.util.concurrent.Callable;
 import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
-import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
 
 
     
 /**
  *
- * @author Teppo
+ * @author Orlof
  */
 public class ShipGeometry extends EntityComponent {
     public int size;
@@ -35,11 +35,12 @@ public class ShipGeometry extends EntityComponent {
     }
 
     @Override
-    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        ClientGlobals.artemis.setComponent(entity, this);
+    public void receive(Connection pc, Entity entity) {
+        entity.addComponent(this);
         ClientGlobals.spatialManager.setupShip(entity, this);
     }
     
+    @Override
     public String toString() {
         return "ShipGeometry()";
     }

@@ -7,6 +7,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.Position;
 import org.megastage.util.Globals;
+import org.megastage.util.ServerGlobals;
 
 public class PPS extends DCPUHardware {
     @Override
@@ -42,10 +43,10 @@ public class PPS extends DCPUHardware {
             dcpu.ram[b++ & 0xffff] = (char) (position.z >> 16 & 0xffff);
             dcpu.ram[b++ & 0xffff] = (char) (position.z >> 00 & 0xffff);
 
-            dcpu.ram[b++ & 0xffff] = (char) (Globals.time >> 48 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (Globals.time >> 32 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (Globals.time >> 16 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (Globals.time >> 00 & 0xffff);
+            dcpu.ram[b++ & 0xffff] = (char) (ServerGlobals.time >> 48 & 0xffff);
+            dcpu.ram[b++ & 0xffff] = (char) (ServerGlobals.time >> 32 & 0xffff);
+            dcpu.ram[b++ & 0xffff] = (char) (ServerGlobals.time >> 16 & 0xffff);
+            dcpu.ram[b++ & 0xffff] = (char) (ServerGlobals.time >> 00 & 0xffff);
 
             dcpu.cycles += 16;
         }

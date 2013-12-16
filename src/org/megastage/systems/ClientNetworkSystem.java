@@ -3,6 +3,7 @@ package org.megastage.systems;
 import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.EntitySystem;
+import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -116,7 +117,12 @@ public class ClientNetworkSystem extends EntitySystem {
 
         @Override
         public void received(Connection pc, Object o) {
-            if(o instanceof Object[]) {
+            if(o instanceof Bag) {
+                Bag bag = (Bag) o;
+                for(int i = 0; i < bag.size(); i++) {
+                    handlePacket(pc, bag.get(i));
+                }
+            } else if(o instanceof Object[]) {
                 for(Object packet: (Object[]) o) {
                     handlePacket(pc, packet);
                 }
@@ -127,19 +133,18 @@ public class ClientNetworkSystem extends EntitySystem {
         
         public void handlePacket(final Connection pc, final Object o) {
             Log.debug("Received: " + o.toString());
-            
             if(o instanceof Message) {
-                ClientGlobals.app.enqueue(new Callable() {
-                    @Override
-                    public Object call() throws Exception {
-                        ((Message) o).receive(ClientNetworkSystem.this, pc);
-                        return null;
-                    }
-                });
+                ((Message) o).receive(pc);
+//                ClientGlobals.app.enqueue(new Callable() {
+//                    @Override
+//                    public Object call() throws Exception {
+//                        ((Message) o).receive(pc);
+//                        return null;
+//                    }
+//                });
             } else {
                 Log.warn("Unknown message type: " + o.getClass().getSimpleName());
-            }
-            
+            } 
         }
     }
 }

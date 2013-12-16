@@ -15,7 +15,7 @@ import org.megastage.util.ClientGlobals;
 
 /**
  *
- * @author Teppo
+ * @author Orlof
  */
 public class PositionControl extends AbstractControl {
     private final Entity entity;

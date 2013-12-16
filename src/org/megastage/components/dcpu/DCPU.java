@@ -10,6 +10,7 @@ import org.megastage.components.BaseComponent;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.megastage.util.ServerGlobals;
 
 /**
  * Experimental 1.7 update to Notch's 1.4 emulator
@@ -67,8 +68,8 @@ public class DCPU extends BaseComponent {
             e.printStackTrace();
         }
 
-        startupTime = Globals.time + 2500;
-        nextHardwareTick = Globals.time + HARDWARE_TICK_INTERVAL;
+        startupTime = ServerGlobals.time + 2500;
+        nextHardwareTick = ServerGlobals.time + HARDWARE_TICK_INTERVAL;
     }
 
     public void interrupt(char a) {
@@ -93,7 +94,7 @@ public class DCPU extends BaseComponent {
     }
 
     public void run_ticks() {
-        long uptime = Globals.time - startupTime;
+        long uptime = ServerGlobals.time - startupTime;
         if(uptime < 0) return;
         
         long cycleTarget = uptime * KHZ;

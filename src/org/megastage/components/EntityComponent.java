@@ -7,12 +7,10 @@ package org.megastage.components;
 import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.protocol.Network;
-import org.megastage.systems.ClientNetworkSystem;
-import org.megastage.util.ClientGlobals;
 
 /**
  *
- * @author Teppo
+ * @author Orlof
  */
 public abstract class EntityComponent extends BaseComponent {
     @Override
@@ -20,7 +18,7 @@ public abstract class EntityComponent extends BaseComponent {
         return new Network.EntityData(entity, this);
     }
     
-    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        ClientGlobals.artemis.setComponent(entity, this);
+    public void receive(Connection pc, Entity entity) {
+        entity.addComponent(this);
     }
 }

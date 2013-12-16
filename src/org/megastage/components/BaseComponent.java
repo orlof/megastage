@@ -21,6 +21,10 @@ public abstract class BaseComponent extends Component {
     public Object create(Entity entity) { 
         return null; 
     }
+
+    public boolean isUpdated() {
+        return false;
+    }
     
     protected static String getStringValue(Element config, String attrName, String defaultValue) {
         Attribute attr = config.getAttribute(attrName);

@@ -10,19 +10,18 @@ import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
 import org.megastage.protocol.Network;
-import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
 
 /**
- *
- * @author Teppo
+ * This entity's position and rotation are relative to parent
+ * @author Orlof
  */
 public class BindTo extends EntityComponent {
-    public int entityID; 
+    public int parent; 
     
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {
-        entityID = parent.getId();
+        this.parent = parent.getId();
     }
 
     @Override
@@ -31,17 +30,19 @@ public class BindTo extends EntityComponent {
     }
 
     @Override
-    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        Entity parent = ClientGlobals.artemis.get(entityID);
+    public void receive(Connection pc, Entity entity) {
+        Entity parentEntity = ClientGlobals.artemis.toClientEntity(parent);
+
+        parent = parentEntity.getId();
 
         if(ClientGlobals.playerEntity == entity) {
-            ClientGlobals.spatialManager.changeShip(parent);
+            ClientGlobals.spatialManager.changeShip(parentEntity);
         } else {
-            ClientGlobals.spatialManager.bindTo(parent, entity);
+            ClientGlobals.spatialManager.bindTo(parentEntity, entity);
         }
     }
 
     public String toString() {
-        return "BindTo(serverID=" + entityID + ")";
+        return "BindTo(serverID=" + parent + ")";
     }
 }

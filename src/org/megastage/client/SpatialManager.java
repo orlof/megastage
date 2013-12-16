@@ -42,7 +42,7 @@ import org.megastage.util.ClientGlobals;
 
 /**
  *
- * @author Teppo
+ * @author Orlof
  */
 public class SpatialManager {
 
@@ -80,11 +80,11 @@ public class SpatialManager {
     }
     
     public void bindTo(final Entity parentEntity, final Entity childEntity) {
+        final Node parentNode = getNode(parentEntity);
+        final Node childNode = getNode(childEntity);
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
-                Node parentNode = getNode(parentEntity);
-                Node childNode = getNode(childEntity);
                 parentNode.attachChild(childNode);
                 Log.info("Attach " + parentNode.getName() + " <- " + childNode.getName());
                 return null;
@@ -282,8 +282,14 @@ public class SpatialManager {
         ClientGlobals.fixedNode.attachChild(shipNode);
     }
 
-    public void setupPlayer(Entity entity) {
-        ClientGlobals.playerNode.addControl(new PositionControl(entity));
-        ClientGlobals.playerNode.addControl(new RotationControl(entity));
+    public void setupPlayer(final Entity entity) {
+        app.enqueue(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                ClientGlobals.playerNode.addControl(new PositionControl(entity));
+                ClientGlobals.playerNode.addControl(new RotationControl(entity));
+                return null;
+            }
+        });
     }
 }

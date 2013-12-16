@@ -50,6 +50,5 @@ public class ClientVideoMemory extends Component {
         updateVideo(data.videoAddr == 0 ? null: data.video.mem);
         updateFont(data.font.mem);
         updatePalette(data.palette.mem);
-
     }
 }
