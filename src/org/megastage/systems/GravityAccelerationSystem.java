@@ -4,10 +4,7 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
-import com.artemis.managers.GroupManager;
 import com.artemis.systems.EntityProcessingSystem;
-import com.artemis.utils.ImmutableBag;
-import org.megastage.util.Globals;
 import org.megastage.components.*;
 import org.megastage.util.Vector;
 

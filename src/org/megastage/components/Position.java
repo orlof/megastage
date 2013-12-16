@@ -6,7 +6,6 @@ import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
 import org.megastage.util.Vector;
 
@@ -26,11 +25,10 @@ public class Position extends EntityComponent {
         z = 1000 * getLongValue(element, "z", 0);
     }
 
-    @Override
-    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        ClientGlobals.artemis.setComponent(entity, this);
+    public boolean isUpdated() {
+        return true;
     }
-
+    
     public void add(Vector vector) {
         x += Math.round(vector.x);
         y += Math.round(vector.y);

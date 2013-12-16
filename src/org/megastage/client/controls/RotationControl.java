@@ -13,7 +13,6 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Rotation;
 import org.megastage.util.ClientGlobals;
-import org.megastage.util.Globals;
 
 public class RotationControl extends AbstractControl {
     private final Entity entity;

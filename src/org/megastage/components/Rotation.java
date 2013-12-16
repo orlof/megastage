@@ -4,7 +4,6 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
-import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
 import org.megastage.util.Quaternion;
 
@@ -20,10 +19,20 @@ public class Rotation extends EntityComponent {
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {
     }
+
+    public boolean isUpdated() {
+        return true;
+    }
     
     @Override
-    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        ClientGlobals.artemis.setComponent(entity, this);
+    public void receive(Connection pc, Entity entity) {
+        if(entity == ClientGlobals.playerEntity) {
+            if(entity.getComponent(Rotation.class) == null) {
+                entity.addComponent(this);
+            }
+            return;
+        }
+        entity.addComponent(this);
     }
     
     public String toString() {

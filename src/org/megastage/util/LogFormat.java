@@ -10,7 +10,7 @@ import java.util.Date;
 
 /**
  *
- * @author Teppo
+ * @author Orlof
  */
 public class LogFormat extends Logger {
     

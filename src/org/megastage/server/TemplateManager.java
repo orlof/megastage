@@ -11,7 +11,7 @@ import org.jdom2.Element;
 
 /**
  *
- * @author Teppo
+ * @author Orlof
  */
 public class TemplateManager extends Manager {
     private HashMap<String, Element> templates = new HashMap<>();

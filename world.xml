@@ -11,7 +11,7 @@
             <component type="Orbit" orbital_distance="200000"/>
             <component type="Rotation"/>
             <component type="server.PlanetGeometry" radius="10000" generator="Earth" color="Blue"/>
-            <component type="FixedRotation" period_y="0.1"/>
+            <component type="FixedRotation" period_y="1.0"/>
             <component type="Position" x="0" y="0" z="0"/>
             <group name="client"/>
             <entity name="Moon">
@@ -21,7 +21,7 @@
                 <component type="Rotation"/>
                 <component type="Orbit" orbital_distance="50000"/>
                 <component type="server.PlanetGeometry" radius="3000" generator="Moon" color="Brown"/>
-                <component type="FixedRotation" period_y="0.01"/>
+                <component type="FixedRotation" period_y="0.1"/>
                 <group name="client"/>
             </entity>
         </entity>
@@ -92,6 +92,7 @@
         <component type="Position" x="0" y="0" z="0"/>
         <component type="Rotation"/>
         <component type="server.VoidGeometry"/>
+        <component type="server.Update"/>
         <group name="client"/>
     </entity-template>
 
@@ -99,6 +100,7 @@
         <component type="Position" x="0" y="0" z="-100000"/>
         <component type="Rotation"/>
         <component type="server.ShipGeometry" size="16" entry_x="0" entry_y="2" entry_z="0"/>
+        <component type="server.Update"/>
         <!--component type="Velocity" x="0" y="0" z="0"/>
         <component type="Acceleration"/>
         <component type="Mass" radius_km="0.02" mass_kg="1000000"/-->
@@ -112,10 +114,12 @@
                 <component type="dcpu.VirtualMonitor"/>
                 <component type="server.MonitorGeometry"/>
                 <component type="server.BindTo"/>
+                <component type="server.Update"/>
                 <group name="client"/>
             </entity>
             <entity name="Generic Keyboard">
                 <component type="dcpu.VirtualKeyboard"/>
+                <component type="server.BindTo"/>
                 <group name="keyboard"/>
             </entity>
             <!---entity>

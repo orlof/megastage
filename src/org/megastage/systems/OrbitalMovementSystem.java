@@ -9,6 +9,7 @@ import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
 import org.megastage.util.Globals;
+import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector;
 
 /**
@@ -29,7 +30,7 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity entity) {
-        double time = Globals.time / 1000.0d;
+        double time = ServerGlobals.time / 1000.0d;
         
         Orbit orbit = ORBIT.get(entity);
         Entity center = world.getEntity(orbit.center);

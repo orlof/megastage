@@ -10,35 +10,28 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
-import org.megastage.components.ItemInUse;
 import org.megastage.components.dcpu.VirtualKeyboard;
 import org.megastage.protocol.Network;
 import org.megastage.protocol.PlayerConnection;
-import org.megastage.util.Globals;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
-import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.server.BindTo;
 import org.megastage.components.server.ShipGeometry;
 import org.megastage.protocol.LoginResponse;
 import org.megastage.protocol.UserCommand;
 import org.megastage.server.TemplateManager;
-import org.megastage.util.ClientGlobals;
 import org.megastage.util.Quaternion;
+import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector;
 
 public class ServerNetworkSystem extends VoidEntitySystem {
     private Server server;
     
-    private long timeOfLastSync;
-    private long interval;
-
-    public ServerNetworkSystem(long interval) {
-        this.interval = interval;
+    public ServerNetworkSystem() {
     }
     
     @Override
@@ -67,19 +60,22 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     
     @Override
     protected void processSystem() {
-        timeOfLastSync = Globals.time;
-        broadcastTimeData();
+//            for(int i=0; i < ServerGlobals.updates.size(); i++) {
+//                Log.info(ServerGlobals.updates.get(i).toString());
+//            }
+        server.sendToAllUDP(ServerGlobals.updates);
+        ServerGlobals.updates = null;
     }
 
     @Override
     protected boolean checkProcessing() {
-        return (timeOfLastSync + interval) < Globals.time;
+        return ServerGlobals.updates != null;
     }
 
     private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
         BindTo bindTo = connection.player.getComponent(BindTo.class);
         if(bindTo != null) {
-            Entity e = world.getEntity(bindTo.entityID);
+            Entity e = world.getEntity(bindTo.parent);
             world.deleteEntity(e);
         }
         world.deleteEntity(connection.player);
@@ -97,7 +93,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         
         // bind player to ship
         BindTo bind = new BindTo();
-        bind.entityID = ship.getId();
+        bind.parent = ship.getId();
         connection.player.addComponent(bind);
 
         ShipGeometry sg = ship.getComponent(ShipGeometry.class);
@@ -146,16 +142,11 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         }
     }
 
-    public void broadcastMonitorData(Entity entity) {
-        VirtualMonitor mon = entity.getComponent(VirtualMonitor.class);
-        server.sendToAllUDP(mon.create(entity));
-    }
-    
-    public void broadcastTimeData() {
-        Network.TimeData data = new Network.TimeData();
-        server.sendToAllUDP(data);
-    }
-
+//    public void broadcastMonitorData(Entity entity) {
+//        VirtualMonitor mon = entity.getComponent(VirtualMonitor.class);
+//        server.sendToAllUDP(mon.create(entity));
+//    }
+//    
     private void sendComponents(PlayerConnection connection, Entity entity) {
         Log.debug("Sending components for " + entity.toString());
 
@@ -181,14 +172,26 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
         if(connection.player == null) return;
         
+        Log.debug(cmd.toString());
+        
         Position pos = connection.player.getComponent(Position.class);
         pos.x += 1000 * cmd.xMove;
+        pos.y += 1000 * cmd.yMove;
         pos.z += 1000 * cmd.zMove;
 
-        connection.sendUDP(pos.create(connection.player));
+        // connection.sendUDP(pos.create(connection.player));
         
+        Rotation rot = connection.player.getComponent(Rotation.class);
+        rot.x = cmd.qx;
+        rot.y = cmd.qy;
+        rot.z = cmd.qz;
+        rot.w = cmd.qw;
+        
+        // not needed because rotation is handled on client
+        // connection.sendUDP(rot.create(connection.player));
+
         BindTo bindTo = connection.player.getComponent(BindTo.class);
-        Entity ship = world.getEntity(bindTo.entityID);
+        Entity ship = world.getEntity(bindTo.parent);
         
         Rotation shipRotation = ship.getComponent(Rotation.class);
         Quaternion shipRotationQuaternion = shipRotation.getQuaternion();
@@ -202,7 +205,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         shipPos.y += vel.y;
         shipPos.z += vel.z;
 
-        connection.sendUDP(shipPos.create(ship));
+        // connection.sendUDP(shipPos.create(ship));
         
         // rotate rotation axis by fixedEntity rotation
         Vector yAxis = new Vector(0, 1, 0).multiply(shipRotationQuaternion);
@@ -223,7 +226,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         shipRotation.z = shipRotationQuaternion.z;
         shipRotation.w = shipRotationQuaternion.w;
 
-        connection.sendUDP(shipRotation.create(ship));
+        //connection.sendUDP(shipRotation.create(ship));
     }
 
     private class ServerNetworkListener extends Listener {

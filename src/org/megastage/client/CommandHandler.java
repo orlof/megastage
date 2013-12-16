@@ -12,9 +12,7 @@ import com.jme3.input.controls.*;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import org.megastage.components.Position;
 import org.megastage.components.Rotation;
-import org.megastage.protocol.UserCommand;
 import org.megastage.util.ClientGlobals;
 
 
@@ -242,6 +240,8 @@ public class CommandHandler implements AnalogListener, ActionListener {
         playerRotation.y = playerQuaternion.getY();
         playerRotation.z = playerQuaternion.getZ();
         playerRotation.w = playerQuaternion.getW();
+        
+        ClientGlobals.userCommand.look(playerRotation);
     }
     
     protected void lookLeft(float value) {
@@ -262,6 +262,8 @@ public class CommandHandler implements AnalogListener, ActionListener {
         playerRotation.y = playerQuaternion.getY();
         playerRotation.z = playerQuaternion.getZ();
         playerRotation.w = playerQuaternion.getW();
+
+        ClientGlobals.userCommand.look(playerRotation);
     }
     
     protected void move(float value, boolean sideways) {
@@ -281,7 +283,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
         Vector3f playerMovement = new Vector3f(0, 0, value * walkSpeed);
         playerQuaternion.multLocal(playerMovement);
         
-        ClientGlobals.userCommand.move(playerMovement.x, playerMovement.z);
+        ClientGlobals.userCommand.move(playerMovement.x, playerMovement.y, playerMovement.z);
     }
 
     private void moveShip(float x, float y, float z) {

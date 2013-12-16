@@ -23,7 +23,7 @@ public class MonitorData extends EntityComponent {
     public RAM palette = new RAM(LEMUtil.defaultPalette);
 
     @Override
-    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
+    public void receive(Connection pc, Entity entity) {
         ClientVideoMemory videoMemory = ClientGlobals.artemis.getComponent(entity, ClientVideoMemory.class);
         videoMemory.update(this);
     }

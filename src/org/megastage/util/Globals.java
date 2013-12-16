@@ -7,12 +7,11 @@ package org.megastage.util;
  * Time: 20:50
  */
 public class Globals {
-    public static double G = 6.67384e-11;
-    public static long time = System.currentTimeMillis();
+    public static final double G = 6.67384e-11;
 
-    public class Group {
-        public static final String CELESTIAL = "celestial";
-        public static final String USABLE = "usable";
+    public final class Group {
+        public static final String CLIENT_INITIALIZATION_DATA = "client";
+        public static final String CLIENT_PERIODIC_UPDATE_DATA = "update";
     }
 }
 
