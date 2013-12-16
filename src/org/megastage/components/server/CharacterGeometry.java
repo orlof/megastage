@@ -17,15 +17,11 @@ import org.megastage.util.ClientGlobals;
  *
  * @author Orlof
  */
-public class SunGeometry extends EntityComponent {
-    public float radius;
+public class CharacterGeometry extends EntityComponent {
     public float red, green, blue, alpha;
-    public float lightRadius;
 
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {
-        radius = getFloatValue(element, "radius", 10.0f);
-        lightRadius = getFloatValue(element, "light_radius", 2000000.0f);
         red = getFloatValue(element, "red", 1.0f); 
         green = getFloatValue(element, "green", 1.0f); 
         blue = getFloatValue(element, "blue", 1.0f); 
@@ -34,15 +30,16 @@ public class SunGeometry extends EntityComponent {
 
     @Override
     public void receive(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.setupSunLikeBody(entity, this);
+        if(entity != ClientGlobals.playerEntity) {
+            ClientGlobals.spatialManager.setupCharacter(entity, this);
+        }
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("SunGeometry(");
-        sb.append("radius=").append(radius);
-        sb.append(", light_radius=").append(lightRadius);
-        sb.append(", red=").append(red);
+        sb.append("PlayerGeometry(");
+        sb.append("red=").append(red);
         sb.append(", green=").append(green);
         sb.append(", blue=").append(blue);
         sb.append(", alpha=").append(alpha);

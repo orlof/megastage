@@ -46,7 +46,7 @@ public class ClientNetworkSystem extends EntitySystem {
         kryoThread.start();
 
         try {
-            client.connect(5000, Network.serverHost, Network.serverPort, Network.serverPort+1);
+            client.connect(5000, ClientGlobals.serverHost, Network.serverPort, Network.serverPort+1);
         } catch (IOException e) {
             e.printStackTrace();
         }

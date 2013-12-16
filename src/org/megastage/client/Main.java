@@ -24,9 +24,11 @@ import org.megastage.util.LogFormat;
  */
 public class Main extends SimpleApplication {
 
-    private final static String MAPPING_DCPU = "DCPU";
-    
     public static void main(String[] args) {
+        if(args.length > 0) {
+            ClientGlobals.serverHost = args[0];
+        }
+        
         Log.setLogger(new LogFormat());
         Log.set(Log.LEVEL_INFO);
 
@@ -42,7 +44,6 @@ public class Main extends SimpleApplication {
     }
 
     private PlanetAppState planetAppState;
-    private ArtemisState artemisAppState;
     
     public Main() {
         super(null);

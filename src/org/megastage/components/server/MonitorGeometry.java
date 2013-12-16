@@ -7,10 +7,8 @@ package org.megastage.components.server;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
-import java.util.concurrent.Callable;
 import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
-import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
 
 

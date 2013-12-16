@@ -81,17 +81,26 @@
         </entity-->
     </entity>
 
-    <!--entity name="Borg Ship">
-        <component type="Position" x="0" y="0" z="100000"/>
+    <entity name="Borg Ship">
+        <component type="Position" x="40" y="0" z="-100000"/>
         <component type="Rotation"/>
-        <component type="server.ShipGeometry" hull="cube"/>
+        <component type="server.ShipGeometry" size="16" entry_x="0" entry_y="0" entry_z="0"/>
+        <component type="server.Update"/>
         <group name="client"/>
-    </entity-->
+        <entity name="Enemy">
+            <component type="Position" x="0" y="2" z="0"/>
+            <component type="Rotation"/>
+            <component type="server.CharacterGeometry" red="1.0" green="0.0" blue="0.5" alpha="1.0"/>
+            <component type="server.BindTo"/>
+            <component type="server.Update"/>
+            <group name="client"/>
+        </entity>
+    </entity>
 
     <entity-template name="Player">
         <component type="Position" x="0" y="0" z="0"/>
         <component type="Rotation"/>
-        <component type="server.VoidGeometry"/>
+        <component type="server.CharacterGeometry"/>
         <component type="server.Update"/>
         <group name="client"/>
     </entity-template>

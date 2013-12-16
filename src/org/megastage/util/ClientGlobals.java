@@ -40,6 +40,7 @@ public class ClientGlobals {
     public static CommandHandler cmdHandler;
     public static SpatialManager spatialManager;
     public static ArtemisState artemis;
+    public static String serverHost = "localhost";
     
     public static class GFXQuality {
         public static int SPHERE_Z_SAMPLES = 32;
