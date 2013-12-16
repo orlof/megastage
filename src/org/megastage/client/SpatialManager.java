@@ -14,9 +14,12 @@ import com.jme3.asset.AssetManager;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.LightNode;
 import com.jme3.scene.Node;
+import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Dome;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.texture.Image;
@@ -35,6 +38,7 @@ import org.megastage.client.controls.RotationControl;
 import org.megastage.components.client.ClientRaster;
 import org.megastage.components.server.MonitorGeometry;
 import org.megastage.components.server.PlanetGeometry;
+import org.megastage.components.server.CharacterGeometry;
 import org.megastage.components.server.ShipGeometry;
 import org.megastage.components.server.SunGeometry;
 import org.megastage.components.server.VoidGeometry;
@@ -223,7 +227,7 @@ public class SpatialManager {
         });
     }
 
-    public void setupMonitor(final Entity entity, final MonitorGeometry data) {
+    public void setupMonitor(Entity entity, MonitorGeometry data) {
         Geometry geom = new Geometry(entity.toString(), new Quad(8, 6, true));
         
         BufferedImage img = new BufferedImage(128, 96, BufferedImage.TYPE_INT_ARGB);
@@ -236,11 +240,32 @@ public class SpatialManager {
         mat.setTexture("ColorMap", tex);
         geom.setMaterial(mat);
         
-        final Node node = createUserNode(entity);
+        Node node = createUserNode(entity);
         node.attachChild(geom);
 
         ClientRaster rasterComponent = ClientGlobals.artemis.getComponent(entity, ClientRaster.class);
         rasterComponent.raster = raster;
+    }
+
+    public void setupCharacter(Entity entity, CharacterGeometry data) {
+        //Geometry geom = new Geometry(entity.toString(), new Dome(new Vector3f(0,0,0), 2, 4, 2, false));
+        Geometry base = new Geometry(entity.toString(), new Box(0.5f, 1.5f, 0.5f));
+
+        Geometry nose = new Geometry(entity.toString(), new Box(0.5f, 0.5f, 0.7f));
+        nose.setLocalTranslation(0, 2, 0.2f);
+        
+        Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
+
+        ColorRGBA color = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
+        mat.setBoolean("UseMaterialColors",true);  // Set some parameters, e.g. blue.
+        mat.setColor("Ambient", color);   // ... color of this object
+        mat.setColor("Diffuse", color);   // ... color of light being reflected
+        base.setMaterial(mat);               // Use new material on this Geometry.
+        nose.setMaterial(mat);               // Use new material on this Geometry.
+        
+        Node node = createUserNode(entity);
+        node.attachChild(base);
+        node.attachChild(nose);
     }
 
     private Planet createPlanet(PlanetGeometry data) {

@@ -13,6 +13,7 @@ import org.megastage.components.FixedRotation;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.components.server.BindTo;
+import org.megastage.components.server.CharacterGeometry;
 import org.megastage.components.server.MonitorGeometry;
 import org.megastage.components.server.PlanetGeometry;
 import org.megastage.components.server.ShipGeometry;
@@ -33,10 +34,7 @@ import org.megastage.util.Vector;
 public class Network {
     public static String networkInterface = "localhost";
 
-    public static String serverHost = "localhost";
     public static int serverPort = 12358;
-
-    public static int clientPort = 0;
 
     static public void register(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
@@ -62,6 +60,7 @@ public class Network {
         kryo.register(RAM.class);
         kryo.register(BindTo.class);
         kryo.register(VoidGeometry.class);
+        kryo.register(CharacterGeometry.class);
         kryo.register(Vector.class);
         kryo.register(LoginResponse.class);
         kryo.register(UserCommand.class);
