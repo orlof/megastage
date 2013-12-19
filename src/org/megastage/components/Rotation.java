@@ -6,6 +6,7 @@ import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.util.ClientGlobals;
 import org.megastage.util.Quaternion;
+import org.megastage.util.Vector;
 
 /**
  * MegaStage
@@ -18,6 +19,14 @@ public class Rotation extends EntityComponent {
 
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {
+        double x = Math.toRadians(getDoubleValue(element, "x", 0.0));
+        double y = Math.toRadians(getDoubleValue(element, "y", 0.0));
+        double z = Math.toRadians(getDoubleValue(element, "z", 0.0));
+
+        Quaternion q = rotate(getQuaternion(), Vector.UNIT_Y, y);
+        q = rotate(q, Vector.UNIT_Z, z);
+        q = rotate(q, Vector.UNIT_X, x);
+        set(q);
     }
 
     public boolean isUpdated() {
@@ -41,5 +50,19 @@ public class Rotation extends EntityComponent {
 
     public Quaternion getQuaternion() {
         return new Quaternion(w, x, y, z);
+    }
+    
+    public static Quaternion rotate(Quaternion q, Vector axis, double radians) {
+        if(radians == 0.0) {
+            return q;
+        } 
+        return q.localRotation(axis, radians).normalize();
+    }
+    
+    public void set(Quaternion q) {
+        x = q.x;
+        y = q.y;
+        z = q.z;
+        w = q.w;
     }
 }
