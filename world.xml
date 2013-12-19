@@ -119,7 +119,8 @@
             <component type="server.BindTo"/>
             <component type="dcpu.DCPU" bootrom="admiral.bin"/>
             <entity name="LEM">
-                <component type="Position" x="-4" y="0" z="-16"/>
+                <component type="Position" x="4" y="0" z="16"/>
+                <component type="Rotation" x="0" y="180" z="0"/>
                 <component type="dcpu.VirtualMonitor"/>
                 <component type="server.MonitorGeometry"/>
                 <component type="server.BindTo"/>
@@ -131,11 +132,15 @@
                 <component type="server.BindTo"/>
                 <group name="keyboard"/>
             </entity>
-            <!---entity>
-                <component type="dcpu.Engine" x="0" y="0" z="10"/>
-                <component type="Rotation"/>
-            </entity>
             <entity>
+                <component type="dcpu.Engine" x="0" y="0" z="-10"/>
+                <component type="Position" x="0" y="0" z="-16"/>
+                <component type="server.EngineGeometry"/>
+                <component type="server.BindTo"/>
+                <component type="Rotation" x="0" y="180" z="0"/>
+                <group name="client"/>
+            </entity>
+            <!--entity>
                 <component type="dcpu.Engine" x="0" y="0" z="-1"/>
                 <component type="Rotation"/>
             </entity>
