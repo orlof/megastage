@@ -6,6 +6,7 @@ import com.artemis.Entity;
 import com.artemis.EntitySystem;
 import com.artemis.annotations.Mapper;
 import com.artemis.utils.ImmutableBag;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.GravityField;
 import org.megastage.components.Mass;
 import org.megastage.components.Position;
@@ -33,6 +34,7 @@ public class GravityFieldSystem extends EntitySystem {
     @Override
     protected void processEntities(ImmutableBag<Entity> entityImmutableBag) {
         gravityFieldEntities = entityImmutableBag;
+        Log.info("Number of Gravity fields: " + gravityFieldEntities.size());
     }
 
     @Override
@@ -41,29 +43,44 @@ public class GravityFieldSystem extends EntitySystem {
     }
     
     public Vector getGravityField(Position coordinates) {
-        Vector acceleration = new Vector();
+        Log.info("Calculating gravity field in position " + coordinates.toString());
+        Vector acc = new Vector();
 
         for(int i=0; i < gravityFieldEntities.size(); i++) {
             Entity entity = gravityFieldEntities.get(i);
             
-            GravityField gravityField = GRAVITY_FIELD.get(entity);
             Position position = POSITION.get(entity);
             Mass mass = MASS.get(entity);
+            
+            Log.info(entity.toString() + " position " + position.toString() + " mass " + mass.toString());
 
-            double dx = position.x - coordinates.x;
-            double dy = position.y - coordinates.y;
-            double dz = position.z - coordinates.z;
+            double dx = (position.x - coordinates.x) / 1000.0;
+            double dy = (position.y - coordinates.y) / 1000.0;
+            double dz = (position.z - coordinates.z) / 1000.0;
+            
+            Log.info("dx: " + dx + ", dy: " + dy + ", dz: " + dz);
 
             double distanceSquared = dx*dx + dy*dy + dz*dz;
+            
+            Log.info("distance squared: " + distanceSquared);
 
-            double gravitationalField = Globals.G * mass.mass / distanceSquared;
+            double gravitationalField = Globals.GRAVITY_G * mass.mass / distanceSquared;
+            
+            Log.info("Gravitational field: " + gravitationalField);
 
             double distance = Math.sqrt(distanceSquared);
 
+            Log.info("Distance: " + distance);
+
             double multiplier = gravitationalField / distance;
-            acceleration.add(multiplier * dx, multiplier * dy, multiplier * dz);
+
+            Log.info("Multiplier: " + multiplier);
+
+            acc = acc.add(multiplier * dx, multiplier * dy, multiplier * dz);
+            
+            Log.info("Acceleration: " + acc.toString());
         }
 
-        return acceleration;
+        return acc;
     }    
 }

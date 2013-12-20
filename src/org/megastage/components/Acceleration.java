@@ -34,4 +34,8 @@ public class Acceleration extends BaseComponent {
     public Vector getVelocityChange(float time) {
         return vector.multiply(time);
     }
+
+    public String toString() {
+        return "Acceleration(" + vector.toString() + ")";
+    }
 }

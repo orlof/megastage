@@ -4,7 +4,7 @@
         <component type="Mass" kg="1.989e28"/>
         <component type="server.SunGeometry" radius="40000" light_radius="2000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
         <component type="GravityField"/>
-        <group name="client"/>
+        <group name="initialization"/>
         <entity name="Earth">
             <component type="Mass" kg="5.972e25"/>
             <component type="GravityField"/>
@@ -13,7 +13,7 @@
             <component type="server.PlanetGeometry" radius="10000" generator="Earth" color="Blue"/>
             <component type="FixedRotation" period_y="1.0"/>
             <component type="Position" x="0" y="0" z="0"/>
-            <group name="client"/>
+            <group name="initialization"/>
             <entity name="Moon">
                 <component type="Mass" kg="7.4e23"/>
                 <component type="GravityField"/>
@@ -22,7 +22,7 @@
                 <component type="Orbit" orbital_distance="50000"/>
                 <component type="server.PlanetGeometry" radius="3000" generator="Moon" color="Brown"/>
                 <component type="FixedRotation" period_y="0.1"/>
-                <group name="client"/>
+                <group name="initialization"/>
             </entity>
         </entity>
         <!--entity name="Water World">
@@ -32,7 +32,7 @@
             <component type="server.PlanetGeometry" radius="5000" generator="Water"/>
             <component type="FixedRotation" period_y="1.0"/>
             <component type="Position"/>
-            <group name="client"/>
+            <group name="initialization"/>
             <entity name="Phobos">
                 <component type="Mass" kg="7.4e23"/>
                 <component type="GravityField"/>
@@ -40,7 +40,7 @@
                 <component type="Orbit" orbital_distance="50000"/>
                 <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
                 <component type="FixedRotation" period_y="0.2"/>
-                <group name="client"/>
+                <group name="initialization"/>
             </entity>
         </entity>
         <entity name="Mars">
@@ -50,7 +50,7 @@
             <component type="server.PlanetGeometry" radius="10000" generator="Earth"/>
             <component type="FixedRotation" period_y="1.0"/>
             <component type="Position"/>
-            <group name="client"/>
+            <group name="initialization"/>
             <entity name="Deimos">
                 <component type="Mass" kg="7.4e23"/>
                 <component type="GravityField"/>
@@ -58,7 +58,7 @@
                 <component type="Orbit" orbital_distance="50000"/>
                 <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
                 <component type="FixedRotation" period_y="0.2"/>
-                <group name="client"/>
+                <group name="initialization"/>
             </entity>
         </entity>
         <entity name="Jupiter">
@@ -68,7 +68,7 @@
             <component type="server.PlanetGeometry" radius="10000" generator="Earth"/>
             <component type="FixedRotation" period_y="1.0"/>
             <component type="Position"/>
-            <group name="client"/>
+            <group name="initialization"/>
             <entity name="Europa">
                 <component type="Mass" kg="7.4e23"/>
                 <component type="GravityField"/>
@@ -76,7 +76,7 @@
                 <component type="Orbit" orbital_distance="50000"/>
                 <component type="server.PlanetGeometry" radius="2000" generator="Moon"/>
                 <component type="FixedRotation" period_y="0.2"/>
-                <group name="client"/>
+                <group name="initialization"/>
             </entity>
         </entity-->
     </entity>
@@ -84,16 +84,18 @@
     <entity name="Borg Ship">
         <component type="Position" x="40" y="0" z="-100000"/>
         <component type="Rotation"/>
+        <component type="Acceleration"/>
+        <component type="Velocity"/>
         <component type="server.ShipGeometry" size="16" entry_x="0" entry_y="0" entry_z="0"/>
         <component type="server.Update"/>
-        <group name="client"/>
+        <group name="initialization"/>
         <entity name="Enemy">
             <component type="Position" x="0" y="2" z="0"/>
             <component type="Rotation"/>
             <component type="server.CharacterGeometry" red="1.0" green="0.0" blue="0.5" alpha="1.0"/>
             <component type="server.BindTo"/>
             <component type="server.Update"/>
-            <group name="client"/>
+            <group name="initialization"/>
         </entity>
     </entity>
 
@@ -102,7 +104,7 @@
         <component type="Rotation"/>
         <component type="server.CharacterGeometry"/>
         <component type="server.Update"/>
-        <group name="client"/>
+        <group name="initialization"/>
     </entity-template>
 
     <entity-template name="Apollo 13">
@@ -114,7 +116,7 @@
         <component type="Acceleration"/>
         <component type="Mass" radius_km="0.02" mass_kg="1000000"/-->
         <entity name="DCPU">
-            <group name="client"/>
+            <group name="initialization"/>
             <component type="server.VoidGeometry"/>
             <component type="server.BindTo"/>
             <component type="dcpu.DCPU" bootrom="admiral.bin"/>
@@ -125,20 +127,20 @@
                 <component type="server.MonitorGeometry"/>
                 <component type="server.BindTo"/>
                 <component type="server.Update"/>
-                <group name="client"/>
+                <group name="initialization"/>
             </entity>
             <entity name="Generic Keyboard">
                 <component type="dcpu.VirtualKeyboard"/>
                 <component type="server.BindTo"/>
                 <group name="keyboard"/>
             </entity>
-            <entity>
+            <entity name="Engine">
                 <component type="dcpu.Engine" x="0" y="0" z="-10"/>
                 <component type="Position" x="0" y="0" z="-16"/>
                 <component type="server.EngineGeometry"/>
                 <component type="server.BindTo"/>
                 <component type="Rotation" x="0" y="180" z="0"/>
-                <group name="client"/>
+                <group name="initialization"/>
             </entity>
             <!--entity>
                 <component type="dcpu.Engine" x="0" y="0" z="-1"/>
@@ -160,7 +162,7 @@
             <component type="Gyroscope" x="0" y="0" z="1"/>
             <component type="SystemBus" address="4"/>
         </entity-->
-        <group name="client"/>
+        <group name="initialization"/>
     </entity-template>
 
 </root>

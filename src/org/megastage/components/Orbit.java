@@ -37,7 +37,7 @@ public class Orbit extends EntityComponent {
     }
     
     public double getAngularSpeed(double centerMass) {
-        return 1.0 / Math.sqrt(Math.pow(distance, 3.0) / (Globals.G * centerMass));
+        return 1.0 / Math.sqrt(Math.pow(distance, 3.0) / (Globals.ORBIT_G * centerMass));
     }
     
     public Vector getLocalCoordinates(double time, double mass) {

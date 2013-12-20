@@ -105,8 +105,8 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         
         connection.sendTCP(new LoginResponse(connection.player.getId()));
 
-        ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("client");
-        Log.info("Sending intialization data for " + entities.size() + " entities.");
+        ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("initialization");
+        Log.info("Sending initialization data for " + entities.size() + " entities.");
 
         for(int i=0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
@@ -179,17 +179,12 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         pos.y += 1000 * cmd.yMove;
         pos.z += 1000 * cmd.zMove;
 
-        // connection.sendUDP(pos.create(connection.player));
-        
         Rotation rot = connection.player.getComponent(Rotation.class);
         rot.x = cmd.qx;
         rot.y = cmd.qy;
         rot.z = cmd.qz;
         rot.w = cmd.qw;
         
-        // not needed because rotation is handled on client
-        // connection.sendUDP(rot.create(connection.player));
-
         BindTo bindTo = connection.player.getComponent(BindTo.class);
         Entity ship = world.getEntity(bindTo.parent);
         
@@ -205,8 +200,6 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         shipPos.y += vel.y;
         shipPos.z += vel.z;
 
-        // connection.sendUDP(shipPos.create(ship));
-        
         // rotate rotation axis by fixedEntity rotation
         Vector yAxis = new Vector(0, 1, 0).multiply(shipRotationQuaternion);
         Quaternion yRotation = new Quaternion(yAxis, cmd.shipYaw);
