@@ -32,12 +32,13 @@ public class Game {
         world.setSystem(new ServerUpdateSystem(20));
         world.setSystem(new ServerNetworkSystem());
 
-        //world.setSystem(new OrbitalMovementSystem());
+        world.setSystem(new OrbitalMovementSystem());
 
         //world.setSystem(new EngineAccelerationSystem());
-        //world.setSystem(new GravityAccelerationSystem());
+        world.setSystem(new GravityFieldSystem());
+        world.setSystem(new GravityAccelerationSystem());
 
-        //world.setSystem(new ShipMovementSystem());
+        world.setSystem(new ShipMovementSystem());
 
         world.setSystem(new DCPUSystem());
         //world.setSystem(new VirtualMonitorSenderSystem());

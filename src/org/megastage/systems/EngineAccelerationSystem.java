@@ -8,9 +8,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.Acceleration;
 import org.megastage.components.Mass;
 import org.megastage.components.Rotation;
-import org.megastage.components.GravityAcceleration;
 import org.megastage.components.dcpu.Engine;
-import org.megastage.util.Quaternion;
 import org.megastage.util.Vector;
 
 /**
