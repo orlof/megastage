@@ -1,0 +1,12 @@
+Megastage Paradox:
+
+Requirements:
+ - Travel time from planet to moon (<20 min)    1 Mkm ->     100 000m
+ - Travel time between planets (<30 min)      100 Mkm -> 
+ - Travel time between star systems (<30 min)
+
+FTL mechanism will handle the last problem
+ - mounted ftl (jump drive) can jump to 100 diameter, jump takes 5-15 min, can misjump.
+ - jump gate, receives jump capable ships without misjumps or diameter limits.
+
+

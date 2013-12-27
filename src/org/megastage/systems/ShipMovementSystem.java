@@ -28,18 +28,17 @@ public class ShipMovementSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity entity) {
-        Log.info("Processing " + entity.toString());
         Velocity velocity = velocityMapper.get(entity);
         Acceleration acceleration = accelerationMapper.get(entity);
         Position position = positionMapper.get(entity);
 
-        Log.info("Acceleration " + acceleration.toString());
+        Log.debug(entity.toString() + acceleration.toString());
         
         position.move(velocity, world.delta / 2.0f);
         velocity.accelerate(acceleration, world.delta);
         position.move(velocity, world.delta / 2.0f);
 
-        Log.info("Velocity " + velocity.toString());
+        Log.debug(entity.toString() + velocity.toString());
 
         acceleration.set(Vector.ZERO);
     }

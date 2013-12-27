@@ -7,6 +7,8 @@ package org.megastage.components.server;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
@@ -19,19 +21,27 @@ import org.megastage.util.ClientGlobals;
  * @author Orlof
  */
 public class ShipGeometry extends EntityComponent {
-    public int size;
-
-    public int entry_x;
-    public int entry_y;
-    public int entry_z;
-    
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {
-        size = getIntegerValue(element, "size", 16);
+        List<Element> yList = element.getChildren("y");
+        int y = yList.size();
         
-        entry_x = getIntegerValue(element, "entry_x", 8);
-        entry_y = getIntegerValue(element, "entry_y", 2);
-        entry_z = getIntegerValue(element, "entry_z", 8);
+        for(Element yElem: yList) {
+            y--;
+
+            List<Element> zList = yElem.getChildren("z");
+            for(int z=0; z < zList.size(); z++) {
+                Element zElem = zList.get(z);
+                
+                String xString = zElem.getText();
+                for(int x=0; x < xString.length(); x++) {
+                    if(xString.charAt(x) == '#') {
+                        set(x, y, z);
+                    }
+                }
+            }
+        }
+        
     }
 
     @Override
@@ -43,5 +53,23 @@ public class ShipGeometry extends EntityComponent {
     @Override
     public String toString() {
         return "ShipGeometry()";
+    }
+
+    public int maxx = -1, maxy = -1, maxz = -1;
+    public boolean[][][] data = new boolean[16][16][16];
+    
+    public void set(int x, int y, int z) {
+        if(x > maxx) maxx = x;
+        if(y > maxy) maxy = y;
+        if(z > maxz) maxz = z;
+        data[x][y][z] = true;
+    }
+
+    public int getChunkSize() {
+        int size = maxx;
+        if(size < maxy) size = maxy;
+        if(size < maxz) size = maxz;
+        
+        return size / 16 + 1;
     }
 }

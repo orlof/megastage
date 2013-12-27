@@ -10,6 +10,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Rotation;
 import org.megastage.util.ClientGlobals;
@@ -30,7 +31,11 @@ public class RotationControl extends AbstractControl {
             spatial.setLocalRotation(Quaternion.IDENTITY);            
         } else {
             Quaternion q = new Quaternion((float) rotation.x, (float) rotation.y, (float) rotation.z, (float) rotation.w);
-            spatial.setLocalRotation(q);
+            Node main = (Node) ((Node) spatial).getChild("main");
+            if(main == null) {
+                main = (Node) spatial;
+            }
+            main.setLocalRotation(q);
         }
         if(Log.TRACE) {
             float[] eulerAngles = spatial.getLocalRotation().toAngles(null);

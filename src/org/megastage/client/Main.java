@@ -4,6 +4,7 @@ import com.cubes.CubesSettings;
 import com.cubes.test.CubesTestAssets;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
+import com.jme3.app.state.AppState;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -46,7 +47,7 @@ public class Main extends SimpleApplication {
     private PlanetAppState planetAppState;
     
     public Main() {
-        super(null);
+        super((AppState) null);
     }
     
     @Override
@@ -90,7 +91,7 @@ public class Main extends SimpleApplication {
         
         ClientGlobals.cubesSettings = new CubesSettings(this);
         ClientGlobals.cubesSettings.setBlockMaterial(CubesTestAssets.getSettings(this).getBlockMaterial());
-        ClientGlobals.cubesSettings.setBlockSize(2);
+        ClientGlobals.cubesSettings.setBlockSize(1);
         CubesTestAssets.registerBlocks();
      }
 
