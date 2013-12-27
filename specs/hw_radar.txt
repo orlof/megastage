@@ -1,0 +1,15 @@
+
+RADAR
+
+2 - SET_TARGET 
+
+Sets the target to object B in radar target menu starting at 0.
+
+3 - GET_TARGET 
+
+Sets a 7 word area of ram starting at B to radar data of target. Word 1 = type of object ( 0=unknown 1=natural 2=manmade). Words 2 and 3 = est. mass of object in kilograms (a 32-bit integer roughly approximated from density and size readings. NOT ALWAYS ACCURATE!). If both words 2 and 3 equal 0, then mass calculation cannot be accurately ascertained. Words 4 and 5 = distance in meters between ship and target (a 32-bit integer). Words 6 and 7 = the pitch and yaw angles between the direction of target and the direction the ship is pointing.
+
+4 - GET_MENU 
+
+Sets B to number of objects in radar target menu.
+
