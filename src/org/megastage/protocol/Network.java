@@ -12,6 +12,7 @@ import org.megastage.components.Orbit;
 import org.megastage.components.FixedRotation;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
+import org.megastage.components.SpawnPoint;
 import org.megastage.components.server.BindTo;
 import org.megastage.components.server.CharacterGeometry;
 import org.megastage.components.server.EngineGeometry;
@@ -45,6 +46,9 @@ public class Network {
         }
 
         kryo.register(char[].class);
+        kryo.register(boolean[].class);
+        kryo.register(boolean[][].class);
+        kryo.register(boolean[][][].class);
         kryo.register(Object[].class);
         kryo.register(EntityData.class);
         kryo.register(Bag.class);
@@ -54,6 +58,7 @@ public class Network {
         kryo.register(FixedRotation.class);
         kryo.register(Position.class);
         kryo.register(Rotation.class);
+        kryo.register(SpawnPoint.class);
         kryo.register(PlanetGeometry.class);
         kryo.register(SunGeometry.class);
         kryo.register(ShipGeometry.class);

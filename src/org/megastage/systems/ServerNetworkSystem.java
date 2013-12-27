@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
+import org.megastage.components.SpawnPoint;
 import org.megastage.components.server.BindTo;
-import org.megastage.components.server.ShipGeometry;
 import org.megastage.protocol.LoginResponse;
 import org.megastage.protocol.UserCommand;
 import org.megastage.server.TemplateManager;
@@ -96,12 +96,12 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         bind.parent = ship.getId();
         connection.player.addComponent(bind);
 
-        ShipGeometry sg = ship.getComponent(ShipGeometry.class);
+        SpawnPoint sp = ship.getComponent(SpawnPoint.class);
         
         Position pos = connection.player.getComponent(Position.class);
-        pos.x = 2000 * sg.entry_x;
-        pos.y = 2000 * sg.entry_y;
-        pos.z = 2000 * sg.entry_z;
+        pos.x = 2000 * sp.x;
+        pos.y = 2000 * sp.y;
+        pos.z = 2000 * sp.z;
         
         connection.sendTCP(new LoginResponse(connection.player.getId()));
 

@@ -89,7 +89,10 @@ public class SpatialManager {
     }
     
     public void bindTo(final Entity parentEntity, final Entity childEntity) {
-        final Node parentNode = getNode(parentEntity);
+        Node tmp = getNode(parentEntity);
+        Node main = (Node) tmp.getChild("main");
+        final Node parentNode = main == null ? tmp: main; 
+        
         final Node childNode = getNode(childEntity);
         app.enqueue(new Callable() {
             @Override
@@ -200,18 +203,26 @@ public class SpatialManager {
     }
     
     public void setupShip(Entity entity, ShipGeometry data) {
-        int chunkSize = data.size / 16 + 1;
+        int chunkSize = data.getChunkSize();
         
         BlockTerrainControl shipBlockControl = new BlockTerrainControl(ClientGlobals.cubesSettings, new Vector3Int(chunkSize, chunkSize, chunkSize));
-        shipBlockControl.setBlockArea(new Vector3Int(0,0,0), new Vector3Int(data.size, 1, data.size), Block_Wood.class);
-
+        for(int x = 0; x <= data.maxx; x++) {
+            for(int y = 0; y <= data.maxy; y++) {
+                for(int z = 0; z <= data.maxz; z++) {
+                    if(data.data[x][y][z]) {
+                        shipBlockControl.setBlock(x, y, z, Block_Wood.class);
+                    }
+                }
+            }
+        }
+        
         Node shipNode = new Node("main");
         shipNode.addControl(shipBlockControl);
         //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 
         final Node node = createUserNode(entity);
         node.attachChild(shipNode);
-        shipNode.setLocalTranslation(-data.size, -1, -data.size);
+        shipNode.setLocalTranslation(-data.maxx, -data.maxy, -data.maxz);
 
         app.enqueue(new Callable() {
             @Override
@@ -226,18 +237,21 @@ public class SpatialManager {
 
     public void setupEngine(Entity entity, EngineGeometry data) {
         Node engine = createUserNode(entity);
+        Node main = new Node("main");
+        engine.attachChild(main);
+        main.setLocalTranslation(0, 0.5f, 0.5f);
 
-        engine.attachChild(assetManager.loadModel("Scenes/testScene.j3o"));
+        main.attachChild(assetManager.loadModel("Scenes/testScene.j3o"));
 
-        Geometry geom = new Geometry("", new Cylinder(16, 16, 1, 1, true));
+        Geometry geom = new Geometry("", new Cylinder(16, 16, 0.5f, 1, true));
         geom.setMaterial(material(ColorRGBA.Gray, true));
         
-        engine.attachChild(geom);
-        ((ParticleEmitter) engine.getChild("Emitter")).setEnabled(true);
+        main.attachChild(geom);
+        ((ParticleEmitter) main.getChild("Emitter")).setEnabled(true);
     }
     
     public void setupMonitor(Entity entity, MonitorGeometry data) {
-        Geometry geom = new Geometry(entity.toString(), new Quad(8, 6, true));
+        Geometry geom = new Geometry(entity.toString(), new Quad(data.width, data.height, true));
         
         BufferedImage img = new BufferedImage(128, 96, BufferedImage.TYPE_INT_ARGB);
         Image img2 = new AWTLoader().load(img, false);
@@ -251,6 +265,7 @@ public class SpatialManager {
         
         Node node = createUserNode(entity);
         node.attachChild(geom);
+        geom.setLocalTranslation(0, 0, 0.5f);
 
         ClientRaster rasterComponent = ClientGlobals.artemis.getComponent(entity, ClientRaster.class);
         rasterComponent.raster = raster;

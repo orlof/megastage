@@ -6,6 +6,7 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.shape.Cylinder;
 import com.jme3.scene.shape.Dome;
 import com.jme3.scene.shape.Sphere;
 
@@ -24,7 +25,8 @@ public class DomeTestApp extends SimpleApplication {
         lighting.setColor("Diffuse", ColorRGBA.Blue);
 
         // setup light
-        Geometry geom = new Geometry("Light", new Sphere(16, 16, 1));
+        Geometry geom = new Geometry("Light", new Sphere(16, 16, .1f));
+        geom.setLocalTranslation(-3, 0, 0);
         geom.setMaterial(unshaded);
         rootNode.attachChild(geom);
         
@@ -32,7 +34,7 @@ public class DomeTestApp extends SimpleApplication {
         rootNode.addLight(light);
 
         // setup sphere
-        geom = new Geometry("Sphere", new Sphere(16, 16, 1));
+        geom = new Geometry("Sphere", new Cylinder(16, 16, 0.5f, 1, false));
         geom.setLocalTranslation(-3, 0, 0);
         geom.setMaterial(lighting);
         rootNode.attachChild(geom);

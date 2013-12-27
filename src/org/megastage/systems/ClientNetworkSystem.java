@@ -38,7 +38,7 @@ public class ClientNetworkSystem extends EntitySystem {
 
     @Override
     protected void initialize() {
-        client = new Client();
+        client = new Client(8192,8192);
         Network.register(client);
 
         Thread kryoThread = new Thread(client);
