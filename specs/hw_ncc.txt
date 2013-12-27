@@ -29,7 +29,8 @@ A - behavior
 
 0 - GET_ORBIT_BASIC_DATA 
 
-Sets a 5 word area of ram starting at B to a list of data points that define the ship's orbit without an external reference frame.
+Sets a 5 word area of ram starting at B to a list of data points that define
+the ship's orbit without an external reference frame.
 
 Data format:
     UINT32 apoapsis (height in meters)
@@ -43,16 +44,26 @@ Data format:
 
 1 - GET_ORBIT_REFERENCE_DATA 
 
-Sets a 4 word area of ram starting at B to a list of data points that define the ship's orbit with strongest gravity field as reference frame.
+Sets a 4 word area of ram starting at B to a list of data points that define
+the ship's orbit with strongest gravity field as reference frame.
 
-The first 3 words are set to the inclination relative to a selected target's orbital plane, the angle of ascending node to the periapsis, the angle of the ship's periapsis to the target's periapsis (inclination is ignored) in that order and all in the 16-bit angular format described above. The last word is set to the orbital state relative to the target's orbit (0=orbiting in same direction, 1=orbiting in opposing direction).
+The first 3 words are set to the inclination relative to a selected target's
+orbital plane, the angle of ascending node to the periapsis, the angle of the
+ship's periapsis to the target's periapsis (inclination is ignored) in that
+order and all in the 16-bit angular format described above. The last word is
+set to the orbital state relative to the target's orbit (0=orbiting in same
+direction, 1=orbiting in opposing direction).
 
 Halts the DCPU-16 for 4 cycles.
 
 2 - GET_TIMES 
 
-Sets a 10 word area of ram starting at B to the times until major nodes and another 4 word area after to speed data. The first 10 words are the time till apoapsis, periapsis, ascending node, descending node, and total orbital period in that order and all in 32-bit integers defining the time in seconds.
+Sets a 10 word area of ram starting at B to the times until major nodes and
+another 4 word area after to speed data. The first 10 words are the time till
+apoapsis, periapsis, ascending node, descending node, and total orbital period
+in that order and all in 32-bit integers defining the time in seconds.
 
-The last 4 words is the current orbital speed in mm/s and current acceleration in mm/s^2, both in 32-bit integers using millimeters as the unit of length.
+The last 4 words is the current orbital speed in mm/s and current acceleration
+in mm/s^2, both in 32-bit integers using millimeters as the unit of length.
 
 
