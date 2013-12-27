@@ -1,0 +1,50 @@
+ <Ender innovations>
+"It's alive! Dear lord almighty, it's alive!"
+
+Name: NCC-1701 (Navigational computer core)
+Version: 1701
+ID: 0x89FE5AE1
+Manufacturer: 0xE142A1FA (Ender innov.)
+
+About: The purpose of this device is to take a major load off the dcpu in the
+navigational department. It processes raw sensory and radar data, and using
+hardware interrupts, can give this processed data to the dcpu so the dcpu can
+focus on using this data to preform complex automatic orbital maneuvers, basic
+maneuver calculation, or just plain displaying the data for the user to pilot
+with. Features an internal list of trackable targets using radar data. These
+targets can be individually locked onto to get an external reference frame to
+further define the ship's orbit relative to the target's frame of reference.
+
+INTERRUPT BEHAVIOR:
+
+When referring to A, B, C, I, J, X, Y, and Z it is referring to registers in
+the dcpu-16.
+
+Note: If any of the data points below are equal to 0xFFFF or 0xFFFFFFFF then
+the data is not available. Also the binary format for defining an angle in
+degrees and minutes is: [Caaaaaaaaabbbbbb] b=minutes a=degrees C=sign(if
+needed).
+
+A - behavior
+
+0 - GET_ORBIT 
+
+Sets a 5 word area of ram starting at B to a list of data points that define the ship's orbit without an external reference frame. The first 4 data points are the apoapsis (height in meters) and the periapsis (height in meters) in 32-bit integers. The last word is the eccentricity of the orbit. If there is a selected target to be used as a reference frame then it will add 4 more words to the list using the target to define the orbit further. The first 3 words are set to the inclination relative to a selected target's orbital plane, the angle of ascending node to the periapsis, the angle of the ship's periapsis to the target's periapsis (inclination is ignored) in that order and all in the 16-bit angular format described above. The last word is set to the orbital state relative to the target's orbit (0=orbiting in same direction, 1=orbiting in opposing direction)
+
+1 - GET_TIMES 
+
+Sets a 10 word area of ram starting at B to the times until major nodes and another 4 word area after to speed data. The first 10 words are the time till apoapsis, periapsis, ascending node, descending node, and total orbital period in that order and all in 32-bit integers defining the time in seconds.
+The last 4 words is the current orbital speed in m/s and current acceleration in m/s^2, both in single accuracy (32-bit) IEEE floating point numbers.
+
+2 - SET_TARGET 
+
+Sets the target to object B in radar target menu starting at 0.
+
+3 - GET_TARGET 
+
+Sets a 7 word area of ram starting at B to radar data of target. Word 1 = type of object ( 0=unknown 1=natural 2=manmade). Words 2 and 3 = est. mass of object in kilograms (a 32-bit integer roughly approximated from density and size readings. NOT ALWAYS ACCURATE!). If both words 2 and 3 equal 0, then mass calculation cannot be accurately ascertained. Words 4 and 5 = distance in meters between ship and target (a 32-bit integer). Words 6 and 7 = the pitch and yaw angles between the direction of target and the direction the ship is pointing.
+
+4 - GET_MENU 
+
+Sets B to number of objects in radar target menu.
+
