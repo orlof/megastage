@@ -31,43 +31,42 @@ INTERRUPT BEHAVIOR:
     of the following actions:
 
     0 - STORE_ORBITAL_ELEMENTS
-        Takes an 6 word area of ram starting at B containing a 3 word 
-        (X, Y, Z format) positional vector and a 3 word velocity vector in that 
-        order and both in the same format. It takes these vectors and 
-        calculates the orbital data from them based on gravitational data of 
-        the current SOI and returns the following to an 8 word area of ram 
-        starting at C. 
+        Takes an [ORBITAL_STATE_VECTOR] starting at B and and calculates 
+        orbital elements based on gravitational data of the current SOI and 
+        returns the following to an 7 word area of ram starting at C. 
 
-        Word 1&2 = height of apoapsis in 32-bit integer
-        Word 3&4 = height of periapse in 32-bit integer
-        Word 5 = eccentricity in 1/1000 16-bit integer.
-        Word 6 = inclination angle in angular format.
-        Word 7 = Argument of periapse in angular format.
+        Halts DCPU for 7 cycles.
 
-    1 - STORE_SIMULATION_TIMES
-        Takes vector values from an area starting at B and computes them just 
-        as described above but instead of returning elements it returns the 
-        times in seconds till major nodes of the orbit in 32-bit integers and 
-        the current orbital speed (mm/s) and orbital acceleration (mm/s^2) 
-        also in 32-bit integers to a 14 word area of ram starting at C. 
+        Word 0&1 = [INT32] height of apoapsis (100m)
+        Word 2&3 = [INT32] height of periapse (100m)
+        Word 4 = [SPECIAL] eccentricity in 1/1000 16-bit integer
+        Word 5 = [ANGLE] inclination angle
+        Word 6 = [ANGLE] Argument of periapse in angular format.
 
-        Note: the amount of cycles it takes this device to simulate and orbit 
-        and return times is unpredictable as it depends on the orbit.
+    1 - STORE_SIMULATED_TIMES
+        Reads the [ORBITAL_STATE_VECTOR] from memory area starting at B and 
+        receives current SOI data directly from Gravity Sensor. Runs the orbit 
+        simulation and estimates following orbit parameters:
+            - the time in seconds to major nodes of the orbit
+            - the current orbital speed 
+            - orbital acceleration
+        Simulation estimates are stored to a 14 word area of ram starting at C. 
 
-        Words 1&2 = till apoapse
-        Words 3&4 = till periapse
-        Words 5&6 = till ascending node
-        Words 7&8 = till descending node
-        Words 9&10 = orbital period
-        Words 11&12 = current orbital speed
-        Words 13&14 = current acceleration
+        Note: the amount of cycles it takes this device to simulate an orbit 
+        and estimate arrival times is unpredictable as it depends on the orbit.
 
-    2 - COMPARE_ORBIT
-        Gets two sets of vector values from a 12 word area of ram starting at 
-        B and compares their orbits. It then returns 2 words to a place in ram 
-        starting at C. This allows one to compare orbits to plan intercepts 
-        and the like.
+        Words 0&1 = [INT32] till apoapse (unit s)
+        Words 2&3 = [INT32] till periapse (unit s)
+        Words 4&5 = [INT32] till ascending node (unit s)
+        Words 6&7 = [INT32] till descending node (unit s)
+        Words 8&9 = [INT32] orbital period (unit s)
+        Words 10&11 = [INT32] current orbital speed (unit m/s)
+        Words 12&13 = [INT32] current acceleration (unit m/s2)
 
-        Word 1 = inclination of orbit 1 relative to 2
-        Word 2 = angle between periapse 1 and 2
+    2 - COMPARE_ORBITS
+        Gets two sets of [ORBITAL_STATE_VECTOR] from 24 word area of ram 
+        starting at B and compares their orbits using current SOI as reference 
+        frame. It returns inclination of orbit 1 relative to 2 in A and angle 
+        between periapse 1 and 2 in B. Both are in angular format. This allows 
+        one to compare orbits to plan intercepts and the like.
 
