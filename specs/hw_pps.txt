@@ -10,28 +10,30 @@ DCPU-16 Hardware Info:
     Manufacturer: 0x91a2b24c (TALON NAVIGATION SYSTEMS)
 
 Description:
-    PPS can determine it's position using signals from x-ray pulsars.
+    PPS can determine it's position using signals from x-ray pulsars. PPS can
+    function in all locations in the Milky Way, but its accuracy will degrade
+    exponentially in high velocities and strong gravity fields.
 
 Interrupt behavior:
     When a HWI is received by the PPS, it reads the A register and does one
     of the following actions:
     
-    0: SECTOR
+    0: GET_SECTOR
        Write current sector number to register B. Numbers from 0x0000 to
        0x00ff are reserved for special codes.
           0x0000       : Unknown sector
           0x0001       : No known pulsars detected
           0x0002       : Equipment malfunction
 
-    1: COORDINATES
+    1: STORE_COORDINATES
        Reads the B register, and writes the current position data to DCPU-16
        ram starting at address B. Halts the DCPU-16 for 7 cycles.
 
        The data is encoded as
-         SINT32: x-coordinate (m)
-         SINT32: y-coordinate (m)
-         SINT32: z-coordinate (m)
-         UINT16: time synchronization pulse (ms)
+         INT32: x-coordinate (unit 100m)
+         INT32: y-coordinate (unit 100m)
+         INT32: z-coordinate (unit 100m)
+         UINT16: time synchronization pulse (unit ms)
 
        Synchronization pulse is 16 bit counter that increments every
        millisecond and resets to zero between every 2^16 seconds.
