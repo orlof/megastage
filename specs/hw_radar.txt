@@ -2,25 +2,52 @@
 <Ender innovations>
 "It's alive! Dear lord almighty, it's alive!"
 
-Name: HTA 90
-(Hybrid Tracking Array)
-Version: 90
-ID: 0x3442980F
-Manufacturer: 0xE142A1FA (Ender innov.)
+DCPU-16 Hardware Info:
+    Name: HTA 90 (Hybrid Tracking Array)
+    Version: 90
+    ID: 0x3442980F
+    Manufacturer: 0xE142A1FA (Ender innov.)
 
-About: This is a mixup of a standard radar detection array and a laser targeting theodolite built by Ender innovations because we believe we are better at building tracking systems (and anything for that matter) than anyone else and not because of our inflated ego either (we consider that to be a separate and unrelated issue). This tracking system is built to scan for targets whether they be manmade or natural and easily target and scan any one of them to get information as easily as can be done with our obviously superior technology.
+Description:
+    This is a mixup of a standard radar detection array and a laser targeting 
+    theodolite built by Ender innovations because we believe we are better at 
+    building tracking systems (and anything for that matter) than anyone else 
+    and not because of our inflated ego either (we consider that to be a 
+    separate and unrelated issue). 
 
-A - behavior
+    This tracking system is built to scan for targets whether they be manmade 
+    or natural and easily target and scan any one of them to get information 
+    as easily as can be done with our obviously superior technology.
 
-0 - GET_MENU Sets an area of ram starting at B to a list of the 512 nearest objects within range. Each target has a unique 16-bit number assigned to it that is never equal to 0. The list, for space purposes, can never be more than 512 words (1 kilobyte). This means that the tracker cannot hold more than 512 targets so it always chooses the 512 nearest.
+Interrupt behavior:
+    When a HWI is received by the PPS, it reads the A register and does one
+    of the following actions:
+    
+    0 - GET_MENU 
+        Sets an area of ram starting at B to a list of the 512 nearest objects 
+        within range. Each target has a unique 16-bit number assigned to it 
+        that is never equal to 0. The list, for space purposes, can never be 
+        more than 512 words (1 kilobyte). This means that the tracker cannot 
+        hold more than 512 targets so it always chooses the 512 nearest.
 
-1 - SET_TARGET Sets the target to the object with the code B in radar target menu.
+    1 - SET_TARGET
+        Sets the target to the object with the code B in radar target menu.
 
-2 - GET_TARGET Sets a 7 word area of ram starting at B to radar data of target. 
-Word 1 = type of object ( 0=unknown 1=natural 2=manmade). 
-Words 2 and 3 = est. mass of object in kilograms (a 32-bit integer roughly approximated from density and size readings. NOT ALWAYS ACCURATE!). If both words 2 and 3 equal 0, then mass calculation cannot be accurately ascertained. 
-Words 4 and 5 = distance in meters between ship and target (a 32-bit integer). 
-Words 6 and 7 = the pitch and yaw angles between the direction of target and the direction the ship is pointing.
+    2 - GET_TARGET
+        Sets a 7 word area of ram starting at B to radar data of target. 
 
-3 - GET_VECTOR Sets a 6 word area of ram starting at B to the position vector and the velocity vector of the target in that order and each in 3 word (X, Y, Z) format.
+        Word 1 = type of object ( 0=unknown 1=natural 2=manmade). 
+        Words 2 and 3 = est. mass of object in kilograms (a 32-bit integer 
+            roughly approximated from density and size readings. NOT ALWAYS 
+            ACCURATE!). If both words 2 and 3 equal 0, then mass calculation 
+            cannot be accurately ascertained. 
+        Words 4 and 5 = distance in meters between ship and target 
+            (a 32-bit integer). 
+        Words 6 and 7 = the pitch and yaw angles between the direction of 
+            target and the direction the ship is pointing.
+
+    3 - GET_VECTOR
+        Sets a 6 word area of ram starting at B to the position vector and 
+        the velocity vector of the target in that order and each in 3 word 
+        (X, Y, Z) format.
 

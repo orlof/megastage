@@ -2,42 +2,72 @@
 <Ender innovations>
 "It's alive! Dear lord almighty, it's alive!"
 
-Name: NCC-1701 
-(Navigational computer core)
-Version: 1701
-ID: 0x89FE5AE1
-Manufacturer: 0xE142A1FA (Ender innov.)
+    Name: NCC-1701 (Navigational computer core)
+    Version: 1701
+    ID: 0x89FE5AE1
+    Manufacturer: 0xE142A1FA (Ender innov.)
 
-About: The purpose of this device is to take a major load off the dcpu in the navigational department. This device calculates orbital data and times using imputed orbital state vector data, and using hardware interrupts, can give this processed data to the dcpu so the dcpu can focus on using this data to preform complex automatic orbital maneuvers, basic maneuver calculation, or just plain displaying the data for the user to pilot with. 
+About: 
+    The purpose of this device is to take a major load off the dcpu in the 
+    navigational department. This device calculates orbital data and times 
+    using imputed orbital state vector data, and using hardware interrupts, can 
+    give this processed data to the dcpu so the dcpu can focus on using this 
+    data to preform complex automatic orbital maneuvers, basic maneuver 
+    calculation, or just plain displaying the data for the user to pilot with. 
 
 INTERRUPT BEHAVIOR:
 
-When referring to A, B, C, I, J, X, Y, and Z it is referring to registers in the dcpu-16.
+    When referring to A, B, C, I, J, X, Y, and Z it is referring to registers in 
+    the dcpu-16.
 
-Note: If any of the data points below are equal to 0xFFFF or 0xFFFFFFFF then the data is not available (eccentricity is the exception, 0xFFFF means a hyperbola). Also the binary format for defining an angle in degrees and minutes is: [Caaaaaaaaabbbbbb] b=minutes a=degrees C=sign(if needed)
+    Note: If any of the data points below are equal to 0xFFFF or 0xFFFFFFFF 
+    then the data is not available (eccentricity is the exception, 0xFFFF means 
+    a hyperbola). 
 
-A - behavior
+    Also the binary format for defining an angle in degrees and minutes is: 
+    [Caaaaaaaaabbbbbb] b=minutes a=degrees C=sign(if needed)
 
-0 - GET_VECTOR_ORBIT Takes an 6 word area of ram starting at B containing a 3 word (X, Y, Z format) positional vector and a 3 word velocity vector in that order and both in the same format. It takes these vectors and calculates the orbital data from them based on gravitational data of the current SOI and returns the following to an 8 word area of ram starting at C. 
+    When a HWI is received by the NCC, it reads the A register and does one
+    of the following actions:
 
-Word 1&2 = height of apoapsis in 32-bit integer
-Word 3&4 = height of periapse in 32-bit integer
-Word 5 = eccentricity in 1/1000 16-bit integer.
-Word 6 = inclination angle in angular format.
-Word 7 = Argument of periapse in angular format.
+    0 - STORE_ORBITAL_ELEMENTS
+        Takes an 6 word area of ram starting at B containing a 3 word 
+        (X, Y, Z format) positional vector and a 3 word velocity vector in that 
+        order and both in the same format. It takes these vectors and 
+        calculates the orbital data from them based on gravitational data of 
+        the current SOI and returns the following to an 8 word area of ram 
+        starting at C. 
 
-1 - GET_VECTOR_TIMES Takes vector values from an area starting at B and computes them just as described above but instead of returning elements it returns the times in seconds till major nodes of the orbit in 32-bit integers and the current orbital speed (mm/s) and orbital acceleration (mm/s^2) also in 32-bit integers to a 14 word area of ram starting at C. Note: the amount of cycles it takes this device to simulate and orbit and return times is unpredictable as it depends on the orbit.
+        Word 1&2 = height of apoapsis in 32-bit integer
+        Word 3&4 = height of periapse in 32-bit integer
+        Word 5 = eccentricity in 1/1000 16-bit integer.
+        Word 6 = inclination angle in angular format.
+        Word 7 = Argument of periapse in angular format.
 
-Words 1&2 = till apoapse
-Words 3&4 = till periapse
-Words 5&6 = till ascending node
-Words 7&8 = till descending node
-Words 9&10 = orbital period
-Words 11&12 = current orbital speed
-Words 13&14 = current acceleration
+    1 - STORE_SIMULATION_TIMES
+        Takes vector values from an area starting at B and computes them just 
+        as described above but instead of returning elements it returns the 
+        times in seconds till major nodes of the orbit in 32-bit integers and 
+        the current orbital speed (mm/s) and orbital acceleration (mm/s^2) 
+        also in 32-bit integers to a 14 word area of ram starting at C. 
 
-2 - COMPARE_ORBIT Gets two sets of vector values from a 12 word area of ram starting at B and compares their orbits. It then returns 2 words to a place in ram starting at C. This allows one to compare orbits to plan intercepts and the like.
+        Note: the amount of cycles it takes this device to simulate and orbit 
+        and return times is unpredictable as it depends on the orbit.
 
-Word 1 = inclination of orbit 1 relative to 2
-Word 2 = angle between periapse 1 and 2
+        Words 1&2 = till apoapse
+        Words 3&4 = till periapse
+        Words 5&6 = till ascending node
+        Words 7&8 = till descending node
+        Words 9&10 = orbital period
+        Words 11&12 = current orbital speed
+        Words 13&14 = current acceleration
+
+    2 - COMPARE_ORBIT
+        Gets two sets of vector values from a 12 word area of ram starting at 
+        B and compares their orbits. It then returns 2 words to a place in ram 
+        starting at C. This allows one to compare orbits to plan intercepts 
+        and the like.
+
+        Word 1 = inclination of orbit 1 relative to 2
+        Word 2 = angle between periapse 1 and 2
 
