@@ -20,34 +20,32 @@ Description:
     as easily as can be done with our obviously superior technology.
 
 Interrupt behavior:
-    When a HWI is received by the PPS, it reads the A register and does one
+    When a HWI is received by radar, it reads the A register and does one
     of the following actions:
     
-    0 - GET_MENU 
-        Sets an area of ram starting at B to a list of the 512 nearest objects 
-        within range. Each target has a unique 16-bit number assigned to it 
-        that is never equal to 0. The list, for space purposes, can never be 
-        more than 512 words (1 kilobyte). This means that the tracker cannot 
-        hold more than 512 targets so it always chooses the 512 nearest.
+    0 - STORE_SIGNATURES
+        Copies echo signatures received with last radar sweep from internal 
+        memory to 16 word area of DCPU ram starting at B. Maximum of 16 nearest 
+        objects are copied. Each signature is a unique 16-bit number that is 
+        never equal to 0. If the are less than 16 signatures then rest of
+        signature array is filled with 0.
 
-    1 - SET_TARGET
-        Sets the target to the object with the code B in radar target menu.
+    1 - SET_TRACKING_TARGET
+        Sets the tracking target to the object with the signature in B.
 
-    2 - GET_TARGET
+    2 - STORE_TARGET_DATA
         Sets a 7 word area of ram starting at B to radar data of target. 
 
         Word 1 = type of object ( 0=unknown 1=natural 2=manmade). 
-        Words 2 and 3 = est. mass of object in kilograms (a 32-bit integer 
-            roughly approximated from density and size readings. NOT ALWAYS 
-            ACCURATE!). If both words 2 and 3 equal 0, then mass calculation 
-            cannot be accurately ascertained. 
-        Words 4 and 5 = distance in meters between ship and target 
-            (a 32-bit integer). 
-        Words 6 and 7 = the pitch and yaw angles between the direction of 
-            target and the direction the ship is pointing.
+        Words 2 and 3 = [INT32] est. mass of object in kilograms (roughly 
+            approximated from density and size readings. NOT ALWAYS ACCURATE!). 
+            If both words 2 and 3 equal 0, then mass calculation cannot be 
+            accurately ascertained. 
+        Words 4 and 5 = [FLOAT] distance in meters between ship and target.
+        Words 6 and 7 = the pitch and yaw angles between the direction of the
+            target and the direction that the ship is pointing.
 
     3 - GET_VECTOR
-        Sets a 6 word area of ram starting at B to the position vector and 
-        the velocity vector of the target in that order and each in 3 word 
-        (X, Y, Z) format.
+        Sets a 12 word area of ram starting at B to [ORBITAL_STATE_VECTOR]
+        of target in _ship's_ SOI.
 

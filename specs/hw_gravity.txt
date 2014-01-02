@@ -25,52 +25,53 @@ Interrupt behavior:
     does one of the following actions:
     
     0: STORE_FIELD_SIGNATURES
-       Copies gravity field signatures from Acceleresolutors internal memory
-       to 16 word area of DCPU ram starting at B. 
+        Copies gravity field signatures from Acceleresolutors internal memory
+        to 16 word area of DCPU ram starting at B. 
 
-       Each signature is a 16-bit value that is never equal to 0. If less than 
-       16 gravity wells were resolved on latest gravity sweep, end of the 
-       signature list is filled with 0.
+        Each signature is a 16-bit value that is never equal to 0. If less than 
+        16 gravity wells were resolved on latest gravity sweep, end of the 
+        signature list is filled with 0.
 
-       Strongest gravity field's signature is stored in index 0 and rest of the 
-       fields are listed in the order of decreasing field strengths.
+        Strongest gravity field's signature is stored in index 0 and rest of the 
+        fields are listed in the order of decreasing field strengths.
 
-       Halts DCPU for 16 cycles.
+        Halts DCPU for 16 cycles.
 
     1: STORE_ORBITAL_STATE_VECTOR
-       Stores Orbital State Vector to 12 word area of ram starting at C. 
-       Reference frame's field signature is given in B.
+        Stores Orbital State Vector to 12 word area of ram starting at C. 
+        Reference frame's field signature is given in B.
 
-       Halts DCPU for 12 cycles.
+        Halts DCPU for 12 cycles.
 
     2: STORE_FIELD_DATA
-       Stores Gravity Field Data to 4 word area of ram starting at C. 
-       Reference frame's field signature is given in B.
+        Stores Gravity Field Data to 4 word area of ram starting at C. 
+        Reference frame's field signature is given in B.
 
-       Halts DCPU for 4 cycles.
+        Halts DCPU for 4 cycles.
 
 
 Orbital State Vector:
     The binary format for defining an orbital state vector is: 
-      word 0-1: INT32 ship's x coordinate in reference frame (unit 100m)
-      word 2-3: INT32 ship's y coordinate in reference frame (unit 100m)
-      word 4-5: INT32 ship's z coordinate in reference frame (unit 100m)
-      word 6-7: INT32 ship's x velocity in reference frame (unit 1m)
-      word 8-9: INT32 ship's y velocity in reference frame (unit 1m)
-      word 10-11: INT32 ship's z velocity in reference frame (unit 1m)
+        word  0 - 1: INT32 ship's x coordinate in reference frame (unit 100m)
+        word  2 - 3: INT32 ship's y coordinate in reference frame (unit 100m)
+        word  4 - 5: INT32 ship's z coordinate in reference frame (unit 100m)
+        word  6 - 7: INT32 ship's x velocity in reference frame (unit m/s)
+        word  8 - 9: INT32 ship's y velocity in reference frame (unit m/s)
+        word 10 -11: INT32 ship's z velocity in reference frame (unit m/s)
 
 
 Gravity Field Data:
     The binary format for defining a Gravity Field Data is: 
-      word 0-1: FLOAT standard gravitational parameter μ of SOI (unit kg)
-      word 2-3: ANGLE The pitch and yaw angles between the SOI and the direction 
-                      the ship is pointing.
+        word 0-1: FLOAT standard gravitational parameter μ of SOI (unit kg)
+        word 2-3: ANGLE The pitch and yaw angles between the SOI and the 
+                        direction the ship is pointing.
 
     
 Floating Point Number (FLOAT):
     The binary format for defining a floating point value is: 
-      word 0: seeeeeee eeeeeeee
-      word 1: ffffffff ffffffff
+
+    word 0: seeeeeee eeeeeeee
+    word 1: ffffffff ffffffff
     
     Sign bit determines the sign of the number, which is the sign of the 
     significand as well. (0: positive, 1: negative)
@@ -81,8 +82,8 @@ Floating Point Number (FLOAT):
     Fraction is 16 bit unsigned integer from 0 to 65535.
 
     Following values are interpreted specially:
-      0x0000 0x0000: +0
-      0x8000 0x0000: -0
-      0x7FFF 0x0000: +Inf
-      0xFFFF 0x0000: -Inf
-      0xFFFF 0xFFFF: NaN
+        0x0000 0x0000: +0
+        0x8000 0x0000: -0
+        0x7FFF 0x0000: +Inf
+        0xFFFF 0x0000: -Inf
+        0xFFFF 0xFFFF: NaN
