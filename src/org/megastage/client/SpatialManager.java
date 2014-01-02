@@ -15,15 +15,11 @@ import com.jme3.effect.ParticleEmitter;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.LightNode;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
-import com.jme3.scene.shape.Dome;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.texture.Image;
@@ -90,7 +86,7 @@ public class SpatialManager {
     
     public void bindTo(final Entity parentEntity, final Entity childEntity) {
         Node tmp = getNode(parentEntity);
-        Node main = (Node) tmp.getChild("main");
+        Node main = (Node) tmp.getChild("offset");
         final Node parentNode = main == null ? tmp: main; 
         
         final Node childNode = getNode(childEntity);
@@ -204,25 +200,31 @@ public class SpatialManager {
     
     public void setupShip(Entity entity, ShipGeometry data) {
         int chunkSize = data.getChunkSize();
+
+        float cx = 0, cy = 0, cz = 0, bc = 0;
         
-        BlockTerrainControl shipBlockControl = new BlockTerrainControl(ClientGlobals.cubesSettings, new Vector3Int(chunkSize, chunkSize, chunkSize));
+        BlockTerrainControl blockControl = new BlockTerrainControl(ClientGlobals.cubesSettings, new Vector3Int(chunkSize, chunkSize, chunkSize));
         for(int x = 0; x <= data.maxx; x++) {
             for(int y = 0; y <= data.maxy; y++) {
                 for(int z = 0; z <= data.maxz; z++) {
                     if(data.data[x][y][z]) {
-                        shipBlockControl.setBlock(x, y, z, Block_Wood.class);
+                        cx += x; cy += y; cz += z; bc++;
+                        blockControl.setBlock(x, y, z, Block_Wood.class);
                     }
                 }
             }
         }
         
-        Node shipNode = new Node("main");
-        shipNode.addControl(shipBlockControl);
+        cx /= bc; cy /= bc; cz /= bc;
+        cx += 0.5; cy += 0.5; cz += 0.5;
+        
+        Node blockNode = new Node("offset");
+        blockNode.addControl(blockControl);
         //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 
         final Node node = createUserNode(entity);
-        node.attachChild(shipNode);
-        shipNode.setLocalTranslation(-data.maxx, -data.maxy, -data.maxz);
+        node.attachChild(blockNode);
+        blockNode.setLocalTranslation(-cx, -cy, -cz);
 
         app.enqueue(new Callable() {
             @Override
@@ -239,7 +241,7 @@ public class SpatialManager {
         Node engine = createUserNode(entity);
         Node main = new Node("main");
         engine.attachChild(main);
-        main.setLocalTranslation(0, 0.5f, 0.5f);
+        main.setLocalTranslation(0.5f, 0.5f, 0.5f);
 
         main.attachChild(assetManager.loadModel("Scenes/testScene.j3o"));
 

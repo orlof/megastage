@@ -31,6 +31,7 @@ public class RotationControl extends AbstractControl {
             spatial.setLocalRotation(Quaternion.IDENTITY);            
         } else {
             Quaternion q = new Quaternion((float) rotation.x, (float) rotation.y, (float) rotation.z, (float) rotation.w);
+            
             Node main = (Node) ((Node) spatial).getChild("main");
             if(main == null) {
                 main = (Node) spatial;
