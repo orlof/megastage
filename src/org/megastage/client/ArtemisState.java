@@ -16,6 +16,7 @@ import java.util.HashMap;
 import org.megastage.systems.ClientFixedRotationSystem;
 import org.megastage.systems.ClientMonitorRenderSystem;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.systems.ClientOrbitalMovementSystem;
 import org.megastage.systems.OrbitalMovementSystem;
 import org.megastage.util.ClientGlobals;
 
@@ -31,7 +32,7 @@ public class ArtemisState extends AbstractAppState {
         world = new World();
 
         world.setSystem(new ClientMonitorRenderSystem(), false);
-        world.setSystem(new OrbitalMovementSystem());
+        world.setSystem(new ClientOrbitalMovementSystem());
         world.setSystem(new ClientFixedRotationSystem());
 
         ClientGlobals.network = new ClientNetworkSystem(20);

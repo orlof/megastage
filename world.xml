@@ -1,26 +1,26 @@
 <root>
     <entity name="Sun">
         <component type="Position" x="0" y="0" z="0"/>
-        <component type="Mass" kg="1.989e28"/>
-        <component type="server.SunGeometry" radius="40000" light_radius="2000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
+        <component type="Mass" kg="1.989e21"/>
+        <component type="server.SunGeometry" radius="50000" light_radius="20000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
         <component type="GravityField"/>
         <group name="initialization"/>
         <entity name="Earth">
-            <component type="Mass" kg="5.972e25"/>
+            <component type="Mass" kg="5.972e15"/>
             <component type="GravityField"/>
             <component type="Orbit" orbital_distance="200000"/>
             <component type="Rotation"/>
-            <component type="server.PlanetGeometry" radius="10000" generator="Earth" color="Blue"/>
+            <component type="server.PlanetGeometry" radius="3000" generator="Earth" color="Blue"/>
             <component type="FixedRotation" period_y="1.0"/>
             <component type="Position" x="0" y="0" z="0"/>
             <group name="initialization"/>
             <entity name="Moon">
-                <component type="Mass" kg="7.4e23"/>
+                <component type="Mass" kg="7.3e13"/>
                 <component type="GravityField"/>
                 <component type="Position" x="0" y="0" z="0"/>
                 <component type="Rotation"/>
-                <component type="Orbit" orbital_distance="50000"/>
-                <component type="server.PlanetGeometry" radius="3000" generator="Moon" color="Brown"/>
+                <component type="Orbit" orbital_distance="40000"/>
+                <component type="server.PlanetGeometry" radius="1500" generator="Moon" color="Brown"/>
                 <component type="FixedRotation" period_y="0.1"/>
                 <group name="initialization"/>
             </entity>
@@ -82,15 +82,66 @@
     </entity>
 
     <entity name="Borg Ship">
-        <component type="Position" x="40" y="0" z="-100000"/>
+        <component type="Position" x="40" y="0" z="-250000"/>
         <component type="Rotation"/>
         <component type="Acceleration"/>
         <component type="Velocity"/>
-        <component type="server.ShipGeometry" size="16" entry_x="0" entry_y="0" entry_z="0"/>
+        <component type="server.ShipGeometry">
+            <y>
+                <z>       </z>
+                <z>#######</z>
+                <z>#     #</z>
+                <z>#     #</z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
+            </y>
+            <y>
+                <z>       </z>
+                <z>#######</z>
+                <z>  LLL  </z>
+                <z>       </z>
+                <z>       </z>
+                <z>       </z>
+                <z>#     #</z>
+            </y>
+            <y>
+                <z>   e   </z>
+                <z>#######</z>
+                <z>  LLL  </z>
+                <z>       </z>
+                <z>       </z>
+                <z>       </z>
+                <z>#     #</z>
+            </y>
+            <y>
+                <z>       </z>
+                <z>#######</z>
+                <z>       </z>
+                <z>   X   </z>
+                <z>   s   </z>
+                <z>       </z>
+                <z>#     #</z>
+            </y>
+            <y>
+                <z>       </z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
+            </y>
+        </component>
         <component type="server.Update"/>
         <group name="initialization"/>
         <entity name="Enemy">
-            <component type="Position" x="0" y="2" z="0"/>
+            <component type="Position" x="3" y="1" z="8"/>
             <component type="Rotation"/>
             <component type="server.CharacterGeometry" red="1.0" green="0.0" blue="0.5" alpha="1.0"/>
             <component type="server.BindTo"/>
@@ -108,7 +159,7 @@
     </entity-template>
 
     <entity-template name="Apollo 13">
-        <component type="Position" x="0" y="0" z="-100000"/>
+        <component type="Position" x="0" y="0" z="-250000"/>
         <component type="Rotation"/>
         <component type="server.ShipGeometry">
             <y>
@@ -121,6 +172,15 @@
                 <z>#######</z>
             </y>
             <y>
+                <z>       </z>
+                <z>#######</z>
+                <z>  LLL  </z>
+                <z>       </z>
+                <z>       </z>
+                <z>       </z>
+                <z>#     #</z>
+            </y>
+            <y>
                 <z>   e   </z>
                 <z>#######</z>
                 <z>  LLL  </z>
@@ -131,7 +191,7 @@
             </y>
             <y>
                 <z>       </z>
-                <z>##   ##</z>
+                <z>#######</z>
                 <z>       </z>
                 <z>   X   </z>
                 <z>   s   </z>
@@ -140,6 +200,11 @@
             </y>
             <y>
                 <z>       </z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
+                <z>#######</z>
                 <z>#######</z>
                 <z>#######</z>
                 <z>#######</z>
@@ -162,7 +227,7 @@
                 <component type="Position" x="2" y="2" z="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="dcpu.VirtualMonitor"/>
-                <component type="server.MonitorGeometry" width="3" height="1"/>
+                <component type="server.MonitorGeometry" width="3" height="2"/>
                 <component type="server.BindTo"/>
                 <component type="server.Update"/>
                 <group name="initialization"/>

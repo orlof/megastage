@@ -218,13 +218,13 @@ public class SpatialManager {
         cx /= bc; cy /= bc; cz /= bc;
         cx += 0.5; cy += 0.5; cz += 0.5;
         
-        Node blockNode = new Node("offset");
-        blockNode.addControl(blockControl);
+        Node offset = new Node("offset");
+        offset.addControl(blockControl);
         //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 
         final Node node = createUserNode(entity);
-        node.attachChild(blockNode);
-        blockNode.setLocalTranslation(-cx, -cy, -cz);
+        node.attachChild(offset);
+        offset.setLocalTranslation(-cx, -cy, -cz);
 
         app.enqueue(new Callable() {
             @Override
@@ -266,26 +266,31 @@ public class SpatialManager {
         geom.setMaterial(mat);
         
         Node node = createUserNode(entity);
-        node.attachChild(geom);
-        geom.setLocalTranslation(0, 0, 0.5f);
+        Node main = new Node("main");
+        node.attachChild(main);
+        main.setLocalTranslation(0.5f, 0.0f, 0.5f);
+        
+        main.attachChild(geom);
+        geom.setLocalTranslation(-0.5f, 0, 0f);
 
         ClientRaster rasterComponent = ClientGlobals.artemis.getComponent(entity, ClientRaster.class);
         rasterComponent.raster = raster;
     }
 
     public void setupCharacter(Entity entity, CharacterGeometry data) {
-        Geometry base = new Geometry(entity.toString(), new Box(0.5f, 1.5f, 0.5f));
-
-        Geometry nose = new Geometry(entity.toString(), new Box(0.5f, 0.5f, 0.7f));
-        nose.setLocalTranslation(0, 2, 0.2f);
-        
         Material mat = material(new ColorRGBA(data.red, data.green, data.blue, data.alpha), true);
-        base.setMaterial(mat);
-        nose.setMaterial(mat);
+
+        Geometry body = new Geometry(entity.toString(), new Box(0.25f, 0.5f, 0.25f));
+        body.setMaterial(mat);
+        body.setLocalTranslation(0.5f, 0.5f, 0.5f);
+
+        Geometry head = new Geometry(entity.toString(), new Box(0.25f, 0.25f, 0.25f));
+        head.setMaterial(mat);
+        head.setLocalTranslation(0.5f, 1.5f, 0.5f);
         
         Node node = createUserNode(entity);
-        node.attachChild(base);
-        node.attachChild(nose);
+        node.attachChild(body);
+        node.attachChild(head);
     }
 
     private Material material(ColorRGBA color, boolean lighting) {
@@ -329,16 +334,18 @@ public class SpatialManager {
 
             Node shipNode = getNode(shipEntity);
             ClientGlobals.sysMovNode.attachChild(shipNode);
+            ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
         }
     }
     
     private void enterShip(Entity shipEntity) {
-        Log.debug(shipEntity.toString());
+        Log.info(shipEntity.toString());
 
         ClientGlobals.shipEntity = shipEntity;
 
         Node shipNode = getNode(shipEntity);
         ClientGlobals.fixedNode.attachChild(shipNode);
+        ((Node) shipNode.getChild("offset")).attachChild(ClientGlobals.playerNode);
     }
 
     public void setupPlayer(final Entity entity) {

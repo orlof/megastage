@@ -25,16 +25,16 @@ public class GravityFieldSystem extends EntitySystem {
     @Mapper ComponentMapper<Position> POSITION;
     @Mapper ComponentMapper<Mass> MASS;
     
-    private ImmutableBag<Entity> gravityFieldEntities;
+    private ImmutableBag<Entity> entitiesWithGravityField;
 
     public GravityFieldSystem() {
         super(Aspect.getAspectForAll(GravityField.class, Position.class, Mass.class));
     }
 
     @Override
-    protected void processEntities(ImmutableBag<Entity> entityImmutableBag) {
-        gravityFieldEntities = entityImmutableBag;
-        Log.debug("Number of Gravity fields: " + gravityFieldEntities.size());
+    protected void processEntities(ImmutableBag<Entity> entities) {
+        entitiesWithGravityField = entities;
+        Log.debug("Number of Gravity fields: " + entitiesWithGravityField.size());
     }
 
     @Override
@@ -46,8 +46,8 @@ public class GravityFieldSystem extends EntitySystem {
         Log.debug("Calculating gravity field in position " + coordinates.toString());
         Vector acc = new Vector();
 
-        for(int i=0; i < gravityFieldEntities.size(); i++) {
-            Entity entity = gravityFieldEntities.get(i);
+        for(int i=0; i < entitiesWithGravityField.size(); i++) {
+            Entity entity = entitiesWithGravityField.get(i);
             
             Position position = POSITION.get(entity);
             Mass mass = MASS.get(entity);
@@ -59,7 +59,7 @@ public class GravityFieldSystem extends EntitySystem {
             double dz = (position.z - coordinates.z) / 1000.0;
             
             double distanceSquared = dx*dx + dy*dy + dz*dz;
-            double gravitationalField = Globals.GRAVITY_G * mass.mass / distanceSquared;
+            double gravitationalField = Globals.G * mass.mass / distanceSquared;
             double distance = Math.sqrt(distanceSquared);
             double multiplier = gravitationalField / distance;
 
