@@ -25,16 +25,16 @@ public class GravityFieldSystem extends EntitySystem {
     @Mapper ComponentMapper<Position> POSITION;
     @Mapper ComponentMapper<Mass> MASS;
     
-    private ImmutableBag<Entity> gravityFieldEntities;
+    private ImmutableBag<Entity> entitiesWithGravityField;
 
     public GravityFieldSystem() {
         super(Aspect.getAspectForAll(GravityField.class, Position.class, Mass.class));
     }
 
     @Override
-    protected void processEntities(ImmutableBag<Entity> entityImmutableBag) {
-        gravityFieldEntities = entityImmutableBag;
-        Log.info("Number of Gravity fields: " + gravityFieldEntities.size());
+    protected void processEntities(ImmutableBag<Entity> entities) {
+        entitiesWithGravityField = entities;
+        Log.debug("Number of Gravity fields: " + entitiesWithGravityField.size());
     }
 
     @Override
@@ -43,42 +43,29 @@ public class GravityFieldSystem extends EntitySystem {
     }
     
     public Vector getGravityField(Position coordinates) {
-        Log.info("Calculating gravity field in position " + coordinates.toString());
+        Log.debug("Calculating gravity field in position " + coordinates.toString());
         Vector acc = new Vector();
 
-        for(int i=0; i < gravityFieldEntities.size(); i++) {
-            Entity entity = gravityFieldEntities.get(i);
+        for(int i=0; i < entitiesWithGravityField.size(); i++) {
+            Entity entity = entitiesWithGravityField.get(i);
             
             Position position = POSITION.get(entity);
             Mass mass = MASS.get(entity);
             
-            Log.info(entity.toString() + " position " + position.toString() + " mass " + mass.toString());
+            Log.debug(entity.toString() + " position " + position.toString() + " mass " + mass.toString());
 
             double dx = (position.x - coordinates.x) / 1000.0;
             double dy = (position.y - coordinates.y) / 1000.0;
             double dz = (position.z - coordinates.z) / 1000.0;
             
-            Log.info("dx: " + dx + ", dy: " + dy + ", dz: " + dz);
-
             double distanceSquared = dx*dx + dy*dy + dz*dz;
-            
-            Log.info("distance squared: " + distanceSquared);
-
-            double gravitationalField = Globals.GRAVITY_G * mass.mass / distanceSquared;
-            
-            Log.info("Gravitational field: " + gravitationalField);
-
+            double gravitationalField = Globals.G * mass.mass / distanceSquared;
             double distance = Math.sqrt(distanceSquared);
-
-            Log.info("Distance: " + distance);
-
             double multiplier = gravitationalField / distance;
-
-            Log.info("Multiplier: " + multiplier);
 
             acc = acc.add(multiplier * dx, multiplier * dy, multiplier * dz);
             
-            Log.info("Acceleration: " + acc.toString());
+            Log.debug("Acceleration: " + acc.toString());
         }
 
         return acc;

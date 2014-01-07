@@ -4,12 +4,17 @@ import com.cubes.CubesSettings;
 import com.cubes.test.CubesTestAssets;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
+import com.jme3.app.state.AppState;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.CameraNode;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.CameraControl.ControlDirection;
+import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
@@ -46,7 +51,7 @@ public class Main extends SimpleApplication {
     private PlanetAppState planetAppState;
     
     public Main() {
-        super(null);
+        super((AppState) null);
     }
     
     @Override
@@ -56,12 +61,13 @@ public class Main extends SimpleApplication {
 
         ClientGlobals.spatialManager = new SpatialManager(this);
         
-        CameraNode camNode = new CameraNode("Camera 1", cam);
+        CameraNode camNode = new CameraNode("main", cam);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         ClientGlobals.playerNode.attachChild(camNode);
+        camNode.setLocalTranslation(0, 1.5f, 0);
         
         ClientGlobals.rootNode = rootNode;
-        cam.setLocation(new Vector3f(16, 6, 60));
+        //cam.setLocation(new Vector3f(16, 6, 60));
 
         ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
         
@@ -90,16 +96,26 @@ public class Main extends SimpleApplication {
         
         ClientGlobals.cubesSettings = new CubesSettings(this);
         ClientGlobals.cubesSettings.setBlockMaterial(CubesTestAssets.getSettings(this).getBlockMaterial());
-        ClientGlobals.cubesSettings.setBlockSize(2);
+        ClientGlobals.cubesSettings.setBlockSize(1);
         CubesTestAssets.registerBlocks();
-     }
+
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Black);
+
+        Geometry body = new Geometry("MARKER", new Box(.1f, .1f, .1f));
+        body.setMaterial(mat);
+        rootNode.attachChild(body);
+}
 
     @Override
     public void simpleUpdate(float tpf) {
         ClientGlobals.time = System.currentTimeMillis() + ClientGlobals.timeDiff;
 
-        Log.trace("Camera coords: " + cam.getLocation().toString());
         if(Log.TRACE) {
+            Log.trace("Camera coords: " + cam.getLocation().toString());
+            Log.trace("Player coords:" + ClientGlobals.playerNode.getLocalTranslation().toString());
+            Log.trace("Parent:" + ClientGlobals.playerNode.getParent().toString());
+            Log.trace("Parent coords:" + ClientGlobals.playerNode.getParent().getLocalTranslation().toString());
             float[] eulerAngles = cam.getRotation().toAngles(null);
             Log.trace("Camera(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
         }

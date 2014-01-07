@@ -15,15 +15,11 @@ import com.jme3.effect.ParticleEmitter;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.LightNode;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
-import com.jme3.scene.shape.Dome;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.texture.Image;
@@ -89,7 +85,10 @@ public class SpatialManager {
     }
     
     public void bindTo(final Entity parentEntity, final Entity childEntity) {
-        final Node parentNode = getNode(parentEntity);
+        Node tmp = getNode(parentEntity);
+        Node main = (Node) tmp.getChild("offset");
+        final Node parentNode = main == null ? tmp: main; 
+        
         final Node childNode = getNode(childEntity);
         app.enqueue(new Callable() {
             @Override
@@ -200,18 +199,32 @@ public class SpatialManager {
     }
     
     public void setupShip(Entity entity, ShipGeometry data) {
-        int chunkSize = data.size / 16 + 1;
-        
-        BlockTerrainControl shipBlockControl = new BlockTerrainControl(ClientGlobals.cubesSettings, new Vector3Int(chunkSize, chunkSize, chunkSize));
-        shipBlockControl.setBlockArea(new Vector3Int(0,0,0), new Vector3Int(data.size, 1, data.size), Block_Wood.class);
+        int chunkSize = data.getChunkSize();
 
-        Node shipNode = new Node("main");
-        shipNode.addControl(shipBlockControl);
+        float cx = 0, cy = 0, cz = 0, bc = 0;
+        
+        BlockTerrainControl blockControl = new BlockTerrainControl(ClientGlobals.cubesSettings, new Vector3Int(chunkSize, chunkSize, chunkSize));
+        for(int x = 0; x <= data.maxx; x++) {
+            for(int y = 0; y <= data.maxy; y++) {
+                for(int z = 0; z <= data.maxz; z++) {
+                    if(data.data[x][y][z]) {
+                        cx += x; cy += y; cz += z; bc++;
+                        blockControl.setBlock(x, y, z, Block_Wood.class);
+                    }
+                }
+            }
+        }
+        
+        cx /= bc; cy /= bc; cz /= bc;
+        cx += 0.5; cy += 0.5; cz += 0.5;
+        
+        Node offset = new Node("offset");
+        offset.addControl(blockControl);
         //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 
         final Node node = createUserNode(entity);
-        node.attachChild(shipNode);
-        shipNode.setLocalTranslation(-data.size, -1, -data.size);
+        node.attachChild(offset);
+        offset.setLocalTranslation(-cx, -cy, -cz);
 
         app.enqueue(new Callable() {
             @Override
@@ -226,18 +239,21 @@ public class SpatialManager {
 
     public void setupEngine(Entity entity, EngineGeometry data) {
         Node engine = createUserNode(entity);
+        Node main = new Node("main");
+        engine.attachChild(main);
+        main.setLocalTranslation(0.5f, 0.5f, 0.5f);
 
-        engine.attachChild(assetManager.loadModel("Scenes/testScene.j3o"));
+        main.attachChild(assetManager.loadModel("Scenes/testScene.j3o"));
 
-        Geometry geom = new Geometry("", new Cylinder(16, 16, 1, 1, true));
+        Geometry geom = new Geometry("", new Cylinder(16, 16, 0.5f, 1, true));
         geom.setMaterial(material(ColorRGBA.Gray, true));
         
-        engine.attachChild(geom);
-        ((ParticleEmitter) engine.getChild("Emitter")).setEnabled(true);
+        main.attachChild(geom);
+        ((ParticleEmitter) main.getChild("Emitter")).setEnabled(true);
     }
     
     public void setupMonitor(Entity entity, MonitorGeometry data) {
-        Geometry geom = new Geometry(entity.toString(), new Quad(8, 6, true));
+        Geometry geom = new Geometry(entity.toString(), new Quad(data.width, data.height, true));
         
         BufferedImage img = new BufferedImage(128, 96, BufferedImage.TYPE_INT_ARGB);
         Image img2 = new AWTLoader().load(img, false);
@@ -250,25 +266,31 @@ public class SpatialManager {
         geom.setMaterial(mat);
         
         Node node = createUserNode(entity);
-        node.attachChild(geom);
+        Node main = new Node("main");
+        node.attachChild(main);
+        main.setLocalTranslation(0.5f, 0.0f, 0.5f);
+        
+        main.attachChild(geom);
+        geom.setLocalTranslation(-0.5f, 0, 0f);
 
         ClientRaster rasterComponent = ClientGlobals.artemis.getComponent(entity, ClientRaster.class);
         rasterComponent.raster = raster;
     }
 
     public void setupCharacter(Entity entity, CharacterGeometry data) {
-        Geometry base = new Geometry(entity.toString(), new Box(0.5f, 1.5f, 0.5f));
-
-        Geometry nose = new Geometry(entity.toString(), new Box(0.5f, 0.5f, 0.7f));
-        nose.setLocalTranslation(0, 2, 0.2f);
-        
         Material mat = material(new ColorRGBA(data.red, data.green, data.blue, data.alpha), true);
-        base.setMaterial(mat);
-        nose.setMaterial(mat);
+
+        Geometry body = new Geometry(entity.toString(), new Box(0.25f, 0.5f, 0.25f));
+        body.setMaterial(mat);
+        body.setLocalTranslation(0.5f, 0.5f, 0.5f);
+
+        Geometry head = new Geometry(entity.toString(), new Box(0.25f, 0.25f, 0.25f));
+        head.setMaterial(mat);
+        head.setLocalTranslation(0.5f, 1.5f, 0.5f);
         
         Node node = createUserNode(entity);
-        node.attachChild(base);
-        node.attachChild(nose);
+        node.attachChild(body);
+        node.attachChild(head);
     }
 
     private Material material(ColorRGBA color, boolean lighting) {
@@ -312,16 +334,18 @@ public class SpatialManager {
 
             Node shipNode = getNode(shipEntity);
             ClientGlobals.sysMovNode.attachChild(shipNode);
+            ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
         }
     }
     
     private void enterShip(Entity shipEntity) {
-        Log.debug(shipEntity.toString());
+        Log.info(shipEntity.toString());
 
         ClientGlobals.shipEntity = shipEntity;
 
         Node shipNode = getNode(shipEntity);
         ClientGlobals.fixedNode.attachChild(shipNode);
+        ((Node) shipNode.getChild("offset")).attachChild(ClientGlobals.playerNode);
     }
 
     public void setupPlayer(final Entity entity) {
