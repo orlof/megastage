@@ -99,9 +99,9 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         SpawnPoint sp = ship.getComponent(SpawnPoint.class);
         
         Position pos = connection.player.getComponent(Position.class);
-        pos.x = 2000 * sp.x;
-        pos.y = 2000 * sp.y;
-        pos.z = 2000 * sp.z;
+        pos.x = 1000 * sp.x;
+        pos.y = 1000 * sp.y;
+        pos.z = 1000 * sp.z;
         
         connection.sendTCP(new LoginResponse(connection.player.getId()));
 
