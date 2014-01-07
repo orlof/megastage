@@ -1,0 +1,34 @@
+
+   \\ TALON NAVIGATION //
+   "walk among the stars"
+
+
+DCPU-16 Hardware Info:
+    Name: Pulsar Positioning System (navigator)
+    ID: 0xcb4c0cb7
+    Version: 0x6509
+    Manufacturer: 0x91a2b24c (TALON NAVIGATION SYSTEMS)
+
+Description:
+    PPS can determine it's position using signals from x-ray pulsars.
+
+Interrupt behavior:
+    When a HWI is received by the PPS, it reads the A register and does one
+    of the following actions:
+    
+    0: MEM_DUMP_POSITION
+       Reads the B register, and writes the current position data to DCPU-16 ram
+       starting at address B.
+       Halts the DCPU-16 for 16 cycles
+
+Position data:
+    INT64: x-coordinate (mm)
+    INT64: y-coordinate (mm)
+    INT64: z-coordinate (mm)
+    INT64: current time (ms)
+
+
+======================= WARNING WARNING WARNING WARNING ========================    
+                     USE OF PPS JAMMING DEVICES IS ILLEGAL!
+======================= WARNING WARNING WARNING WARNING ======================== 
+

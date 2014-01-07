@@ -128,6 +128,8 @@ public class CommandHandler implements AnalogListener, ActionListener {
         if (!enabled)
             return;
         
+        if(ClientGlobals.playerEntity == null) return;
+        
         switch (name) {
             case "WALK_LookLeft":
                 lookLeft(value);

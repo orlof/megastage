@@ -52,7 +52,7 @@ public class ClientOrbitalMovementSystem extends EntityProcessingSystem {
         position.x = Math.round(localSum.x) + fixedStar.x;
         position.y = fixedStar.y;
         position.z = Math.round(localSum.z) + fixedStar.z;
-        Log.info(position.toString());
+        //Log.info(position.toString());
     }
 
     private boolean isInFixedPosition(Entity center) {

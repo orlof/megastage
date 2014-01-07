@@ -1,0 +1,35 @@
+DCPU-16 Hardware Info:
+    Name: Model S8 Manouver Drive (engine)
+    ID: 0xa8fb6730
+    Version: 0xad3c
+    Manufacturer: 0xe1e0bd31 (GENERAL DRIVES)
+
+Description:
+    Ships move through ordinary space using maneuver drives. Power for the S8MD
+    is provided by the ship's power plant.
+
+    S8MD feds hydrogen fuel into the ignition chamber and uses lasers to trigger
+    a thermonuclear explosion to push the ship forward.
+
+    Engine's power intake in safe operation area is from 0 to 992MW. Engine
+    thrust is logarithmically proportional to the input power. Manufacturer's
+    test data is available in separate data sheet.
+
+    Engine is equipped with safety mechinism to prevent uncontrolled chain
+    reaction in ignition chamber.
+
+Interrupt behavior:
+    When a HWI is received by the S8MD, it reads the A register and does one
+    of the following actions:
+    
+    0: SET_POWER_LEVEL
+       Reads the B register and sets the engine's power intake to B / 66.0 MW.
+       If B is 0 or insufficient power is available, the safety circuit will
+       immediately shutdown the engine. Powering the engine from shutdown
+       state takes 20 to 60 seconds.
+
+    1: REQUEST_IDENTIFICATION
+       Engine's identification number is set to B register. Unique ID-number for
+       each engine is defined by shipyard and each engine's location and thrust
+       direction can be validated from ship owner's manual.
+

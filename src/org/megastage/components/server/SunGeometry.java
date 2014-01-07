@@ -10,6 +10,7 @@ import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
 import org.megastage.util.ClientGlobals;
+import org.megastage.util.Globals;
 
 
     
@@ -24,8 +25,8 @@ public class SunGeometry extends EntityComponent {
 
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {
-        radius = getFloatValue(element, "radius", 10.0f);
-        lightRadius = getFloatValue(element, "light_radius", 2000000.0f);
+        radius = (float) (getFloatValue(element, "radius", 10.0f));
+        lightRadius = (float) (getFloatValue(element, "light_radius", 2000000.0f));
         red = getFloatValue(element, "red", 1.0f); 
         green = getFloatValue(element, "green", 1.0f); 
         blue = getFloatValue(element, "blue", 1.0f); 

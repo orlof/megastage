@@ -26,12 +26,11 @@ public class GravityAccelerationSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity entity) {
-        Log.info("Calculating gravity for " + entity.toString());
         Position position = POSITION.get(entity);
         Acceleration acceleration = ACCELERATION.get(entity);
 
         Vector gravityField = gravityFieldSystem.getGravityField(position);
-        Log.info("Total gravity field for " + entity.toString() + " is " + gravityField.toString());
+        Log.debug(entity.toString() + " in gravity field " + gravityField.toString());
         acceleration.add(gravityField);
     }
 }

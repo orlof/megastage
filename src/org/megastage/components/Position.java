@@ -17,6 +17,10 @@ import org.megastage.util.Vector;
  */
 public class Position extends EntityComponent {
     public long x, y, z;
+    
+    public Position() {
+        super();
+    }
 
     @Override
     public void init(World world, Entity parent, Element element) throws DataConversionException {
