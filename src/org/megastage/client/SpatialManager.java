@@ -33,6 +33,7 @@ import jmeplanet.FractalDataSource;
 import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
+import org.megastage.client.controls.EngineControl;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RotationControl;
 import org.megastage.components.EngineData;
@@ -244,13 +245,15 @@ public class SpatialManager {
         engine.attachChild(main);
         main.setLocalTranslation(0.5f, 0.5f, 0.5f);
 
-        main.attachChild(assetManager.loadModel("Scenes/testScene.j3o"));
+        Node burn = (Node) assetManager.loadModel("Scenes/testScene.j3o"); 
+        ParticleEmitter emitter = (ParticleEmitter) burn.getChild("Emitter");
+        emitter.addControl(new EngineControl(entity));
+        main.attachChild(burn);
 
         Geometry geom = new Geometry("", new Cylinder(16, 16, 0.5f, 1, true));
         geom.setMaterial(material(ColorRGBA.Gray, true));
         
         main.attachChild(geom);
-        ((ParticleEmitter) main.getChild("Emitter")).setEnabled(true);
     }
     
     public void setupMonitor(Entity entity, MonitorGeometry data) {
@@ -339,24 +342,6 @@ public class SpatialManager {
         }
     }
 
-    public void updateEngine(Entity engineEntity, EngineData data) {
-        Node engineNode = getNode(engineEntity);
-        Node main = (Node) engineNode.getChild("main");
-        ParticleEmitter emitter = ((ParticleEmitter) main.getChild("Emitter"));
-        if(data.power == 0) {
-            emitter.setEnabled(false);
-        } else {
-            emitter.setEnabled(true);
-            float high = (float) (0.1 + 0.9 * data.power / Character.MAX_VALUE);
-            float low = (float) (0.05 + 0.095 * data.power / Character.MAX_VALUE);
-            emitter.setHighLife(high);
-            emitter.setLowLife(low);
-            emitter.setStartSize(low);
-            emitter.setEndSize(high);
-        }
-        
-    }
-    
     private void enterShip(Entity shipEntity) {
         Log.info(shipEntity.toString());
 

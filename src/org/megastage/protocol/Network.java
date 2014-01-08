@@ -5,6 +5,7 @@ import com.artemis.utils.Bag;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
+import org.megastage.components.EngineData;
 import org.megastage.components.EntityComponent;
 import org.megastage.components.Mass;
 import org.megastage.components.MonitorData;
@@ -54,6 +55,7 @@ public class Network {
         kryo.register(Bag.class);
         kryo.register(Mass.class);
         kryo.register(MonitorData.class);
+        kryo.register(EngineData.class);
         kryo.register(Orbit.class);
         kryo.register(FixedRotation.class);
         kryo.register(Position.class);
