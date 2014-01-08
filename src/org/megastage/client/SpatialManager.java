@@ -35,6 +35,7 @@ import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RotationControl;
+import org.megastage.components.EngineData;
 import org.megastage.components.client.ClientRaster;
 import org.megastage.components.server.MonitorGeometry;
 import org.megastage.components.server.PlanetGeometry;
@@ -336,6 +337,24 @@ public class SpatialManager {
             ClientGlobals.sysMovNode.attachChild(shipNode);
             ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
         }
+    }
+
+    public void updateEngine(Entity engineEntity, EngineData data) {
+        Node engineNode = getNode(engineEntity);
+        Node main = (Node) engineNode.getChild("main");
+        ParticleEmitter emitter = ((ParticleEmitter) main.getChild("Emitter"));
+        if(data.power == 0) {
+            emitter.setEnabled(false);
+        } else {
+            emitter.setEnabled(true);
+            float high = (float) (0.1 + 0.9 * data.power / Character.MAX_VALUE);
+            float low = (float) (0.05 + 0.095 * data.power / Character.MAX_VALUE);
+            emitter.setHighLife(high);
+            emitter.setLowLife(low);
+            emitter.setStartSize(low);
+            emitter.setEndSize(high);
+        }
+        
     }
     
     private void enterShip(Entity shipEntity) {

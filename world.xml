@@ -238,10 +238,11 @@
                 <group name="keyboard"/>
             </entity>
             <entity name="Engine">
-                <component type="dcpu.Engine" x="0" y="0" z="-10"/>
+                <component type="dcpu.Engine" x="0" y="0" z="-1" max_power="10000"/>
                 <component type="Position" x="3" y="2" z="0"/>
                 <component type="server.EngineGeometry"/>
                 <component type="server.BindTo"/>
+                <component type="server.Update"/>
                 <component type="Rotation" x="0" y="180" z="0"/>
                 <group name="initialization"/>
             </entity>

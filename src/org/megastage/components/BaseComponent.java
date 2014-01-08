@@ -71,7 +71,7 @@ public abstract class BaseComponent extends Component {
 
         if(attr != null) {
             String val = attr.getValue();
-            if(val.endsWith("km")) {
+            if(val.endsWith("km") || val.endsWith("kg")) {
                 val = val.substring(0, val.length()-2);
                 return 1000.0f * Double.parseDouble(val);
             }
@@ -86,7 +86,7 @@ public abstract class BaseComponent extends Component {
 
         if(attr != null) {
             String val = attr.getValue();
-            if(val.endsWith("km")) {
+            if(val.endsWith("km") || val.endsWith("kg")) {
                 val = val.substring(0, val.length()-2);
                 return 1000.0f * Float.parseFloat(val);
             }
