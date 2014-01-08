@@ -76,6 +76,20 @@ public class Vector {
     public Vector divide(double scalar) {
         return new Vector(x / scalar, y / scalar, z / scalar);
     }
+    
+    public double dot(Vector v){
+        return x * v.x + y * v.y + z * v.z;
+    }
+ 
+    public Vector cross(Vector v){
+        return new Vector(
+            y * v.z - z * v.y,
+            z * v.x - x * v.z,
+            x * v.y - y * v.x
+        );
+    }
+ 
+
 }
 
 class Ship {

@@ -30,9 +30,20 @@ Interrupt behavior:
        immediately shutdown the engine. Powering the engine from shutdown
        state takes 20 to 60 seconds.
 
-    1: GET_IMPULSE_VECTOR
+    1: GET_STATUS
+       Engine's current status is set to B register and engine power level to C
+       register.
+
+    2: GET_IMPULSE_VECTOR
        Engine's impulse direction vector is set to B register. Vector has the
        format: 0000xxxxyyyyzzzz
 
        Each of the cartesian component is in two's complement format.
 
+    .--------------.
+----! STATUS CODES !------------------------------------------------------------
+    '--------------'
+  
+0x0000 STATE_NO_POWER   Engine is shutdown.
+0x0001 STATE_POWER_UP   Engine is starting.
+0x0002 STATE_POWER      Engine is working.

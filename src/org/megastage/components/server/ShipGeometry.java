@@ -7,9 +7,7 @@ package org.megastage.components.server;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
 import org.megastage.util.ClientGlobals;
@@ -21,10 +19,14 @@ import org.megastage.util.ClientGlobals;
  * @author Orlof
  */
 public class ShipGeometry extends EntityComponent {
+    public float xCenter, yCenter, zCenter;
+    
     @Override
     public void init(World world, Entity parent, Element element) throws Exception {
         List<Element> yList = element.getChildren("y");
         int y = yList.size();
+
+        float blockCount = 0;
         
         for(Element yElem: yList) {
             y--;
@@ -37,10 +39,15 @@ public class ShipGeometry extends EntityComponent {
                 for(int x=0; x < xString.length(); x++) {
                     if(xString.charAt(x) == '#') {
                         set(x, y, z);
+                        xCenter += x; yCenter += y; zCenter += z; blockCount++;
                     }
                 }
             }
         }
+
+        // calculate center of mass (for rotation)
+        xCenter /= blockCount; yCenter /= blockCount; zCenter /= blockCount;
+        xCenter += 0.5; yCenter += 0.5; zCenter += 0.5;
         
     }
 
