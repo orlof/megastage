@@ -48,10 +48,12 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
                     int charValue = dat & 0x7F;
                     int charOffsetInFontMemory = charValue * 2;
 
-                    int colorForeground = videoMemory.paletteMemRam[dat >> 12];
-                    int colorBackground = videoMemory.paletteMemRam[dat >> 8 & 0xF];
+                    //int colorForeground = videoMemory.paletteMemRam[dat >> 12];
+                    //int colorBackground = videoMemory.paletteMemRam[dat >> 8 & 0xF];
+                    ColorRGBA colorForeground = videoMemory.colors[dat >> 12];
+                    ColorRGBA colorBackground = videoMemory.colors[dat >> 8 & 0xF];
 
-                    if (blink && ((dat & 0x80) > 0)) {
+                    if (ClientGlobals.gfxQuality.ENABLE_LEM_BLINKING && blink && ((dat & 0x80) > 0)) {
                         colorForeground = colorBackground;
                     }
 
@@ -66,13 +68,11 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
                         */
                         int bits = videoMemory.fontMemRam[charOffsetInFontMemory + (x >> 1)] >> (x + 1 & 0x1) * 8 & 0xFF;
                         for (int y = 0; y < 8; y++) {
-                            int bit = (bits >> y & 0x1) == 1 ? colorForeground: colorBackground;
+                            ColorRGBA color = (bits >> y & 0x1) == 1 ? colorForeground: colorBackground;
                             //view.pixels[(pixelOffs + x + y * 128)] = bit;
                             //TODO optimize
-                            ColorRGBA c = new ColorRGBA();
-                            c.fromIntARGB(bit);
                             //c.fromIntARGB(0x33555555);
-                            rasterComponent.raster.setPixel(col*4+x, row*8+y, c);
+                            rasterComponent.raster.setPixel(col*4+x, row*8+y, color);
                         }
                     }
                 }

@@ -14,7 +14,7 @@ import org.megastage.util.Vector;
 
 public class Engine extends DCPUHardware {
     public static final char STATUS_OFF = 0;
-    public static final char STATUS_STARTING = 1;
+    public static final char STATUS_WARMUP = 1;
     public static final char STATUS_ON = 2;
     
     public int x, y, z;
@@ -53,7 +53,7 @@ public class Engine extends DCPUHardware {
                 ignitionCompleted = 0;
             } else {
                 if(status == STATUS_OFF) {
-                    status = STATUS_STARTING;
+                    status = STATUS_WARMUP;
                     ignitionCompleted = getIgnitionTime();
                 }
             }

@@ -2,6 +2,7 @@ package org.megastage.components.client;
 
 import com.artemis.Component;
 import com.esotericsoftware.minlog.Log;
+import com.jme3.math.ColorRGBA;
 import org.megastage.components.MonitorData;
 
 /**
@@ -16,7 +17,8 @@ public class ClientVideoMemory extends Component {
 
     public char[] screenMemRam = new char[384];
     public char[] fontMemRam = new char[256];
-    public int[] paletteMemRam = new int[16];
+    //public int[] paletteMemRam = new int[16];
+    public ColorRGBA[] colors = new ColorRGBA[16];
 
     public boolean blink = false;
     public boolean isDirty = false;
@@ -27,7 +29,12 @@ public class ClientVideoMemory extends Component {
             int b = (ch & 0xF) * 17;
             int g = (ch >> 4 & 0xF) * 17;
             int r = (ch >> 8 & 0xF) * 17;
-            paletteMemRam[i] = (0xFF000000 | r << 16 | g << 8 | b);
+            // paletteMemRam[i] = (0xFF000000 | r << 16 | g << 8 | b);
+
+            int argb = (0xFF000000 | r << 16 | g << 8 | b);
+            colors[i] = new ColorRGBA();
+            colors[i].fromIntARGB(argb);
+
         }
         isDirty = true;
     }
