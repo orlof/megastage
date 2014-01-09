@@ -215,9 +215,9 @@
         </component>
         <component type="SpawnPoint"  x="3" y="1" z="4"/>
         <component type="server.Update"/>
-        <!--component type="Velocity" x="0" y="0" z="0"/>
+        <component type="Velocity"/>
         <component type="Acceleration"/>
-        <component type="Mass" radius_km="0.02" mass_kg="1000000"/-->
+        <component type="Mass" mass="1e6"/>
         <entity name="DCPU">
             <group name="initialization"/>
             <component type="server.VoidGeometry"/>
@@ -238,7 +238,7 @@
                 <group name="keyboard"/>
             </entity>
             <entity name="Engine">
-                <component type="dcpu.Engine" x="0" y="0" z="-1" max_power="10000"/>
+                <component type="dcpu.Engine" x="0" y="0" z="-1" max_power="1e9"/>
                 <component type="Position" x="3" y="2" z="0"/>
                 <component type="server.EngineGeometry"/>
                 <component type="server.BindTo"/>

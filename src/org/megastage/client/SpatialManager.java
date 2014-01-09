@@ -248,6 +248,7 @@ public class SpatialManager {
         Node burn = (Node) assetManager.loadModel("Scenes/testScene.j3o"); 
         ParticleEmitter emitter = (ParticleEmitter) burn.getChild("Emitter");
         emitter.addControl(new EngineControl(entity));
+        emitter.setEnabled(true);
         main.attachChild(burn);
 
         Geometry geom = new Geometry("", new Cylinder(16, 16, 0.5f, 1, true));

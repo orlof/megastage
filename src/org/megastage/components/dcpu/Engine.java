@@ -48,25 +48,31 @@ public class Engine extends DCPUHardware {
         Log.debug("a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
 
         if (a == 0) {
-            powerTarget = dcpu.registers[1];
-            if(powerTarget == 0) {
-                ignitionCompleted = 0;
-            } else {
-                if(status == STATUS_OFF) {
-                    status = STATUS_WARMUP;
-                    ignitionCompleted = getIgnitionTime();
-                }
-            }
+
+            setPowerTarget(dcpu.registers[1]);
         } else if (a == 1) {
+            
             dcpu.registers[2] = powerActual;
             dcpu.registers[1] = status;
-
         } else if (a == 2) {
+            
             char dir = (char) ((x << 8) | (y << 4) | z);
             dcpu.registers[1] = dir;
         }
     }
 
+    public void setPowerTarget(char power) {
+        powerTarget = power;
+        if(powerTarget == 0) {
+            ignitionCompleted = 0;
+        } else {
+            if(status == STATUS_OFF) {
+                status = STATUS_WARMUP;
+                ignitionCompleted = getIgnitionTime();
+            }
+        }
+    }
+    
     public double getPowerLevel() {
         if(powerTarget != powerActual && ServerGlobals.time >= ignitionCompleted) {
             powerActual = powerTarget;
@@ -77,12 +83,12 @@ public class Engine extends DCPUHardware {
     }
 
     public Vector getAcceleration(double shipMass) {
-        double mult = -1.0 * maxForce * getPowerLevel() / shipMass;
+        double mult = maxForce * getPowerLevel() / shipMass;
         return new Vector(x * mult, y * mult, z * mult);
     }
 
     public boolean isActive() {
-        return status == STATUS_ON;
+        return status != STATUS_OFF;
     }
 
     public Vector getForceVector() {
@@ -91,7 +97,8 @@ public class Engine extends DCPUHardware {
     }
 
     private long getIgnitionTime() {
-        return random.nextInt(40000) + 20000 + ServerGlobals.time;
+        return 0;
+        // return random.nextInt(40000) + 20000 + ServerGlobals.time;
     }
 
     private static Random random = new Random();
