@@ -7,14 +7,10 @@ package org.megastage.client.controls;
 import com.artemis.Entity;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.effect.ParticleEmitter;
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.EngineData;
-import org.megastage.components.Position;
-import org.megastage.util.ClientGlobals;
 
 /**
  *
@@ -22,6 +18,8 @@ import org.megastage.util.ClientGlobals;
  */
 public class EngineControl extends AbstractControl {
     private final Entity entity;
+    
+    private int power = -1;
 
     public EngineControl(Entity entity) {
         this.entity = entity;
@@ -31,17 +29,23 @@ public class EngineControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         EngineData data = entity.getComponent(EngineData.class);
-        if(data != null) {
-            if(data.power == 0) {
-                ((ParticleEmitter) spatial).setEnabled(false);
+        if(data != null && power != data.power) {
+            ParticleEmitter emitter = (ParticleEmitter) spatial;
+
+            power = data.power;
+
+            if(power == 0) {
+                emitter.emitAllParticles();
+                emitter.setParticlesPerSec(0);
             } else {
-                ((ParticleEmitter) spatial).setEnabled(true);
-                float high = (float) (0.1 + 0.9 * data.power / Character.MAX_VALUE);
-                float low = (float) (0.05 + 0.095 * data.power / Character.MAX_VALUE);
-                ((ParticleEmitter) spatial).setHighLife(high);
-                ((ParticleEmitter) spatial).setLowLife(low);
-                ((ParticleEmitter) spatial).setStartSize(low);
-                ((ParticleEmitter) spatial).setEndSize(high);
+                emitter.setParticlesPerSec(150);
+                float high = (float) (0.1 + 0.9 * power / Character.MAX_VALUE);
+                float low = (float) (0.05 + 0.095 * power / Character.MAX_VALUE);
+                
+                emitter.setHighLife(high);
+                emitter.setLowLife(low);
+                emitter.setStartSize(low);
+                emitter.setEndSize(high);
             }
         }
     }

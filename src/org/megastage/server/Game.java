@@ -28,13 +28,14 @@ public class Game {
         world.setManager(new TagManager());
         world.setManager(new TemplateManager());
 
+        world.setSystem(new ServerEngineTestSystem(5000));
         world.setSystem(new ServerCleanupSystem(500));
         world.setSystem(new ServerUpdateSystem(20));
         world.setSystem(new ServerNetworkSystem());
 
         world.setSystem(new OrbitalMovementSystem());
 
-        //world.setSystem(new EngineAccelerationSystem());
+        world.setSystem(new EngineAccelerationSystem());
         world.setSystem(new GravityFieldSystem());
         world.setSystem(new GravityAccelerationSystem());
 
