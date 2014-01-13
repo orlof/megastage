@@ -5,6 +5,7 @@ import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.MonitorData;
 import org.megastage.protocol.Network.EntityData;
 import org.megastage.systems.ServerNetworkSystem;
@@ -13,12 +14,14 @@ public class VirtualMonitor extends DCPUHardware {
     public MonitorData data = new MonitorData();
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_LEM;
         revision = 0x1802;
         manufactorer = MANUFACTORER_NYA_ELEKTRISKA;
 
         super.init(world, parent, element);
+        
+        return null;
     }
     
     @Override

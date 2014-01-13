@@ -18,10 +18,12 @@ public class SpawnPoint extends EntityComponent {
     public int x, y, z;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         x = getIntegerValue(element, "x", 0);
         y = getIntegerValue(element, "y", 0);
         z = getIntegerValue(element, "z", 0);
+        
+        return null;
     }
 
     public Vector3f getAsVector() {

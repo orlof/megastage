@@ -6,6 +6,7 @@ import com.esotericsoftware.minlog.Log;
 import java.util.Random;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.EngineData;
 import org.megastage.components.MonitorData;
 import org.megastage.protocol.Network;
@@ -28,7 +29,7 @@ public class Engine extends DCPUHardware {
     private long ignitionCompleted = 0;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_ENGINE;
         revision = 0xad3c;
         manufactorer = MANUFACTORER_GENERAL_DRIVES;
@@ -40,6 +41,8 @@ public class Engine extends DCPUHardware {
         z = getIntegerValue(element, "z", -1) & 0xf;
         
         maxForce = getDoubleValue(element, "max_power", 10000.0);
+        
+        return null;
     }
 
     public void interrupt() {

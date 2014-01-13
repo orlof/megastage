@@ -5,6 +5,7 @@ import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 
 public class VirtualKeyboard extends DCPUHardware {
     public static final int KEY_BACKSPACE = 16;
@@ -26,7 +27,7 @@ public class VirtualKeyboard extends DCPUHardware {
     public boolean doInterrupt;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_KEYBOARD;
         revision = 0x1337;
         manufactorer = MANUFACTORER_MACKAPAR;
@@ -34,6 +35,8 @@ public class VirtualKeyboard extends DCPUHardware {
         super.init(world, parent, element);
 
         this.keyMapping = new AWTKeyMapping(true);
+        
+        return null;
     }
 
     public void keyTyped(int key) {

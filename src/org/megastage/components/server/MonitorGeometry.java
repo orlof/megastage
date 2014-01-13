@@ -8,6 +8,7 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.EntityComponent;
 import org.megastage.util.ClientGlobals;
 
@@ -21,9 +22,11 @@ public class MonitorGeometry extends EntityComponent {
     public float width, height;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws Exception {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
         width = getFloatValue(element, "width", 3.0f);
         height = getFloatValue(element, "height", 2.0f);
+        
+        return null;
     }
 
     @Override

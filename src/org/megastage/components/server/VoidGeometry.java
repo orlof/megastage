@@ -22,10 +22,6 @@ import org.megastage.util.ClientGlobals;
 public class VoidGeometry extends EntityComponent {
 
     @Override
-    public void init(World world, Entity parent, Element element) throws Exception {
-    }
-
-    @Override
     public void receive(Connection pc, Entity entity) {
         ClientGlobals.spatialManager.setupVoidNode(entity, this);
     }

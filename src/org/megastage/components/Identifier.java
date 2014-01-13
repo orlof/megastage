@@ -13,8 +13,10 @@ import org.jdom2.Element;
  */
 public class Identifier extends BaseComponent {
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         name = element.getAttributeValue("name");
+        
+        return null;
     }
     
     public String name;

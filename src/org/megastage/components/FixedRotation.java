@@ -17,13 +17,15 @@ public class FixedRotation extends EntityComponent {
     public double period_x, period_y, period_z;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         period_x = 3600.0 * getDoubleValue(element, "period_x", 0.0);
         speed_x = period_x == 0.0 ? 0.0: ((2.0 * Math.PI) / (1000.0 * period_x));
         period_y = 3600.0 * getDoubleValue(element, "period_y", 0.0);
         speed_y = period_y == 0.0 ? 0.0: ((2.0 * Math.PI) / (1000.0 * period_y));
         period_z = 3600.0 * getDoubleValue(element, "period_z", 0.0);
         speed_z = period_z == 0.0 ? 0.0: ((2.0 * Math.PI) / (1000.0 * period_z));
+        
+        return null;
     }
 
     public double getX(long time) {

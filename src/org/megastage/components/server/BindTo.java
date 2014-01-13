@@ -8,6 +8,7 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.EntityComponent;
 import org.megastage.protocol.Network;
 import org.megastage.util.ClientGlobals;
@@ -20,8 +21,10 @@ public class BindTo extends EntityComponent {
     public int parent; 
     
     @Override
-    public void init(World world, Entity parent, Element element) throws Exception {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
         this.parent = parent.getId();
+        
+        return null;
     }
 
     @Override

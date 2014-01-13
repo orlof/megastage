@@ -19,10 +19,6 @@ import org.megastage.util.ClientGlobals;
  */
 public class EngineGeometry extends EntityComponent {
     @Override
-    public void init(World world, Entity parent, Element element) throws Exception {
-    }
-
-    @Override
     public void receive(Connection pc, Entity entity) {
         if(entity != ClientGlobals.playerEntity) {
             ClientGlobals.spatialManager.setupEngine(entity, this);

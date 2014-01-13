@@ -13,11 +13,12 @@ import org.jdom2.Element;
  */
 public class Mass extends EntityComponent {
     public double mass;
-    public double inertia;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         mass = getDoubleValue(element, "mass", 0.0);
+        
+        return null;
     }
 
     public String toString() {

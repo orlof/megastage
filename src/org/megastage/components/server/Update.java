@@ -14,7 +14,4 @@ import org.megastage.components.BaseComponent;
  * @author teppo
  */
 public class Update extends BaseComponent {
-    public void init(World world, Entity parent, Element element) throws Exception {
-    }
-    
 }

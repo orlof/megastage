@@ -23,10 +23,12 @@ public class Position extends EntityComponent {
     }
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         x = 1000 * getLongValue(element, "x", 0);
         y = 1000 * getLongValue(element, "y", 0);
         z = 1000 * getLongValue(element, "z", 0);
+        
+        return null;
     }
 
     public boolean isUpdated() {

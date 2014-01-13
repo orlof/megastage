@@ -12,9 +12,6 @@ import org.jdom2.Element;
  * Time: 20:58
  */
 public class GravityField extends BaseComponent {
-    @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {}
-    
     public String toString() {
         return "GravityField()";
     }

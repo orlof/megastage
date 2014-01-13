@@ -9,8 +9,11 @@ import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import java.util.List;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.EntityComponent;
+import org.megastage.components.Mass;
 import org.megastage.util.ClientGlobals;
+import org.megastage.util.Vector;
 
 
     
@@ -20,16 +23,17 @@ import org.megastage.util.ClientGlobals;
  */
 public class ShipGeometry extends EntityComponent {
     public float xCenter, yCenter, zCenter;
+    public long updateTime;
     
     @Override
-    public void init(World world, Entity parent, Element element) throws Exception {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
         List<Element> yList = element.getChildren("y");
-        int y = yList.size();
+        int index = yList.size();
 
         float blockCount = 0;
         
         for(Element yElem: yList) {
-            y--;
+            index--;
 
             List<Element> zList = yElem.getChildren("z");
             for(int z=0; z < zList.size(); z++) {
@@ -38,8 +42,8 @@ public class ShipGeometry extends EntityComponent {
                 String xString = zElem.getText();
                 for(int x=0; x < xString.length(); x++) {
                     if(xString.charAt(x) == '#') {
-                        set(x, y, z);
-                        xCenter += x; yCenter += y; zCenter += z; blockCount++;
+                        set(x, index, z);
+                        xCenter += x; yCenter += index; zCenter += z; blockCount++;
                     }
                 }
             }
@@ -48,9 +52,36 @@ public class ShipGeometry extends EntityComponent {
         // calculate center of mass (for rotation)
         xCenter /= blockCount; yCenter /= blockCount; zCenter /= blockCount;
         xCenter += 0.5; yCenter += 0.5; zCenter += 0.5;
-        
+
+        BaseComponent[] adds = new BaseComponent[1];
+
+        Mass mass = new Mass();
+        mass.mass = 1000 * blockCount;
+        adds[0] = mass;
+
+        return adds;
     }
 
+    public double getInertia(Vector axis) {
+        double xc = xCenter - 0.5;
+        double yc = yCenter - 0.5;
+        double zc = zCenter - 0.5;
+        
+        double inertia = 0;
+        for(int x=0; x < maxx; x++) {
+            for(int y=0; y < maxy; y++) {
+                for(int z=0; z < maxz; z++) {
+                    if(data[x][y][z]) {
+                        Vector point = new Vector(x - xc, y - yc, z - zc);
+                        inertia += 1000.0 * axis.distance(point);
+                    }
+                }
+            }
+        }
+        
+        return inertia;
+    }
+    
     @Override
     public void receive(Connection pc, Entity entity) {
         entity.addComponent(this);
