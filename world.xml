@@ -217,7 +217,7 @@
         <component type="server.Update"/>
         <component type="Velocity"/>
         <component type="Acceleration"/>
-        <component type="Mass" mass="1e6"/>
+        <!--component type="Mass" mass="1e6"/-->
         <entity name="DCPU">
             <group name="initialization"/>
             <component type="server.VoidGeometry"/>
@@ -245,6 +245,10 @@
                 <component type="server.Update"/>
                 <component type="Rotation" x="0" y="180" z="0"/>
                 <group name="initialization"/>
+            </entity>
+            <entity>
+                <component type="dcpu.Gyroscope" x="0" y="0" z="1" torque="50000"/>
+                <component type="server.BindTo"/>
             </entity>
             <!--entity>
                 <component type="dcpu.Engine" x="0" y="0" z="-1"/>

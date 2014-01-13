@@ -13,6 +13,7 @@ import org.megastage.components.BaseComponent;
 import org.megastage.components.EntityComponent;
 import org.megastage.components.Mass;
 import org.megastage.util.ClientGlobals;
+import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector;
 
 
@@ -58,6 +59,8 @@ public class ShipGeometry extends EntityComponent {
         Mass mass = new Mass();
         mass.mass = 1000 * blockCount;
         adds[0] = mass;
+        
+        updateTime = ServerGlobals.time;
 
         return adds;
     }

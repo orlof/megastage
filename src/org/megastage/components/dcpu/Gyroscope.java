@@ -3,17 +3,17 @@ package org.megastage.components.dcpu;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
-import java.util.Random;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.components.EngineData;
 import org.megastage.components.server.ShipGeometry;
-import org.megastage.util.Quaternion;
-import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector;
 
 public class Gyroscope extends DCPUHardware {
+    public static final char STATUS_OFF = 0;
+    public static final char STATUS_ON = 1;
+    public static final char STATUS_NO_POWER = 2;
+
     public Vector axis;
 
     public double maxTorque;
@@ -51,8 +51,13 @@ public class Gyroscope extends DCPUHardware {
 
             setTorque(dcpu.registers[1]);
         } else if (a == 1) {
+            if(power == 0) {
+                dcpu.registers[1] = STATUS_OFF;
+            } else {
+                dcpu.registers[1] = STATUS_ON;
+            }
             
-            dcpu.registers[1] = power;
+            dcpu.registers[2] = power;
         } else if (a == 2) {
             int x = (int) Math.round(axis.x);
             int y = (int) Math.round(axis.y);
@@ -63,9 +68,10 @@ public class Gyroscope extends DCPUHardware {
     }
 
     public void setTorque(char torque) {
+        Log.debug("" + (int) torque);
         power = torque;
 
-        double tmp = torque < 0x8000 ? torque: -2^16 + torque;
+        double tmp = torque < 0x8000 ? torque: torque - (2<<15);
         curTorque = maxTorque * (tmp < 0 ? tmp / 0x8000: tmp / 0x7fff);
     }
     
@@ -77,7 +83,24 @@ public class Gyroscope extends DCPUHardware {
             inertia = geom.getInertia(axis);
         }
         
-        return power / inertia;
+        return curTorque / inertia;
+    }
+    
+    public static void main(String[] args) throws Exception {
+        Gyroscope gyro = new Gyroscope();
+        gyro.maxTorque = 100;
+        
+        gyro.setTorque((char) 0x0000);
+        System.out.println((int) gyro.power);
+        System.out.println(gyro.curTorque);
+    
+        gyro.setTorque((char) 0x7fff);
+        System.out.println((int) gyro.power);
+        System.out.println(gyro.curTorque);
+        
+        gyro.setTorque((char) 0x8000);
+        System.out.println((int) gyro.power);
+        System.out.println(gyro.curTorque);
     }
 
 }
