@@ -45,7 +45,7 @@ public class DCPU extends BaseComponent {
     public int iwp;
 
     @Override
-    public void init(World world, Entity parent, Element element) {
+    public BaseComponent[] init(World world, Entity parent, Element element) {
         this.ship = parent;
         try {
             load(new File("admiral.bin"));
@@ -70,6 +70,8 @@ public class DCPU extends BaseComponent {
 
         startupTime = ServerGlobals.time + 2500;
         nextHardwareTick = ServerGlobals.time + HARDWARE_TICK_INTERVAL;
+        
+        return null;
     }
 
     public void interrupt(char a) {

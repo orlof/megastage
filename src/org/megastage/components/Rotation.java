@@ -18,7 +18,7 @@ public class Rotation extends EntityComponent {
     public double x=0.0, y=0.0, z=0.0, w=1.0;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws Exception {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
         double x = Math.toRadians(getDoubleValue(element, "x", 0.0));
         double y = Math.toRadians(getDoubleValue(element, "y", 0.0));
         double z = Math.toRadians(getDoubleValue(element, "z", 0.0));
@@ -27,6 +27,8 @@ public class Rotation extends EntityComponent {
         q = rotate(q, Vector.UNIT_Z, z);
         q = rotate(q, Vector.UNIT_X, x);
         set(q);
+        
+        return null;
     }
 
     public boolean isUpdated() {

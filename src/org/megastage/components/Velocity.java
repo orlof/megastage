@@ -16,12 +16,14 @@ public class Velocity extends BaseComponent {
     public Vector vector;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         double x = 1000 * getDoubleValue(element, "x", 0);
         double y = 1000 * getDoubleValue(element, "y", 0);
         double z = 1000 * getDoubleValue(element, "z", 0);
         
         vector = new Vector(x, y, z);
+        
+        return null;
     }
 
     public void add(Vector v) {

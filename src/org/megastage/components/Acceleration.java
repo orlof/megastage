@@ -15,10 +15,6 @@ import org.megastage.util.Vector;
 public class Acceleration extends BaseComponent {
     public Vector vector = Vector.ZERO;
 
-    @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
-    }
-
     public void add(Vector v) {
         vector = vector.add(v);
     }

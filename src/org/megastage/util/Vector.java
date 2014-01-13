@@ -1,7 +1,5 @@
 package org.megastage.util;
 
-import java.util.ArrayList;
-
 /**
  * Created with IntelliJ IDEA. User: contko3 Date: 8/14/13 Time: 8:35 AM To
  * change this template use File | Settings | File Templates.
@@ -41,6 +39,10 @@ public class Vector {
 
     public Vector add(Vector v) {
         return new Vector(x + v.x, y + v.y, z + v.z);
+    }
+    
+    public Vector negate() {
+        return new Vector(-x, -y, -z);
     }
 
     public Vector add(double dx, double dy, double dz) {
@@ -89,42 +91,23 @@ public class Vector {
         );
     }
  
-
-}
-
-class Ship {
-
-    Vector position = new Vector();
-    Vector velocity = new Vector();
-    double mass = 1.0d;
-    double momentOfInertia = 1.0d;
-    ArrayList<Gyro> gyros = new ArrayList<Gyro>();
-
-    public Ship() {
-        gyros.add(new Gyro(1.0d, 0.0d, 0.0d)); // Pitch
-        gyros.add(new Gyro(0.0d, 0.0d, 1.0d)); // Roll
+    public double length() {
+        return Math.sqrt(lengthSquared());
+    }
+ 
+    public double lengthSquared() {
+        return x * x + y * y + z * z;
+    }
+    
+    public double distance(Vector point) {
+        Vector numerator = cross(point.negate());
+        return numerator.length() / length();
     }
 
-    public void tick(double dt) {
-        tickGyros(dt);
-
-        position = position.add(velocity);
-    }
-
-    public void tickGyros(double dt) {
-        for (Gyro gyro : gyros) {
-            double angle = dt * gyro.power / momentOfInertia;
-            //heading.rotate(gyro.axis, angle);
-        }
-    }
-}
-
-class Gyro {
-
-    Vector axis;
-    double power = 1.0d;
-
-    Gyro(double x, double y, double z) {
-        axis = new Vector(x, y, z);
+    public static void main(String[] args) throws Exception {
+        Vector v = new Vector(1, 1, 0);
+        Vector p = new Vector(10, 0, 0);
+        
+        System.out.println(v.distance(p));
     }
 }

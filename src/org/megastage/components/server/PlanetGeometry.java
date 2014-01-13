@@ -9,6 +9,7 @@ import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import java.util.concurrent.Callable;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.EntityComponent;
 import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
@@ -26,12 +27,14 @@ public class PlanetGeometry extends EntityComponent {
     public String color;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws Exception {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
         center = parent.getId();
 
         radius = getFloatValue(element, "radius", 10.0f);
         generator = getStringValue(element, "generator", "Earth");
         color = getStringValue(element, "color", "red");
+        
+        return null;
     }
 
     @Override

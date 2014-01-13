@@ -14,8 +14,8 @@ import org.jdom2.Element;
  * Time: 20:11
  */
 public abstract class BaseComponent extends Component {
-    public void init(World world, Entity parent, Element element) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
+        return null;
     }
 
     public Object create(Entity entity) { 

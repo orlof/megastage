@@ -213,12 +213,9 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         shipRotationQuaternion = yRotation.multiply(shipRotationQuaternion).normalize();
         shipRotationQuaternion = zRotation.multiply(shipRotationQuaternion).normalize();
         shipRotationQuaternion = xRotation.multiply(shipRotationQuaternion).normalize();
-        
-        shipRotation.x = shipRotationQuaternion.x;
-        shipRotation.y = shipRotationQuaternion.y;
-        shipRotation.z = shipRotationQuaternion.z;
-        shipRotation.w = shipRotationQuaternion.w;
 
+        shipRotation.set(shipRotationQuaternion);
+        
         //connection.sendUDP(shipRotation.create(ship));
     }
 

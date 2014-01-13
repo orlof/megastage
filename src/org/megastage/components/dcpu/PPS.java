@@ -5,18 +5,21 @@ import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.Position;
 import org.megastage.util.Globals;
 import org.megastage.util.ServerGlobals;
 
 public class PPS extends DCPUHardware {
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_PPS;
         revision = 0x2222;
         manufactorer = MANUFACTORER_TALON_NAVIGATION;
 
         super.init(world, parent, element);
+        
+        return null;
     }
 
     public void interrupt() {
