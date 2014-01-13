@@ -1,49 +1,61 @@
 DCPU-16 Hardware Info:
-    Name: Model S8 Manouver Drive (engine)
-    ID: 0xa8fb6730
-    Version: 0xad3c
+    Name: XL Control Moment Gyroscope (gyroscope)
+    ID: 0xeec6c4de
+    Version: 0xabcd
     Manufacturer: 0xe1e0bd31 (GENERAL DRIVES)
 
 Description:
-    Ships move through ordinary space using maneuver drives. Power for the S8MD
-    is provided by the ship's power plant.
+    Ships use electrically-powered reaction wheels, also called momentum wheels,
+    to control attitude and achieve stabilization. Massive wheels are typically
+    mounted in three orthogonal axes aboard the spacecraft. They provide means 
+    to trade angular momentum back and forth between spacecraft and wheels. To 
+    rotate the vehicle in one direction, you spin up the proper wheel in the 
+    opposite direction. To rotate the vehicle back, you slow down the wheel. 
 
-    S8MD feds hydrogen fuel into the ignition chamber and uses lasers to
-    trigger a thermonuclear explosion to push the ship forward.
+    General Drive's high capacity Control Moment Gyroscope provides highly
+    sophisticated control interface that hides the low level spin speed 
+    momentum management and automatic momentum desaturation manouvers.
 
-    Engine's power intake in safe operation area is from 0 to 992MW. Engine
-    thrust is logarithmically proportional to the input power. Manufacturer's
-    test data is available in separate data sheet.
-
-    Engine is equipped with safety mechanism that protects against power
-    intake failures. Engine's laser ignition system will not trigger the 
-    reaction unless sufficient amount of energy is already reserved for 
-    controlling the reaction energies.
+    Ships computer can simply set the level of torque that will be generated
+    by gyroscope around its axis of installation.
 
 Interrupt behavior:
-    When a HWI is received by the S8MD, it reads the A register and does one
+    When a HWI is received by the XLCMG, it reads the A register and does one
     of the following actions:
     
-    0: SET_POWER_LEVEL
-       Reads the B register and sets the engine's power intake to B / 66.0 MW.
-       If B is 0 or insufficient power is available, the safety circuit will
-       immediately shutdown the engine. Powering the engine from shutdown
-       state takes 20 to 60 seconds.
+    0: SET_TORQUE_LEVEL
+       Reads the B register and sets the CMG to generate torque. Amount of 
+       generated torque depends on B that is interpreted as two's complement
+       signed number.
+       
+       If b > 0 then 50kNm * b / 0x7fff torque is generated
+       If b < 0 then 50kNm * b / 0x7fff torque is generated
+
+       If B is 0 or insufficient power is available, gyroscope will stabilize
+       the ship in respect to it's installation axis.
+
+       When sufficient power is restored torque generation will continue at
+       specified power level.
+
+       Disclaimer: Setting torque to 0xffff is not allowed and may seriously 
+       damage or destroy the CMG. General Drives cannot be held liable 
+       under any circumstances by anyone, directly or indirectly, in any 
+       specific or other way, for damages resulting from the use 0xffff.
 
     1: GET_STATUS
-       Engine's current status is set to B register and engine power level to C
+       CMG's current status is set to B register and torque power level to C
        register.
 
-    2: GET_IMPULSE_VECTOR
-       Engine's impulse direction vector is set to B register. Vector has the
+    2: GET_ROTATION_AXIS
+       Gyroscope's rotation axis vector is set to B register. Vector has the
        format: 0000xxxxyyyyzzzz
 
-       Each of the cartesian component is in two's complement format.
+       Each of the cartesian components are in two's complement format.
 
     .--------------.
 ----! STATUS CODES !------------------------------------------------------------
     '--------------'
   
-0x0000 STATE_NO_POWER   Engine is shutdown.
-0x0001 STATE_POWER_UP   Engine is starting.
-0x0002 STATE_POWER      Engine is working.
+0x0000 STATE_POWER_OFF  Gyroscope is not generating torque
+0x0001 STATE_POWER_ON   Gyroscope is generating torque
+0x0002 STATE_NO_POWER   Gyroscope has insufficient power

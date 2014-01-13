@@ -5,6 +5,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Rotation;
 import org.megastage.components.dcpu.Gyroscope;
 import org.megastage.components.server.ShipGeometry;
@@ -33,6 +34,8 @@ public class AttitudeControlSystem extends EntityProcessingSystem {
         if(gyro.power == 0) return; 
 
         ShipGeometry geom = SHIP_GEOMETRY.get(gyro.ship);
+        if(geom == null) return;
+        
         double angle = gyro.getRotation(geom) * world.delta;
         
         Rotation rotation = ROTATION.get(gyro.ship);
