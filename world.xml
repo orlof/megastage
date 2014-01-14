@@ -238,7 +238,7 @@
                 <group name="keyboard"/>
             </entity>
             <entity name="Engine">
-                <component type="dcpu.Engine" x="0" y="0" z="-1" max_power="1e9"/>
+                <component type="dcpu.Engine" x="0" y="0" z="-1" max_power="1e7"/>
                 <component type="Position" x="3" y="2" z="0"/>
                 <component type="server.EngineGeometry"/>
                 <component type="server.BindTo"/>
@@ -246,30 +246,22 @@
                 <component type="Rotation" x="0" y="180" z="0"/>
                 <group name="initialization"/>
             </entity>
+            <!--entity>
+                <component type="dcpu.Gyroscope" x="0" y="0" z="1" torque="50000"/>
+                <component type="server.BindTo"/>
+            </entity-->
             <entity>
                 <component type="dcpu.Gyroscope" x="0" y="0" z="1" torque="50000"/>
                 <component type="server.BindTo"/>
             </entity>
             <!--entity>
-                <component type="dcpu.Engine" x="0" y="0" z="-1"/>
-                <component type="Rotation"/>
-            </entity>
-            <entity>
+                <component type="dcpu.Gyroscope" x="1" y="0" z="0" torque="50000"/>
+                <component type="server.BindTo"/>
+            </entity-->
+            <!--entity>
                 <component type="dcpu.PPS"/>
             </entity-->
         </entity>
-        <!--entity>
-            <component type="Engine" x="0" y="0" z="-1"/>
-            <component type="SystemBus" address="2"/>
-        </entity>
-        <entity>
-            <component type="Gyroscope" x="1" y="0" z="0"/>
-            <component type="SystemBus" address="3"/>
-        </entity>
-        <entity>
-            <component type="Gyroscope" x="0" y="0" z="1"/>
-            <component type="SystemBus" address="4"/>
-        </entity-->
         <group name="initialization"/>
     </entity-template>
 
