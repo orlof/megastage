@@ -37,10 +37,10 @@ Interrupt behavior:
        When sufficient power is restored torque generation will continue at
        specified power level.
 
-       Disclaimer: Setting torque to 0xffff is not allowed and may seriously 
+       Disclaimer: Setting torque to 0x8000 is not allowed and may seriously 
        damage or destroy the CMG. General Drives cannot be held liable 
        under any circumstances by anyone, directly or indirectly, in any 
-       specific or other way, for damages resulting from the use 0xffff.
+       specific or other way, for damages resulting from the use 0x8000.
 
     1: GET_STATUS
        CMG's current status is set to B register and torque power level to C

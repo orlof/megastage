@@ -62,7 +62,7 @@ public class Gyroscope extends DCPUHardware {
             int x = (int) Math.round(axis.x);
             int y = (int) Math.round(axis.y);
             int z = (int) Math.round(axis.z);
-            char dir = (char) ((x << 8) | (y << 4) | z);
+            char dir = (char) (((x & 0xf) << 8) | ((y & 0xf) << 4) | (z & 0xf));
             dcpu.registers[1] = dir;
         }
     }
@@ -81,6 +81,7 @@ public class Gyroscope extends DCPUHardware {
             //     calculated only for changed block
             inertiaTime = geom.updateTime;
             inertia = geom.getInertia(axis);
+            Log.info("Inertia: " + inertia);
         }
         
         return curTorque / inertia;

@@ -19,11 +19,11 @@ Interrupt behavior:
     of the following actions:
     
     0: GET_SECTOR
-       Write current sector number to register B. Numbers from 0x0000 to
-       0x00ff are reserved for special codes.
-          0x0000       : Unknown sector
-          0x0001       : No known pulsars detected
-          0x0002       : Equipment malfunction
+       Write current sector number to register B. Numbers with msb set (0x8000)
+       are reserved for special codes.
+          0x8000       : Unknown sector
+          0x8001       : No known pulsars detected
+          0x8002       : Equipment malfunction
 
     1: STORE_COORDINATES
        Reads the B register, and writes the current position data to DCPU-16

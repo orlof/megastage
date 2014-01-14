@@ -16,7 +16,7 @@ public class Mass extends EntityComponent {
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        mass = getDoubleValue(element, "mass", 0.0);
+        mass = getDoubleValue(element, "kg", 0.0);
         
         return null;
     }

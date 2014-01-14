@@ -54,5 +54,34 @@ One more thing you can do: Behind you there is a big live DCPU LEM screen. If yo
 
 https://github.com/orlof/dcpu-admiral
 
+If you want to change the boot up software, just replace the admiral.bin with your own DCPU binary before starting the server.
+
 In the future the DCPU boot disk can be freely changed and DCPU will have control to all ship systems including engines, gyroscopes, positioning systems, weapons, radars...
+
+TODO list
+    Free look in DCPU-mode
+    First person physics in ship
+    First person physics in space
+    First person ship entry / leave
+    Use item framework
+    Use item: floppy disk drive
+    Support for all the standard DCPU equipment: floppy, clock...
+    Figure out the final scale for distances and sizes
+    DCPU Gravity detector
+    DCPU Attitude gyroscope
+    DCPU Navigation chip
+    DCPU PPS
+    DCPU Radar
+    Design ship building system
+    Ship damage framework
+    Ship repair framework
+    Energy weapon system framework
+    Energy weapon mode
+    DCPU energy weapon control
+    Doors and windows
+    Planetary landings
+    Replace placeholder graphics with real graphics
+    Add basic sounds
+    Add Ship collisions
+    Add star radiation/heat physics
 

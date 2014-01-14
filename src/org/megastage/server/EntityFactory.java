@@ -33,13 +33,14 @@ public class EntityFactory {
 
                 BaseComponent[] additionalComponents = comp.init(world, parent, e);
                 entity.addComponent(comp);
+                Log.info("Add Component: " + comp.toString());
+
                 if(additionalComponents != null) {
                     for(BaseComponent c: additionalComponents) {
                         entity.addComponent(c);
+                        Log.info("Add Component: " + c.toString());
                     }
                 }
-
-                Log.debug("Add Component: " + comp.toString());
             }
 
             for(Element e: element.getChildren("group")) {

@@ -112,12 +112,12 @@ public class Main extends SimpleApplication {
         ClientGlobals.time = System.currentTimeMillis() + ClientGlobals.timeDiff;
 
         if(Log.TRACE) {
-            Log.trace("Camera coords: " + cam.getLocation().toString());
-            Log.trace("Player coords:" + ClientGlobals.playerNode.getLocalTranslation().toString());
-            Log.trace("Parent:" + ClientGlobals.playerNode.getParent().toString());
-            Log.trace("Parent coords:" + ClientGlobals.playerNode.getParent().getLocalTranslation().toString());
+            Log.info("Camera coords: " + cam.getLocation().toString());
+            Log.info("Player coords:" + ClientGlobals.playerNode.getLocalTranslation().toString());
+            Log.info("Parent:" + ClientGlobals.playerNode.getParent().toString());
+            Log.info("Parent coords:" + ClientGlobals.playerNode.getParent().getLocalTranslation().toString());
             float[] eulerAngles = cam.getRotation().toAngles(null);
-            Log.trace("Camera(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
+            Log.info("Camera(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
         }
         
         // slow camera down as we approach a planet
