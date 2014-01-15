@@ -9,6 +9,7 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
+import org.megastage.util.ClientGlobals;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector;
 
@@ -30,7 +31,7 @@ public class ClientOrbitalMovementSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity entity) {
-        double time = Globals.time / 1000.0d;
+        double time = ClientGlobals.time / 1000.0d;
         
         Orbit orbit = ORBIT.get(entity);
         
@@ -51,7 +52,7 @@ public class ClientOrbitalMovementSystem extends EntityProcessingSystem {
         position.x = Math.round(localSum.x) + fixedStar.x;
         position.y = fixedStar.y;
         position.z = Math.round(localSum.z) + fixedStar.z;
-        Log.info(position.toString());
+        //Log.info(position.toString());
     }
 
     private boolean isInFixedPosition(Entity center) {

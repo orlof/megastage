@@ -1,0 +1,72 @@
+
+<Ender innovations>
+"It's alive! Dear lord almighty, it's alive!"
+
+    Name: NCC-1701 (Navigational computer core)
+    Version: 1701
+    ID: 0x89FE5AE1
+    Manufacturer: 0xE142A1FA (Ender innov.)
+
+About: 
+    The purpose of this device is to take a major load off the dcpu in the 
+    navigational department. This device calculates orbital data and times 
+    using imputed orbital state vector data, and using hardware interrupts, can 
+    give this processed data to the dcpu so the dcpu can focus on using this 
+    data to preform complex automatic orbital maneuvers, basic maneuver 
+    calculation, or just plain displaying the data for the user to pilot with. 
+
+INTERRUPT BEHAVIOR:
+
+    When referring to A, B, C, I, J, X, Y, and Z it is referring to registers in 
+    the dcpu-16.
+
+    Note: If any of the data points below are equal to 0xFFFF or 0xFFFFFFFF 
+    then the data is not available (eccentricity is the exception, 0xFFFF means 
+    a hyperbola). 
+
+    Also the binary format for defining an angle in degrees and minutes is: 
+    [Caaaaaaaaabbbbbb] b=minutes a=degrees C=sign(if needed)
+
+    When a HWI is received by the NCC, it reads the A register and does one
+    of the following actions:
+
+    0 - STORE_ORBITAL_ELEMENTS
+        Takes an [ORBITAL_STATE_VECTOR] starting at B and and calculates 
+        orbital elements based on gravitational data of the current SOI and 
+        returns the following to an 7 word area of ram starting at C. 
+
+        Halts DCPU for 7 cycles.
+
+        Word 0&1 = [INT32] height of apoapsis (100m)
+        Word 2&3 = [INT32] height of periapse (100m)
+        Word 4 = [SPECIAL] eccentricity in 1/1000 16-bit integer
+        Word 5 = [ANGLE] inclination angle
+        Word 6 = [ANGLE] Argument of periapse in angular format.
+
+    1 - STORE_SIMULATED_TIMES
+        Reads the [ORBITAL_STATE_VECTOR] from memory area starting at B and 
+        receives current SOI data directly from Gravity Sensor. Runs the orbit 
+        simulation and estimates following orbit parameters:
+            - the time in seconds to major nodes of the orbit
+            - the current orbital speed 
+            - orbital acceleration
+        Simulation estimates are stored to a 14 word area of ram starting at C. 
+
+        Note: the amount of cycles it takes this device to simulate an orbit 
+        and estimate arrival times is unpredictable as it depends on the orbit.
+
+        Words 0&1 = [INT32] till apoapse (unit s)
+        Words 2&3 = [INT32] till periapse (unit s)
+        Words 4&5 = [INT32] till ascending node (unit s)
+        Words 6&7 = [INT32] till descending node (unit s)
+        Words 8&9 = [INT32] orbital period (unit s)
+        Words 10&11 = [INT32] current orbital speed (unit m/s)
+        Words 12&13 = [INT32] current acceleration (unit m/s2)
+
+    2 - COMPARE_ORBITS
+        Gets two sets of [ORBITAL_STATE_VECTOR] from 24 word area of ram 
+        starting at B and compares their orbits using current SOI as reference 
+        frame. It returns inclination of orbit 1 relative to 2 in A and angle 
+        between periapse 1 and 2 in B. Both are in angular format. This allows 
+        one to compare orbits to plan intercepts and the like.
+

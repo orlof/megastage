@@ -14,12 +14,16 @@ import org.jdom2.Element;
  * Time: 20:11
  */
 public abstract class BaseComponent extends Component {
-    public void init(World world, Entity parent, Element element) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
+        return null;
     }
 
     public Object create(Entity entity) { 
         return null; 
+    }
+
+    public boolean isUpdated() {
+        return false;
     }
     
     protected static String getStringValue(Element config, String attrName, String defaultValue) {
@@ -65,12 +69,13 @@ public abstract class BaseComponent extends Component {
     protected static double getDoubleValue(Element config, String attrName, double defaultValue) {
         Attribute attr = config.getAttribute(attrName);
 
-        try {
-            if(attr != null) {
-                return attr.getDoubleValue();
+        if(attr != null) {
+            String val = attr.getValue();
+            if(val.endsWith("km") || val.endsWith("kg")) {
+                val = val.substring(0, val.length()-2);
+                return 1000.0f * Double.parseDouble(val);
             }
-        } catch (DataConversionException e) {
-            e.printStackTrace();
+            return Double.parseDouble(val);
         }
 
         return defaultValue;
@@ -79,12 +84,13 @@ public abstract class BaseComponent extends Component {
     protected static float getFloatValue(Element config, String attrName, float defaultValue) {
         Attribute attr = config.getAttribute(attrName);
 
-        try {
-            if(attr != null) {
-                return attr.getFloatValue();
+        if(attr != null) {
+            String val = attr.getValue();
+            if(val.endsWith("km") || val.endsWith("kg")) {
+                val = val.substring(0, val.length()-2);
+                return 1000.0f * Float.parseFloat(val);
             }
-        } catch (DataConversionException e) {
-            e.printStackTrace();
+            return Float.parseFloat(val);
         }
 
         return defaultValue;

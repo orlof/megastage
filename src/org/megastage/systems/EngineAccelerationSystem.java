@@ -5,10 +5,10 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Acceleration;
 import org.megastage.components.Mass;
 import org.megastage.components.Rotation;
-import org.megastage.components.GravityAcceleration;
 import org.megastage.components.dcpu.Engine;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector;
@@ -35,18 +35,22 @@ public class EngineAccelerationSystem extends EntityProcessingSystem {
         Engine engine = ENGINE.get(entity);
 
         if(engine.isActive()) {
-            Vector force = engine.getForce();
+            Mass mass = MASS.get(engine.ship);
+            if(mass == null) return;
 
-            double shipMass = MASS.get(engine.ship).mass;
-            Vector acceleration = force.divide(shipMass);
-
+            double shipMass = mass.mass;
+            Vector acc = engine.getAcceleration(shipMass);
+            
             // rotate acceleration into global coordinate system
-            // Quaternion orientation = ROTATION.get(entity).getOrientation();
+            Rotation rotation = ROTATION.get(engine.ship);
+            if(rotation != null) {
+                Quaternion shipRot = rotation.getQuaternion();
 
-            // convert speed change from local to global -space
-            //Vector globalAcceleration = acceleration.multiply(orientation);
+                // convert speed change from local to global -space
+                acc = acc.multiply(shipRot);
+            }
 
-            //ACCELERATION.get(engine.ship).add(globalAcceleration);
+            ACCELERATION.get(engine.ship).add(acc);
         }
     }
 }

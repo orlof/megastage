@@ -5,17 +5,21 @@ import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.Position;
 import org.megastage.util.Globals;
+import org.megastage.util.ServerGlobals;
 
 public class PPS extends DCPUHardware {
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_PPS;
         revision = 0x2222;
         manufactorer = MANUFACTORER_TALON_NAVIGATION;
 
         super.init(world, parent, element);
+        
+        return null;
     }
 
     public void interrupt() {
@@ -42,10 +46,10 @@ public class PPS extends DCPUHardware {
             dcpu.ram[b++ & 0xffff] = (char) (position.z >> 16 & 0xffff);
             dcpu.ram[b++ & 0xffff] = (char) (position.z >> 00 & 0xffff);
 
-            dcpu.ram[b++ & 0xffff] = (char) (Globals.time >> 48 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (Globals.time >> 32 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (Globals.time >> 16 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (Globals.time >> 00 & 0xffff);
+            dcpu.ram[b++ & 0xffff] = (char) (ServerGlobals.time >> 48 & 0xffff);
+            dcpu.ram[b++ & 0xffff] = (char) (ServerGlobals.time >> 32 & 0xffff);
+            dcpu.ram[b++ & 0xffff] = (char) (ServerGlobals.time >> 16 & 0xffff);
+            dcpu.ram[b++ & 0xffff] = (char) (ServerGlobals.time >> 00 & 0xffff);
 
             dcpu.cycles += 16;
         }

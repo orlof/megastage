@@ -4,38 +4,35 @@
  */
 package org.megastage.client;
 
-import org.megastage.systems.ClientEntityManagerSystem;
+import com.artemis.Component;
+import com.artemis.Entity;
 import com.artemis.World;
+import com.artemis.utils.Bag;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import java.util.HashMap;
 import org.megastage.systems.ClientFixedRotationSystem;
 import org.megastage.systems.ClientMonitorRenderSystem;
 import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.systems.ClientOrbitalMovementSystem;
-import org.megastage.systems.ClientSpatialManagerSystem;
 import org.megastage.systems.OrbitalMovementSystem;
 import org.megastage.util.ClientGlobals;
 
 /**
  *
- * @author Teppo
+ * @author Orlof
  */
 public class ArtemisState extends AbstractAppState {
-    World world;
+    public World world;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         world = new World();
 
-        world.setSystem(new ClientSpatialManagerSystem((SimpleApplication) app), true);
-        world.setSystem(new ClientEntityManagerSystem(), true);
-        //world.setSystem(new ClientKeyboardSystem());
-        
-        world.setSystem(new ClientMonitorRenderSystem());
-        world.setSystem(new OrbitalMovementSystem());
+        world.setSystem(new ClientMonitorRenderSystem(), false);
+        world.setSystem(new ClientOrbitalMovementSystem());
         world.setSystem(new ClientFixedRotationSystem());
 
         ClientGlobals.network = new ClientNetworkSystem(20);
@@ -50,7 +47,6 @@ public class ArtemisState extends AbstractAppState {
     @Override
     public void update(float tpf) {
         world.setDelta(tpf);
-
         ClientGlobals.time = System.currentTimeMillis() + ClientGlobals.timeDiff;
         
         world.process();
@@ -61,5 +57,58 @@ public class ArtemisState extends AbstractAppState {
         world.getSystem(ClientNetworkSystem.class).sendLogout();
     }
     
+    // TODO following entity management should be cleaned so that
+    // server-client entity id conversion is done only in network interface
+    
+    HashMap<Integer, Entity> serverToClient = new HashMap<>();
+    HashMap<Integer, Integer> clientToServer = new HashMap<>();
+
+    public <T extends Component> T getComponent(Entity entity, Class<T> type) {
+        T component = entity.getComponent(type);
+        if(component == null) {
+            component = createComponent(entity, type);
+        }
+        return type.cast(component);
+    }
+
+    public int toServerID(int clientID) {
+        return clientToServer.get(clientID);
+    }
+        
+    public Entity toClientEntity(int serverID) {
+        Entity entity = serverToClient.get(serverID);
+        if(entity == null) {
+            entity = addEntity(serverID);
+        }
+        return entity;
+    }
+        
+    private Entity addEntity(int serverID) {
+        Entity entity = world.createEntity();
+        world.addEntity(entity);
+
+        serverToClient.put(serverID, entity);
+        clientToServer.put(entity.getId(), serverID);
+
+        Log.info("Created new entity " + serverID + " -> " + entity.getId());
+        
+        return entity;
+    }
+
+    private <T extends Component> T createComponent(Entity entity, Class<T> type) {
+        Log.info(entity.toString() + " <- " + type.getSimpleName());
+        T component = null;
+        
+        try {
+            component = type.newInstance();
+            entity.addComponent(component);
+            world.changedEntity(entity);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return component;
+    }
     
 }

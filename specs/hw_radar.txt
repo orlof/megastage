@@ -1,0 +1,51 @@
+
+<Ender innovations>
+"It's alive! Dear lord almighty, it's alive!"
+
+DCPU-16 Hardware Info:
+    Name: HTA 90 (Hybrid Tracking Array)
+    Version: 90
+    ID: 0x3442980F
+    Manufacturer: 0xE142A1FA (Ender innov.)
+
+Description:
+    This is a mixup of a standard radar detection array and a laser targeting 
+    theodolite built by Ender innovations because we believe we are better at 
+    building tracking systems (and anything for that matter) than anyone else 
+    and not because of our inflated ego either (we consider that to be a 
+    separate and unrelated issue). 
+
+    This tracking system is built to scan for targets whether they be manmade 
+    or natural and easily target and scan any one of them to get information 
+    as easily as can be done with our obviously superior technology.
+
+Interrupt behavior:
+    When a HWI is received by radar, it reads the A register and does one
+    of the following actions:
+    
+    0 - STORE_SIGNATURES
+        Copies echo signatures received with last radar sweep from internal 
+        memory to 16 word area of DCPU ram starting at B. Maximum of 16 nearest 
+        objects are copied. Each signature is a unique 16-bit number that is 
+        never equal to 0. If the are less than 16 signatures then rest of
+        signature array is filled with 0.
+
+    1 - SET_TRACKING_TARGET
+        Sets the tracking target to the object with the signature in B.
+
+    2 - STORE_TARGET_DATA
+        Sets a 7 word area of ram starting at B to radar data of target. 
+
+        Word 1 = type of object ( 0=unknown 1=natural 2=manmade). 
+        Words 2 and 3 = [INT32] est. mass of object in kilograms (roughly 
+            approximated from density and size readings. NOT ALWAYS ACCURATE!). 
+            If both words 2 and 3 equal 0, then mass calculation cannot be 
+            accurately ascertained. 
+        Words 4 and 5 = [FLOAT] distance in meters between ship and target.
+        Words 6 and 7 = the pitch and yaw angles between the direction of the
+            target and the direction that the ship is pointing.
+
+    3 - GET_VECTOR
+        Sets a 12 word area of ram starting at B to [ORBITAL_STATE_VECTOR]
+        of target in _ship's_ SOI.
+

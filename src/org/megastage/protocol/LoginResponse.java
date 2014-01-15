@@ -7,9 +7,7 @@ package org.megastage.protocol;
 import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
-import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
-import org.megastage.util.Globals;
 
 public class LoginResponse extends EventMessage {
     private int id = 0;
@@ -19,16 +17,13 @@ public class LoginResponse extends EventMessage {
     public LoginResponse(int id) {
         this();
         this.id = id;
-        this.time = Globals.time;
     }
 
     @Override
-    public void receive(ClientNetworkSystem system, Connection pc) {
-        ClientGlobals.timeDiff += time - System.currentTimeMillis();
-        Log.info("Timediff: " + ClientGlobals.timeDiff);
-        Entity entity = system.cems.get(id);
+    public void receive(Connection pc) {
+        Entity entity = ClientGlobals.artemis.toClientEntity(id);
         ClientGlobals.playerEntity = entity;
-        system.csms.setupPlayer(entity);
+        ClientGlobals.spatialManager.setupPlayer(entity);
     }
 
     public String toString() {

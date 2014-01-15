@@ -13,6 +13,6 @@ import org.megastage.systems.ClientNetworkSystem;
  */
 public abstract class EventMessage implements Message {
     @Override
-    public void receive(ClientNetworkSystem system, Connection pc) {}
+    public void receive(Connection pc) {}
 }
     

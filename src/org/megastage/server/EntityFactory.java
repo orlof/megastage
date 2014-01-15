@@ -31,10 +31,16 @@ public class EntityFactory {
                 Class clazz = Class.forName("org.megastage.components." + e.getAttributeValue("type"));
                 BaseComponent comp = (BaseComponent) clazz.newInstance();
 
-                comp.init(world, parent, e);
+                BaseComponent[] additionalComponents = comp.init(world, parent, e);
                 entity.addComponent(comp);
+                Log.info("Add Component: " + comp.toString());
 
-                Log.debug("Add Component: " + comp.toString());
+                if(additionalComponents != null) {
+                    for(BaseComponent c: additionalComponents) {
+                        entity.addComponent(c);
+                        Log.info("Add Component: " + c.toString());
+                    }
+                }
             }
 
             for(Element e: element.getChildren("group")) {

@@ -9,7 +9,7 @@ import com.jme3.texture.image.ImageRaster;
 
 /**
  *
- * @author Teppo
+ * @author Orlof
  */
 public class ClientRaster extends Component {
     public ImageRaster raster;

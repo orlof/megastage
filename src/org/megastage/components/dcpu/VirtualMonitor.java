@@ -5,22 +5,52 @@ import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.MonitorData;
+import org.megastage.protocol.Network.EntityData;
+import org.megastage.systems.ServerNetworkSystem;
 
 public class VirtualMonitor extends DCPUHardware {
     public MonitorData data = new MonitorData();
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_LEM;
         revision = 0x1802;
         manufactorer = MANUFACTORER_NYA_ELEKTRISKA;
 
         super.init(world, parent, element);
+        
+        return null;
     }
     
+    @Override
+    public boolean isUpdated() {
+        return true;
+    }
+
     public Object create(Entity entity) {
-        return data.create(entity);
+        boolean videoChanged = data.videoAddr == 0 ?
+                data.video.update(LEMUtil.defaultVideo):
+                data.video.update(dcpu.ram, data.videoAddr, 384);
+
+        boolean fontChanged = data.fontAddr == 0 ?
+                data.font.update(LEMUtil.defaultFont):
+                data.font.update(dcpu.ram, data.fontAddr, 256);
+
+        boolean paletteChanged = data.paletteAddr == 0 ?
+                data.palette.update(LEMUtil.defaultPalette):
+                data.palette.update(dcpu.ram, data.paletteAddr, 16);
+
+        if(videoChanged || fontChanged || paletteChanged) {
+            Log.trace("video   " + (videoChanged ? "*": " ") + " [" + ((int) data.videoAddr) + "] " + data.video.toString());
+            Log.trace("font    " + (fontChanged ? "*": " ") + " [" + ((int) data.fontAddr) + "] " + data.font.toString());
+            Log.trace("palette " + (paletteChanged ? "*": " ") + " [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
+
+            return data.create(entity);
+        }
+        
+        return null;
     }
 
     public void interrupt() {

@@ -6,7 +6,6 @@ import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
 import org.megastage.util.Vector;
 
@@ -18,19 +17,24 @@ import org.megastage.util.Vector;
  */
 public class Position extends EntityComponent {
     public long x, y, z;
+    
+    public Position() {
+        super();
+    }
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         x = 1000 * getLongValue(element, "x", 0);
         y = 1000 * getLongValue(element, "y", 0);
         z = 1000 * getLongValue(element, "z", 0);
+        
+        return null;
     }
 
-    @Override
-    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        system.cems.setComponent(entity, this);
+    public boolean isUpdated() {
+        return true;
     }
-
+    
     public void add(Vector vector) {
         x += Math.round(vector.x);
         y += Math.round(vector.y);
