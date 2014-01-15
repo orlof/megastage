@@ -1,4 +1,4 @@
-Megastage v0.1
+Megastage v0.2
 ==============
 <i>Random ECS experiments inspired by DCPU</i>
 
@@ -7,13 +7,20 @@ Few months ago I decided to start learning 3d programming. Progress in my learni
 
 In December 2013 I released 0.1 version of Megastage. It is only a technology demo, not ment to impress anyone, but to pace my own work and give me the feeling that I have accomplished something. This version is only a proof of concept type things - it has no game in it. Following instructions contain a lot of "future version" references that should give some light to the direction of my development efforts. 
 
+In January 2014 I released 0.2 version of Megastage. It is still not a game. The main purpose for the release is to test DCPU integration to ship controls - namely engine and gyroscopes.
+
 INSTRUCTIONS
 
 Download distribution package megastage.zip behind the following link. It should work in Windows and Linux if you have recent enough (?) java installed.
 
 https://github.com/orlof/megastage/releases
 
-Start server by going to installation directory and typing:
+Unzip the megastage.zip
+    unzip megastage.zip
+    
+It will create megastage/ directory.
+
+Start server by going to megastage directory and typing:
 
     ./server.sh (linux)
     server.bat (windows)
@@ -22,7 +29,7 @@ Next start client by typing
 
     ./client.sh (linux)
     client.bat (windows)
- 
+
 In the future there will be multiplayer support but currently server supports only single client connection per server start.
 
 After starting the client, a first person view should open on your screen. Imagine yourself standing on a starship bridge and don't mind that the whole starship is represented by a wooden "floor" :-)
