@@ -11,7 +11,7 @@ import org.megastage.util.LogFormat;
 
 /**
  * Created by IntelliJ IDEA.
- * User: Teppo
+ * User: Orlof
  * Date: 6.8.2013
  * Time: 13:43
  * To change this template use File | Settings | File Templates.

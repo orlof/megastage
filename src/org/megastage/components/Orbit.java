@@ -6,7 +6,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector;
 
@@ -21,31 +21,41 @@ public class Orbit extends EntityComponent {
     public double distance;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         center = parent.getId();
-        distance = 1000.0 * getDoubleValue(element, "orbital_distance", 0.0);
+        distance = getDoubleValue(element, "orbital_distance", 0.0);
+        
+        return null;
     }
 
     @Override
-    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        center = system.cems.get(center).getId();
-        system.cems.setComponent(entity, this);
+    public void receive(Connection pc, Entity entity) {
+        center = ClientGlobals.artemis.toClientEntity(center).getId();
+        entity.addComponent(this);
+    }
+
+    public double getAngularSpeed(double centerMass) {
+        return 2.0 * Math.PI / getOrbitalPeriod(centerMass);
     }
 
     public double getOrbitalPeriod(double centerMass) {
-        return (2.0 * Math.PI) / getAngularSpeed(centerMass);
+        return getOrbitLength() / getOrbitalSpeed(centerMass);
     }
     
-    public double getAngularSpeed(double centerMass) {
-        return 1.0 / Math.sqrt(Math.pow(distance, 3.0) / (Globals.G * centerMass));
+    public double getOrbitLength() {
+        return 2.0 * Math.PI * distance;
     }
     
-    public Vector getLocalCoordinates(double time, double mass) {
-        double angle = getAngularSpeed(mass) * time;
+    public double getOrbitalSpeed(double centerMass) {
+        return Math.sqrt(centerMass * Globals.G / distance);
+    }
+    
+    public Vector getLocalCoordinates(double time, double centerMass) {
+        double angle = getAngularSpeed(centerMass) * time;
         return new Vector(
-                distance * Math.sin(angle),
-                0.0d,
-                distance * Math.cos(angle)
+                1000.0 * distance * Math.sin(angle),
+                0.0,
+                1000.0 * distance * Math.cos(angle)
         );
     }
 

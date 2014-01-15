@@ -8,26 +8,29 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.EntityComponent;
-import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 
 
     
 /**
  *
- * @author Teppo
+ * @author Orlof
  */
 public class MonitorGeometry extends EntityComponent {
     public float width, height;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws Exception {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
         width = getFloatValue(element, "width", 3.0f);
         height = getFloatValue(element, "height", 2.0f);
+        
+        return null;
     }
 
     @Override
-    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        system.csms.setupMonitor(entity, this);
+    public void receive(Connection pc, Entity entity) {
+        ClientGlobals.spatialManager.setupMonitor(entity, this);
     }
 }

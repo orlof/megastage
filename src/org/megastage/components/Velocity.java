@@ -16,12 +16,14 @@ public class Velocity extends BaseComponent {
     public Vector vector;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
-        double x = element.getAttribute("x").getDoubleValue();
-        double y = element.getAttribute("y").getDoubleValue();
-        double z = element.getAttribute("z").getDoubleValue();
+    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
+        double x = 1000 * getDoubleValue(element, "x", 0);
+        double y = 1000 * getDoubleValue(element, "y", 0);
+        double z = 1000 * getDoubleValue(element, "z", 0);
         
         vector = new Vector(x, y, z);
+        
+        return null;
     }
 
     public void add(Vector v) {
@@ -34,5 +36,9 @@ public class Velocity extends BaseComponent {
 
     public void accelerate(Acceleration acceleration, float time) {
         vector = vector.add(acceleration.getVelocityChange(time));
+    }
+
+    public String toString() {
+        return "Velocity(" + vector.toString() + ")";
     }
 }

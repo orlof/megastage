@@ -7,15 +7,18 @@ package org.megastage.components.server;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
+import java.util.concurrent.Callable;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.EntityComponent;
 import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
 
 
     
 /**
  *
- * @author Teppo
+ * @author Orlof
  */
 public class PlanetGeometry extends EntityComponent {
     public int center;
@@ -24,18 +27,20 @@ public class PlanetGeometry extends EntityComponent {
     public String color;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws Exception {
+    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
         center = parent.getId();
 
         radius = getFloatValue(element, "radius", 10.0f);
         generator = getStringValue(element, "generator", "Earth");
         color = getStringValue(element, "color", "red");
+        
+        return null;
     }
 
     @Override
-    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        // center = system.cems.get(center).getId();
-        system.csms.setupPlanetLikeBody(entity, this);
+    public void receive(Connection pc, Entity entity) {
+        // center = ClientGlobals.artemis.get(center).getId();
+        ClientGlobals.spatialManager.setupPlanetLikeBody(entity, this);
     }
     
     public String toString() {

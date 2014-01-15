@@ -8,15 +8,16 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.EntityComponent;
-import org.megastage.protocol.Network;
-import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.util.ClientGlobals;
+import org.megastage.util.Globals;
 
 
     
 /**
  *
- * @author Teppo
+ * @author Orlof
  */
 public class SunGeometry extends EntityComponent {
     public float radius;
@@ -24,18 +25,20 @@ public class SunGeometry extends EntityComponent {
     public float lightRadius;
 
     @Override
-    public void init(World world, Entity parent, Element element) throws Exception {
-        radius = getFloatValue(element, "radius", 10.0f);
-        lightRadius = getFloatValue(element, "light_radius", 2000000.0f);
+    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
+        radius = (float) (getFloatValue(element, "radius", 10.0f));
+        lightRadius = (float) (getFloatValue(element, "light_radius", 2000000.0f));
         red = getFloatValue(element, "red", 1.0f); 
         green = getFloatValue(element, "green", 1.0f); 
         blue = getFloatValue(element, "blue", 1.0f); 
         alpha = getFloatValue(element, "alpha", 1.0f); 
+        
+        return null;
     }
 
     @Override
-    public void receive(ClientNetworkSystem system, Connection pc, Entity entity) {
-        system.csms.setupSunLikeBody(entity, this);
+    public void receive(Connection pc, Entity entity) {
+        ClientGlobals.spatialManager.setupSunLikeBody(entity, this);
     }
     
     public String toString() {

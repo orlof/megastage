@@ -3,25 +3,21 @@ package org.megastage.systems;
 import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.EntitySystem;
+import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
-import com.jme3.scene.Node;
 import org.megastage.protocol.Network;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import org.megastage.protocol.Message;
-import org.megastage.protocol.UserCommand;
 import org.megastage.util.ClientGlobals;
 
 public class ClientNetworkSystem extends EntitySystem {
     private Client client;
-
-    public ClientEntityManagerSystem cems;
-    public ClientSpatialManagerSystem csms;
 
     public ClientNetworkSystem(long interval) {
         super(Aspect.getEmpty());
@@ -42,10 +38,7 @@ public class ClientNetworkSystem extends EntitySystem {
 
     @Override
     protected void initialize() {
-        this.cems = world.getSystem(ClientEntityManagerSystem.class);
-        this.csms = world.getSystem(ClientSpatialManagerSystem.class);
-
-        client = new Client();
+        client = new Client(8192,8192);
         Network.register(client);
 
         Thread kryoThread = new Thread(client);
@@ -53,7 +46,7 @@ public class ClientNetworkSystem extends EntitySystem {
         kryoThread.start();
 
         try {
-            client.connect(5000, Network.serverHost, Network.serverPort, Network.serverPort+1);
+            client.connect(5000, ClientGlobals.serverHost, Network.serverPort, Network.serverPort+1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,7 +70,7 @@ public class ClientNetworkSystem extends EntitySystem {
 	
     protected void processSystem() {
         if(ClientGlobals.userCommand.count > 0) {
-            Log.info(ClientGlobals.userCommand.toString());
+            Log.debug(ClientGlobals.userCommand.toString());
             client.sendUDP(ClientGlobals.userCommand);
             ClientGlobals.userCommand.reset();
         }
@@ -124,7 +117,12 @@ public class ClientNetworkSystem extends EntitySystem {
 
         @Override
         public void received(Connection pc, Object o) {
-            if(o instanceof Object[]) {
+            if(o instanceof Bag) {
+                Bag bag = (Bag) o;
+                for(int i = 0; i < bag.size(); i++) {
+                    handlePacket(pc, bag.get(i));
+                }
+            } else if(o instanceof Object[]) {
                 for(Object packet: (Object[]) o) {
                     handlePacket(pc, packet);
                 }
@@ -135,19 +133,18 @@ public class ClientNetworkSystem extends EntitySystem {
         
         public void handlePacket(final Connection pc, final Object o) {
             Log.debug("Received: " + o.toString());
-            
             if(o instanceof Message) {
-                ClientGlobals.app.enqueue(new Callable() {
-                    @Override
-                    public Object call() throws Exception {
-                        ((Message) o).receive(ClientNetworkSystem.this, pc);
-                        return null;
-                    }
-                });
+                ((Message) o).receive(pc);
+//                ClientGlobals.app.enqueue(new Callable() {
+//                    @Override
+//                    public Object call() throws Exception {
+//                        ((Message) o).receive(pc);
+//                        return null;
+//                    }
+//                });
             } else {
                 Log.warn("Unknown message type: " + o.getClass().getSimpleName());
-            }
-            
+            } 
         }
     }
 }

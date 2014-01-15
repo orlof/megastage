@@ -5,6 +5,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.*;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector;
@@ -31,9 +32,15 @@ public class ShipMovementSystem extends EntityProcessingSystem {
         Acceleration acceleration = accelerationMapper.get(entity);
         Position position = positionMapper.get(entity);
 
+        Log.debug(entity.toString() + acceleration.toString());
+        Log.debug(entity.toString() + velocity.toString());
+        Log.debug(entity.toString() + position.toString());
+        
         position.move(velocity, world.delta / 2.0f);
         velocity.accelerate(acceleration, world.delta);
         position.move(velocity, world.delta / 2.0f);
+
+        Log.debug(entity.toString() + velocity.toString());
 
         acceleration.set(Vector.ZERO);
     }

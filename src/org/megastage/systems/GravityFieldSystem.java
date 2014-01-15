@@ -6,6 +6,7 @@ import com.artemis.Entity;
 import com.artemis.EntitySystem;
 import com.artemis.annotations.Mapper;
 import com.artemis.utils.ImmutableBag;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.GravityField;
 import org.megastage.components.Mass;
 import org.megastage.components.Position;
@@ -24,15 +25,16 @@ public class GravityFieldSystem extends EntitySystem {
     @Mapper ComponentMapper<Position> POSITION;
     @Mapper ComponentMapper<Mass> MASS;
     
-    private ImmutableBag<Entity> gravityFieldEntities;
+    private ImmutableBag<Entity> entitiesWithGravityField;
 
     public GravityFieldSystem() {
         super(Aspect.getAspectForAll(GravityField.class, Position.class, Mass.class));
     }
 
     @Override
-    protected void processEntities(ImmutableBag<Entity> entityImmutableBag) {
-        gravityFieldEntities = entityImmutableBag;
+    protected void processEntities(ImmutableBag<Entity> entities) {
+        entitiesWithGravityField = entities;
+        Log.debug("Number of Gravity fields: " + entitiesWithGravityField.size());
     }
 
     @Override
@@ -41,29 +43,31 @@ public class GravityFieldSystem extends EntitySystem {
     }
     
     public Vector getGravityField(Position coordinates) {
-        Vector acceleration = new Vector();
+        Log.debug("Calculating gravity field in position " + coordinates.toString());
+        Vector acc = new Vector();
 
-        for(int i=0; i < gravityFieldEntities.size(); i++) {
-            Entity entity = gravityFieldEntities.get(i);
+        for(int i=0; i < entitiesWithGravityField.size(); i++) {
+            Entity entity = entitiesWithGravityField.get(i);
             
-            GravityField gravityField = GRAVITY_FIELD.get(entity);
             Position position = POSITION.get(entity);
             Mass mass = MASS.get(entity);
+            
+            Log.debug(entity.toString() + " position " + position.toString() + " mass " + mass.toString());
 
-            double dx = position.x - coordinates.x;
-            double dy = position.y - coordinates.y;
-            double dz = position.z - coordinates.z;
-
+            double dx = (position.x - coordinates.x) / 1000.0;
+            double dy = (position.y - coordinates.y) / 1000.0;
+            double dz = (position.z - coordinates.z) / 1000.0;
+            
             double distanceSquared = dx*dx + dy*dy + dz*dz;
-
             double gravitationalField = Globals.G * mass.mass / distanceSquared;
-
             double distance = Math.sqrt(distanceSquared);
-
             double multiplier = gravitationalField / distance;
-            acceleration.add(multiplier * dx, multiplier * dy, multiplier * dz);
+
+            acc = acc.add(multiplier * dx, multiplier * dy, multiplier * dz);
+            
+            Log.debug("Acceleration: " + acc.toString());
         }
 
-        return acceleration;
+        return acc;
     }    
 }

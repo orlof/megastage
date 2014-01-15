@@ -13,8 +13,4 @@ import org.jdom2.Element;
  */
 public class ItemInUse extends BaseComponent {
     public Entity entity;
-
-    @Override
-    public void init(World world, Entity parent, Element element) throws DataConversionException {
-    }
 }
