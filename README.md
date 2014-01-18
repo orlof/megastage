@@ -65,13 +65,9 @@ One more thing you can do: Behind you there is a big live DCPU LEM screen. If yo
 
 https://github.com/orlof/dcpu-admiral
 
-<<<<<<< HEAD
 In the future the DCPU boot disk can be freely changed and DCPU can control all ship systems including engines, gyroscopes, positioning systems, weapons, radars...
-=======
-If you want to change the boot up software, just replace the admiral.bin with your own DCPU binary before starting the server.
 
-In the future the DCPU boot disk can be freely changed and DCPU will have control to all ship systems including engines, gyroscopes, positioning systems, weapons, radars...
->>>>>>> release/v0.2
+If you want to change the boot up software, just replace the admiral.bin with your own DCPU binary before starting the server.
 
 TODO list
     Free look in DCPU-mode
