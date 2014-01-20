@@ -9,6 +9,7 @@ import org.megastage.components.BaseComponent;
 
 public abstract class DCPUHardware extends BaseComponent {
     public static final int TYPE_LEM = 0x7349F615;
+    public static final int TYPE_FLOPPY = 0x4fd524c5;
     public static final int TYPE_KEYBOARD = 0x30CF7406;
     public static final int TYPE_CLOCK = 0x12D0B402;
     public static final int TYPE_ENGINE = 0xa8fb6730;

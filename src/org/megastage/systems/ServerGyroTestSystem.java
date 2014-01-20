@@ -4,8 +4,6 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.EntitySystem;
 import com.artemis.utils.ImmutableBag;
-import com.esotericsoftware.minlog.Log;
-import org.megastage.components.dcpu.Engine;
 import org.megastage.components.dcpu.Gyroscope;
 import org.megastage.util.ServerGlobals;
 

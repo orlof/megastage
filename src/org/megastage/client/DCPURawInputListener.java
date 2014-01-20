@@ -13,7 +13,6 @@ import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
 import java.util.HashMap;
-import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.util.ClientGlobals;
 
 public class DCPURawInputListener implements RawInputListener {
