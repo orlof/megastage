@@ -10,7 +10,7 @@ O O  T  E   C C
 DCPU-16 Hardware Info:
     Name: Far Field Acceleresolutor (Gravitation sensor)
     Version: 0x6673
-    ID: 0x1a70bc0b
+    ID: 0x3846bc64
     Manufacturer: 0xb8badde8 (Otec)
 
 Description:
