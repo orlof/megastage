@@ -15,6 +15,7 @@ public abstract class DCPUHardware extends BaseComponent {
     public static final int TYPE_ENGINE = 0xa8fb6730;
     public static final int TYPE_PPS = 0x3c7742c2;
     public static final int TYPE_GYRO = 0xeec6c4de;
+    public static final int TYPE_GRAVITATION_SENSOR = 0x3846bc64;
     public static final int MANUFACTORER_NYA_ELEKTRISKA = 0x1C6C8B36;
     public static final int MANUFACTORER_MOJANG = 0x4AB55488;
     public static final int MANUFACTORER_MACKAPAR = 0x1EB37E91;
@@ -22,6 +23,7 @@ public abstract class DCPUHardware extends BaseComponent {
     public static final int MANUFACTORER_TALON_NAVIGATION = 0x982d3e46;
     public static final int MANUFACTORER_PRECISION_RESEARCH = 0x352ad8bf;
     public static final int MANUFACTORER_SEIKORION = 0xcf115b97;
+    public static final int MANUFACTORER_OTEC = 0xb8badde8;
 
     public int type;
     public int revision;
