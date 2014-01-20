@@ -27,8 +27,8 @@ public class Gyroscope extends DCPUHardware {
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_GYRO;
-        revision = 0xabc1;
-        manufactorer = MANUFACTORER_PRECISION_RESEARCH;
+        revision = 0xabcd;
+        manufactorer = MANUFACTORER_GENERAL_DRIVES;
 
         super.init(world, parent, element);
 

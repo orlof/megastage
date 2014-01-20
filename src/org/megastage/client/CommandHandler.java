@@ -15,121 +15,137 @@ import com.jme3.math.Vector3f;
 import org.megastage.components.Rotation;
 import org.megastage.util.ClientGlobals;
 
-
 /**
- * A first person view camera controller.
- * After creation, you must register the camera controller with the
- * dispatcher using #registerWithDispatcher().
+ * A first person view camera controller. After creation, you must register the
+ * camera controller with the dispatcher using #registerWithDispatcher().
  *
- * Controls:
- *  - Move the mouse to rotate the camera
- *  - Mouse wheel for zooming in or out
- *  - WASD keys for moving forward/backward and strafing
- *  - QZ keys raise or lower the camera
+ * Controls: - Move the mouse to rotate the camera - Mouse wheel for zooming in
+ * or out - WASD keys for moving forward/backward and strafing - QZ keys raise
+ * or lower the camera
  */
 public class CommandHandler implements AnalogListener, ActionListener {
 
-    private static String[] dcpuMappings = new String[] {
-        "DCPU_Exit"
-    };
-
-    private static String[] walkMappings = new String[] {
+    private static String[] dcpuMappings = new String[]{
         "WALK_LookLeft",
         "WALK_LookRight",
         "WALK_LookUp",
         "WALK_LookDown",
+        "DCPU_Exit",
+        "GAME_Exit",
+    };
 
+    private static String[] walkMappings = new String[]{
+        "WALK_LookLeft",
+        "WALK_LookRight",
+        "WALK_LookUp",
+        "WALK_LookDown",
         "WALK_MoveForward",
         "WALK_MoveBackward",
         "WALK_MoveLeft",
         "WALK_MoveRight",
-
-        "WALK_InvertY",
-        "DCPU_Enter",
-        "TEST",
-
         "SHIP_MoveForward",
         "SHIP_MoveBackward",
         "SHIP_MoveUp",
         "SHIP_MoveDown",
         "SHIP_MoveLeft",
         "SHIP_MoveRight",
-
         "SHIP_PitchUp",
         "SHIP_PitchDown",
         "SHIP_RollCW",
         "SHIP_RollCCW",
         "SHIP_YawLeft",
         "SHIP_YawRight",
+        "WALK_InvertY",
+        "ITEM_Use",
+        "GAME_Exit",
     };
 
-    private String[] currentMappings = walkMappings;
-        
-    protected float rotationSpeed = 1f;
-    protected float walkSpeed = 3f;
-    protected float shipSpeed = 10000f;
-    protected boolean enabled = true;
-    protected boolean invertY = true;
-    protected InputManager inputManager;
-    
-    public void setWalkSpeed(float walkSpeed){
-        this.walkSpeed = walkSpeed;
-    }
-    
-    public float getWalkSpeed(){
-        return walkSpeed;
+    public enum Mode {
+        WALK, DCPU
     }
 
-    public void setRotationSpeed(float rotationSpeed){
-        this.rotationSpeed = rotationSpeed;
-    }
-    
-    public float getRotationSpeed(){
-        return rotationSpeed;
-    }
-    
-    public void setEnabled(boolean enable){
-        if (enabled && !enable){
-            if (inputManager!= null){
-                inputManager.setCursorVisible(true);
-            }
-        }
-        enabled = enable;
-    }
+    public Mode mode = Mode.WALK;
+    private InputManager inputManager;
+    private DCPURawInputListener dcpuListener = new DCPURawInputListener();
 
-    public boolean isEnabled(){
-        return enabled;
-    }
-
-    public void registerWithInput(InputManager inputManager){
+    public void registerWithInput(InputManager inputManager) {
         this.inputManager = inputManager;
- 
-        enableWalkMappings();
-        
-        inputManager.addListener(this, walkMappings);
+
         inputManager.setCursorVisible(false);
+        initWalkMode();
     }
 
-    public void unregisterInput(){
-    
+    public void unregisterInput() {
+
         if (inputManager == null) {
             return;
         }
-        
-        disableWalkMappings();
-        disableDCPUMappings();
-    
-        inputManager.removeListener(this);
+
+        inputManager.clearMappings();
+        inputManager.clearRawInputListeners();
+
         inputManager.setCursorVisible(false);
+    }
+
+    private void initWalkMode() {
+        mode = Mode.WALK;
+
+        inputManager.clearMappings();
+        inputManager.clearRawInputListeners();
+
+        inputManager.addListener(this, walkMappings);
+
+        inputManager.addMapping("WALK_LookLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        inputManager.addMapping("WALK_LookRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        inputManager.addMapping("WALK_LookUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
+        inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
+
+        inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_UP));
+        inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_DOWN));
+        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_LEFT));
+        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_RIGHT));
+
+        inputManager.addMapping("SHIP_MoveForward", new KeyTrigger(KeyInput.KEY_W));
+        inputManager.addMapping("SHIP_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("SHIP_MoveUp", new KeyTrigger(KeyInput.KEY_Q));
+        inputManager.addMapping("SHIP_MoveDown", new KeyTrigger(KeyInput.KEY_Z));
+        inputManager.addMapping("SHIP_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
+        inputManager.addMapping("SHIP_MoveRight", new KeyTrigger(KeyInput.KEY_D));
+
+        inputManager.addMapping("SHIP_PitchUp", new KeyTrigger(KeyInput.KEY_I));
+        inputManager.addMapping("SHIP_PitchDown", new KeyTrigger(KeyInput.KEY_K));
+        inputManager.addMapping("SHIP_RollCW", new KeyTrigger(KeyInput.KEY_L));
+        inputManager.addMapping("SHIP_RollCCW", new KeyTrigger(KeyInput.KEY_J));
+        inputManager.addMapping("SHIP_YawLeft", new KeyTrigger(KeyInput.KEY_U));
+        inputManager.addMapping("SHIP_YawRight", new KeyTrigger(KeyInput.KEY_O));
+
+        inputManager.addMapping("ITEM_Use", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
+    }
+
+    private void initDCPUMode() {
+        mode = Mode.DCPU;
+
+        inputManager.clearMappings();
+
+        inputManager.addRawInputListener(dcpuListener);
+        inputManager.addListener(this, dcpuMappings);
+
+        inputManager.addMapping("WALK_LookLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        inputManager.addMapping("WALK_LookRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        inputManager.addMapping("WALK_LookUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
+        inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
+
+        inputManager.addMapping("DCPU_Exit", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
     }
 
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        if (!enabled)
+        if (ClientGlobals.playerEntity == null) {
             return;
-        
-        if(ClientGlobals.playerEntity == null) return;
-        
+        }
+
         switch (name) {
             case "WALK_LookLeft":
                 lookLeft(value);
@@ -196,68 +212,94 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
     @Override
     public void onAction(String name, boolean value, float tpf) {
-        if (!enabled)
-            return;
+        Log.info(name);
+
         switch (name) {
             case "WALK_InvertY":
                 // Toggle on the up.
-                if( !value ) {  
+                if (!value) {
                     invertY = !invertY;
                 }
                 break;
-            case "DCPU_Enter":
+            case "ITEM_Use":
                 // Toggle on the up.
-                if( !value ) {  
-                    toggleDCPU();
-                }        
+                if (!value) {
+                    initDCPUMode();
+                }
                 break;
             case "DCPU_Exit":
                 // Toggle on the up.
-                if( !value ) {  
-                    toggleDCPU();
-                }        
+                if (!value) {
+                    initWalkMode();
+                }
                 break;
-            case "TEST":
+            case "GAME_Exit":
                 // Toggle on the up.
-                Log.info("SPACE");
+                if (!value) {
+                    ClientGlobals.app.stop();
+                }
                 break;
         }
+    }
+    protected float rotationSpeed = 1f;
+    protected float walkSpeed = 3f;
+    protected float shipSpeed = 10000f;
+    protected boolean invertY = true;
+
+    public void setWalkSpeed(float walkSpeed) {
+        this.walkSpeed = walkSpeed;
+    }
+
+    public float getWalkSpeed() {
+        return walkSpeed;
+    }
+
+    public void setRotationSpeed(float rotationSpeed) {
+        this.rotationSpeed = rotationSpeed;
+    }
+
+    public float getRotationSpeed() {
+        return rotationSpeed;
     }
 
     protected void lookUp(float value) {
         Rotation playerRotation = ClientGlobals.playerEntity.getComponent(Rotation.class);
-        if(playerRotation == null) return;
+        if (playerRotation == null) {
+            return;
+        }
 
         Quaternion playerQuaternion = new Quaternion(
-                (float) playerRotation.x, (float) playerRotation.y, 
+                (float) playerRotation.x, (float) playerRotation.y,
                 (float) playerRotation.z, (float) playerRotation.w);
 
         float[] eulerAngles = playerQuaternion.toAngles(null);
         eulerAngles[0] = FastMath.clamp(eulerAngles[0] + value, -0.9f * FastMath.HALF_PI, 0.9f * FastMath.HALF_PI);
         eulerAngles[2] = 0f;
-        
+
         playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
 
         playerRotation.x = playerQuaternion.getX();
         playerRotation.y = playerQuaternion.getY();
         playerRotation.z = playerQuaternion.getZ();
         playerRotation.w = playerQuaternion.getW();
-        
+
         ClientGlobals.userCommand.look(playerRotation);
     }
-    
+
     protected void lookLeft(float value) {
         Rotation playerRotation = ClientGlobals.playerEntity.getComponent(Rotation.class);
-        if(playerRotation == null) return;
+        if (playerRotation == null) {
+            return;
+        }
 
         Quaternion playerQuaternion = new Quaternion(
-                (float) playerRotation.x, (float) playerRotation.y, 
+                (float) playerRotation.x, (float) playerRotation.y,
                 (float) playerRotation.z, (float) playerRotation.w);
 
         float[] eulerAngles = playerQuaternion.toAngles(null);
         eulerAngles[1] = (eulerAngles[1] + value) % FastMath.TWO_PI;
         eulerAngles[2] = 0f;
-        
+
         playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
 
         playerRotation.x = playerQuaternion.getX();
@@ -267,24 +309,28 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
         ClientGlobals.userCommand.look(playerRotation);
     }
-    
+
     protected void move(float value, boolean sideways) {
         Rotation playerRotation = ClientGlobals.playerEntity.getComponent(Rotation.class);
-        if(playerRotation == null) return;
+        if (playerRotation == null) {
+            return;
+        }
 
         Quaternion playerQuaternion = new Quaternion(
-                (float) playerRotation.x, (float) playerRotation.y, 
+                (float) playerRotation.x, (float) playerRotation.y,
                 (float) playerRotation.z, (float) playerRotation.w);
 
         float[] eulerAngles = playerQuaternion.toAngles(null);
         eulerAngles[0] = 0f;
-        if(sideways) eulerAngles[1] += FastMath.HALF_PI;
+        if (sideways) {
+            eulerAngles[1] += FastMath.HALF_PI;
+        }
         eulerAngles[2] = 0f;
         playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
-        
+
         Vector3f playerMovement = new Vector3f(0, 0, value * walkSpeed);
         playerQuaternion.multLocal(playerMovement);
-        
+
         ClientGlobals.userCommand.move(playerMovement.x, playerMovement.y, playerMovement.z);
     }
 
@@ -303,76 +349,4 @@ public class CommandHandler implements AnalogListener, ActionListener {
     private void yaw(float value) {
         ClientGlobals.userCommand.shipYaw(value);
     }
-
-    private boolean dcpu = false;
-    private DCPURawInputListener dcpuListener = new DCPURawInputListener();
-
-    void toggleDCPU() {
-        dcpu = !dcpu;
-        if(dcpu) {
-            disableWalkMappings();
-            enableDCPUMappings();
-            inputManager.removeListener(this);
-            inputManager.addRawInputListener(dcpuListener);
-            inputManager.addListener(this, dcpuMappings);
-        } else {
-            inputManager.removeRawInputListener(dcpuListener);
-            inputManager.removeListener(this);
-            inputManager.addListener(this, walkMappings);
-            disableDCPUMappings();
-            enableWalkMappings();
-        }
-    }
-
-    private void enableWalkMappings() {
-       // both mouse and button - rotation of cam
-        inputManager.addMapping("WALK_LookLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
-        inputManager.addMapping("WALK_LookRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
-        inputManager.addMapping("WALK_LookUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
-        inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
-
-        // keyboard only WASD for movement and WZ for rise/lower height
-        inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_UP));
-        inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_DOWN));
-        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_LEFT));
-        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_RIGHT));
-
-        inputManager.addMapping("SHIP_MoveForward", new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("SHIP_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("SHIP_MoveUp", new KeyTrigger(KeyInput.KEY_Q));
-        inputManager.addMapping("SHIP_MoveDown", new KeyTrigger(KeyInput.KEY_Z));
-        inputManager.addMapping("SHIP_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("SHIP_MoveRight", new KeyTrigger(KeyInput.KEY_D));
-        
-        inputManager.addMapping("SHIP_PitchUp", new KeyTrigger(KeyInput.KEY_I));
-        inputManager.addMapping("SHIP_PitchDown", new KeyTrigger(KeyInput.KEY_K));
-        inputManager.addMapping("SHIP_RollCW", new KeyTrigger(KeyInput.KEY_L));
-        inputManager.addMapping("SHIP_RollCCW", new KeyTrigger(KeyInput.KEY_J));
-        inputManager.addMapping("SHIP_YawLeft", new KeyTrigger(KeyInput.KEY_U));
-        inputManager.addMapping("SHIP_YawRight", new KeyTrigger(KeyInput.KEY_O));
-
-        inputManager.addMapping("DCPU_Enter", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-        inputManager.addMapping("TEST", new KeyTrigger(KeyInput.KEY_SPACE));
-     }
-
-     private void enableDCPUMappings() {
-         inputManager.addMapping("DCPU_Exit", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-     }
-    
-    public void disableWalkMappings() {
-        for (String s : walkMappings) {
-            if (inputManager.hasMapping(s)) {
-                inputManager.deleteMapping( s );
-            }
-        }
-    }
-
-    public void disableDCPUMappings() {
-        for (String s : dcpuMappings) {
-            if (inputManager.hasMapping(s)) {
-                inputManager.deleteMapping( s );
-            }
-        }
-    }
-    
 }
