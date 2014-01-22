@@ -29,7 +29,7 @@ public class Game {
         world.setManager(new TemplateManager());
 
         //world.setSystem(new ServerEngineTestSystem(5000));
-        //world.setSystem(new ServerGyroTestSystem(5000));
+        world.setSystem(new ServerGyroTestSystem(5000));
         world.setSystem(new ServerCleanupSystem(500));
         world.setSystem(new ServerUpdateSystem(20));
         world.setSystem(new ServerNetworkSystem());
@@ -44,7 +44,6 @@ public class Game {
         world.setSystem(new ShipMovementSystem());
 
         world.setSystem(new DCPUSystem());
-        //world.setSystem(new VirtualMonitorSenderSystem());
 
         world.initialize();
 

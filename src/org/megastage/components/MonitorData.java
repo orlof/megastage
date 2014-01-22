@@ -9,7 +9,7 @@ import com.esotericsoftware.kryonet.Connection;
 import org.megastage.components.client.ClientVideoMemory;
 import org.megastage.components.dcpu.LEMUtil;
 import org.megastage.systems.ClientNetworkSystem;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 import org.megastage.util.RAM;
 
 public class MonitorData extends EntityComponent {

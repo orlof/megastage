@@ -13,7 +13,6 @@ import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
 import java.util.HashMap;
-import org.megastage.util.ClientGlobals;
 
 public class DCPURawInputListener implements RawInputListener {
     HashMap<Integer, Character> pressed = new HashMap<>();
@@ -86,9 +85,9 @@ public class DCPURawInputListener implements RawInputListener {
         }
 
         pressed.put(keyCode, keyChar);
-        Log.debug("KeyPressed(keyChar=" + Integer.toHexString(keyChar) + ")");
+        Log.info("KeyPressed(keyChar=" + Integer.toHexString(keyChar) + ")");
         ClientGlobals.network.sendKeyPressed(keyChar);
-        Log.debug("KeyTyped(keyChar=" + Integer.toHexString(keyChar) + ")");
+        Log.info("KeyTyped(keyChar=" + Integer.toHexString(keyChar) + ")");
         ClientGlobals.network.sendKeyTyped(keyChar);
         return true;
     }
@@ -98,7 +97,7 @@ public class DCPURawInputListener implements RawInputListener {
         Character keyChar = pressed.get(keyCode);
 
         if(keyChar != null) {
-            Log.debug("KeyReleased(keyChar=" + Integer.toHexString(keyChar) + ")");
+            Log.info("KeyReleased(keyChar=" + Integer.toHexString(keyChar) + ")");
             ClientGlobals.network.sendKeyReleased(keyChar);
         }
 

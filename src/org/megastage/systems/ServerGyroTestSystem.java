@@ -4,6 +4,7 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.EntitySystem;
 import com.artemis.utils.ImmutableBag;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.dcpu.Gyroscope;
 import org.megastage.util.ServerGlobals;
 
@@ -32,7 +33,7 @@ public class ServerGyroTestSystem extends EntitySystem {
         for(int i=0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
             Gyroscope gyro = entity.getComponent(Gyroscope.class);
-            switch(state++) {
+            switch(state) {
                 case 0:
                     gyro.setTorque((char) 0);
                     break;
@@ -45,5 +46,6 @@ public class ServerGyroTestSystem extends EntitySystem {
                     break;
             }
         }
+        state++;
     }	
 }

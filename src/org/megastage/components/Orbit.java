@@ -6,7 +6,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector;
 

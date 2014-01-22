@@ -9,7 +9,7 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector;
 

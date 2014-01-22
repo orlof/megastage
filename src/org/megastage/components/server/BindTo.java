@@ -11,7 +11,7 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.EntityComponent;
 import org.megastage.protocol.Network;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 
 /**
  * This entity's position and rotation are relative to parent

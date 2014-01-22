@@ -14,7 +14,7 @@ import org.megastage.protocol.Network;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import org.megastage.protocol.Message;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 
 public class ClientNetworkSystem extends EntitySystem {
     private Client client;

@@ -45,7 +45,6 @@ import org.megastage.components.server.EngineGeometry;
 import org.megastage.components.server.ShipGeometry;
 import org.megastage.components.server.SunGeometry;
 import org.megastage.components.server.VoidGeometry;
-import org.megastage.util.ClientGlobals;
 
 /**
  *
@@ -101,7 +100,8 @@ public class SpatialManager {
             }
         });
     }
-    
+
+/*    
     private Node createUserNode(Entity entity) {
         // DON'T use for system nodes
         Node node = getNode(entity);
@@ -111,6 +111,7 @@ public class SpatialManager {
 
         return node;
      }
+*/
     
     private Geometry createSphere(float radius, ColorRGBA color, boolean shaded) {
         Sphere mesh = new Sphere(
@@ -135,7 +136,10 @@ public class SpatialManager {
     public void setupSunLikeBody(final Entity entity, final SunGeometry data) {
         ColorRGBA colorRGBA = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
 
-        final Node node = createUserNode(entity);
+        final Node node = getNode(entity);
+        node.addControl(new PositionControl(entity));
+        node.addControl(new RotationControl(entity));
+
         node.attachChild(createSphere(data.radius, colorRGBA, false));
 
         final PointLight light = new PointLight();
@@ -157,7 +161,10 @@ public class SpatialManager {
 
     public void setupPlanetLikeBody(Entity entity, PlanetGeometry data) {
         // Add planet
-        final Node node = createUserNode(entity);
+        final Node node = getNode(entity);
+        node.addControl(new PositionControl(entity));
+        node.addControl(new RotationControl(entity));
+
         
         if(ClientGlobals.gfxQuality.ENABLE_PLANETS) {
             node.attachChild(createPlanet(data));
@@ -196,11 +203,11 @@ public class SpatialManager {
     }
     
     public void setupVoidNode(Entity entity, VoidGeometry data) {
-        // Add planet
-        final Node node = createUserNode(entity);
+        getNode(entity);
     }
     
     public void setupShip(Entity entity, ShipGeometry data) {
+        Log.info("" + entity.toString());
         int chunkSize = data.getChunkSize();
 
         float cx = 0, cy = 0, cz = 0, bc = 0;
@@ -224,7 +231,10 @@ public class SpatialManager {
         offset.addControl(blockControl);
         //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 
-        final Node node = createUserNode(entity);
+        final Node node = getNode(entity);
+        node.addControl(new PositionControl(entity));
+        node.addControl(new RotationControl(entity));
+
         node.attachChild(offset);
         offset.setLocalTranslation(-cx, -cy, -cz);
 
@@ -240,21 +250,20 @@ public class SpatialManager {
     }
 
     public void setupEngine(Entity entity, EngineGeometry data) {
-        Node engine = createUserNode(entity);
-        Node main = new Node("main");
-        engine.attachChild(main);
-        main.setLocalTranslation(0.5f, 0.5f, 0.5f);
+        final Node node = getNode(entity);
+        node.addControl(new PositionControl(entity));
+        node.addControl(new RotationControl(entity));
 
         Node burn = (Node) assetManager.loadModel("Scenes/testScene.j3o"); 
         ParticleEmitter emitter = (ParticleEmitter) burn.getChild("Emitter");
         emitter.addControl(new EngineControl(entity));
         emitter.setEnabled(true);
-        main.attachChild(burn);
+        node.attachChild(burn);
 
         Geometry geom = new Geometry("", new Cylinder(16, 16, 0.5f, 1, true));
         geom.setMaterial(material(ColorRGBA.Gray, true));
         
-        main.attachChild(geom);
+        node.attachChild(geom);
     }
     
     public void setupMonitor(Entity entity, MonitorGeometry data) {
@@ -270,13 +279,12 @@ public class SpatialManager {
         mat.setTexture("ColorMap", tex);
         geom.setMaterial(mat);
         
-        Node node = createUserNode(entity);
-        Node main = new Node("main");
-        node.attachChild(main);
-        main.setLocalTranslation(0.5f, 0.0f, 0.5f);
-        
-        main.attachChild(geom);
-        geom.setLocalTranslation(-0.5f, 0, 0f);
+        final Node node = getNode(entity);
+        node.addControl(new PositionControl(entity));
+        node.addControl(new RotationControl(entity));
+
+        node.attachChild(geom);
+        geom.setLocalTranslation(-0.5f, -0.5f, 0f);
 
         ClientRaster rasterComponent = ClientGlobals.artemis.getComponent(entity, ClientRaster.class);
         rasterComponent.raster = raster;
@@ -287,13 +295,15 @@ public class SpatialManager {
 
         Geometry body = new Geometry(entity.toString(), new Box(0.25f, 0.5f, 0.25f));
         body.setMaterial(mat);
-        body.setLocalTranslation(0.5f, 0.5f, 0.5f);
 
         Geometry head = new Geometry(entity.toString(), new Box(0.25f, 0.25f, 0.25f));
         head.setMaterial(mat);
-        head.setLocalTranslation(0.5f, 1.5f, 0.5f);
+        head.setLocalTranslation(0, 1.5f, 0);
         
-        Node node = createUserNode(entity);
+        final Node node = getNode(entity);
+        node.addControl(new PositionControl(entity));
+        node.addControl(new RotationControl(entity));
+
         node.attachChild(body);
         node.attachChild(head);
     }

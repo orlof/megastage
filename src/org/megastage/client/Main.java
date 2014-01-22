@@ -20,7 +20,6 @@ import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.SystemPositionControl;
 import org.megastage.client.controls.SystemRotationControl;
-import org.megastage.util.ClientGlobals;
 import org.megastage.util.LogFormat;
 
 /**
