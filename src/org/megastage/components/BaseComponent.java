@@ -26,6 +26,10 @@ public abstract class BaseComponent extends Component {
         return false;
     }
     
+    protected static boolean hasValue(Element config, String arrtName) {
+        return config.getAttribute(arrtName) != null;
+    }
+    
     protected static String getStringValue(Element config, String attrName, String defaultValue) {
         Attribute attr = config.getAttribute(attrName);
 

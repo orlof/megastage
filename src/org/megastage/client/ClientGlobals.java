@@ -1,4 +1,4 @@
-package org.megastage.util;
+package org.megastage.client;
 
 import com.artemis.Entity;
 import com.cubes.CubesSettings;

@@ -31,7 +31,7 @@ public class AttitudeControlSystem extends EntityProcessingSystem {
     @Override
     protected void process(Entity entity) {
         Gyroscope gyro = GYROSCOPE.get(entity);
-        if(gyro.power == 0) return; 
+        if(gyro.power == 0) return;
 
         ShipGeometry geom = SHIP_GEOMETRY.get(gyro.ship);
         if(geom == null) return;

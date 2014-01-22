@@ -12,7 +12,7 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.EntityComponent;
 import org.megastage.systems.ClientNetworkSystem;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 
 
     

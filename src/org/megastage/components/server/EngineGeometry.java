@@ -9,7 +9,7 @@ import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.EntityComponent;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 
 
     

@@ -43,7 +43,7 @@ public class ServerUpdateSystem extends EntitySystem {
             for(int j=0; j < components.size(); j++) {
                 BaseComponent baseComponent = (BaseComponent) components.get(j);
                 if(baseComponent.isUpdated()) {
-                    Object transferable = baseComponent.create(entity);                
+                    Object transferable = baseComponent.create(entity);
                     if(transferable != null) {
                         bag.add(transferable);
                     }

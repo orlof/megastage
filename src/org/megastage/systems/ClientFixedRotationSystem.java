@@ -8,7 +8,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.jme3.math.Quaternion;
 import org.megastage.components.FixedRotation;
 import org.megastage.components.Rotation;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 
 /**
  * Created with IntelliJ IDEA.

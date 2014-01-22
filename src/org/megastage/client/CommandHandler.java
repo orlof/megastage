@@ -13,7 +13,6 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import org.megastage.components.Rotation;
-import org.megastage.util.ClientGlobals;
 
 /**
  * A first person view camera controller. After creation, you must register the

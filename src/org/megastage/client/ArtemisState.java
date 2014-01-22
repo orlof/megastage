@@ -18,7 +18,6 @@ import org.megastage.systems.ClientMonitorRenderSystem;
 import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.systems.ClientOrbitalMovementSystem;
 import org.megastage.systems.OrbitalMovementSystem;
-import org.megastage.util.ClientGlobals;
 
 /**
  *

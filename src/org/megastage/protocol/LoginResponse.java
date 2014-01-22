@@ -7,7 +7,7 @@ package org.megastage.protocol;
 import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 
 public class LoginResponse extends EventMessage {
     private int id = 0;
