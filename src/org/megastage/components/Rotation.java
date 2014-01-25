@@ -15,7 +15,7 @@ import org.megastage.util.Vector;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class Rotation extends EntityComponent {
+public class Rotation extends BaseComponent {
     public double x=0, y=0, z=0, w=1;
 
     @Override
@@ -32,7 +32,12 @@ public class Rotation extends EntityComponent {
         return null;
     }
 
-    public boolean isUpdated() {
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+    
+    public boolean synchronize() {
         return true;
     }
     

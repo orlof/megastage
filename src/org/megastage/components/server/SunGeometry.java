@@ -9,7 +9,6 @@ import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.components.EntityComponent;
 import org.megastage.client.ClientGlobals;
 import org.megastage.util.Globals;
 
@@ -19,7 +18,7 @@ import org.megastage.util.Globals;
  *
  * @author Orlof
  */
-public class SunGeometry extends EntityComponent {
+public class SunGeometry extends BaseComponent {
     public float radius;
     public float red, green, blue, alpha;
     public float lightRadius;
@@ -36,6 +35,11 @@ public class SunGeometry extends EntityComponent {
         return null;
     }
 
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+    
     @Override
     public void receive(Connection pc, Entity entity) {
         ClientGlobals.spatialManager.setupSunLikeBody(entity, this);

@@ -8,8 +8,8 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
-import org.megastage.components.EntityComponent;
 import org.megastage.client.ClientGlobals;
+import org.megastage.components.BaseComponent;
 
 
     
@@ -17,7 +17,7 @@ import org.megastage.client.ClientGlobals;
  *
  * @author Orlof
  */
-public class EngineGeometry extends EntityComponent {
+public class EngineGeometry extends BaseComponent {
     @Override
     public void receive(Connection pc, Entity entity) {
         if(entity != ClientGlobals.playerEntity) {
@@ -26,9 +26,7 @@ public class EngineGeometry extends EntityComponent {
     }
     
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("PlayerGeometry()");
-        return sb.toString();
+    public boolean replicate() {
+        return true;
     }
 }

@@ -193,7 +193,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
             return;
         }
 
-        Log.info(name + ", " + value + ", " + tpf);
+        Log.trace(name + ", " + value + ", " + tpf);
 
         switch (name) {
             case "WALK_LookLeft":

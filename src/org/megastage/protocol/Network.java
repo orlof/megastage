@@ -6,7 +6,6 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
 import org.megastage.components.EngineData;
-import org.megastage.components.EntityComponent;
 import org.megastage.components.Mass;
 import org.megastage.components.MonitorData;
 import org.megastage.components.Orbit;
@@ -23,6 +22,7 @@ import org.megastage.components.server.ShipGeometry;
 import org.megastage.components.server.SunGeometry;
 import org.megastage.components.server.VoidGeometry;
 import org.megastage.client.ClientGlobals;
+import org.megastage.components.BaseComponent;
 import org.megastage.components.server.Mode;
 import org.megastage.components.server.UsableFlag;
 import org.megastage.util.RAM;
@@ -54,6 +54,7 @@ public class Network {
         kryo.register(Object[].class);
         kryo.register(ComponentMessage.class);
         kryo.register(Bag.class);
+        kryo.register(BaseComponent.class);
         kryo.register(Mass.class);
         kryo.register(Mode.class);
         kryo.register(MonitorData.class);
@@ -83,11 +84,11 @@ public class Network {
     
     static public class ComponentMessage implements Message {
         public int owner;
-        public EntityComponent component;
+        public BaseComponent component;
 
         public ComponentMessage() { /* required for Kryo */ }
         
-        public ComponentMessage(Entity entity, EntityComponent c) {
+        public ComponentMessage(Entity entity, BaseComponent c) {
             owner = entity.getId();
             component = c;
         }

@@ -15,7 +15,7 @@ import org.megastage.util.Vector;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class Position extends EntityComponent {
+public class Position extends BaseComponent {
     public long x, y, z;
     
     public Position() {
@@ -38,7 +38,12 @@ public class Position extends EntityComponent {
     }
 
     @Override
-    public boolean isUpdated() {
+    public boolean replicate() {
+        return true;
+    }
+    
+    @Override
+    public boolean synchronize() {
         return true;
     }
     

@@ -64,10 +64,6 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     
     @Override
     protected void processSystem() {
-//            for(int i=0; i < ServerGlobals.updates.size(); i++) {
-//                Log.info(ServerGlobals.updates.get(i).toString());
-//            }
-        
         Log.trace("Client state refreshed with packet size " + ServerGlobals.updates.size());
         server.sendToAllUDP(ServerGlobals.updates);
         ServerGlobals.updates = null;
@@ -112,8 +108,8 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         connection.sendTCP(new LoginResponse(connection.player.getId()));
         Log.info("Sent player entity id: " + connection.player.toString());
 
-        ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("initialization");
-        Log.info("Sending initialization data for " + entities.size() + " entities.");
+        ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("replicate");
+        Log.info("Creating components for " + entities.size() + " entities.");
 
         for(int i=0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
@@ -122,7 +118,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     }
 
     private void sendComponents(PlayerConnection connection, Entity entity) {
-        Log.trace("Sending components for " + entity.toString());
+        Log.trace("Creating components for " + entity.toString());
 
         Bag<Component> components = entity.getComponents(new Bag<Component>());
         ArrayList list = new ArrayList();
@@ -131,8 +127,8 @@ public class ServerNetworkSystem extends VoidEntitySystem {
             BaseComponent comp = (BaseComponent) components.get(j);
             Log.trace(" Component " + comp.toString());
 
-            Object trans = comp.create(entity);                
-            if(trans != null) {
+            if(comp.replicate()) {
+                Object trans = comp.create(entity);                
                 Log.trace("   Added");
                 list.add(trans);
             }

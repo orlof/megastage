@@ -9,7 +9,7 @@ import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.components.EntityComponent;
+import org.megastage.components.BaseComponent;
 import org.megastage.client.ClientGlobals;
 
 
@@ -18,7 +18,7 @@ import org.megastage.client.ClientGlobals;
  *
  * @author Orlof
  */
-public class MonitorGeometry extends EntityComponent {
+public class MonitorGeometry extends BaseComponent {
     public float width, height;
 
     @Override
@@ -29,6 +29,11 @@ public class MonitorGeometry extends EntityComponent {
         return null;
     }
 
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+    
     @Override
     public void receive(Connection pc, Entity entity) {
         ClientGlobals.spatialManager.setupMonitor(entity, this);

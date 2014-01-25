@@ -8,6 +8,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.EngineData;
+import org.megastage.protocol.Network;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector;
 
@@ -107,17 +108,22 @@ public class Engine extends DCPUHardware {
     public EngineData data = new EngineData();
 
     @Override
-    public Object create(Entity entity) {
+    public Network.ComponentMessage create(Entity entity) {
         dirty = false;
 
         data.power = powerActual;
         return data.create(entity);
     }
 
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+    
     private boolean dirty = false;
 
     @Override
-    public boolean isUpdated() {
+    public boolean synchronize() {
         return dirty;
     }
     
