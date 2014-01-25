@@ -3,9 +3,11 @@ package org.megastage.components;
 import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.protocol.Network;
 
 /**
  * MegaStage
@@ -17,15 +19,23 @@ public abstract class BaseComponent extends Component {
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
         return null;
     }
-
-    public Object create(Entity entity) { 
-        return null; 
+    
+    public boolean replicate() {
+        return false;
     }
 
-    public boolean isUpdated() {
+    public boolean synchronize() {
         return false;
     }
     
+    public Network.ComponentMessage create(Entity entity) {
+        return new Network.ComponentMessage(entity, this);
+    }
+
+    public void receive(Connection pc, Entity entity) {
+        entity.addComponent(this);
+    }
+
     protected static boolean hasValue(Element config, String arrtName) {
         return config.getAttribute(arrtName) != null;
     }

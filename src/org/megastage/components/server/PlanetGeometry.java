@@ -10,7 +10,6 @@ import com.esotericsoftware.kryonet.Connection;
 import java.util.concurrent.Callable;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.components.EntityComponent;
 import org.megastage.systems.ClientNetworkSystem;
 import org.megastage.client.ClientGlobals;
 
@@ -20,7 +19,7 @@ import org.megastage.client.ClientGlobals;
  *
  * @author Orlof
  */
-public class PlanetGeometry extends EntityComponent {
+public class PlanetGeometry extends BaseComponent {
     public int center;
     public float radius;
     public String generator;
@@ -37,6 +36,11 @@ public class PlanetGeometry extends EntityComponent {
         return null;
     }
 
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+    
     @Override
     public void receive(Connection pc, Entity entity) {
         // center = ClientGlobals.artemis.get(center).getId();

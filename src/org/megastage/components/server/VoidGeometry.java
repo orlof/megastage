@@ -5,12 +5,8 @@
 package org.megastage.components.server;
 
 import com.artemis.Entity;
-import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
-import java.util.concurrent.Callable;
-import org.jdom2.Element;
-import org.megastage.components.EntityComponent;
-import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.components.BaseComponent;
 import org.megastage.client.ClientGlobals;
 
 
@@ -19,8 +15,13 @@ import org.megastage.client.ClientGlobals;
  *
  * @author Orlof
  */
-public class VoidGeometry extends EntityComponent {
+public class VoidGeometry extends BaseComponent {
 
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+    
     @Override
     public void receive(Connection pc, Entity entity) {
         ClientGlobals.spatialManager.setupVoidNode(entity, this);

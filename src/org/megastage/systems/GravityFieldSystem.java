@@ -7,7 +7,7 @@ import com.artemis.EntitySystem;
 import com.artemis.annotations.Mapper;
 import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.minlog.Log;
-import org.megastage.components.GravityField;
+import org.megastage.components.GravityFieldFlag;
 import org.megastage.components.Mass;
 import org.megastage.components.Position;
 import org.megastage.util.Globals;
@@ -21,14 +21,14 @@ import org.megastage.util.Vector;
  * To change this template use File | Settings | File Templates.
  */
 public class GravityFieldSystem extends EntitySystem {
-    @Mapper ComponentMapper<GravityField> GRAVITY_FIELD;
+    @Mapper ComponentMapper<GravityFieldFlag> GRAVITY_FIELD;
     @Mapper ComponentMapper<Position> POSITION;
     @Mapper ComponentMapper<Mass> MASS;
     
     private ImmutableBag<Entity> entitiesWithGravityField;
 
     public GravityFieldSystem() {
-        super(Aspect.getAspectForAll(GravityField.class, Position.class, Mass.class));
+        super(Aspect.getAspectForAll(GravityFieldFlag.class, Position.class, Mass.class));
     }
 
     @Override

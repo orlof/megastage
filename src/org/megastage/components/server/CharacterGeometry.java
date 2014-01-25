@@ -9,7 +9,6 @@ import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.components.EntityComponent;
 import org.megastage.client.ClientGlobals;
 
 
@@ -18,7 +17,7 @@ import org.megastage.client.ClientGlobals;
  *
  * @author Orlof
  */
-public class CharacterGeometry extends EntityComponent {
+public class CharacterGeometry extends BaseComponent {
     public float red, green, blue, alpha;
 
     @Override
@@ -31,6 +30,11 @@ public class CharacterGeometry extends EntityComponent {
         return null;
     }
 
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+    
     @Override
     public void receive(Connection pc, Entity entity) {
         if(entity != ClientGlobals.playerEntity) {

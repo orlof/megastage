@@ -12,7 +12,7 @@ import static org.megastage.components.BaseComponent.getDoubleValue;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class FixedRotation extends EntityComponent {
+public class FixedRotation extends BaseComponent {
     public double speed_x, speed_y, speed_z;
     public double period_x, period_y, period_z;
 
@@ -28,6 +28,11 @@ public class FixedRotation extends EntityComponent {
         return null;
     }
 
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+    
     public double getX(long time) {
         return (time * speed_x)  % (2.0 * Math.PI);
     }

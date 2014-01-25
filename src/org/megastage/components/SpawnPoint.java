@@ -14,7 +14,7 @@ import org.megastage.util.Vector;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class SpawnPoint extends EntityComponent {
+public class SpawnPoint extends BaseComponent {
     public int x, y, z;
 
     @Override
@@ -26,6 +26,11 @@ public class SpawnPoint extends EntityComponent {
         return null;
     }
 
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+    
     public Vector3f getAsVector() {
         return new Vector3f(x, y, z);
     }

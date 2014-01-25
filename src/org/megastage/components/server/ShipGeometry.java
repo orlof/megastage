@@ -10,7 +10,6 @@ import com.esotericsoftware.kryonet.Connection;
 import java.util.List;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.components.EntityComponent;
 import org.megastage.components.Mass;
 import org.megastage.client.ClientGlobals;
 import org.megastage.util.ServerGlobals;
@@ -22,7 +21,7 @@ import org.megastage.util.Vector;
  *
  * @author Orlof
  */
-public class ShipGeometry extends EntityComponent {
+public class ShipGeometry extends BaseComponent {
     public float xCenter, yCenter, zCenter;
     public long updateTime;
     
@@ -83,6 +82,11 @@ public class ShipGeometry extends EntityComponent {
         }
         
         return inertia;
+    }
+    
+    @Override
+    public boolean replicate() {
+        return true;
     }
     
     @Override

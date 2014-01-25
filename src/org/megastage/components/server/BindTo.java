@@ -9,7 +9,6 @@ import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.components.EntityComponent;
 import org.megastage.protocol.Network;
 import org.megastage.client.ClientGlobals;
 
@@ -17,7 +16,7 @@ import org.megastage.client.ClientGlobals;
  * This entity's position and rotation are relative to parent
  * @author Orlof
  */
-public class BindTo extends EntityComponent {
+public class BindTo extends BaseComponent {
     public int parent; 
     
     @Override
@@ -28,10 +27,10 @@ public class BindTo extends EntityComponent {
     }
 
     @Override
-    public Network.ComponentMessage create(Entity entity) {
-        return new Network.ComponentMessage(entity, this);
+    public boolean replicate() {
+        return true;
     }
-
+    
     @Override
     public void receive(Connection pc, Entity entity) {
         Entity parentEntity = ClientGlobals.artemis.toClientEntity(parent);
@@ -45,6 +44,7 @@ public class BindTo extends EntityComponent {
         }
     }
 
+    @Override
     public String toString() {
         return "BindTo(serverID=" + parent + ")";
     }

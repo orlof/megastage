@@ -10,7 +10,7 @@ import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.server.BindTo;
-import org.megastage.components.server.Update;
+import org.megastage.components.server.UpdateFlag;
 import org.megastage.util.ServerGlobals;
 
 public class ServerCleanupSystem extends EntityProcessingSystem {

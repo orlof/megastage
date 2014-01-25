@@ -7,7 +7,7 @@ package org.megastage.components.server;
 import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.client.ClientGlobals;
-import org.megastage.components.EntityComponent;
+import org.megastage.components.BaseComponent;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.Network;
 
@@ -15,12 +15,17 @@ import org.megastage.protocol.Network;
  * This entity's position and rotation are relative to parent
  * @author Orlof
  */
-public class Mode extends EntityComponent {
+public class Mode extends BaseComponent {
     public int mode = CharacterMode.WALK; 
     public boolean isDirty = true;
 
     @Override
-    public boolean isUpdated() {
+    public boolean replicate() {
+        return true;
+    }
+    
+    @Override
+    public boolean synchronize() {
         return isDirty;
     }
 

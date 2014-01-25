@@ -7,6 +7,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.MonitorData;
+import org.megastage.protocol.Network;
 
 public class VirtualMonitor extends DCPUHardware {
     public MonitorData data = new MonitorData();
@@ -23,7 +24,12 @@ public class VirtualMonitor extends DCPUHardware {
     }
     
     @Override
-    public boolean isUpdated() {
+    public boolean replicate() {
+        return true;
+    }
+    
+    @Override
+    public boolean synchronize() {
         boolean videoChanged = data.videoAddr == 0 ?
                 data.video.update(LEMUtil.defaultVideo):
                 data.video.update(dcpu.ram, data.videoAddr, 384);
@@ -40,7 +46,7 @@ public class VirtualMonitor extends DCPUHardware {
     }
 
     @Override
-    public Object create(Entity entity) {
+    public Network.ComponentMessage create(Entity entity) {
         Log.trace("video   [" + ((int) data.videoAddr) + "] " + data.video.toString());
         Log.trace("font    [" + ((int) data.fontAddr) + "] " + data.font.toString());
         Log.trace("palette [" + ((int) data.paletteAddr) + "] " + data.palette.toString());

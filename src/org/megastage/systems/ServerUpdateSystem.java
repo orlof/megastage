@@ -8,7 +8,7 @@ import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.BaseComponent;
-import org.megastage.components.server.Update;
+import org.megastage.components.server.UpdateFlag;
 import org.megastage.util.ServerGlobals;
 
 public class ServerUpdateSystem extends EntitySystem {
@@ -16,7 +16,7 @@ public class ServerUpdateSystem extends EntitySystem {
     private long acc;
     
     public ServerUpdateSystem(long interval) {
-        super(Aspect.getAspectForAll(Update.class));
+        super(Aspect.getAspectForAll(UpdateFlag.class));
         this.interval = interval;
     }
 
@@ -42,7 +42,7 @@ public class ServerUpdateSystem extends EntitySystem {
 
             for(int j=0; j < components.size(); j++) {
                 BaseComponent baseComponent = (BaseComponent) components.get(j);
-                if(baseComponent.isUpdated()) {
+                if(baseComponent.synchronize()) {
                     Object transferable = baseComponent.create(entity);
                     bag.add(transferable);
                 }
