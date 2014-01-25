@@ -64,7 +64,7 @@ public class Main extends SimpleApplication {
         CameraNode camNode = new CameraNode("main", cam);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         ClientGlobals.playerNode.attachChild(camNode);
-        camNode.setLocalTranslation(0, 1.5f, 0);
+        camNode.setLocalTranslation(0, 1.0f, 0);
         ClientGlobals.cam = cam;
         
         ClientGlobals.rootNode = rootNode;

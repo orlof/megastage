@@ -30,9 +30,9 @@ public class Mode extends EntityComponent {
     }
 
     @Override
-    public Network.EntityData create(Entity entity) {
+    public Network.ComponentMessage create(Entity entity) {
         isDirty = false;
-        return new Network.EntityData(entity, this);
+        return new Network.ComponentMessage(entity, this);
     }
     
     

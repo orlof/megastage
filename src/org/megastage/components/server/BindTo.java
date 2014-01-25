@@ -28,8 +28,8 @@ public class BindTo extends EntityComponent {
     }
 
     @Override
-    public Network.EntityData create(Entity entity) {
-        return new Network.EntityData(entity, this);
+    public Network.ComponentMessage create(Entity entity) {
+        return new Network.ComponentMessage(entity, this);
     }
 
     @Override
