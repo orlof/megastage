@@ -121,40 +121,19 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         }
     }
 
-    private void handleKeyEventMessage(PlayerConnection connection, Network.KeyEvent packet) {
-        if(connection.item == null) return;
-        
-        VirtualKeyboard kbd = (VirtualKeyboard) connection.item;
-
-        if(packet instanceof Network.KeyTyped) {
-            kbd.keyTyped(packet.key);
-
-        } else if(packet instanceof Network.KeyPressed) {
-            kbd.keyPressed(packet.key);
-
-        } else if(packet instanceof Network.KeyReleased) {
-            kbd.keyReleased(packet.key);
-        }
-    }
-
-//    public void broadcastMonitorData(Entity entity) {
-//        VirtualMonitor mon = entity.getComponent(VirtualMonitor.class);
-//        server.sendToAllUDP(mon.create(entity));
-//    }
-//    
     private void sendComponents(PlayerConnection connection, Entity entity) {
-        Log.debug("Sending components for " + entity.toString());
+        Log.trace("Sending components for " + entity.toString());
 
         Bag<Component> components = entity.getComponents(new Bag<Component>());
         ArrayList list = new ArrayList();
 
         for(int j=0; j < components.size(); j++) {
             BaseComponent comp = (BaseComponent) components.get(j);
-            Log.debug(" Component " + comp.toString());
+            Log.trace(" Component " + comp.toString());
 
             Object trans = comp.create(entity);                
             if(trans != null) {
-                Log.debug("   Added");
+                Log.trace("   Added");
                 list.add(trans);
             }
         }
@@ -188,7 +167,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         
         Vector vel = new Vector(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
         
-        vel = vel.multiply(50000000);
+        vel = vel.multiply(50000);
         
         Position shipPos = ship.getComponent(Position.class);
         shipPos.x += vel.x;
@@ -218,6 +197,24 @@ public class ServerNetworkSystem extends VoidEntitySystem {
             case Action.UNPICK_ITEM:
                 unpickItem(connection, cmd);
                 break;
+        }
+
+        if(cmd.keyEventPtr > 0 && connection.item != null) {
+            VirtualKeyboard kbd = (VirtualKeyboard) connection.item;
+
+            for(int i=0; i < cmd.keyEventPtr; /*NOP*/ ) {
+                switch(cmd.keyEvents[i++]) {
+                    case 'T':
+                        kbd.keyTyped(cmd.keyEvents[i++]);
+                        break;
+                    case 'P':
+                        kbd.keyPressed(cmd.keyEvents[i++]);
+                        break;
+                    case 'R':
+                        kbd.keyReleased(cmd.keyEvents[i++]);
+                        break;
+                }
+            }
         }
         
         //connection.sendUDP(shipRotation.create(ship));
@@ -269,9 +266,6 @@ public class ServerNetworkSystem extends VoidEntitySystem {
             } else if(o instanceof Network.Logout) {
                 handleLogoutMessage(pc, (Network.Logout) o);
 
-            } else if(o instanceof Network.KeyEvent) {
-                handleKeyEventMessage(pc, (Network.KeyEvent) o);
-            
             } else if(o instanceof UserCommand) {
                 handleUserCmd(pc, (UserCommand) o);
             }

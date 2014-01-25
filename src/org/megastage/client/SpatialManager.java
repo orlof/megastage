@@ -321,7 +321,7 @@ public class SpatialManager {
 
         Geometry head = new Geometry(entity.toString(), new Box(0.25f, 0.25f, 0.25f));
         head.setMaterial(mat);
-        head.setLocalTranslation(0, 1.5f, 0);
+        head.setLocalTranslation(0, 1.0f, 0);
         
         final Node node = getNode(entity);
         node.addControl(new PositionControl(entity));

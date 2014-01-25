@@ -105,6 +105,4 @@ public class VirtualKeyboard extends DCPUHardware {
             doInterrupt = false;
         }
     }
-
-
 }

@@ -85,10 +85,11 @@ public class DCPURawInputListener implements RawInputListener {
         }
 
         pressed.put(keyCode, keyChar);
-        Log.info("KeyPressed(keyChar=" + Integer.toHexString(keyChar) + ")");
-        ClientGlobals.network.sendKeyPressed(keyChar);
-        Log.info("KeyTyped(keyChar=" + Integer.toHexString(keyChar) + ")");
-        ClientGlobals.network.sendKeyTyped(keyChar);
+        Log.trace("KeyPressed(keyChar=" + Integer.toHexString(keyChar) + ")");
+        ClientGlobals.userCommand.keyPressed(keyChar);
+
+        Log.trace("KeyTyped(keyChar=" + Integer.toHexString(keyChar) + ")");
+        ClientGlobals.userCommand.keyTyped(keyChar);
         return true;
     }
 
@@ -97,8 +98,8 @@ public class DCPURawInputListener implements RawInputListener {
         Character keyChar = pressed.get(keyCode);
 
         if(keyChar != null) {
-            Log.info("KeyReleased(keyChar=" + Integer.toHexString(keyChar) + ")");
-            ClientGlobals.network.sendKeyReleased(keyChar);
+            Log.trace("KeyReleased(keyChar=" + Integer.toHexString(keyChar) + ")");
+            ClientGlobals.userCommand.keyReleased(keyChar);
         }
 
         return true;

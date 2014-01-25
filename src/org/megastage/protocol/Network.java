@@ -52,7 +52,7 @@ public class Network {
         kryo.register(boolean[][].class);
         kryo.register(boolean[][][].class);
         kryo.register(Object[].class);
-        kryo.register(EntityData.class);
+        kryo.register(ComponentMessage.class);
         kryo.register(Bag.class);
         kryo.register(Mass.class);
         kryo.register(Mode.class);
@@ -81,20 +81,13 @@ public class Network {
     static public class Login extends EventMessage {}
     static public class Logout extends EventMessage {}
     
-    static public abstract class KeyEvent extends EventMessage {
-        public int key;
-    }
-    static public class KeyPressed extends KeyEvent {}
-    static public class KeyTyped extends KeyEvent {}
-    static public class KeyReleased extends KeyEvent {}
-
-    static public class EntityData implements Message {
+    static public class ComponentMessage implements Message {
         public int owner;
         public EntityComponent component;
 
-        public EntityData() { /* required for Kryo */ }
+        public ComponentMessage() { /* required for Kryo */ }
         
-        public EntityData(Entity entity, EntityComponent c) {
+        public ComponentMessage(Entity entity, EntityComponent c) {
             owner = entity.getId();
             component = c;
         }
@@ -108,7 +101,7 @@ public class Network {
         }
         
         public String toString() {
-            return "EntityData(" + owner + ", " + component.toString() + ")";
+            return "ComponentMessage(" + owner + ", " + component.toString() + ")";
         }
     }
 }

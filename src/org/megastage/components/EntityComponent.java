@@ -14,8 +14,8 @@ import org.megastage.protocol.Network;
  */
 public abstract class EntityComponent extends BaseComponent {
     @Override
-    public Network.EntityData create(Entity entity) {
-        return new Network.EntityData(entity, this);
+    public Network.ComponentMessage create(Entity entity) {
+        return new Network.ComponentMessage(entity, this);
     }
     
     public void receive(Connection pc, Entity entity) {

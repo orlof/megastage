@@ -16,11 +16,8 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import org.megastage.components.Rotation;
-import org.megastage.protocol.Action;
 import org.megastage.protocol.CharacterMode;
 
 /**
@@ -76,12 +73,12 @@ public class CommandHandler implements AnalogListener, ActionListener {
             CollisionResult closest = results.getClosestCollision();
             Node target = closest.getGeometry().getParent();
             
-            Log.info("original: " + target.toString());
+            Log.trace("original: " + target.toString());
 
             Entity entity = null;
             while(true) {
                 if(target == ClientGlobals.rootNode) {
-                    Log.info("Picked rootNode");
+                    Log.trace("Picked rootNode");
                     return;
                 }
 
@@ -196,7 +193,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
             return;
         }
 
-        Log.trace(name);
+        Log.info(name + ", " + value + ", " + tpf);
 
         switch (name) {
             case "WALK_LookLeft":
@@ -296,7 +293,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
     protected float rotationSpeed = 1f;
     protected float walkSpeed = 3f;
-    protected float shipSpeed = 10000f;
+    protected float shipSpeed = 100f;
     protected boolean invertY = true;
 
     public void setWalkSpeed(float walkSpeed) {

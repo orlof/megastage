@@ -12,7 +12,6 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.protocol.Network;
 
 import java.io.IOException;
-import java.util.concurrent.Callable;
 import org.megastage.protocol.Message;
 import org.megastage.client.ClientGlobals;
 
@@ -79,24 +78,6 @@ public class ClientNetworkSystem extends EntitySystem {
             client.sendUDP(ClientGlobals.userCommand);
             ClientGlobals.userCommand.reset();
         }
-    }
-
-    public void sendKeyTyped(int key) {
-        Network.KeyEvent keyEvent = new Network.KeyTyped();
-        keyEvent.key = key;
-        client.sendUDP(keyEvent);
-    }
-
-    public void sendKeyPressed(int key) {
-        Network.KeyEvent keyEvent = new Network.KeyPressed();
-        keyEvent.key = key;
-        client.sendUDP(keyEvent);
-    }
-
-    public void sendKeyReleased(int key) {
-        Network.KeyEvent keyEvent = new Network.KeyReleased();
-        keyEvent.key = key;
-        client.sendUDP(keyEvent);
     }
 
     public void sendLogin() {
