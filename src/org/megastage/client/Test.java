@@ -10,8 +10,11 @@ package org.megastage.client;
  */
 public class Test {
     public static void main(String[] args) throws Exception {
-        A b = (A) new B();
-        System.out.println(b.get());
+        A a = new A();
+        B b = new B();
+        System.out.println(a.getClass().isAssignableFrom(b.getClass()));
+        System.out.println(b.getClass().isAssignableFrom(a.getClass()));
+        System.out.println(a.getClass().isAssignableFrom(a.getClass()));
     }
 }
 

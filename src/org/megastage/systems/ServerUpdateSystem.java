@@ -44,13 +44,12 @@ public class ServerUpdateSystem extends EntitySystem {
                 BaseComponent baseComponent = (BaseComponent) components.get(j);
                 if(baseComponent.isUpdated()) {
                     Object transferable = baseComponent.create(entity);
-                    if(transferable != null) {
-                        bag.add(transferable);
-                    }
+                    bag.add(transferable);
                 }
             }
         }
         
+        Log.trace("Client state packet size updated: " + bag.size());
         ServerGlobals.updates = bag;
     }	
     

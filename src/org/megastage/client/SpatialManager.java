@@ -18,6 +18,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.LightNode;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
 import com.jme3.scene.shape.Quad;
@@ -44,6 +45,7 @@ import org.megastage.components.server.CharacterGeometry;
 import org.megastage.components.server.EngineGeometry;
 import org.megastage.components.server.ShipGeometry;
 import org.megastage.components.server.SunGeometry;
+import org.megastage.components.server.UsableFlag;
 import org.megastage.components.server.VoidGeometry;
 
 /**
@@ -56,12 +58,32 @@ public class SpatialManager {
     private final AssetManager assetManager;
 
     private HashMap<Integer, Node> nodes = new HashMap<>();
+    private HashMap<Node, Entity> entities = new HashMap<>();
     
     public SpatialManager(SimpleApplication app) {
         this.app = app;
         assetManager = app.getAssetManager();
     }
 
+    public Entity getEntity(Node node) {
+        Entity entity = entities.get(node);
+        if(entity == null) {
+            Log.info(node.toString() + " -> no entity");
+            return null;
+        }
+
+        Log.info(node.toString() + " -> " + entity.toString());
+        
+        UsableFlag use = entity.getComponent(UsableFlag.class);
+        if(use != null) {
+            Log.info("Match");
+            return entity;
+        }
+        
+        Log.info("Not Usable");
+        return null;
+    }
+    
     private Node getNode(Entity entity) {
         int id = entity.getId();
         Node node = nodes.get(id);
@@ -69,6 +91,7 @@ public class SpatialManager {
         if(node == null) {
             node = new Node(entity.toString());
             nodes.put(id, node);
+            entities.put(node, entity);
         }
         
         return node;
@@ -95,7 +118,7 @@ public class SpatialManager {
             @Override
             public Object call() throws Exception {
                 parentNode.attachChild(childNode);
-                Log.info("Attach " + parentNode.getName() + " <- " + childNode.getName());
+                Log.info("BindTo " + childNode.getName() + " -> " + parentNode.getName());
                 return null;
             }
         });

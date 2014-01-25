@@ -34,7 +34,7 @@ public class GravityFieldSystem extends EntitySystem {
     @Override
     protected void processEntities(ImmutableBag<Entity> entities) {
         entitiesWithGravityField = entities;
-        Log.debug("Number of Gravity fields: " + entitiesWithGravityField.size());
+        Log.trace("Number of Gravity fields: " + entitiesWithGravityField.size());
     }
 
     @Override
@@ -43,7 +43,7 @@ public class GravityFieldSystem extends EntitySystem {
     }
     
     public Vector getGravityField(Position coordinates) {
-        Log.debug("Calculating gravity field in position " + coordinates.toString());
+        Log.trace("Calculating gravity field in position " + coordinates.toString());
         Vector acc = new Vector();
 
         for(int i=0; i < entitiesWithGravityField.size(); i++) {
@@ -52,7 +52,7 @@ public class GravityFieldSystem extends EntitySystem {
             Position position = POSITION.get(entity);
             Mass mass = MASS.get(entity);
             
-            Log.debug(entity.toString() + " position " + position.toString() + " mass " + mass.toString());
+            Log.trace(entity.toString() + " position " + position.toString() + " mass " + mass.toString());
 
             double dx = (position.x - coordinates.x) / 1000.0;
             double dy = (position.y - coordinates.y) / 1000.0;
@@ -65,7 +65,7 @@ public class GravityFieldSystem extends EntitySystem {
 
             acc = acc.add(multiplier * dx, multiplier * dy, multiplier * dz);
             
-            Log.debug("Acceleration: " + acc.toString());
+            Log.trace("Acceleration: " + acc.toString());
         }
 
         return acc;

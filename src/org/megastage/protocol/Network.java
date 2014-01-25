@@ -23,7 +23,8 @@ import org.megastage.components.server.ShipGeometry;
 import org.megastage.components.server.SunGeometry;
 import org.megastage.components.server.VoidGeometry;
 import org.megastage.client.ClientGlobals;
-import org.megastage.util.Globals;
+import org.megastage.components.server.Mode;
+import org.megastage.components.server.UsableFlag;
 import org.megastage.util.RAM;
 import org.megastage.util.Vector;
 
@@ -54,6 +55,7 @@ public class Network {
         kryo.register(EntityData.class);
         kryo.register(Bag.class);
         kryo.register(Mass.class);
+        kryo.register(Mode.class);
         kryo.register(MonitorData.class);
         kryo.register(EngineData.class);
         kryo.register(Orbit.class);
@@ -72,6 +74,7 @@ public class Network {
         kryo.register(CharacterGeometry.class);
         kryo.register(Vector.class);
         kryo.register(LoginResponse.class);
+        kryo.register(UsableFlag.class);
         kryo.register(UserCommand.class);
     }
 

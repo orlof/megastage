@@ -20,7 +20,11 @@ import org.megastage.components.BaseComponent;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.components.SpawnPoint;
+import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.server.BindTo;
+import org.megastage.components.server.Mode;
+import org.megastage.protocol.Action;
+import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.LoginResponse;
 import org.megastage.protocol.UserCommand;
 import org.megastage.server.TemplateManager;
@@ -63,6 +67,8 @@ public class ServerNetworkSystem extends VoidEntitySystem {
 //            for(int i=0; i < ServerGlobals.updates.size(); i++) {
 //                Log.info(ServerGlobals.updates.get(i).toString());
 //            }
+        
+        Log.trace("Client state refreshed with packet size " + ServerGlobals.updates.size());
         server.sendToAllUDP(ServerGlobals.updates);
         ServerGlobals.updates = null;
     }
@@ -104,6 +110,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         pos.z = 1000 * sp.z;
         
         connection.sendTCP(new LoginResponse(connection.player.getId()));
+        Log.info("Sent player entity id: " + connection.player.toString());
 
         ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("initialization");
         Log.info("Sending initialization data for " + entities.size() + " entities.");
@@ -114,22 +121,10 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         }
     }
 
-    /*
-    private void handleUseMessage(PlayerConnection connection, UseData packet) {
-        Entity item = world.getEntity(packet.entityID);
-        Entity player = connection.player;
-
-        ItemInUse comp = new ItemInUse();
-        comp.entity = item;
-
-        player.addComponent(comp);
-    }
-*/
     private void handleKeyEventMessage(PlayerConnection connection, Network.KeyEvent packet) {
-        ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("keyboard");
-        Entity entity = entities.get(0);
-
-        VirtualKeyboard kbd = entity.getComponent(VirtualKeyboard.class);
+        if(connection.item == null) return;
+        
+        VirtualKeyboard kbd = (VirtualKeyboard) connection.item;
 
         if(packet instanceof Network.KeyTyped) {
             kbd.keyTyped(packet.key);
@@ -215,8 +210,43 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         shipRotationQuaternion = xRotation.multiply(shipRotationQuaternion).normalize();
 
         shipRotation.set(shipRotationQuaternion);
+
+        switch(cmd.action) {
+            case Action.PICK_ITEM:
+                pickItem(connection, cmd);
+                break;
+            case Action.UNPICK_ITEM:
+                unpickItem(connection, cmd);
+                break;
+        }
         
         //connection.sendUDP(shipRotation.create(ship));
+    }
+
+    private void unpickItem(PlayerConnection connection, UserCommand cmd) {
+        connection.item = null;
+        Mode mode = connection.player.getComponent(Mode.class);
+        mode.setMode(CharacterMode.WALK);
+    }
+    
+    private void pickItem(PlayerConnection connection, UserCommand cmd) {
+        Entity target = world.getEntity(cmd.pick);
+        if(target == null) {
+            Log.info("pick for null item!!!");
+            return;
+        }
+        
+        // TODO check distance
+        // Position pos = connection.player.getComponent(Position.class);
+        // ===================
+
+        VirtualMonitor virtualMonitor = target.getComponent(VirtualMonitor.class);
+        if(virtualMonitor != null) {
+            connection.item = virtualMonitor.getHardware(VirtualKeyboard.class);
+            Log.info("" + connection.item.toString());
+            Mode mode = connection.player.getComponent(Mode.class);
+            mode.setMode(CharacterMode.DCPU);
+        }
     }
 
     private class ServerNetworkListener extends Listener {
@@ -230,7 +260,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
 
         @Override
         public void received(Connection connection, Object o) {
-            Log.debug("Received: " + o.getClass().getName());
+            Log.trace("Received: " + o.getClass().getName());
             PlayerConnection pc = (PlayerConnection) connection;
 
             if(o instanceof Network.Login) {

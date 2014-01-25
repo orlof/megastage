@@ -4,15 +4,24 @@
  */
 package org.megastage.client;
 
+import com.artemis.Entity;
 import com.esotericsoftware.minlog.Log;
+import com.jme3.collision.CollisionResult;
+import com.jme3.collision.CollisionResults;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.*;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
+import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import org.megastage.components.Rotation;
+import org.megastage.protocol.Action;
+import org.megastage.protocol.CharacterMode;
 
 /**
  * A first person view camera controller. After creation, you must register the
@@ -59,11 +68,37 @@ public class CommandHandler implements AnalogListener, ActionListener {
         "GAME_Exit",
     };
 
-    public enum Mode {
-        WALK, DCPU
+    private void pickItem() {
+        CollisionResults results = new CollisionResults();
+        Ray ray = new Ray(ClientGlobals.cam.getLocation(), ClientGlobals.cam.getDirection());
+        ClientGlobals.rootNode.collideWith(ray, results);
+        if(results.size() > 0) {
+            CollisionResult closest = results.getClosestCollision();
+            Node target = closest.getGeometry().getParent();
+            
+            Log.info("original: " + target.toString());
+
+            Entity entity = null;
+            while(true) {
+                if(target == ClientGlobals.rootNode) {
+                    Log.info("Picked rootNode");
+                    return;
+                }
+
+                entity = ClientGlobals.spatialManager.getEntity(target);
+                if(entity != null) break;
+                target = target.getParent();
+            }
+
+            ClientGlobals.userCommand.pickItem(entity);
+        }
+    }
+    
+    private void unpickItem() {
+        ClientGlobals.userCommand.unpickItem();
     }
 
-    public Mode mode = Mode.WALK;
+    public int mode = CharacterMode.WALK;
     private InputManager inputManager;
     private DCPURawInputListener dcpuListener = new DCPURawInputListener();
 
@@ -86,13 +121,26 @@ public class CommandHandler implements AnalogListener, ActionListener {
         inputManager.setCursorVisible(false);
     }
 
-    private void initWalkMode() {
-        mode = Mode.WALK;
+    public void changeMode(int newMode) {
+        if(newMode == mode) return;
+        
+        Log.info("Mode change " + mode + " -> " + newMode);
+        
+        switch(newMode) {
+            case CharacterMode.WALK:
+                initWalkMode();
+                break;
+            case CharacterMode.DCPU:
+                initDCPUMode();
+                break;
+        }
+    }
+    
+    public void initWalkMode() {
+        mode = CharacterMode.WALK;
 
         inputManager.clearMappings();
         inputManager.clearRawInputListeners();
-
-        inputManager.addListener(this, walkMappings);
 
         inputManager.addMapping("WALK_LookLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
         inputManager.addMapping("WALK_LookRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
@@ -120,15 +168,14 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
         inputManager.addMapping("ITEM_Use", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
+
+        inputManager.addListener(this, walkMappings);
     }
 
-    private void initDCPUMode() {
-        mode = Mode.DCPU;
+    public void initDCPUMode() {
+        mode = CharacterMode.DCPU;
 
         inputManager.clearMappings();
-
-        inputManager.addRawInputListener(dcpuListener);
-        inputManager.addListener(this, dcpuMappings);
 
         inputManager.addMapping("WALK_LookLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
         inputManager.addMapping("WALK_LookRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
@@ -137,13 +184,19 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
         inputManager.addMapping("DCPU_Exit", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
+
+        inputManager.addRawInputListener(dcpuListener);
+        inputManager.addListener(this, dcpuMappings);
     }
 
     @Override
     public void onAnalog(String name, float value, float tpf) {
         if (ClientGlobals.playerEntity == null) {
+            Log.info("playerEntity=null, not processed: " + name);
             return;
         }
+
+        Log.trace(name);
 
         switch (name) {
             case "WALK_LookLeft":
@@ -211,7 +264,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
     @Override
     public void onAction(String name, boolean value, float tpf) {
-        Log.info(name);
+        Log.trace(name);
 
         switch (name) {
             case "WALK_InvertY":
@@ -223,13 +276,14 @@ public class CommandHandler implements AnalogListener, ActionListener {
             case "ITEM_Use":
                 // Toggle on the up.
                 if (!value) {
-                    initDCPUMode();
+                    //initDCPUMode();
+                    pickItem();
                 }
                 break;
             case "DCPU_Exit":
                 // Toggle on the up.
                 if (!value) {
-                    initWalkMode();
+                    unpickItem();
                 }
                 break;
             case "GAME_Exit":

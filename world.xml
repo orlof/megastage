@@ -146,9 +146,10 @@
             <component type="server.BindTo"/>
             <component type="dcpu.DCPU" bootrom="admiral.bin"/>
             <entity name="LEM">
+                <component type="dcpu.VirtualMonitor"/>
+                <component type="server.UsableFlag"/>
                 <component type="Position" dx="2" dy="2" dz="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <component type="dcpu.VirtualMonitor"/>
                 <component type="server.MonitorGeometry" width="3" height="2"/>
                 <component type="server.BindTo"/>
                 <component type="server.Update"/>
@@ -183,6 +184,7 @@
     </entity>
 
     <entity-template name="Player">
+        <component type="server.Mode"/>
         <component type="Position" x="0" y="0" z="0"/>
         <component type="Rotation"/>
         <component type="server.CharacterGeometry"/>
@@ -261,6 +263,7 @@
                 <component type="dcpu.VirtualMonitor"/>
                 <component type="server.MonitorGeometry" width="3" height="2"/>
                 <component type="server.BindTo"/>
+                <component type="server.UsableFlag"/>
                 <component type="server.Update"/>
                 <group name="initialization"/>
             </entity>
