@@ -2,6 +2,7 @@ package org.megastage.client;
 
 import com.artemis.Entity;
 import com.cubes.CubesSettings;
+import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import org.megastage.client.ArtemisState;
 import org.megastage.client.Main;
@@ -41,6 +42,7 @@ public class ClientGlobals {
     public static SpatialManager spatialManager;
     public static ArtemisState artemis;
     public static String serverHost = "localhost";
+    public static Camera cam;
     
     public static class GFXQuality {
         public static int SPHERE_Z_SAMPLES = 32;

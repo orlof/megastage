@@ -1,5 +1,6 @@
 package org.megastage.protocol;
 
+import com.artemis.Component;
 import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 
@@ -12,4 +13,5 @@ import com.esotericsoftware.kryonet.Connection;
  */
 public class PlayerConnection extends Connection {
     public Entity player;
+    public Component item;
 }

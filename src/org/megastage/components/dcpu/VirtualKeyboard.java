@@ -40,7 +40,7 @@ public class VirtualKeyboard extends DCPUHardware {
     }
 
     public void keyTyped(int key) {
-        Log.debug("KeyTyped(" + Integer.toHexString(key) + ")");
+        Log.trace("KeyTyped(" + Integer.toHexString(key) + ")");
 
         if (key < 20 || key >= 127) return;
         if (keyBuffer[kwp & 0x3F] == 0) {
@@ -51,7 +51,7 @@ public class VirtualKeyboard extends DCPUHardware {
     }
 
     public void keyPressed(int key) {
-        Log.debug("KeyPressed(" + Integer.toHexString(key) + ")");
+        Log.trace("KeyPressed(" + Integer.toHexString(key) + ")");
 
         int i = key; //keyMapping.getKey(key);
         if (i < 0) return;
@@ -64,7 +64,7 @@ public class VirtualKeyboard extends DCPUHardware {
     }
 
     public void keyReleased(int key) {
-        Log.debug("KeyReleased(" + Integer.toHexString(key) + ")");
+        Log.trace("KeyReleased(" + Integer.toHexString(key) + ")");
 
         int i = key; //keyMapping.getKey(key);
         if (i < 0) return;

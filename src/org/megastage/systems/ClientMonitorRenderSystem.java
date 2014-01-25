@@ -39,15 +39,13 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
     }
 
     public void render(ClientVideoMemory videoMemory, boolean blink, ClientRaster rasterComponent) {
-        Log.info("rendering");
+        Log.trace("rendering");
         try {
             for (int row = 0; row < 12; row++) {
                 for (int col = 0; col < 32; col++) {
                     int dat = videoMemory.screenMemRam[col + row * 32];
                     int charValue = dat & 0x7F;
                     int charOffsetInFontMemory = charValue * 2;
-
-                    if(charValue != 0) Log.info("" + (char) charValue);
 
                     //int colorForeground = videoMemory.paletteMemRam[dat >> 12];
                     //int colorBackground = videoMemory.paletteMemRam[dat >> 8 & 0xF];
@@ -70,9 +68,6 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
                         int bits = videoMemory.fontMemRam[charOffsetInFontMemory + (x >> 1)] >> (x + 1 & 0x1) * 8 & 0xFF;
                         for (int y = 0; y < 8; y++) {
                             ColorRGBA color = (bits >> y & 0x1) == 1 ? colorForeground: colorBackground;
-                            if((char) charValue == 'x') {
-                                Log.info(color.toString());
-                            }
                             //view.pixels[(pixelOffs + x + y * 128)] = bit;
                             //TODO optimize
                             //c.fromIntARGB(0x33555555);

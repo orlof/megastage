@@ -24,10 +24,6 @@ public class VirtualMonitor extends DCPUHardware {
     
     @Override
     public boolean isUpdated() {
-        return true;
-    }
-
-    public Object create(Entity entity) {
         boolean videoChanged = data.videoAddr == 0 ?
                 data.video.update(LEMUtil.defaultVideo):
                 data.video.update(dcpu.ram, data.videoAddr, 384);
@@ -39,18 +35,20 @@ public class VirtualMonitor extends DCPUHardware {
         boolean paletteChanged = data.paletteAddr == 0 ?
                 data.palette.update(LEMUtil.defaultPalette):
                 data.palette.update(dcpu.ram, data.paletteAddr, 16);
-
-        if(videoChanged || fontChanged || paletteChanged) {
-            Log.trace("video   " + (videoChanged ? "*": " ") + " [" + ((int) data.videoAddr) + "] " + data.video.toString());
-            Log.trace("font    " + (fontChanged ? "*": " ") + " [" + ((int) data.fontAddr) + "] " + data.font.toString());
-            Log.trace("palette " + (paletteChanged ? "*": " ") + " [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
-
-            return data.create(entity);
-        }
         
-        return null;
+        return videoChanged || fontChanged || paletteChanged;
     }
 
+    @Override
+    public Object create(Entity entity) {
+        Log.trace("video   [" + ((int) data.videoAddr) + "] " + data.video.toString());
+        Log.trace("font    [" + ((int) data.fontAddr) + "] " + data.font.toString());
+        Log.trace("palette [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
+
+        return data.create(entity);
+    }
+
+    @Override
     public void interrupt() {
         char a = dcpu.registers[0];
         char b = dcpu.registers[1];

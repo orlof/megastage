@@ -60,9 +60,9 @@ public final class ClientVideoMemory extends Component {
     }
 
     public void update(MonitorData data) {
-        Log.info("video   [" + ((int) data.videoAddr) + "] " + data.video.toString());
-        Log.info("font    [" + ((int) data.fontAddr) + "] " + data.font.toString());
-        Log.info("palette [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
+        Log.trace("video   [" + ((int) data.videoAddr) + "] " + data.video.toString());
+        Log.trace("font    [" + ((int) data.fontAddr) + "] " + data.font.toString());
+        Log.trace("palette [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
 
         updateVideo(data.videoAddr == 0 ? null: data.video.mem);
         updateFont(data.font.mem);

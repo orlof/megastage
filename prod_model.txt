@@ -1,0 +1,114 @@
+Cryptix's help with hw specifications was invaluable (...and I hope more contributions are on their way in the form of dcpu code - ship control system). I more than welcome all other help also.
+
+I have not yet made any plans concerning the product tree. I have some vague ideas that I would like to see in the game, but those are subject to change as soon as we start designing the system and learn more about it.
+
+The basic idea is the usual one. Different resources can be collected from various places with various kind of equipment and power demand. Those resources can be refined to other - more valuable - resources and finally resources can be assembled into components with correct tools and big enough power sources. Single player can in theory build anything but the really big components (Death Star) require enormous amounts of resources, power and tools, which in practise will require co-operation of many player. I would like to start from the small scale stuff - stuff that single player can build, and quite quickly add support for stuff that is reasonable for teams of ten players. The really massive projects (requiring co-operation of 100-1000 players) will come much later.
+
+Here are some random ideas that I have:
+ - Ships blueprints are designed with separate software. That software allows building the ship's with following steps:
+[list=1]
+[*] Ship's hull is constructed with blocks
+[*] Ship-components are added (engines, gyros, lifts, doors, air locks, power plants, DCPUs, weapons, shields, radars, radios, fuel scoops, repair droids... The list goes on and on... It is very important to prioritize the ship components, as only small subset will be available in the beginning.)
+[*] Connect the ship components to DCPUs for control
+[*] Connect the ship components to power plants
+[/list]
+
+I don't really want any physical cables for control or power. The connections only exist in the blueprint level, not in the real game.
+
+To realize the ship blueprint in the game you must have all the ship components (already manufactored or bought), tools for assembling the ship (Construction Droid (one or more) for small ships e.g. fighters and shuttles, Ship Yard and Droid(s) for medium ships e.g. transports and cruisers, Huge Ship Yard and army of droids for large ships e.g. Death Star, space stations), and enough power available. Then you just "press the button" and wait for the ship to be build.
+
+All small components can be build with 3D printer -stations that can be installed into ships.
+
+All components are of-course available in many different flavors. E.g. Laser guns: light, heavy, military, bazooka, MG, eco... Power plants: variation of power output / weight / reliability.
+
+again... everything must be prioritized. Only VERY limited selection of components is available in the beginning.
+
+So, to get started I would need an absolut minimal list of mandatory resources, refined materials and buildable components. Then I would also need the definition of what materials are consumed, what tools are needed and how much power and time is needed to complete the build. 
+
+E.g.
+
+RESOURCES
+[table]
+[tr]
+[th]Name[/th]
+[th]Location[/th]
+[th]Availability[/th]
+[/tr]
+[tr]
+[td]Hydrogen[/td]
+[td]Gas giants[/td]
+[td]Abundant[/td]
+[/tr]
+[tr]
+[td]Carbon[/td]
+[td]Planets Asteroids[/td]
+[td]Common[/td]
+[/tr]
+[tr]
+[td]Iron[/td]
+[td]Planets Asteroids[/td]
+[td]Common[/td]
+[/tr]
+[tr]
+[td]Diamond[/td]
+[td]Asteroids[/td]
+[td]Extremely rare[/td]
+[/tr]
+[/table]
+
+MATERIALS
+[table]
+[tr]
+[th]Name[/th]
+[th]Raw materials[/th]
+[th]Tool / min time / energy[/th]
+[/tr]
+[tr]
+[td]Steel[/td]
+[td]9*Iron, 1*Carbon => 10*Steel[/td]
+[td]Portable Material Converter / 10h / 100MWh, Orbital Material Factory / 30s / 60MWh[/td]
+[/tr]
+[tr]
+[td]Crystal Steel[/td]
+[td]99*Steel, 1*Quarz => 100*Crystal Steel[/td]
+[td]Portable Nano Coating device / 100h / 10MWh, Orbital Nano-Material Factory / 30min / 6MWh[/td]
+[/tr]
+[tr]
+[td]Antimatter[/td]
+[td]1*Hydrogen => 1*Antihydrogen[/td]
+[td]Orbital Particle Laboratory / 10h / 50 000 GWh[/td]
+[/tr]
+[/table]
+
+COMPONENTS
+[table]
+[tr]
+[th]Name[/th]
+[th]Raw materials[/th]
+[th]Tool / min time / energy[/th]
+[/tr]
+[tr]
+[td]Ship Engine[/td]
+[td]10 Steel, 2*Reinforced Carbon-Carbon, 1*Titanium => 1*Engine[/td]
+[td]Portable 3D printer / 1h / 100MWh, Orbital Factory / 1min / 60MWh[/td]
+[/tr]
+[tr]
+[td]Construction Droid[/td]
+[td]100 * Steel => 1 * Construction Droid[/td]
+[td]Portable 3D printer / 10h / 250MWh, Orbital Factory / 10min / 150MWh[/td]
+[/tr]
+[tr]
+[td]Orbital Ship Yard[/td]
+[td]1 000 000 * Steel, 2 * Space Freighter... => 1 * Orbital Ship Yard[/td]
+[td]Construction Droids (1-100) / 10 000h / ??MWh[/td]
+[/tr]
+[/table]
+
+...and these are just examples that I made up without thinking.
+
+The problem is to find the correct balance! I don't want too many materials. In the beginning the simplest possible solution is to leave out refined materials and just build components from resources and subcomponents?
+
+But still - What is the absolute minimum that we need to still have all the game elements present?
+
+
+

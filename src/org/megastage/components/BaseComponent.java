@@ -99,4 +99,9 @@ public abstract class BaseComponent extends Component {
 
         return defaultValue;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
 }

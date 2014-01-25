@@ -54,4 +54,13 @@ public abstract class DCPUHardware extends BaseComponent {
     public void tick60hz() {
     }
 
+    public <T extends DCPUHardware> T getHardware(Class<T> type) {
+        for(DCPUHardware hw: dcpu.hardware) {
+            if(type.isAssignableFrom(hw.getClass())) {
+                return type.cast(hw);
+            }
+        }
+        
+        return null;
+    }
 }

@@ -46,12 +46,16 @@ public class ClientNetworkSystem extends EntitySystem {
         kryoThread.start();
 
         try {
+            Log.trace("Connecting");
             client.connect(5000, ClientGlobals.serverHost, Network.serverPort, Network.serverPort+1);
+            Log.trace("Connected");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        client.addListener(new ClientNetworkListener());        
+        client.addListener(new ClientNetworkListener());
+        
+        /*
         client.updateReturnTripTime();
         while(client.getReturnTripTime() == -1) {
             try {
@@ -61,6 +65,7 @@ public class ClientNetworkSystem extends EntitySystem {
         }
         Log.info("RTT: "+ client.getReturnTripTime());
         ClientGlobals.timeDiff -= client.getReturnTripTime();
+        */
     }
 
     @Override
@@ -70,7 +75,7 @@ public class ClientNetworkSystem extends EntitySystem {
 	
     protected void processSystem() {
         if(ClientGlobals.userCommand.count > 0) {
-            Log.debug(ClientGlobals.userCommand.toString());
+            Log.trace(ClientGlobals.userCommand.toString());
             client.sendUDP(ClientGlobals.userCommand);
             ClientGlobals.userCommand.reset();
         }
@@ -95,6 +100,7 @@ public class ClientNetworkSystem extends EntitySystem {
     }
 
     public void sendLogin() {
+        Log.info("");
         Network.Login msg = new Network.Login();
         client.sendTCP(msg);
     }
@@ -132,13 +138,14 @@ public class ClientNetworkSystem extends EntitySystem {
         }
         
         public void handlePacket(final Connection pc, final Object o) {
-            Log.debug("Received: " + o.toString());
+            Log.trace("Received: " + o.toString());
             if(o instanceof Message) {
-                ((Message) o).receive(pc);
+                final Message msg = (Message) o;
+                msg.receive(pc);
 //                ClientGlobals.app.enqueue(new Callable() {
 //                    @Override
 //                    public Object call() throws Exception {
-//                        ((Message) o).receive(pc);
+//                        msg.receive(pc);
 //                        return null;
 //                    }
 //                });
