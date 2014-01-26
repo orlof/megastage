@@ -10,7 +10,7 @@ import com.jme3.effect.ParticleEmitter;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
-import org.megastage.components.EngineData;
+import org.megastage.components.transfer.EngineData;
 
 /**
  *

@@ -37,7 +37,7 @@ public class ClientNetworkSystem extends EntitySystem {
 
     @Override
     protected void initialize() {
-        client = new Client(8192,8192);
+        client = new Client(16*1024, 8*1024);
         Network.register(client);
 
         Thread kryoThread = new Thread(client);
@@ -45,9 +45,9 @@ public class ClientNetworkSystem extends EntitySystem {
         kryoThread.start();
 
         try {
-            Log.trace("Connecting");
+            Log.info("Connecting");
             client.connect(5000, ClientGlobals.serverHost, Network.serverPort, Network.serverPort+1);
-            Log.trace("Connected");
+            Log.info("Connected");
         } catch (IOException e) {
             e.printStackTrace();
         }

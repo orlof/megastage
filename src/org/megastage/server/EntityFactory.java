@@ -7,7 +7,8 @@ import com.artemis.managers.TagManager;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.components.Identifier;
+import org.megastage.components.srv.Identifier;
+import org.megastage.components.srv.UninitializedFlag;
 
 
 /**
@@ -48,6 +49,10 @@ public class EntityFactory {
                 Log.debug("Add to group " + groupName);
 
                 world.getManager(GroupManager.class).add(entity, groupName);
+                if(groupName.equals("replicate")) {
+                    Log.info("created uninitialized: " + entity.toString());
+                    entity.addComponent(new UninitializedFlag());
+                }
             }
 
             for(Element e: element.getChildren("tag")) {

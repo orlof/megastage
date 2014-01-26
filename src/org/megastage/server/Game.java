@@ -3,7 +3,6 @@ package org.megastage.server;
 import com.artemis.World;
 import com.artemis.managers.GroupManager;
 import com.artemis.managers.TagManager;
-import com.artemis.utils.Bag;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.systems.*;
@@ -31,7 +30,8 @@ public class Game {
         //world.setSystem(new ServerEngineTestSystem(5000));
         world.setSystem(new ServerGyroTestSystem(5000));
         world.setSystem(new ServerCleanupSystem(500));
-        world.setSystem(new ServerUpdateSystem(20));
+        world.setSystem(new ServerSynchronizeSystem(20));
+//        world.setSystem(new ServerInitializeSystem(20));
         world.setSystem(new ServerNetworkSystem());
 
         world.setSystem(new OrbitalMovementSystem());

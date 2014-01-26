@@ -19,7 +19,7 @@ import org.megastage.util.LogFormat;
 public class Main {
     public static void main(String args[]) throws Exception {
         Log.setLogger(new LogFormat());
-        Log.set(Log.LEVEL_INFO);
+        Log.set(Log.LEVEL_DEBUG);
         
         Element root = readConfig(args[0]);
         Game game = new Game(root);

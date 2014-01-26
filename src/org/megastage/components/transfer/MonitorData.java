@@ -2,13 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.megastage.components;
+package org.megastage.components.transfer;
 
 import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.components.client.ClientVideoMemory;
 import org.megastage.components.dcpu.LEMUtil;
 import org.megastage.client.ClientGlobals;
+import org.megastage.components.BaseComponent;
 import org.megastage.util.RAM;
 
 public class MonitorData extends BaseComponent {

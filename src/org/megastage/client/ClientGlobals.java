@@ -4,10 +4,6 @@ import com.artemis.Entity;
 import com.cubes.CubesSettings;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
-import org.megastage.client.ArtemisState;
-import org.megastage.client.Main;
-import org.megastage.client.CommandHandler;
-import org.megastage.client.SpatialManager;
 import org.megastage.protocol.UserCommand;
 import org.megastage.systems.ClientNetworkSystem;
 

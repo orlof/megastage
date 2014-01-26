@@ -32,11 +32,6 @@ public class Rotation extends BaseComponent {
         return null;
     }
 
-    @Override
-    public boolean replicate() {
-        return true;
-    }
-    
     public boolean synchronize() {
         return true;
     }

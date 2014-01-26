@@ -6,7 +6,7 @@ import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.components.server.ShipGeometry;
+import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.util.Vector;
 
 public class Gyroscope extends DCPUHardware {

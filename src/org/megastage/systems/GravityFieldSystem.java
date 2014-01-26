@@ -7,7 +7,7 @@ import com.artemis.EntitySystem;
 import com.artemis.annotations.Mapper;
 import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.minlog.Log;
-import org.megastage.components.GravityFieldFlag;
+import org.megastage.components.srv.GravityFieldFlag;
 import org.megastage.components.Mass;
 import org.megastage.components.Position;
 import org.megastage.util.Globals;
