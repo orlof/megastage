@@ -95,7 +95,7 @@ public class ArtemisState extends AbstractAppState {
     }
 
     private <T extends Component> T createComponent(Entity entity, Class<T> type) {
-        Log.info(entity.toString() + " <- " + type.getSimpleName());
+        Log.info("Add component " + type.getSimpleName() + " to " + entity.toString());
         T component = null;
         
         try {

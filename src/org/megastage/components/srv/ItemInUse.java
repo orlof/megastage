@@ -1,9 +1,10 @@
-package org.megastage.components;
+package org.megastage.components.srv;
 
 import com.artemis.Entity;
 import com.artemis.World;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.components.BaseComponent;
 
 /**
  * MegaStage

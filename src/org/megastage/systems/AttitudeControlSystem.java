@@ -8,7 +8,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Rotation;
 import org.megastage.components.dcpu.Gyroscope;
-import org.megastage.components.server.ShipGeometry;
+import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector;
 

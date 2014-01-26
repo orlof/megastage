@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.megastage.components.server;
+package org.megastage.components.gfx;
 
 import com.artemis.Entity;
 import com.artemis.World;

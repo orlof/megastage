@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.megastage.components.server;
+package org.megastage.components.gfx;
 
 import com.artemis.Entity;
 import com.artemis.World;
@@ -10,6 +10,7 @@ import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.client.ClientGlobals;
+import org.megastage.util.Globals;
 
 
     
@@ -17,11 +18,15 @@ import org.megastage.client.ClientGlobals;
  *
  * @author Orlof
  */
-public class CharacterGeometry extends BaseComponent {
+public class SunGeometry extends BaseComponent {
+    public float radius;
     public float red, green, blue, alpha;
+    public float lightRadius;
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
+        radius = (float) (getFloatValue(element, "radius", 10.0f));
+        lightRadius = (float) (getFloatValue(element, "light_radius", 2000000.0f));
         red = getFloatValue(element, "red", 1.0f); 
         green = getFloatValue(element, "green", 1.0f); 
         blue = getFloatValue(element, "blue", 1.0f); 
@@ -37,16 +42,15 @@ public class CharacterGeometry extends BaseComponent {
     
     @Override
     public void receive(Connection pc, Entity entity) {
-        if(entity != ClientGlobals.playerEntity) {
-            ClientGlobals.spatialManager.setupCharacter(entity, this);
-        }
+        ClientGlobals.spatialManager.setupSunLikeBody(entity, this);
     }
     
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("PlayerGeometry(");
-        sb.append("red=").append(red);
+        sb.append("SunGeometry(");
+        sb.append("radius=").append(radius);
+        sb.append(", light_radius=").append(lightRadius);
+        sb.append(", red=").append(red);
         sb.append(", green=").append(green);
         sb.append(", blue=").append(blue);
         sb.append(", alpha=").append(alpha);

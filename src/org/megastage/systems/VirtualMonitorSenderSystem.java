@@ -6,7 +6,7 @@ import com.artemis.Entity;
 import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
-import org.megastage.components.MonitorData;
+import org.megastage.components.transfer.MonitorData;
 import org.megastage.components.dcpu.LEMUtil;
 import org.megastage.components.dcpu.VirtualMonitor;
 

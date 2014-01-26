@@ -1,4 +1,6 @@
-package org.megastage.components;
+package org.megastage.components.srv;
+
+import org.megastage.components.BaseComponent;
 
 /**
  * MegaStage

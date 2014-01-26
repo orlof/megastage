@@ -189,7 +189,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     @Override
     public void onAnalog(String name, float value, float tpf) {
         if (ClientGlobals.playerEntity == null) {
-            Log.info("playerEntity=null, not processed: " + name);
+            Log.warn("playerEntity=null, not processed: " + name);
             return;
         }
 

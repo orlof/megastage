@@ -37,16 +37,16 @@ import jmeplanet.test.Utility;
 import org.megastage.client.controls.EngineControl;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RotationControl;
-import org.megastage.components.EngineData;
+import org.megastage.components.transfer.EngineData;
 import org.megastage.components.client.ClientRaster;
-import org.megastage.components.server.MonitorGeometry;
-import org.megastage.components.server.PlanetGeometry;
-import org.megastage.components.server.CharacterGeometry;
-import org.megastage.components.server.EngineGeometry;
-import org.megastage.components.server.ShipGeometry;
-import org.megastage.components.server.SunGeometry;
-import org.megastage.components.server.UsableFlag;
-import org.megastage.components.server.VoidGeometry;
+import org.megastage.components.gfx.MonitorGeometry;
+import org.megastage.components.gfx.PlanetGeometry;
+import org.megastage.components.gfx.CharacterGeometry;
+import org.megastage.components.gfx.EngineGeometry;
+import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.components.gfx.SunGeometry;
+import org.megastage.components.UsableFlag;
+import org.megastage.components.gfx.VoidGeometry;
 
 /**
  *
@@ -68,19 +68,14 @@ public class SpatialManager {
     public Entity getEntity(Node node) {
         Entity entity = entities.get(node);
         if(entity == null) {
-            Log.info(node.toString() + " -> no entity");
             return null;
         }
 
-        Log.info(node.toString() + " -> " + entity.toString());
-        
         UsableFlag use = entity.getComponent(UsableFlag.class);
         if(use != null) {
-            Log.info("Match");
             return entity;
         }
         
-        Log.info("Not Usable");
         return null;
     }
     

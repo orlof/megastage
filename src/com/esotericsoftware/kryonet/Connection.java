@@ -112,6 +112,7 @@ public class Connection {
 			close();
 			return 0;
 		} catch (KryoNetException ex) {
+                    ex.printStackTrace();
 			if (ERROR) error("kryonet", "Unable to send UDP with connection: " + this, ex);
 			close();
 			return 0;

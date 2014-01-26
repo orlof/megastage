@@ -1,5 +1,6 @@
 package org.megastage.systems;
 
+import org.megastage.components.srv.Acceleration;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;

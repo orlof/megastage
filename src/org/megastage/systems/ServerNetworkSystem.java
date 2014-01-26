@@ -21,11 +21,11 @@ import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.components.SpawnPoint;
 import org.megastage.components.dcpu.VirtualMonitor;
-import org.megastage.components.server.BindTo;
-import org.megastage.components.server.Mode;
+import org.megastage.components.gfx.BindTo;
+import org.megastage.components.Mode;
 import org.megastage.protocol.Action;
 import org.megastage.protocol.CharacterMode;
-import org.megastage.protocol.LoginResponse;
+import org.megastage.protocol.PlayerIDMessage;
 import org.megastage.protocol.UserCommand;
 import org.megastage.server.TemplateManager;
 import org.megastage.util.Quaternion;
@@ -40,7 +40,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     
     @Override
     protected void initialize() {
-        server = new Server() {
+        server = new Server(16*1024, 16*1024) {
             @Override
             protected Connection newConnection () {
                 // By providing our own connection implementation, we can store per
@@ -85,14 +85,15 @@ public class ServerNetworkSystem extends VoidEntitySystem {
     }
 
     private void handleLoginMessage(PlayerConnection connection, Network.Login packet) {
-        // create player
-        connection.player = world.getManager(TemplateManager.class).create("Player");
-        connection.player.addToWorld();
-        
+        // replicate
+        replicateAllEntities(connection);
+
         // create ship
         Entity ship = world.getManager(TemplateManager.class).create("Apollo 13");
-        ship.addToWorld();
         
+        // create character
+        connection.player = world.getManager(TemplateManager.class).create("Player");
+
         // bind player to ship
         BindTo bind = new BindTo();
         bind.parent = ship.getId();
@@ -105,38 +106,43 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         pos.y = 1000 * sp.y;
         pos.z = 1000 * sp.z;
         
-        connection.sendTCP(new LoginResponse(connection.player.getId()));
+        connection.sendTCP(new PlayerIDMessage(connection.player.getId()));
         Log.info("Sent player entity id: " + connection.player.toString());
 
+        //ship.addToWorld();
+        //connection.player.addToWorld();
+    }
+
+    private void replicateAllEntities(PlayerConnection connection) {
         ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("replicate");
-        Log.info("Creating components for " + entities.size() + " entities.");
+        Log.info("Replicate " + entities.size() + " entities for " + connection.toString());
 
         for(int i=0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
-            sendComponents(connection, entity);
-        }
+
+            Log.info("Replicate #" + i + " entity " + entity.toString() + " for " + connection.toString());
+            replicateComponents(connection, entity);
+        }        
     }
-
-    private void sendComponents(PlayerConnection connection, Entity entity) {
-        Log.trace("Creating components for " + entity.toString());
-
+    
+    private void replicateComponents(PlayerConnection connection, Entity entity) {
         Bag<Component> components = entity.getComponents(new Bag<Component>());
         ArrayList list = new ArrayList();
 
         for(int j=0; j < components.size(); j++) {
             BaseComponent comp = (BaseComponent) components.get(j);
-            Log.trace(" Component " + comp.toString());
-
             if(comp.replicate()) {
                 Object trans = comp.create(entity);                
-                Log.trace("   Added");
                 list.add(trans);
+                Log.info("Replicate " + comp.toString() + " -> " + trans.toString() + " for " + connection.toString());
             }
         }
 
         if(!list.isEmpty()) {
             connection.sendTCP(list.toArray());
         }
+
+        Log.info("Sent " + list.size() + " components");
     }
     
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {

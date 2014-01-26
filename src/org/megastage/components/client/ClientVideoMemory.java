@@ -3,7 +3,7 @@ package org.megastage.components.client;
 import com.artemis.Component;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.ColorRGBA;
-import org.megastage.components.MonitorData;
+import org.megastage.components.transfer.MonitorData;
 import org.megastage.components.dcpu.LEMUtil;
 
 /**
@@ -13,12 +13,8 @@ import org.megastage.components.dcpu.LEMUtil;
  * Time: 21:48                                                      0
  */
 public final class ClientVideoMemory extends Component {
-    // public BufferedImage img = new BufferedImage(128, 96, BufferedImage.TYPE_INT_ARGB);
-    // public int[] pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
-
     public char[] screenMemRam = new char[384];
     public char[] fontMemRam = new char[256];
-    //public int[] paletteMemRam = new int[16];
     public ColorRGBA[] colors = new ColorRGBA[16];
 
     public boolean blink = false;

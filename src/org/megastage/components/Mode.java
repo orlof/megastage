@@ -2,12 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.megastage.components.server;
+package org.megastage.components;
 
 import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.client.ClientGlobals;
-import org.megastage.components.BaseComponent;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.Network;
 
@@ -16,7 +15,7 @@ import org.megastage.protocol.Network;
  * @author Orlof
  */
 public class Mode extends BaseComponent {
-    public int mode = CharacterMode.WALK; 
+    public int value = CharacterMode.WALK; 
     public boolean isDirty = true;
 
     @Override
@@ -30,7 +29,7 @@ public class Mode extends BaseComponent {
     }
 
     public void setMode(int mode) {
-        this.mode = mode;
+        this.value = mode;
         isDirty = true;
     }
 
@@ -44,11 +43,11 @@ public class Mode extends BaseComponent {
     @Override
     public void receive(Connection pc, Entity entity) {
         if(ClientGlobals.playerEntity == entity) {
-            ClientGlobals.cmdHandler.changeMode(mode);
+            ClientGlobals.cmdHandler.changeMode(value);
         }
     }
 
     public String toString() {
-        return "Mode(mode=" + mode + ")";
+        return "Mode(mode=" + value + ")";
     }
 }

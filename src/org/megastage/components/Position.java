@@ -1,5 +1,6 @@
 package org.megastage.components;
 
+import org.megastage.components.srv.Velocity;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
@@ -37,11 +38,6 @@ public class Position extends BaseComponent {
         return null;
     }
 
-    @Override
-    public boolean replicate() {
-        return true;
-    }
-    
     @Override
     public boolean synchronize() {
         return true;
