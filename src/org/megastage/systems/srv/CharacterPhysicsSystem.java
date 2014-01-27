@@ -1,4 +1,4 @@
-package org.megastage.systems;
+package org.megastage.systems.srv;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -9,9 +9,9 @@ import org.megastage.components.Mode;
 import org.megastage.components.Position;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.ShipGeometry;
-import org.megastage.util.ServerGlobals;
+import org.megastage.util.Time;
 
-public class ServerCharacterPhysicsSystem extends EntityProcessingSystem {
+public class CharacterPhysicsSystem extends EntityProcessingSystem {
     @Mapper ComponentMapper<Position> POSITION;
     @Mapper ComponentMapper<BindTo> BIND_TO;
     @Mapper ComponentMapper<ShipGeometry> SHIP_GEOMETRY;
@@ -19,15 +19,15 @@ public class ServerCharacterPhysicsSystem extends EntityProcessingSystem {
     private long interval;
     private long acc;
     
-    public ServerCharacterPhysicsSystem(long interval) {
+    public CharacterPhysicsSystem(long interval) {
         super(Aspect.getAspectForAll(Mode.class));
         this.interval = interval;
     }
 
     @Override
     protected boolean checkProcessing() {
-        if(ServerGlobals.time >= acc) {
-                acc = ServerGlobals.time + interval;
+        if(Time.value >= acc) {
+                acc = Time.value + interval;
                 return true;
         }
         return false;

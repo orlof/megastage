@@ -5,7 +5,7 @@ import com.cubes.CubesSettings;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import org.megastage.protocol.UserCommand;
-import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.systems.client.ClientNetworkSystem;
 
 /**
  * MegaStage
@@ -19,7 +19,6 @@ public class ClientGlobals {
     public static Entity playerEntity;
     public static Entity shipEntity;
     
-    public static long time = System.currentTimeMillis();
     public static long timeDiff;
 
     public static Node rootNode;

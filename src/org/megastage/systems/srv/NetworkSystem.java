@@ -1,4 +1,4 @@
-package org.megastage.systems;
+package org.megastage.systems.srv;
 
 import com.artemis.Component;
 import com.artemis.Entity;
@@ -33,10 +33,10 @@ import org.megastage.util.Quaternion;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector;
 
-public class ServerNetworkSystem extends VoidEntitySystem {
+public class NetworkSystem extends VoidEntitySystem {
     private Server server;
     
-    public ServerNetworkSystem() {
+    public NetworkSystem() {
     }
     
     @Override
@@ -100,6 +100,7 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         BindTo bind = new BindTo();
         bind.parent = ship.getId();
         connection.player.addComponent(bind);
+        connection.player.changedInWorld();
 
         SpawnPoint sp = ship.getComponent(SpawnPoint.class);
         
@@ -110,9 +111,6 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         
         connection.sendTCP(new PlayerIDMessage(connection.player.getId()));
         Log.info("Sent player entity id: " + connection.player.toString());
-
-        //ship.addToWorld();
-        //connection.player.addToWorld();
     }
 
     private void replicateAllEntities(PlayerConnection connection) {

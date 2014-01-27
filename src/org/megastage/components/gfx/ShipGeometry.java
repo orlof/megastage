@@ -12,7 +12,7 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.client.ClientGlobals;
-import org.megastage.util.ServerGlobals;
+import org.megastage.util.Time;
 import org.megastage.util.Vector;
 
 /**
@@ -57,7 +57,7 @@ public class ShipGeometry extends BaseComponent {
         mass.mass = 1000 * blockCount;
         adds[0] = mass;
         
-        updateTime = ServerGlobals.time;
+        updateTime = Time.value;
 
         return adds;
     }

@@ -1,4 +1,4 @@
-package org.megastage.systems;
+package org.megastage.systems.srv;
 
 import com.artemis.Aspect;
 import com.artemis.Component;
@@ -15,23 +15,24 @@ import org.megastage.components.srv.Identifier;
 import org.megastage.components.srv.SynchronizeFlag;
 import org.megastage.components.srv.UninitializedFlag;
 import org.megastage.util.ServerGlobals;
+import org.megastage.util.Time;
 
-public class ServerSynchronizeSystem extends EntitySystem {
+public class SynchronizeSystem extends EntitySystem {
     @Mapper ComponentMapper<UninitializedFlag> UNINITIALIZED_FLAG;
     @Mapper ComponentMapper<DeleteFlag> DELETE_FLAG;
 
     private long interval;
     private long acc;
     
-    public ServerSynchronizeSystem(long interval) {
+    public SynchronizeSystem(long interval) {
         super(Aspect.getAspectForOne(SynchronizeFlag.class, UninitializedFlag.class, DeleteFlag.class));
         this.interval = interval;
     }
 
     @Override
     protected boolean checkProcessing() {
-        if(ServerGlobals.time >= acc) {
-                acc = ServerGlobals.time + interval;
+        if(Time.value >= acc) {
+                acc = Time.value + interval;
                 return true;
         }
         return false;
@@ -39,7 +40,7 @@ public class ServerSynchronizeSystem extends EntitySystem {
 
     @Override
     protected void processEntities(ImmutableBag<Entity> entities) {
-        Log.trace("" + ServerGlobals.time);
+        Log.trace("" + Time.value);
 
         Bag bag = new Bag(100);
         

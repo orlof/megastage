@@ -4,9 +4,8 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.EntitySystem;
 import com.artemis.utils.ImmutableBag;
-import com.esotericsoftware.minlog.Log;
 import org.megastage.components.dcpu.Engine;
-import org.megastage.util.ServerGlobals;
+import org.megastage.util.Time;
 
 public class ServerEngineTestSystem extends EntitySystem {
     private long interval;
@@ -21,8 +20,8 @@ public class ServerEngineTestSystem extends EntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(ServerGlobals.time >= acc) {
-                acc = ServerGlobals.time + interval;
+        if(Time.value >= acc) {
+                acc = Time.value + interval;
                 return true;
         }
         return false;

@@ -1,4 +1,4 @@
-package org.megastage.systems;
+package org.megastage.systems.client;
 
 import com.artemis.Aspect;
 import com.artemis.Entity;
@@ -14,6 +14,7 @@ import org.megastage.protocol.Network;
 import java.io.IOException;
 import org.megastage.protocol.Message;
 import org.megastage.client.ClientGlobals;
+import org.megastage.util.Time;
 
 public class ClientNetworkSystem extends EntitySystem {
     private Client client;
@@ -28,8 +29,8 @@ public class ClientNetworkSystem extends EntitySystem {
     
     @Override
     protected boolean checkProcessing() {
-        if(ClientGlobals.time >= acc) {
-                acc = ClientGlobals.time + interval;
+        if(Time.value >= acc) {
+                acc = Time.value + interval;
                 return true;
         }
         return false;

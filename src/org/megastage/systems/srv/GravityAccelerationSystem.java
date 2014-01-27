@@ -1,5 +1,6 @@
-package org.megastage.systems;
+package org.megastage.systems.srv;
 
+import org.megastage.systems.srv.GravityFieldSystem;
 import org.megastage.components.srv.Acceleration;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;

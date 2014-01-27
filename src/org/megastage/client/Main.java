@@ -8,7 +8,6 @@ import com.jme3.app.state.AppState;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Geometry;
@@ -22,6 +21,7 @@ import jmeplanet.test.Utility;
 import org.megastage.client.controls.SystemPositionControl;
 import org.megastage.client.controls.SystemRotationControl;
 import org.megastage.util.LogFormat;
+import org.megastage.util.Time;
 
 /**
  * test
@@ -112,7 +112,7 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        ClientGlobals.time = System.currentTimeMillis() + ClientGlobals.timeDiff;
+        Time.value = System.currentTimeMillis() + ClientGlobals.timeDiff;
 
         if(Log.TRACE) {
             Log.info("Camera coords: " + cam.getLocation().toString());
