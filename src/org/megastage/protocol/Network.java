@@ -23,6 +23,7 @@ import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.gfx.VoidGeometry;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.BaseComponent;
+import org.megastage.components.DeleteFlag;
 import org.megastage.components.Mode;
 import org.megastage.components.UsableFlag;
 import org.megastage.util.RAM;
@@ -76,6 +77,7 @@ public class Network {
         kryo.register(Vector.class);
         kryo.register(PlayerIDMessage.class);
         kryo.register(UsableFlag.class);
+        kryo.register(DeleteFlag.class);
         kryo.register(UserCommand.class);
     }
 

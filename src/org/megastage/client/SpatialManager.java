@@ -18,7 +18,6 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.LightNode;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
 import com.jme3.scene.shape.Quad;
@@ -37,7 +36,6 @@ import jmeplanet.test.Utility;
 import org.megastage.client.controls.EngineControl;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RotationControl;
-import org.megastage.components.transfer.EngineData;
 import org.megastage.components.client.ClientRaster;
 import org.megastage.components.gfx.MonitorGeometry;
 import org.megastage.components.gfx.PlanetGeometry;
@@ -65,6 +63,22 @@ public class SpatialManager {
         assetManager = app.getAssetManager();
     }
 
+    public void deleteEntity(Entity entity) {
+        int id = entity.getId();
+        final Node node = nodes.get(id);
+
+        if(node != null) {
+            app.enqueue(new Callable() {
+                @Override
+                public Object call() throws Exception {
+                    node.removeFromParent();
+                    //TODO remove lights
+                    return null;
+                }
+            });
+        }
+    }
+    
     public Entity getEntity(Node node) {
         Entity entity = entities.get(node);
         if(entity == null) {

@@ -9,7 +9,6 @@ import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.protocol.Network;
 import org.megastage.client.ClientGlobals;
 
 /**

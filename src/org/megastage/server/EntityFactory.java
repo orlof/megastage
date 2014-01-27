@@ -34,30 +34,30 @@ public class EntityFactory {
 
                 BaseComponent[] additionalComponents = comp.init(world, parent, e);
                 entity.addComponent(comp);
-                Log.info("Add Component: " + comp.toString());
+                Log.info(" Component: " + comp.toString());
 
                 if(additionalComponents != null) {
                     for(BaseComponent c: additionalComponents) {
                         entity.addComponent(c);
-                        Log.info("Add Component: " + c.toString());
+                        Log.info(" Component: " + c.toString());
                     }
                 }
             }
 
             for(Element e: element.getChildren("group")) {
                 String groupName = e.getAttributeValue("name");
-                Log.debug("Add to group " + groupName);
+                Log.debug(" Group " + groupName);
 
                 world.getManager(GroupManager.class).add(entity, groupName);
                 if(groupName.equals("replicate")) {
-                    Log.info("created uninitialized: " + entity.toString());
+                    Log.info(" Component: UninitializedFlag");
                     entity.addComponent(new UninitializedFlag());
                 }
             }
 
             for(Element e: element.getChildren("tag")) {
                 String tagName = e.getAttributeValue("name");
-                Log.debug("Tag with " + tagName);
+                Log.debug(" Tag: " + tagName);
 
                 world.getManager(TagManager.class).register(tagName, entity);
             }

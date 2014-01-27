@@ -17,6 +17,7 @@ import org.megastage.protocol.PlayerConnection;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.megastage.components.BaseComponent;
+import org.megastage.components.DeleteFlag;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.components.SpawnPoint;
@@ -78,9 +79,10 @@ public class ServerNetworkSystem extends VoidEntitySystem {
         BindTo bindTo = connection.player.getComponent(BindTo.class);
         if(bindTo != null) {
             Entity e = world.getEntity(bindTo.parent);
-            world.deleteEntity(e);
+            e.addComponent(new DeleteFlag());
         }
-        world.deleteEntity(connection.player);
+        
+        connection.player.addComponent(new DeleteFlag());
         connection.close();
     }
 

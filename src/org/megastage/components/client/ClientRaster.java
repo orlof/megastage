@@ -13,6 +13,4 @@ import com.jme3.texture.image.ImageRaster;
  */
 public class ClientRaster extends Component {
     public ImageRaster raster;
-
-    
 }

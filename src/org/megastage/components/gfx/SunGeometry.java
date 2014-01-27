@@ -45,6 +45,11 @@ public class SunGeometry extends BaseComponent {
         ClientGlobals.spatialManager.setupSunLikeBody(entity, this);
     }
     
+    @Override
+    public void delete(Connection pc, Entity entity) {
+        ClientGlobals.spatialManager.deleteEntity(entity);
+    }
+    
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("SunGeometry(");
