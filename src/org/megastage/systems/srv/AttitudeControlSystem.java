@@ -1,4 +1,4 @@
-package org.megastage.systems;
+package org.megastage.systems.srv;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;

@@ -10,7 +10,7 @@ import com.esotericsoftware.kryonet.Connection;
 import java.util.concurrent.Callable;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.systems.ClientNetworkSystem;
+import org.megastage.systems.client.ClientNetworkSystem;
 import org.megastage.client.ClientGlobals;
 
 

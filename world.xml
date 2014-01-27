@@ -84,6 +84,7 @@
     <entity name="Borg Ship">
         <group name="replicate"/>
         <component type="srv.SynchronizeFlag"/>
+        <component type="srv.CollisionType" radius="15" item="SHIP"/>
         <component type="Position" x="20" y="0" z="-250000"/>
         <component type="Rotation"/>
         <component type="srv.Acceleration"/>
@@ -192,8 +193,14 @@
     </entity-template>
 
     <entity-template name="Apollo 13">
+        <group name="replicate"/>
+        <component type="srv.SynchronizeFlag"/>
+        <component type="srv.CollisionType" radius="15" item="SHIP"/>
         <component type="Position" x="0" y="0" z="-250000"/>
         <component type="Rotation"/>
+        <component type="srv.Velocity"/>
+        <component type="srv.Acceleration"/>
+        <component type="SpawnPoint"  dx="3" dy="1" dz="4"/>
         <component type="gfx.ShipGeometry">
             <y>
                 <z>       </z>
@@ -246,10 +253,6 @@
                 <z>#######</z>
             </y>
         </component>
-        <component type="SpawnPoint"  dx="3" dy="1" dz="4"/>
-        <component type="srv.SynchronizeFlag"/>
-        <component type="srv.Velocity"/>
-        <component type="srv.Acceleration"/>
         <!--component type="Mass" mass="1e6"/-->
         <entity name="DCPU">
             <group name="replicate"/>
@@ -295,7 +298,6 @@
                 <component type="dcpu.PPS"/>
             </entity-->
         </entity>
-        <group name="replicate"/>
     </entity-template>
 
 </root>

@@ -9,7 +9,7 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.protocol.Network;
-import org.megastage.util.ServerGlobals;
+import org.megastage.util.Time;
 import org.megastage.util.Vector;
 
 public class Engine extends DCPUHardware {
@@ -76,7 +76,7 @@ public class Engine extends DCPUHardware {
     }
     
     public double getPowerLevel() {
-        if(powerTarget != powerActual && ServerGlobals.time >= ignitionCompleted) {
+        if(powerTarget != powerActual && Time.value >= ignitionCompleted) {
             powerActual = powerTarget;
             status = powerTarget == 0 ? STATUS_OFF: STATUS_ON;
             dirty = true;
@@ -100,7 +100,7 @@ public class Engine extends DCPUHardware {
 
     private long getIgnitionTime() {
         return 0;
-        // return random.nextInt(40000) + 20000 + ServerGlobals.time;
+        // return random.nextInt(40000) + 20000 + Time.value;
     }
 
     private static Random random = new Random();

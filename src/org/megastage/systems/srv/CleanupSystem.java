@@ -1,25 +1,25 @@
-package org.megastage.systems;
+package org.megastage.systems.srv;
 
 import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.gfx.BindTo;
-import org.megastage.util.ServerGlobals;
+import org.megastage.util.Time;
 
-public class ServerCleanupSystem extends EntityProcessingSystem {
+public class CleanupSystem extends EntityProcessingSystem {
     private long interval;
     private long acc;
     
-    public ServerCleanupSystem(long interval) {
+    public CleanupSystem(long interval) {
         super(Aspect.getAspectForAll(BindTo.class));
         this.interval = interval;
     }
 
     @Override
     protected boolean checkProcessing() {
-        if(ServerGlobals.time >= acc) {
-                acc = ServerGlobals.time + interval;
+        if(Time.value >= acc) {
+                acc = Time.value + interval;
                 return true;
         }
         return false;
