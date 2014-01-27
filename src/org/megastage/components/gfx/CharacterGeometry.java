@@ -41,6 +41,12 @@ public class CharacterGeometry extends BaseComponent {
             ClientGlobals.spatialManager.setupCharacter(entity, this);
         }
     }
+
+    @Override
+    public void delete(Connection pc, Entity entity) {
+        ClientGlobals.spatialManager.deleteEntity(entity);
+    }
+    
     
     @Override
     public String toString() {

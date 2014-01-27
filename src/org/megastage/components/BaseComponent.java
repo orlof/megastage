@@ -36,6 +36,9 @@ public abstract class BaseComponent extends Component {
         entity.addComponent(this);
     }
 
+    public void delete(Connection pc, Entity entity) {
+    }
+
     protected static boolean hasValue(Element config, String arrtName) {
         return config.getAttribute(arrtName) != null;
     }

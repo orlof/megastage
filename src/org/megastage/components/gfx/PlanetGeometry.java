@@ -47,6 +47,11 @@ public class PlanetGeometry extends BaseComponent {
         ClientGlobals.spatialManager.setupPlanetLikeBody(entity, this);
     }
     
+    @Override
+    public void delete(Connection pc, Entity entity) {
+        ClientGlobals.spatialManager.deleteEntity(entity);
+    }
+    
     public String toString() {
         return "PlanetGeometry(center=" + center + ", generator='" + generator + "', radius=" + radius + ")";
     }

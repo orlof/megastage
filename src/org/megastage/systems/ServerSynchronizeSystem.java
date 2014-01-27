@@ -10,6 +10,7 @@ import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.BaseComponent;
+import org.megastage.components.DeleteFlag;
 import org.megastage.components.srv.Identifier;
 import org.megastage.components.srv.SynchronizeFlag;
 import org.megastage.components.srv.UninitializedFlag;
@@ -17,12 +18,13 @@ import org.megastage.util.ServerGlobals;
 
 public class ServerSynchronizeSystem extends EntitySystem {
     @Mapper ComponentMapper<UninitializedFlag> UNINITIALIZED_FLAG;
+    @Mapper ComponentMapper<DeleteFlag> DELETE_FLAG;
 
     private long interval;
     private long acc;
     
     public ServerSynchronizeSystem(long interval) {
-        super(Aspect.getAspectForOne(SynchronizeFlag.class, UninitializedFlag.class));
+        super(Aspect.getAspectForOne(SynchronizeFlag.class, UninitializedFlag.class, DeleteFlag.class));
         this.interval = interval;
     }
 
@@ -37,36 +39,59 @@ public class ServerSynchronizeSystem extends EntitySystem {
 
     @Override
     protected void processEntities(ImmutableBag<Entity> entities) {
+        Log.trace("" + ServerGlobals.time);
+
         Bag bag = new Bag(100);
         
-        Bag<Component> components = new Bag<>(20);
         for(int i=0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
-            boolean isUninitialized = UNINITIALIZED_FLAG.has(entity);
-            
-            components.clear();
-            entity.getComponents(components);
 
-            for(int j=0; j < components.size(); j++) {
-                BaseComponent baseComponent = (BaseComponent) components.get(j);
-                if(baseComponent.synchronize() || (isUninitialized && baseComponent.replicate())) {
-                    if(isUninitialized) {
-                        Identifier id = entity.getComponent(Identifier.class);
-                        Log.info("replicating: " + id.toString() + " w " + baseComponent.toString());
-                    }
-                    
-                    Object transferable = baseComponent.create(entity);
-                    bag.add(transferable);
-                }
-            }
-            
-            if(isUninitialized) {
+            if(DELETE_FLAG.has(entity)) {
+                world.deleteEntity(entity);
+                bag.add(new DeleteFlag().create(entity));
+            } else if(UNINITIALIZED_FLAG.has(entity)) {
                 entity.removeComponent(UninitializedFlag.class);
+                replicateComponents(bag, entity);
+            } else {
+                synchronizeComponents(bag, entity);
             }
         }
         
-        Log.trace("Client state packet size updated: " + bag.size());
+        Log.trace("Number of components to synchronize: " + bag.size());
         ServerGlobals.updates = bag;
     }	
-    
+
+    private Bag<Component> _components = new Bag<>(20);
+    private Bag synchronizeComponents(Bag fillBag, Entity entity) {
+        _components.clear();
+        entity.getComponents(_components);
+
+        for(int j=0; j < _components.size(); j++) {
+            BaseComponent baseComponent = (BaseComponent) _components.get(j);
+            if(baseComponent.synchronize()) {
+                fillBag.add(baseComponent.create(entity));
+            }
+        }
+        return fillBag;
+    }
+
+    private Bag replicateComponents(Bag fillBag, Entity entity) {
+        Log.info(entity.getComponent(Identifier.class).toString());
+
+        _components.clear();
+        entity.getComponents(_components);
+
+        for(int j=0; j < _components.size(); j++) {
+            BaseComponent baseComponent = (BaseComponent) _components.get(j);
+            if(baseComponent.replicate()) {
+                fillBag.add(baseComponent.create(entity));
+
+                if(Log.INFO) {
+                    Log.info(" " + baseComponent.toString());
+                }
+            }
+        }
+
+        return fillBag;
+    }
 }

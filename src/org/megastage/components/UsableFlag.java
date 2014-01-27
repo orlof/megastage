@@ -4,8 +4,6 @@
  */
 package org.megastage.components;
 
-import org.megastage.components.BaseComponent;
-
 /**
  *
  * @author teppo
