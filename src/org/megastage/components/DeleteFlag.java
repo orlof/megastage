@@ -17,7 +17,7 @@ import org.megastage.client.ClientGlobals;
 public class DeleteFlag extends BaseComponent {
     @Override
     public void receive(Connection pc, Entity entity) {
-        Bag<Component> bag = entity.getComponents(null);
+        Bag<Component> bag = entity.getComponents(new Bag<Component>(20));
         for(int i=0; i < bag.size(); i++) {
             Component c = bag.get(i);
             if(c instanceof BaseComponent) {
