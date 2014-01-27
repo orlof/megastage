@@ -48,37 +48,37 @@ public class Network {
             kryo.register(clazz);
         }
 
-        kryo.register(char[].class);
         kryo.register(boolean[].class);
         kryo.register(boolean[][].class);
         kryo.register(boolean[][][].class);
+        kryo.register(char[].class);
         kryo.register(Object[].class);
-        kryo.register(ComponentMessage.class);
         kryo.register(Bag.class);
         kryo.register(BaseComponent.class);
+        kryo.register(BindTo.class);
+        kryo.register(CharacterGeometry.class);
+        kryo.register(ComponentMessage.class);
+        kryo.register(DeleteFlag.class);
+        kryo.register(EngineData.class);
+        kryo.register(EngineGeometry.class);
+        kryo.register(FixedRotation.class);
         kryo.register(Mass.class);
         kryo.register(Mode.class);
         kryo.register(MonitorData.class);
-        kryo.register(EngineData.class);
-        kryo.register(Orbit.class);
-        kryo.register(FixedRotation.class);
-        kryo.register(Position.class);
-        kryo.register(Rotation.class);
-        kryo.register(SpawnPoint.class);
-        kryo.register(PlanetGeometry.class);
-        kryo.register(SunGeometry.class);
-        kryo.register(ShipGeometry.class);
         kryo.register(MonitorGeometry.class);
-        kryo.register(EngineGeometry.class);
-        kryo.register(RAM.class);
-        kryo.register(BindTo.class);
-        kryo.register(VoidGeometry.class);
-        kryo.register(CharacterGeometry.class);
-        kryo.register(Vector.class);
+        kryo.register(Orbit.class);
+        kryo.register(PlanetGeometry.class);
         kryo.register(PlayerIDMessage.class);
+        kryo.register(Position.class);
+        kryo.register(RAM.class);
+        kryo.register(Rotation.class);
+        kryo.register(ShipGeometry.class);
+        kryo.register(SpawnPoint.class);
+        kryo.register(SunGeometry.class);
         kryo.register(UsableFlag.class);
-        kryo.register(DeleteFlag.class);
         kryo.register(UserCommand.class);
+        kryo.register(Vector.class);
+        kryo.register(VoidGeometry.class);
     }
 
     static public class Login extends EventMessage {}
