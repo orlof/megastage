@@ -24,9 +24,8 @@ Interrupt behavior:
     of the following actions:
     
     0: SET_TORQUE_LEVEL
-       Reads the B register and sets the CMG to generate torque. Amount of 
-       generated torque depends on B that is interpreted as two's complement
-       signed number.
+       Reads the B register and sets the CMG to generate torque. Torque power
+       is specified in register B as two's complement signed number.
        
        If b > 0 then 50kNm * b / 0x7fff torque is generated
        If b < 0 then 50kNm * b / 0x7fff torque is generated
@@ -34,7 +33,7 @@ Interrupt behavior:
        If B is 0 or insufficient power is available, gyroscope will stabilize
        the ship in respect to it's installation axis.
 
-       When sufficient power is restored torque generation will continue at
+       When sufficient power is restored, torque generation will continue at
        specified power level.
 
        Disclaimer: Setting torque to 0x8000 is not allowed and may seriously 
