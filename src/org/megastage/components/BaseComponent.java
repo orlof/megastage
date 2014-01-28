@@ -37,6 +37,7 @@ public abstract class BaseComponent extends Component {
     }
 
     public void delete(Connection pc, Entity entity) {
+        entity.deleteFromWorld();
     }
 
     protected static boolean hasValue(Element config, String arrtName) {
