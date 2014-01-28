@@ -4,6 +4,7 @@
  */
 package org.megastage.client;
 
+import org.megastage.client.controls.ExplosionControl;
 import com.artemis.Entity;
 import com.cubes.BlockTerrainControl;
 import com.cubes.Vector3Int;
@@ -44,6 +45,7 @@ import org.megastage.components.gfx.EngineGeometry;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.UsableFlag;
+import org.megastage.components.gfx.ExplosionGeometry;
 import org.megastage.components.gfx.VoidGeometry;
 
 /**
@@ -61,6 +63,8 @@ public class SpatialManager {
     public SpatialManager(SimpleApplication app) {
         this.app = app;
         assetManager = app.getAssetManager();
+        
+        ExplosionControl.initialize(assetManager);
     }
 
     public void deleteEntity(Entity entity) {
@@ -133,18 +137,6 @@ public class SpatialManager {
         });
     }
 
-/*    
-    private Node createUserNode(Entity entity) {
-        // DON'T use for system nodes
-        Node node = getNode(entity);
- 
-        node.addControl(new PositionControl(entity));
-        node.addControl(new RotationControl(entity));
-
-        return node;
-     }
-*/
-    
     private Geometry createSphere(float radius, ColorRGBA color, boolean shaded) {
         Sphere mesh = new Sphere(
                 ClientGlobals.gfxQuality.SPHERE_Z_SAMPLES,
@@ -404,5 +396,11 @@ public class SpatialManager {
                 return null;
             }
         });
+    }
+
+    public void setupExplosion(Entity entity, ExplosionGeometry aThis) {
+        Node explosionEffect = new Node("explosionFX");
+        explosionEffect.setLocalScale(10.0f);
+        explosionEffect.addControl(new ExplosionControl(entity));
     }
 }
