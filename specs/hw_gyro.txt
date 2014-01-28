@@ -27,8 +27,7 @@ Interrupt behavior:
        Reads the B register and sets the CMG to generate torque. Torque power
        is specified in register B as two's complement signed number.
        
-       If b > 0 then 50kNm * b / 0x7fff torque is generated
-       If b < 0 then 50kNm * b / 0x7fff torque is generated
+           Total torque = 50kNm * B / 0x7fff
 
        If B is 0 or insufficient power is available, gyroscope will stabilize
        the ship in respect to it's installation axis.
