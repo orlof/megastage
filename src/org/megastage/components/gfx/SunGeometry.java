@@ -48,8 +48,10 @@ public class SunGeometry extends BaseComponent {
     @Override
     public void delete(Connection pc, Entity entity) {
         ClientGlobals.spatialManager.deleteEntity(entity);
+        entity.deleteFromWorld();
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("SunGeometry(");

@@ -398,9 +398,17 @@ public class SpatialManager {
         });
     }
 
-    public void setupExplosion(Entity entity, ExplosionGeometry aThis) {
-        Node explosionEffect = new Node("explosionFX");
-        explosionEffect.setLocalScale(10.0f);
+    public void setupExplosion(final Entity entity, ExplosionGeometry aThis) {
+        final Node explosionEffect = new Node("explosionFX");
+        explosionEffect.setLocalScale(1.0f);
         explosionEffect.addControl(new ExplosionControl(entity));
+        
+        app.enqueue(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                getNode(entity).attachChild(explosionEffect);
+                return null;
+            }
+        });
     }
 }
