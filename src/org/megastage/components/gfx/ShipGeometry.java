@@ -12,6 +12,7 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.client.ClientGlobals;
+import org.megastage.components.srv.CollisionType;
 import org.megastage.util.Time;
 import org.megastage.util.Vector;
 
@@ -51,8 +52,14 @@ public class ShipGeometry extends BaseComponent {
         xCenter /= blockCount; yCenter /= blockCount; zCenter /= blockCount;
         xCenter += 0.5; yCenter += 0.5; zCenter += 0.5;
 
-        BaseComponent[] adds = new BaseComponent[1];
+        BaseComponent[] adds = new BaseComponent[2];
 
+        double sphere = Math.sqrt(xCenter * xCenter + yCenter * yCenter + zCenter * zCenter);
+        CollisionType ct = new CollisionType();
+        ct.item = CollisionType.SHIP;
+        ct.radius = sphere;
+        adds[1] = ct;
+        
         Mass mass = new Mass();
         mass.mass = 1000 * blockCount;
         adds[0] = mass;
