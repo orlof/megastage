@@ -8,6 +8,7 @@ import com.artemis.annotations.Mapper;
 import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
+import org.megastage.components.gfx.ExplosionGeometry;
 import org.megastage.components.srv.CollisionType;
 import org.megastage.components.srv.Identifier;
 import org.megastage.util.Time;
@@ -68,11 +69,15 @@ public class CollisionSystem extends EntitySystem {
                         Identifier idb = b.getComponent(Identifier.class);
 
                         if(cola.isShip()) {
+                            a.addComponent(new ExplosionGeometry());
+                            a.changedInWorld();
                             // TODO damage a
                             Log.info(ida.toString() + " was damaged in collision with " + idb.toString());
                         }
                         
                         if(colb.isShip()) {
+                            b.addComponent(new ExplosionGeometry());
+                            b.changedInWorld();
                             // TODO damage b
                             Log.info(idb.toString() + " was damaged in collision with " + ida.toString());
                         }

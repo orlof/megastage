@@ -48,6 +48,7 @@ public class PlanetGeometry extends BaseComponent {
     @Override
     public void delete(Connection pc, Entity entity) {
         ClientGlobals.spatialManager.deleteEntity(entity);
+        entity.deleteFromWorld();
     }
     
     public String toString() {
