@@ -84,7 +84,6 @@
     <entity name="Borg Ship">
         <group name="replicate"/>
         <component type="srv.SynchronizeFlag"/>
-        <component type="srv.CollisionType" radius="15" item="SHIP"/>
         <component type="Position" x="20" y="0" z="-250000"/>
         <component type="Rotation"/>
         <component type="srv.Acceleration"/>
@@ -195,7 +194,6 @@
     <entity-template name="Apollo 13">
         <group name="replicate"/>
         <component type="srv.SynchronizeFlag"/>
-        <component type="srv.CollisionType" radius="15" item="SHIP"/>
         <component type="Position" x="0" y="0" z="-250000"/>
         <component type="Rotation"/>
         <component type="srv.Velocity"/>
