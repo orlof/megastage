@@ -21,15 +21,15 @@ public class Cube3dMap {
     public int count;
     
     public char get(int x, int y, int z) {
-        if(data == null || data.length <= x) {
+        if(data == null || x < 0 || data.length <= x) {
             return 0;
         }
         char[][] xdata = data[x];
-        if(xdata == null || xdata.length <= y) {
+        if(xdata == null || y < 0 || xdata.length <= y) {
             return 0;
         }
         char[] ydata = data[x][y];
-        if(ydata == null || ydata.length <= z) {
+        if(ydata == null || z < 0 || ydata.length <= z) {
             return 0;
         }
         return ydata[z];
