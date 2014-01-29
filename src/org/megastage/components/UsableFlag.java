@@ -6,7 +6,7 @@ package org.megastage.components;
 
 /**
  *
- * @author teppo
+ * @author Orlof
  */
 public class UsableFlag extends BaseComponent {
     @Override

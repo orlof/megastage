@@ -13,6 +13,7 @@ import org.megastage.components.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.srv.CollisionType;
+import org.megastage.util.Cube3dMap;
 import org.megastage.util.Time;
 import org.megastage.util.Vector;
 
@@ -23,6 +24,8 @@ import org.megastage.util.Vector;
 public class ShipGeometry extends BaseComponent {
     public float xCenter, yCenter, zCenter;
     public long updateTime;
+
+    public Cube3dMap map = new Cube3dMap();
     
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
@@ -40,8 +43,8 @@ public class ShipGeometry extends BaseComponent {
                 
                 String xString = zElem.getText();
                 for(int x=0; x < xString.length(); x++) {
-                    if(xString.charAt(x) == '#') {
-                        set(x, index, z);
+                    if(xString.charAt(x) != ' ') {
+                        map.set(x, index, z, xString.charAt(x));
                         xCenter += x; yCenter += index; zCenter += z; blockCount++;
                     }
                 }
@@ -75,10 +78,10 @@ public class ShipGeometry extends BaseComponent {
         double zc = zCenter - 0.5;
         
         double inertia = 0;
-        for(int x=0; x < maxx; x++) {
-            for(int y=0; y < maxy; y++) {
-                for(int z=0; z < maxz; z++) {
-                    if(data[x][y][z]) {
+        for(int x=0; x < map.xsize; x++) {
+            for(int y=0; y < map.ysize; y++) {
+                for(int z=0; z < map.zsize; z++) {
+                    if(map.get(x, y, z) == '#') {
                         Vector point = new Vector(x - xc, y - yc, z - zc);
                         inertia += 1000.0 * axis.distance(point);
                     }
@@ -111,21 +114,4 @@ public class ShipGeometry extends BaseComponent {
         return "ShipGeometry()";
     }
 
-    public int maxx = -1, maxy = -1, maxz = -1;
-    public boolean[][][] data = new boolean[16][16][16];
-    
-    public void set(int x, int y, int z) {
-        if(x > maxx) maxx = x;
-        if(y > maxy) maxy = y;
-        if(z > maxz) maxz = z;
-        data[x][y][z] = true;
-    }
-
-    public int getChunkSize() {
-        int size = maxx;
-        if(size < maxy) size = maxy;
-        if(size < maxz) size = maxz;
-        
-        return size / 16 + 1;
-    }
 }

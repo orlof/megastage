@@ -12,7 +12,7 @@ import org.megastage.client.ClientGlobals;
 
 /**
  *
- * @author teppo
+ * @author Orlof
  */
 public class DeleteFlag extends BaseComponent {
     @Override
