@@ -24,6 +24,7 @@ import org.megastage.components.SpawnPoint;
 import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.Mode;
+import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.protocol.Action;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.PlayerIDMessage;
@@ -144,25 +145,39 @@ public class NetworkSystem extends VoidEntitySystem {
 
         Log.info("Sent " + list.size() + " components");
     }
-    
+
+    private int lx,ly,lz;
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
         if(connection.player == null) return;
         
         Log.debug(cmd.toString());
+
+        BindTo bindTo = connection.player.getComponent(BindTo.class);
+        Entity ship = world.getEntity(bindTo.parent);
+
+        ShipGeometry geom = ship.getComponent(ShipGeometry.class);
         
         Position pos = connection.player.getComponent(Position.class);
-        pos.x += 1000 * cmd.xMove;
-        pos.y += 1000 * cmd.yMove;
-        pos.z += 1000 * cmd.zMove;
+        int x = (int) ((pos.x + 1000 * cmd.xMove) / 1000);
+        int y = (int) ((pos.y + 1000 * cmd.yMove) / 1000);
+        int z = (int) ((pos.z + 1000 * cmd.zMove) / 1000);
+        
+        if(x!=lx || y!=ly || z!=lz) {
+            lx=x;ly=y;lz=z;
+            Log.info("Entering: " + x + ", " + y + ", " + z);
+        }
+        
+        if(geom.map.get(x, y, z) == 0 && geom.map.get(x, y+1, z) == 0 && geom.map.get(x, y-1, z) == '#') {
+            pos.x += 1000 * cmd.xMove;
+            pos.y += 1000 * cmd.yMove;
+            pos.z += 1000 * cmd.zMove;
+        }
 
         Rotation rot = connection.player.getComponent(Rotation.class);
         rot.x = cmd.qx;
         rot.y = cmd.qy;
         rot.z = cmd.qz;
         rot.w = cmd.qw;
-        
-        BindTo bindTo = connection.player.getComponent(BindTo.class);
-        Entity ship = world.getEntity(bindTo.parent);
         
         Rotation shipRotation = ship.getComponent(Rotation.class);
         Quaternion shipRotationQuaternion = shipRotation.getQuaternion();
