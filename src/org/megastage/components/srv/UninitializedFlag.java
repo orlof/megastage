@@ -8,7 +8,7 @@ import org.megastage.components.BaseComponent;
 
 /**
  *
- * @author teppo
+ * @author Orlof
  */
 public class UninitializedFlag extends BaseComponent {
 }

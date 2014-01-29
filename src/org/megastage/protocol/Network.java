@@ -27,6 +27,7 @@ import org.megastage.components.DeleteFlag;
 import org.megastage.components.Mode;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.gfx.ExplosionGeometry;
+import org.megastage.util.Cube3dMap;
 import org.megastage.util.RAM;
 import org.megastage.util.Vector;
 
@@ -49,16 +50,16 @@ public class Network {
             kryo.register(clazz);
         }
 
-        kryo.register(boolean[].class);
-        kryo.register(boolean[][].class);
-        kryo.register(boolean[][][].class);
         kryo.register(char[].class);
+        kryo.register(char[][].class);
+        kryo.register(char[][][].class);
         kryo.register(Object[].class);
         kryo.register(Bag.class);
         kryo.register(BaseComponent.class);
         kryo.register(BindTo.class);
         kryo.register(CharacterGeometry.class);
         kryo.register(ComponentMessage.class);
+        kryo.register(Cube3dMap.class);
         kryo.register(DeleteFlag.class);
         kryo.register(EngineData.class);
         kryo.register(EngineGeometry.class);

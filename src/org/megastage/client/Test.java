@@ -6,7 +6,7 @@ package org.megastage.client;
 
 /**
  *
- * @author teppo
+ * @author Orlof
  */
 public class Test {
     public static void main(String[] args) throws Exception {

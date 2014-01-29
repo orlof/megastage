@@ -232,24 +232,17 @@ public class SpatialManager {
     
     public void setupShip(Entity entity, ShipGeometry data) {
         Log.info("" + entity.toString());
-        int chunkSize = data.getChunkSize();
 
-        float cx = 0, cy = 0, cz = 0, bc = 0;
-        
-        BlockTerrainControl blockControl = new BlockTerrainControl(ClientGlobals.cubesSettings, new Vector3Int(chunkSize, chunkSize, chunkSize));
-        for(int x = 0; x <= data.maxx; x++) {
-            for(int y = 0; y <= data.maxy; y++) {
-                for(int z = 0; z <= data.maxz; z++) {
-                    if(data.data[x][y][z]) {
-                        cx += x; cy += y; cz += z; bc++;
+        BlockTerrainControl blockControl = new BlockTerrainControl(ClientGlobals.cubesSettings, data.map.getChunkSizes());
+        for(int x = 0; x <= data.map.xsize; x++) {
+            for(int y = 0; y <= data.map.ysize; y++) {
+                for(int z = 0; z <= data.map.zsize; z++) {
+                    if(data.map.get(x, y, z) == '#') {
                         blockControl.setBlock(x, y, z, Block_Wood.class);
                     }
                 }
             }
         }
-        
-        cx /= bc; cy /= bc; cz /= bc;
-        cx += 0.5; cy += 0.5; cz += 0.5;
         
         Node offset = new Node("offset");
         offset.addControl(blockControl);
@@ -260,7 +253,7 @@ public class SpatialManager {
         node.addControl(new RotationControl(entity));
 
         node.attachChild(offset);
-        offset.setLocalTranslation(-cx, -cy, -cz);
+        offset.setLocalTranslation(data.map.getCenter().negateLocal());
 
         app.enqueue(new Callable() {
             @Override
