@@ -45,6 +45,19 @@ public class DCPURawInputListener implements RawInputListener {
     @Override
     public void onTouchEvent(TouchEvent evt) {}
 
+/*
+  0x10: Backspace
+  0x11: Return
+  0x12: Insert
+  0x13: Delete
+  0x20-0x7f: ASCII characters
+  0x80: Arrow up
+  0x81: Arrow down
+  0x82: Arrow left
+  0x83: Arrow right
+  0x90: Shift
+  0x91: Control
+ */
     public boolean keyPressed(KeyInputEvent evt) {
         int keyCode = evt.getKeyCode();
         char keyChar = evt.getKeyChar();
@@ -77,6 +90,12 @@ public class DCPURawInputListener implements RawInputListener {
                     break;
                 case 0x2a:
                     keyChar = 0x90;
+                    break;
+                case 0x1d:
+                    keyChar = 0x91;
+                    break;
+                case 0x9d:
+                    keyChar = 0x91;
                     break;
                 default:
                     Log.debug("Key event discarded");

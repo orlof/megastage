@@ -30,6 +30,7 @@ import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.PlayerIDMessage;
 import org.megastage.protocol.UserCommand;
 import org.megastage.server.TemplateManager;
+import org.megastage.util.Cube3dMap;
 import org.megastage.util.Quaternion;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector;
@@ -146,7 +147,49 @@ public class NetworkSystem extends VoidEntitySystem {
         Log.info("Sent " + list.size() + " components");
     }
 
-    private int lx,ly,lz;
+    private int probe(long pos, long step) {
+        long target = pos + step;
+        if(step < 0) {
+            target -= 300;
+        } else if(step > 0) {
+            target += 300;
+        }
+
+        if(target < 0) {
+            target -= 1000;
+        }
+
+        target /= 1000;
+        return (int) target;
+    }
+    
+    private int block(long pos) {
+        if(pos < 0) {
+            pos -= 1000;
+        }
+
+        pos /= 1000;
+        return (int) pos;
+    }
+    
+    private boolean blocked(Cube3dMap map, int x, int y, int z) {
+        return map.get(x, y, z) != 0 || map.get(x, y+1, z) != 0 || 
+                map.get(x, y-1, z) != '#';
+    }
+    
+    private boolean detectCollision(Cube3dMap map, int cx, int cy, int cz, int px, int py, int pz) {
+        if(cx != px && blocked(map, px, cy, cz)) {
+            return true;
+        }
+        if(cz != pz && blocked(map, cx, cy, pz)) {
+            return true;
+        }
+        if(cx != px && cz != pz && blocked(map, px, cy, pz)) {
+            return true;
+        }
+        return false;
+    }
+    
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
         if(connection.player == null) return;
         
@@ -158,19 +201,19 @@ public class NetworkSystem extends VoidEntitySystem {
         ShipGeometry geom = ship.getComponent(ShipGeometry.class);
         
         Position pos = connection.player.getComponent(Position.class);
-        int x = (int) Math.floor((pos.x + 1000 * cmd.xMove + 400 * Math.signum(cmd.xMove)) / 1000);
-        int y = (int) Math.floor((pos.y + 1000 * cmd.yMove + 400 * Math.signum(cmd.yMove)) / 1000);
-        int z = (int) Math.floor((pos.z + 1000 * cmd.zMove + 400 * Math.signum(cmd.zMove)) / 1000);
+        int cx = block(pos.x);
+        int cy = block(pos.y);
+        int cz = block(pos.z);
         
-        if(cmd.xMove != 0 || cmd.zMove != 0) {
+        int xprobe = probe(pos.x, (long) (1000.0 * cmd.xMove));
+        int yprobe = probe(pos.y, (long) (1000.0 * cmd.yMove));
+        int zprobe = probe(pos.z, (long) (1000.0 * cmd.zMove));
+        
+        if(Log.DEBUG && (cmd.xMove != 0 || cmd.zMove != 0)) {
             Log.info("" + pos.x + ", " + pos.y + ", " + pos.z);
         }
-        if(x!=lx || y!=ly || z!=lz) {
-            lx=x;ly=y;lz=z;
-            Log.info("Probe entered: " + x + ", " + y + ", " + z);
-        }
-        
-        if(geom.map.get(x, y, z) == 0 && geom.map.get(x, y+1, z) == 0 && geom.map.get(x, y-1, z) == '#') {
+
+        if(!detectCollision(geom.map, cx, cy, cz, xprobe, yprobe, zprobe)) {
             pos.x += 1000 * cmd.xMove;
             pos.y += 1000 * cmd.yMove;
             pos.z += 1000 * cmd.zMove;

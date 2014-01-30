@@ -47,7 +47,7 @@ public class Engine extends DCPUHardware {
     public void interrupt() {
         char a = dcpu.registers[0];
 
-        Log.debug("a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
+        Log.info("a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
 
         if (a == 0) {
 

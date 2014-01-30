@@ -159,18 +159,27 @@
                 <component type="dcpu.VirtualKeyboard"/>
                 <component type="gfx.BindTo"/>
             </entity>
+            <entity name="Engine">
+                <component type="dcpu.Engine" x="0" y="0" z="-1" max_power="1e6"/>
+                <component type="Position" dx="3" dy="2" dz="0"/>
+                <component type="gfx.EngineGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="srv.SynchronizeFlag"/>
+                <component type="Rotation" x="0" y="180" z="0"/>
+                <group name="replicate"/>
+            </entity>
             <entity>
                 <component type="dcpu.Gyroscope" x="0" y="0" z="1" torque="50000"/>
                 <component type="gfx.BindTo"/>
             </entity>
-            <!--entity>
+            <entity>
                 <component type="dcpu.Gyroscope" x="0" y="1" z="0" torque="50000"/>
-                <component type="server.BindTo"/>
+                <component type="gfx.BindTo"/>
             </entity>
             <entity>
                 <component type="dcpu.Gyroscope" x="1" y="0" z="0" torque="50000"/>
-                <component type="server.BindTo"/>
-            </entity-->
+                <component type="gfx.BindTo"/>
+            </entity>
         </entity>
         <entity name="Enemy">
             <component type="Position" dx="3" dy="1" dz="8"/>
@@ -280,18 +289,18 @@
                 <component type="Rotation" x="0" y="180" z="0"/>
                 <group name="replicate"/>
             </entity>
-            <!--entity>
-                <component type="dcpu.Gyroscope" x="0" y="0" z="1" torque="50000"/>
-                <component type="server.BindTo"/>
-            </entity-->
-            <!--entity>
-                <component type="dcpu.Gyroscope" x="0" y="0" z="1" torque="50000"/>
-                <component type="server.BindTo"/>
-            </entity-->
-            <!--entity>
+            <entity>
                 <component type="dcpu.Gyroscope" x="1" y="0" z="0" torque="50000"/>
-                <component type="server.BindTo"/>
-            </entity-->
+                <component type="gfx.BindTo"/>
+            </entity>
+            <entity>
+                <component type="dcpu.Gyroscope" x="0" y="1" z="0" torque="50000"/>
+                <component type="gfx.BindTo"/>
+            </entity>
+            <entity>
+                <component type="dcpu.Gyroscope" x="0" y="0" z="1" torque="50000"/>
+                <component type="gfx.BindTo"/>
+            </entity>
             <!--entity>
                 <component type="dcpu.PPS"/>
             </entity-->
