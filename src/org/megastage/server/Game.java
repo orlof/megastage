@@ -38,7 +38,7 @@ public class Game {
         world.setManager(new TemplateManager());
 
         //world.setSystem(new ServerEngineTestSystem(5000));
-        world.setSystem(new ServerGyroTestSystem(5000));
+        //world.setSystem(new ServerGyroTestSystem(5000));
         world.setSystem(new CleanupSystem(500));
         world.setSystem(new SynchronizeSystem(50));
         world.setSystem(new NetworkSystem());
