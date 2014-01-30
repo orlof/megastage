@@ -158,13 +158,16 @@ public class NetworkSystem extends VoidEntitySystem {
         ShipGeometry geom = ship.getComponent(ShipGeometry.class);
         
         Position pos = connection.player.getComponent(Position.class);
-        int x = (int) ((pos.x + 1000 * cmd.xMove) / 1000);
-        int y = (int) ((pos.y + 1000 * cmd.yMove) / 1000);
-        int z = (int) ((pos.z + 1000 * cmd.zMove) / 1000);
+        int x = (int) Math.floor((pos.x + 1000 * cmd.xMove + 400 * Math.signum(cmd.xMove)) / 1000);
+        int y = (int) Math.floor((pos.y + 1000 * cmd.yMove + 400 * Math.signum(cmd.yMove)) / 1000);
+        int z = (int) Math.floor((pos.z + 1000 * cmd.zMove + 400 * Math.signum(cmd.zMove)) / 1000);
         
+        if(cmd.xMove != 0 || cmd.zMove != 0) {
+            Log.info("" + pos.x + ", " + pos.y + ", " + pos.z);
+        }
         if(x!=lx || y!=ly || z!=lz) {
             lx=x;ly=y;lz=z;
-            Log.info("Entering: " + x + ", " + y + ", " + z);
+            Log.info("Probe entered: " + x + ", " + y + ", " + z);
         }
         
         if(geom.map.get(x, y, z) == 0 && geom.map.get(x, y+1, z) == 0 && geom.map.get(x, y-1, z) == '#') {
