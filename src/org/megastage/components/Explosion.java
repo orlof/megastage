@@ -5,6 +5,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.BaseComponent;
+import org.megastage.protocol.Network;
 import org.megastage.util.Time;
 
 /**
@@ -15,23 +16,42 @@ import org.megastage.util.Time;
  */
 public class Explosion extends BaseComponent {
     public long startTime = Time.value;
-    public int state = 0;
+    
+    public int clientState = -1;
+    public int serverState = 0;
 
     @Override
     public void receive(Connection pc, Entity entity) {
-        Explosion expl = entity.getComponent(Explosion.class);
-        
-        if(expl == null) {
+        if(serverState == 0) {
+            entity.addComponent(this);
+            entity.changedInWorld();
+
             ClientGlobals.spatialManager.setupExplosion(entity, this);
+            
+        } else {
+            Explosion expl = entity.getComponent(Explosion.class);
+            expl.serverState = serverState;
         }
-        
-        entity.addComponent(this);
+
+        Log.info("received explosion "+entity.toString()+" state: " + serverState);
     }
 
+    @Override
+    public boolean synchronize() {
+        return clientState != serverState;
+    }
+
+    @Override
+    public Network.ComponentMessage create(Entity entity) {
+        Log.info(entity.toString() + " clientState from " + clientState + " to " + serverState);
+
+        clientState = serverState;
+        return new Network.ComponentMessage(entity, copy());
+    }
+    
     public BaseComponent copy() {
         Explosion expl = new Explosion();
-        expl.state = state;
+        expl.serverState = serverState;
         return expl;
     }
-
 }

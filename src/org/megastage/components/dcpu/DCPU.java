@@ -47,7 +47,7 @@ public class DCPU extends BaseComponent {
     public BaseComponent[] init(World world, Entity parent, Element element) {
         this.ship = parent;
         try {
-            load(new File("admiral.bin"));
+            load(new File("bootrom.bin"));
 
             for(Element hwElement: element.getChildren("hardware")) {
                 Class clazz = Class.forName("org.megastage.components." + hwElement.getAttributeValue("type"));

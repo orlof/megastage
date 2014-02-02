@@ -1,6 +1,5 @@
 package org.megastage.client.controls;
 
-import com.artemis.Entity;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.RenderManager;
@@ -13,19 +12,20 @@ import org.megastage.client.ExplosionNode;
 import org.megastage.components.Explosion;
 
 public class ExplosionControl extends AbstractControl {
-    private final Entity entity;
     private final ExplosionNode node;
+    private final Explosion explosion;
 
-    public ExplosionControl(Entity entity, ExplosionNode node) {
-        this.entity = entity;
+    public ExplosionControl(Explosion explosion, ExplosionNode node) {
+        this.explosion = explosion;
         this.node = node;
     }
     
     @Override
     protected void controlUpdate(float tpf) {
-        Explosion explosion = entity.getComponent(Explosion.class);
-        if(explosion != null) {
-            switch(explosion.state) {
+        if(explosion.clientState != explosion.serverState) {
+            Log.info("clientState " + explosion.clientState+ " to " + explosion.serverState);
+            explosion.clientState = explosion.serverState;
+            switch(explosion.clientState) {
                 case 0:
                     break;
                 case 1:
@@ -65,8 +65,6 @@ public class ExplosionControl extends AbstractControl {
                     break;
                 case 6:
                     // rewind the effect
-                    node.light.setColor(ColorRGBA.Red);
-                    node.light.setRadius(2000);
                     node.fire.killAllParticles();
                     node.smoke.killAllParticles();
                     node.embers.killAllParticles();
@@ -75,7 +73,6 @@ public class ExplosionControl extends AbstractControl {
                     node.getParent().removeFromParent();
                     break;
                 case 7:
-
                     break;
             }
         }

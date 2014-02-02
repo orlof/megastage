@@ -1,4 +1,4 @@
-cp admiral.bin dist/
+cp bootrom.bin dist/
 cp font.png dist/
 cp boot.png dist/
 cp bin/server.bat dist/

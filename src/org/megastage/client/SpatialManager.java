@@ -23,6 +23,7 @@ import com.jme3.scene.shape.Cylinder;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.texture.Image;
+import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
 import com.jme3.texture.image.ImageRaster;
 import com.jme3.texture.plugins.AWTLoader;
@@ -290,6 +291,8 @@ public class SpatialManager {
         ImageRaster raster = ImageRaster.create(img2);
         
         Texture2D tex = new Texture2D(img2);
+//        tex.setMagFilter(Texture.MagFilter.Nearest);
+//        tex.setMinFilter(Texture.MinFilter.Trilinear);
 
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setTexture("ColorMap", tex);
@@ -390,14 +393,14 @@ public class SpatialManager {
         });
     }
 
-    public void setupExplosion(final Entity entity, Explosion explosion) {
+    public void setupExplosion(final Entity entity, final Explosion explosion) {
         final ExplosionNode node = new ExplosionNode("ExplosionFX");
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
                 Log.info("Attached explosion node " + entity + " " + node);
                 getNode(entity).attachChild(node);
-                node.addControl(new ExplosionControl(entity, node));
+                node.addControl(new ExplosionControl(explosion, node));
                 return null;
             }
         });

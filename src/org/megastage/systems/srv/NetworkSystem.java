@@ -69,7 +69,7 @@ public class NetworkSystem extends VoidEntitySystem {
     protected void processSystem() {
         Log.trace("Client state refreshed with packet size " + ServerGlobals.updates.size());
         Bag batch = ServerGlobals.getUpdates();
-        batch.addAll(ServerGlobals.getComponentEvents());
+        // batch.addAll(ServerGlobals.getComponentEvents());
         server.sendToAllUDP(batch);
     }
 

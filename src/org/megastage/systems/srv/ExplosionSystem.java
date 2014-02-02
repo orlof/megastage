@@ -39,34 +39,55 @@ public class ExplosionSystem extends EntityProcessingSystem {
         return false;
     }
 
-    private static final long[] delay = new long[] {
-        0, 0, 1500, 3500, 3700, 8000, 12000, 13000
-    };
-
     @Override
     protected void process(Entity e) {
         Explosion explosion = EXPLOSION.get(e);
 
-        long time = Time.value - explosion.startTime;
-
-        while(explosion.state < delay.length && time > delay[explosion.state]) {
-            switch(explosion.state) {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
+        if(isSynchronized(explosion) && stateExpired(explosion)) {
+            switch(explosion.serverState) {
+                case 0: // create spatial
+                case 1: // particles
+                case 2: // particles, ligth
+                case 3: // particles
+                case 4: // remove ship spatial
+                case 5: // kill particles
+                case 6: // kill particles, remove light, remove ship node
                     //ServerGlobals.addUDPEvent(new ExplosionEvent(e, explosion.state));
-                    Log.trace("explosion state change: " + explosion.state);
-                    ServerGlobals.addComponentEvent(new ComponentMessage(e, explosion.copy()));
                     break;
                 case 7:
                     e.addComponent(new DeleteFlag());
                     break;
             }
-            explosion.state++;
+            explosion.serverState++;
+            Log.info("serverState advance " + explosion.serverState);
         }
+    }
+
+    public boolean isSynchronized(Explosion explosion) {
+        return explosion.clientState == explosion.serverState;
+    }
+
+    // create spatial
+    // 1500
+    // sparks
+    // 3500
+    // burst, ligth
+    // 3700
+    // explosion
+    // 8000
+    // remove ship spatial
+    // 8000
+    // kill particles
+    // kill particles, remove light, remove ship node
+    
+    private static final long[] delay = new long[] {
+//        1500, 3500, 3700, 8000, 8000, 13000, 14000, 15000
+        0, 1500, 3500, 3700, 8000, 13000, 13000, 13000
+    };
+
+    public boolean stateExpired(Explosion explosion) {
+        long time = Time.value - explosion.startTime;
+        Log.info("Elapsed time since explosion start: " + time);
+        return time > delay[explosion.serverState];
     }
 }
