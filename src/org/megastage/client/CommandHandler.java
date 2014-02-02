@@ -233,10 +233,10 @@ public class CommandHandler implements AnalogListener, ActionListener {
                 moveShip(0, -value, 0);
                 break;
             case "SHIP_MoveLeft":
-                moveShip(-value, 0, 0);
+                moveShip(value, 0, 0);
                 break;
             case "SHIP_MoveRight":
-                moveShip(value, 0, 0);
+                moveShip(-value, 0, 0);
                 break;
             case "SHIP_PitchUp":
                 pitch(value);

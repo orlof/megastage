@@ -30,8 +30,8 @@ public class SystemPositionControl extends AbstractControl {
         } else {
             spatial.setLocalTranslation(position.getAsVector().negate());
         }
-        Log.trace("System Local " + spatial.getLocalTranslation().toString());
-        Log.trace("System World " + spatial.getWorldTranslation().toString());            
+        Log.trace("System Local " + spatial.toString() + " " + spatial.getLocalTranslation().toString());
+        Log.trace("System World " + spatial.toString() + " " + spatial.getWorldTranslation().toString());
     }
 
     @Override

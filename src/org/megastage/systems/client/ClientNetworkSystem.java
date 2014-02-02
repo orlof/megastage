@@ -124,13 +124,6 @@ public class ClientNetworkSystem extends EntitySystem {
             if(o instanceof Message) {
                 final Message msg = (Message) o;
                 msg.receive(pc);
-//                ClientGlobals.app.enqueue(new Callable() {
-//                    @Override
-//                    public Object call() throws Exception {
-//                        msg.receive(pc);
-//                        return null;
-//                    }
-//                });
             } else {
                 Log.warn("Unknown message type: " + o.getClass().getSimpleName());
             } 

@@ -47,11 +47,10 @@ public class Engine extends DCPUHardware {
     public void interrupt() {
         char a = dcpu.registers[0];
 
-        Log.info("a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
+        Log.trace("a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
 
         if (a == 0) {
-
-            setPowerTarget(dcpu.registers[1]);
+            setPowerTarget((char) (dcpu.registers[1]));
         } else if (a == 1) {
             
             dcpu.registers[2] = powerActual;

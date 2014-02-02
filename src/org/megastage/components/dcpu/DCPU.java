@@ -208,7 +208,6 @@ public class DCPU extends BaseComponent {
                         break;
                     case 16: //HWN
                         cycles++;
-                        Log.info("HWN " + hardware.size());
                         set(aaddr, (char) hardware.size());
                         break;
                     case 17: //HWQ
