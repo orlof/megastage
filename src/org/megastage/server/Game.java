@@ -18,6 +18,7 @@ import org.megastage.systems.*;
 
 import java.io.IOException;
 import org.megastage.systems.srv.CollisionSystem;
+import org.megastage.systems.srv.ExplosionSystem;
 import org.megastage.util.Time;
 
 /**
@@ -51,7 +52,8 @@ public class Game {
         world.setSystem(new GravityAccelerationSystem());
 
         world.setSystem(new ShipMovementSystem());
-        world.setSystem(new CollisionSystem(1000));
+        world.setSystem(new CollisionSystem(200));
+        world.setSystem(new ExplosionSystem(200));
 
         world.setSystem(new DCPUSystem());
 

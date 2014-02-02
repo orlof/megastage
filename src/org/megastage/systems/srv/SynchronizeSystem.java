@@ -42,24 +42,21 @@ public class SynchronizeSystem extends EntitySystem {
     protected void processEntities(ImmutableBag<Entity> entities) {
         Log.trace("" + Time.value);
 
-        Bag bag = new Bag(100);
-        
         for(int i=0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
 
             if(DELETE_FLAG.has(entity)) {
                 world.deleteEntity(entity);
-                bag.add(new DeleteFlag().create(entity));
+                ServerGlobals.updates.add(new DeleteFlag().create(entity));
             } else if(UNINITIALIZED_FLAG.has(entity)) {
                 entity.removeComponent(UninitializedFlag.class);
-                replicateComponents(bag, entity);
+                replicateComponents(ServerGlobals.updates, entity);
             } else {
-                synchronizeComponents(bag, entity);
+                synchronizeComponents(ServerGlobals.updates, entity);
             }
         }
         
-        Log.trace("Number of components to synchronize: " + bag.size());
-        ServerGlobals.updates = bag;
+        Log.trace("Number of components to synchronize: " + ServerGlobals.updates.size());
     }	
 
     private Bag<Component> _components = new Bag<>(20);

@@ -7,6 +7,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.components.Explosion;
 import org.megastage.util.Vector;
 
 public class Gyroscope extends DCPUHardware {
@@ -45,7 +46,7 @@ public class Gyroscope extends DCPUHardware {
     public void interrupt() {
         char a = dcpu.registers[0];
 
-        Log.info("gyro: " + this + " a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
+        Log.trace("axis: " + axis.toString() + " a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
 
         if (a == 0) {
 
@@ -68,11 +69,17 @@ public class Gyroscope extends DCPUHardware {
     }
 
     public void setTorque(char torque) {
-        Log.debug("" + (int) torque);
+        Log.trace("" + (int) torque);
+        if(torque == 0x8000) {
+            ship.addComponent(new Explosion());
+            ship.changedInWorld();
+            return;
+        }
+        
         power = torque;
 
-        double tmp = torque < 0x8000 ? torque: torque - (2<<15);
-        curTorque = maxTorque * (tmp < 0 ? tmp / 0x8000: tmp / 0x7fff);
+        double tmp = torque < 0x8000 ? torque: torque - 65536;
+        curTorque = maxTorque * tmp / 0x7fff;
     }
     
     public double getRotation(ShipGeometry geom) {

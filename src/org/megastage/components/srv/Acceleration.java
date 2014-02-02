@@ -12,6 +12,10 @@ import org.megastage.util.Vector;
 public class Acceleration extends BaseComponent {
     public Vector vector = Vector.ZERO;
 
+    public Acceleration() {
+        super();
+    }
+
     public void add(Vector v) {
         vector = vector.add(v);
     }

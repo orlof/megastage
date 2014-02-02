@@ -8,14 +8,14 @@ import com.artemis.annotations.Mapper;
 import com.artemis.utils.ImmutableBag;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
-import org.megastage.components.gfx.ExplosionGeometry;
 import org.megastage.components.srv.CollisionType;
+import org.megastage.components.Explosion;
 import org.megastage.components.srv.Identifier;
 import org.megastage.util.Time;
 
 /**
  * Created with IntelliJ IDEA.
- * User: contko3
+ * User: Orlof
  * Date: 8/19/13
  * Time: 12:09 PM
  * To change this template use File | Settings | File Templates.
@@ -26,6 +26,7 @@ public class CollisionSystem extends EntitySystem {
 
     @Mapper ComponentMapper<CollisionType> COLLISION_TYPE;
     @Mapper ComponentMapper<Position> POSITION;
+    @Mapper ComponentMapper<Explosion> EXPLOSION;
     
     public CollisionSystem(long interval) {
         super(Aspect.getAspectForAll(CollisionType.class, Position.class));
@@ -68,15 +69,15 @@ public class CollisionSystem extends EntitySystem {
                         Identifier ida = a.getComponent(Identifier.class);
                         Identifier idb = b.getComponent(Identifier.class);
 
-                        if(cola.isShip()) {
-                            a.addComponent(new ExplosionGeometry());
+                        if(cola.isShip() && !EXPLOSION.has(a)) {
+                            a.addComponent(new Explosion());
                             a.changedInWorld();
                             // TODO damage a
                             Log.info(ida.toString() + " was damaged in collision with " + idb.toString());
                         }
                         
-                        if(colb.isShip()) {
-                            b.addComponent(new ExplosionGeometry());
+                        if(colb.isShip() && !EXPLOSION.has(b)) {
+                            b.addComponent(new Explosion());
                             b.changedInWorld();
                             // TODO damage b
                             Log.info(idb.toString() + " was damaged in collision with " + ida.toString());

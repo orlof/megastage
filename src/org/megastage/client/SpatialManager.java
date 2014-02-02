@@ -7,7 +7,6 @@ package org.megastage.client;
 import org.megastage.client.controls.ExplosionControl;
 import com.artemis.Entity;
 import com.cubes.BlockTerrainControl;
-import com.cubes.Vector3Int;
 import com.cubes.test.blocks.Block_Wood;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
@@ -45,8 +44,8 @@ import org.megastage.components.gfx.EngineGeometry;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.UsableFlag;
-import org.megastage.components.gfx.ExplosionGeometry;
 import org.megastage.components.gfx.VoidGeometry;
+import org.megastage.components.Explosion;
 
 /**
  *
@@ -64,7 +63,7 @@ public class SpatialManager {
         this.app = app;
         assetManager = app.getAssetManager();
         
-        ExplosionControl.initialize(assetManager);
+        ExplosionNode.initialize(assetManager);
     }
 
     public void deleteEntity(Entity entity) {
@@ -391,15 +390,14 @@ public class SpatialManager {
         });
     }
 
-    public void setupExplosion(final Entity entity, ExplosionGeometry aThis) {
-        final Node explosionEffect = new Node("explosionFX");
-        explosionEffect.setLocalScale(1.0f);
-        explosionEffect.addControl(new ExplosionControl(entity));
-        
+    public void setupExplosion(final Entity entity, Explosion explosion) {
+        final ExplosionNode node = new ExplosionNode("ExplosionFX");
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
-                getNode(entity).attachChild(explosionEffect);
+                Log.info("Attached explosion node " + entity + " " + node);
+                getNode(entity).attachChild(node);
+                node.addControl(new ExplosionControl(entity, node));
                 return null;
             }
         });
