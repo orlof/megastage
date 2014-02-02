@@ -7,18 +7,16 @@ package org.megastage.client;
 import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.World;
-import com.artemis.utils.Bag;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import java.util.HashMap;
-import org.megastage.systems.ClientFixedRotationSystem;
-import org.megastage.systems.ClientMonitorRenderSystem;
-import org.megastage.systems.ClientNetworkSystem;
-import org.megastage.systems.ClientOrbitalMovementSystem;
+import org.megastage.systems.client.ClientFixedRotationSystem;
+import org.megastage.systems.client.ClientMonitorRenderSystem;
+import org.megastage.systems.client.ClientNetworkSystem;
 import org.megastage.systems.OrbitalMovementSystem;
-import org.megastage.util.ClientGlobals;
+import org.megastage.util.Time;
 
 /**
  *
@@ -32,7 +30,7 @@ public class ArtemisState extends AbstractAppState {
         world = new World();
 
         world.setSystem(new ClientMonitorRenderSystem(), false);
-        world.setSystem(new ClientOrbitalMovementSystem());
+        world.setSystem(new OrbitalMovementSystem());
         world.setSystem(new ClientFixedRotationSystem());
 
         ClientGlobals.network = new ClientNetworkSystem(20);
@@ -47,7 +45,7 @@ public class ArtemisState extends AbstractAppState {
     @Override
     public void update(float tpf) {
         world.setDelta(tpf);
-        ClientGlobals.time = System.currentTimeMillis() + ClientGlobals.timeDiff;
+        Time.value = System.currentTimeMillis() + ClientGlobals.timeDiff;
         
         world.process();
     }
@@ -96,7 +94,7 @@ public class ArtemisState extends AbstractAppState {
     }
 
     private <T extends Component> T createComponent(Entity entity, Class<T> type) {
-        Log.info(entity.toString() + " <- " + type.getSimpleName());
+        Log.info("Add component " + type.getSimpleName() + " to " + entity.toString());
         T component = null;
         
         try {

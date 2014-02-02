@@ -5,7 +5,7 @@ import com.artemis.Entity;
 import com.artemis.EntitySystem;
 import com.artemis.utils.ImmutableBag;
 import org.megastage.components.dcpu.Gyroscope;
-import org.megastage.util.ServerGlobals;
+import org.megastage.util.Time;
 
 public class ServerGyroTestSystem extends EntitySystem {
     private long interval;
@@ -20,8 +20,8 @@ public class ServerGyroTestSystem extends EntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(ServerGlobals.time >= acc) {
-                acc = ServerGlobals.time + interval;
+        if(Time.value >= acc) {
+                acc = Time.value + interval;
                 return true;
         }
         return false;
@@ -32,7 +32,7 @@ public class ServerGyroTestSystem extends EntitySystem {
         for(int i=0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
             Gyroscope gyro = entity.getComponent(Gyroscope.class);
-            switch(state++) {
+            switch(state) {
                 case 0:
                     gyro.setTorque((char) 0);
                     break;
@@ -45,5 +45,6 @@ public class ServerGyroTestSystem extends EntitySystem {
                     break;
             }
         }
+        state++;
     }	
 }

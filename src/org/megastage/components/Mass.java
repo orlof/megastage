@@ -11,7 +11,7 @@ import org.jdom2.Element;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class Mass extends EntityComponent {
+public class Mass extends BaseComponent {
     public double mass;
 
     @Override
@@ -21,6 +21,11 @@ public class Mass extends EntityComponent {
         return null;
     }
 
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+    
     public String toString() {
         return "Mass(" + mass + ")";
     }

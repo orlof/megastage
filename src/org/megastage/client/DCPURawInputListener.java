@@ -13,7 +13,6 @@ import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
 import java.util.HashMap;
-import org.megastage.util.ClientGlobals;
 
 public class DCPURawInputListener implements RawInputListener {
     HashMap<Integer, Character> pressed = new HashMap<>();
@@ -46,6 +45,19 @@ public class DCPURawInputListener implements RawInputListener {
     @Override
     public void onTouchEvent(TouchEvent evt) {}
 
+/*
+  0x10: Backspace
+  0x11: Return
+  0x12: Insert
+  0x13: Delete
+  0x20-0x7f: ASCII characters
+  0x80: Arrow up
+  0x81: Arrow down
+  0x82: Arrow left
+  0x83: Arrow right
+  0x90: Shift
+  0x91: Control
+ */
     public boolean keyPressed(KeyInputEvent evt) {
         int keyCode = evt.getKeyCode();
         char keyChar = evt.getKeyChar();
@@ -79,6 +91,12 @@ public class DCPURawInputListener implements RawInputListener {
                 case 0x2a:
                     keyChar = 0x90;
                     break;
+                case 0x1d:
+                    keyChar = 0x91;
+                    break;
+                case 0x9d:
+                    keyChar = 0x91;
+                    break;
                 default:
                     Log.debug("Key event discarded");
                     return true;
@@ -86,10 +104,11 @@ public class DCPURawInputListener implements RawInputListener {
         }
 
         pressed.put(keyCode, keyChar);
-        Log.debug("KeyPressed(keyChar=" + Integer.toHexString(keyChar) + ")");
-        ClientGlobals.network.sendKeyPressed(keyChar);
-        Log.debug("KeyTyped(keyChar=" + Integer.toHexString(keyChar) + ")");
-        ClientGlobals.network.sendKeyTyped(keyChar);
+        Log.trace("KeyPressed(keyChar=" + Integer.toHexString(keyChar) + ")");
+        ClientGlobals.userCommand.keyPressed(keyChar);
+
+        Log.trace("KeyTyped(keyChar=" + Integer.toHexString(keyChar) + ")");
+        ClientGlobals.userCommand.keyTyped(keyChar);
         return true;
     }
 
@@ -98,8 +117,8 @@ public class DCPURawInputListener implements RawInputListener {
         Character keyChar = pressed.get(keyCode);
 
         if(keyChar != null) {
-            Log.debug("KeyReleased(keyChar=" + Integer.toHexString(keyChar) + ")");
-            ClientGlobals.network.sendKeyReleased(keyChar);
+            Log.trace("KeyReleased(keyChar=" + Integer.toHexString(keyChar) + ")");
+            ClientGlobals.userCommand.keyReleased(keyChar);
         }
 
         return true;

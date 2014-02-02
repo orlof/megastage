@@ -6,7 +6,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector;
 
@@ -16,7 +16,7 @@ import org.megastage.util.Vector;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class Orbit extends EntityComponent {
+public class Orbit extends BaseComponent {
     public int center;
     public double distance;
 
@@ -28,6 +28,11 @@ public class Orbit extends EntityComponent {
         return null;
     }
 
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+    
     @Override
     public void receive(Connection pc, Entity entity) {
         center = ClientGlobals.artemis.toClientEntity(center).getId();

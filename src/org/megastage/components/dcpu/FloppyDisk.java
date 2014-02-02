@@ -11,14 +11,9 @@ import java.io.IOException;
 
 public class FloppyDisk {
 
-    private String id;
     public char[] data = new char[737280];
     private boolean writeProtected;
     private VirtualFloppyDrive drive;
-
-    public FloppyDisk(String id) {
-        this.id = id;
-    }
 
     public void load(File file) throws IOException {
         DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
@@ -55,14 +50,6 @@ public class FloppyDisk {
 
     public void setWriteProtected(boolean writeProtected) {
         this.writeProtected = writeProtected;
-    }
-
-    public String getID() {
-        return id;
-    }
-
-    public void setID(String id) {
-        this.id = id;
     }
 
     public void inserted(VirtualFloppyDrive drive) {

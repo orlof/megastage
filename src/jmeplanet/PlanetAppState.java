@@ -35,7 +35,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.shadow.AbstractShadowRenderer;
 import java.util.ArrayList;
 import java.util.List;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 
 /**
  * PlanetAppState

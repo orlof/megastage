@@ -3,8 +3,9 @@ package org.megastage.components;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector;
 
@@ -14,8 +15,8 @@ import org.megastage.util.Vector;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class Rotation extends EntityComponent {
-    public double x=0.0, y=0.0, z=0.0, w=1.0;
+public class Rotation extends BaseComponent {
+    public double x=0, y=0, z=0, w=1;
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
@@ -31,19 +32,24 @@ public class Rotation extends EntityComponent {
         return null;
     }
 
-    public boolean isUpdated() {
+    public boolean synchronize() {
         return true;
     }
     
     @Override
     public void receive(Connection pc, Entity entity) {
-        if(entity == ClientGlobals.playerEntity) {
-            if(entity.getComponent(Rotation.class) == null) {
-                entity.addComponent(this);
-            }
+        Rotation rot = entity.getComponent(Rotation.class);
+        if(rot == null) {
+            entity.addComponent(this);
+            entity.changedInWorld();
             return;
         }
-        entity.addComponent(this);
+
+        if(entity == ClientGlobals.playerEntity) {
+            return;
+        }
+
+        rot.set(this);
     }
     
     public String toString() {
@@ -66,5 +72,12 @@ public class Rotation extends EntityComponent {
         y = q.y;
         z = q.z;
         w = q.w;
+    }
+    
+    public void set(Rotation rot) {
+        x = rot.x;
+        y = rot.y;
+        z = rot.z;
+        w = rot.w;
     }
 }

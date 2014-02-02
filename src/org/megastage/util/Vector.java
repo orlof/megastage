@@ -41,12 +41,20 @@ public class Vector {
         return new Vector(x + v.x, y + v.y, z + v.z);
     }
     
+    public Vector sub(Vector v) {
+        return new Vector(x - v.x, y - v.y, z - v.z);
+    }
+    
     public Vector negate() {
         return new Vector(-x, -y, -z);
     }
 
     public Vector add(double dx, double dy, double dz) {
         return new Vector(x + dx, y + dy, z + dz);
+    }
+
+    public Vector sub(double dx, double dy, double dz) {
+        return new Vector(x - dx, y - dy, z - dz);
     }
 
     // return the vector norm

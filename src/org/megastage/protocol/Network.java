@@ -5,25 +5,29 @@ import com.artemis.utils.Bag;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
-import org.megastage.components.EngineData;
-import org.megastage.components.EntityComponent;
+import org.megastage.components.transfer.EngineData;
 import org.megastage.components.Mass;
-import org.megastage.components.MonitorData;
+import org.megastage.components.transfer.MonitorData;
 import org.megastage.components.Orbit;
 import org.megastage.components.FixedRotation;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.components.SpawnPoint;
-import org.megastage.components.server.BindTo;
-import org.megastage.components.server.CharacterGeometry;
-import org.megastage.components.server.EngineGeometry;
-import org.megastage.components.server.MonitorGeometry;
-import org.megastage.components.server.PlanetGeometry;
-import org.megastage.components.server.ShipGeometry;
-import org.megastage.components.server.SunGeometry;
-import org.megastage.components.server.VoidGeometry;
-import org.megastage.util.ClientGlobals;
-import org.megastage.util.Globals;
+import org.megastage.components.gfx.BindTo;
+import org.megastage.components.gfx.CharacterGeometry;
+import org.megastage.components.gfx.EngineGeometry;
+import org.megastage.components.gfx.MonitorGeometry;
+import org.megastage.components.gfx.PlanetGeometry;
+import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.components.gfx.SunGeometry;
+import org.megastage.components.gfx.VoidGeometry;
+import org.megastage.client.ClientGlobals;
+import org.megastage.components.BaseComponent;
+import org.megastage.components.DeleteFlag;
+import org.megastage.components.Mode;
+import org.megastage.components.UsableFlag;
+import org.megastage.components.Explosion;
+import org.megastage.util.Cube3dMap;
 import org.megastage.util.RAM;
 import org.megastage.util.Vector;
 
@@ -47,51 +51,49 @@ public class Network {
         }
 
         kryo.register(char[].class);
-        kryo.register(boolean[].class);
-        kryo.register(boolean[][].class);
-        kryo.register(boolean[][][].class);
+        kryo.register(char[][].class);
+        kryo.register(char[][][].class);
         kryo.register(Object[].class);
-        kryo.register(EntityData.class);
         kryo.register(Bag.class);
-        kryo.register(Mass.class);
-        kryo.register(MonitorData.class);
-        kryo.register(EngineData.class);
-        kryo.register(Orbit.class);
-        kryo.register(FixedRotation.class);
-        kryo.register(Position.class);
-        kryo.register(Rotation.class);
-        kryo.register(SpawnPoint.class);
-        kryo.register(PlanetGeometry.class);
-        kryo.register(SunGeometry.class);
-        kryo.register(ShipGeometry.class);
-        kryo.register(MonitorGeometry.class);
-        kryo.register(EngineGeometry.class);
-        kryo.register(RAM.class);
+        kryo.register(BaseComponent.class);
         kryo.register(BindTo.class);
-        kryo.register(VoidGeometry.class);
         kryo.register(CharacterGeometry.class);
-        kryo.register(Vector.class);
-        kryo.register(LoginResponse.class);
+        kryo.register(ComponentMessage.class);
+        kryo.register(Cube3dMap.class);
+        kryo.register(DeleteFlag.class);
+        kryo.register(EngineData.class);
+        kryo.register(EngineGeometry.class);
+        kryo.register(Explosion.class);
+        kryo.register(FixedRotation.class);
+        kryo.register(Mass.class);
+        kryo.register(Mode.class);
+        kryo.register(MonitorData.class);
+        kryo.register(MonitorGeometry.class);
+        kryo.register(Orbit.class);
+        kryo.register(PlanetGeometry.class);
+        kryo.register(PlayerIDMessage.class);
+        kryo.register(Position.class);
+        kryo.register(RAM.class);
+        kryo.register(Rotation.class);
+        kryo.register(ShipGeometry.class);
+        kryo.register(SpawnPoint.class);
+        kryo.register(SunGeometry.class);
+        kryo.register(UsableFlag.class);
         kryo.register(UserCommand.class);
+        kryo.register(Vector.class);
+        kryo.register(VoidGeometry.class);
     }
 
     static public class Login extends EventMessage {}
     static public class Logout extends EventMessage {}
-    
-    static public abstract class KeyEvent extends EventMessage {
-        public int key;
-    }
-    static public class KeyPressed extends KeyEvent {}
-    static public class KeyTyped extends KeyEvent {}
-    static public class KeyReleased extends KeyEvent {}
 
-    static public class EntityData implements Message {
+    static public class ComponentMessage implements Message {
         public int owner;
-        public EntityComponent component;
+        public BaseComponent component;
 
-        public EntityData() { /* required for Kryo */ }
+        public ComponentMessage() { /* required for Kryo */ }
         
-        public EntityData(Entity entity, EntityComponent c) {
+        public ComponentMessage(Entity entity, BaseComponent c) {
             owner = entity.getId();
             component = c;
         }
@@ -105,7 +107,7 @@ public class Network {
         }
         
         public String toString() {
-            return "EntityData(" + owner + ", " + component.toString() + ")";
+            return "ComponentMessage(" + owner + ", " + component.toString() + ")";
         }
     }
 }

@@ -8,8 +8,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
-import org.megastage.util.Globals;
-import org.megastage.util.ServerGlobals;
+import org.megastage.util.Time;
 import org.megastage.util.Vector;
 
 /**
@@ -30,15 +29,15 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity entity) {
-        double time = ServerGlobals.time / 1000.0d;
+        double time = Time.value / 1000.0d;
         
         Orbit orbit = ORBIT.get(entity);
-        Entity center = world.getEntity(orbit.center);
         
+        Entity center = world.getEntity(orbit.center);
         Mass centerMass = MASS.get(center);        
         Vector localSum = orbit.getLocalCoordinates(time, centerMass.mass);
         
-        while(!isOrbitAroundFixedPosition(center)) {
+        while(!isInFixedPosition(center)) {
             orbit = ORBIT.get(center);
             center = world.getEntity(orbit.center);
             centerMass = MASS.get(center);        
@@ -51,10 +50,11 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
         position.x = Math.round(localSum.x) + fixedStar.x;
         position.y = fixedStar.y;
         position.z = Math.round(localSum.z) + fixedStar.z;
-        
+        //Log.info(position.toString());
     }
 
-    private boolean isOrbitAroundFixedPosition(Entity center) {
+    private boolean isInFixedPosition(Entity center) {
         return !ORBIT.has(center);
     }
+
 }
