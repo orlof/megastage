@@ -11,7 +11,7 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Rotation;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 
 public class SystemRotationControl extends AbstractControl {
     

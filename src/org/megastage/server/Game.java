@@ -1,15 +1,25 @@
 package org.megastage.server;
 
+import org.megastage.systems.srv.AttitudeControlSystem;
+import org.megastage.systems.srv.DCPUSystem;
+import org.megastage.systems.srv.EngineAccelerationSystem;
+import org.megastage.systems.srv.GravityAccelerationSystem;
+import org.megastage.systems.srv.GravityFieldSystem;
+import org.megastage.systems.srv.CleanupSystem;
+import org.megastage.systems.srv.NetworkSystem;
+import org.megastage.systems.srv.SynchronizeSystem;
+import org.megastage.systems.srv.ShipMovementSystem;
 import com.artemis.World;
 import com.artemis.managers.GroupManager;
 import com.artemis.managers.TagManager;
-import com.artemis.utils.Bag;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.systems.*;
 
 import java.io.IOException;
-import org.megastage.util.ServerGlobals;
+import org.megastage.systems.srv.CollisionSystem;
+import org.megastage.systems.srv.ExplosionSystem;
+import org.megastage.util.Time;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,9 +40,9 @@ public class Game {
 
         //world.setSystem(new ServerEngineTestSystem(5000));
         //world.setSystem(new ServerGyroTestSystem(5000));
-        world.setSystem(new ServerCleanupSystem(500));
-        world.setSystem(new ServerUpdateSystem(20));
-        world.setSystem(new ServerNetworkSystem());
+        world.setSystem(new CleanupSystem(500));
+        world.setSystem(new SynchronizeSystem(50));
+        world.setSystem(new NetworkSystem());
 
         world.setSystem(new OrbitalMovementSystem());
 
@@ -42,9 +52,10 @@ public class Game {
         world.setSystem(new GravityAccelerationSystem());
 
         world.setSystem(new ShipMovementSystem());
+        world.setSystem(new CollisionSystem(200));
+        world.setSystem(new ExplosionSystem(200));
 
         world.setSystem(new DCPUSystem());
-        //world.setSystem(new VirtualMonitorSenderSystem());
 
         world.initialize();
 
@@ -60,8 +71,8 @@ public class Game {
     public void loopForever() throws InterruptedException {
         while (true) {
             long ctime = System.currentTimeMillis();
-            world.setDelta((ctime - ServerGlobals.time) / 1000.0f);
-            ServerGlobals.time = ctime;
+            world.setDelta((ctime - Time.value) / 1000.0f);
+            Time.value = ctime;
 
             world.process();
             

@@ -1,12 +1,12 @@
 package org.megastage.components;
 
+import org.megastage.components.srv.Velocity;
 import com.artemis.Entity;
 import com.artemis.World;
-import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.util.ClientGlobals;
+import org.megastage.client.ClientGlobals;
 import org.megastage.util.Vector;
 
 /**
@@ -15,7 +15,7 @@ import org.megastage.util.Vector;
  * Date: 17.8.2013
  * Time: 20:58
  */
-public class Position extends EntityComponent {
+public class Position extends BaseComponent {
     public long x, y, z;
     
     public Position() {
@@ -24,14 +24,21 @@ public class Position extends EntityComponent {
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        x = 1000 * getLongValue(element, "x", 0);
-        y = 1000 * getLongValue(element, "y", 0);
-        z = 1000 * getLongValue(element, "z", 0);
+        if(hasValue(element, "x")) {
+            x = 1000 * getLongValue(element, "x", 0);
+            y = 1000 * getLongValue(element, "y", 0);
+            z = 1000 * getLongValue(element, "z", 0);
+        } else {
+            x = 1000 * getLongValue(element, "dx", 0) + 500;
+            y = 1000 * getLongValue(element, "dy", 0) + 500;
+            z = 1000 * getLongValue(element, "dz", 0) + 500;
+        }
         
         return null;
     }
 
-    public boolean isUpdated() {
+    @Override
+    public boolean synchronize() {
         return true;
     }
     

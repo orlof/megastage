@@ -2,6 +2,9 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.minlog.Log;
+import java.io.File;
+import java.io.IOException;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
@@ -44,11 +47,13 @@ public class VirtualFloppyDrive extends DCPUHardware {
     private static final int READ_CYCLES_PER_SECTOR = 1668;
 //	private static final int WRITE_NANOSECONDS_PER_SECTOR = 16677524;
     private static final int WRITE_CYCLES_PER_SECTOR = 1668;
+    
     private char state = STATE_NO_MEDIA;
     private char error = ERROR_NONE;
     private boolean interruptsEnabled;
     private char message;
     private int track;
+    
     private FloppyDisk floppy;
     private FloppyOperation operation = new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
 
@@ -59,6 +64,17 @@ public class VirtualFloppyDrive extends DCPUHardware {
         manufactorer = MANUFACTORER_MACKAPAR;
 
         super.init(world, parent, element);
+        
+        insert(new FloppyDisk());
+        
+        String filename = getStringValue(element, "floppy_image", null);
+        if(filename != null) {
+            try {
+                floppy.load(new File(filename));
+            } catch (IOException ex) {
+                Log.error(ex.toString());
+            }
+        }
 
         return null;
     }
@@ -136,6 +152,7 @@ public class VirtualFloppyDrive extends DCPUHardware {
         }
     }
 
+    @Override
     public void tick60hz() {
         if ((operation.cycles -= 1667) <= 0) {
             switch (operation.type) {
@@ -158,7 +175,8 @@ public class VirtualFloppyDrive extends DCPUHardware {
                     setState(STATE_READY, ERROR_NONE);
                     break;
                 case FloppyOperation.NONE:
-                    new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
+                    //new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
+                    break;
             }
         }
     }

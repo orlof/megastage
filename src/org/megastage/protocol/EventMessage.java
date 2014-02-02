@@ -5,7 +5,6 @@
 package org.megastage.protocol;
 
 import com.esotericsoftware.kryonet.Connection;
-import org.megastage.systems.ClientNetworkSystem;
 
 /**
  *

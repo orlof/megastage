@@ -4,6 +4,9 @@
  */
 package org.megastage.protocol;
 
+import com.artemis.Entity;
+import com.esotericsoftware.minlog.Log;
+import org.megastage.client.ClientGlobals;
 import org.megastage.components.Rotation;
 
 public class UserCommand {
@@ -11,6 +14,11 @@ public class UserCommand {
     public double qx, qy, qz, qw;
     public double shipForward, shipLeft, shipUp, shipPitch, shipRoll, shipYaw;
     public int count;
+    public int pick;
+    public int action;
+
+    public char[] keyEvents = new char[24];
+    public int keyEventPtr = 0;
 
     public UserCommand() {}
 
@@ -53,7 +61,7 @@ public class UserCommand {
     
     public void reset() {
         xMove = yMove = zMove = shipForward = shipLeft = shipUp = shipPitch = shipRoll = shipYaw = 0.0;
-        count = 0;
+        action = pick = count = keyEventPtr = 0;
     }
     
     public String toString() {
@@ -70,9 +78,57 @@ public class UserCommand {
         sb.append(", shipRoll=").append(shipRoll);
         sb.append(", shipYaw=").append(shipYaw);
         sb.append(", count=").append(count);
+        sb.append(", useItem=").append(pick);
+        sb.append(", action=").append(action);
+        sb.append(", keyEvents=").append(new String(keyEvents, 0, keyEventPtr));
         sb.append(")");
         return sb.toString();
     }
 
+    public void pickItem(Entity entity) {
+        Log.info("Pick " + entity.toString());
+        action = Action.PICK_ITEM;
+        pick = ClientGlobals.artemis.toServerID(entity.getId());
+        count++;
+    }
+
+    public void unpickItem() {
+        Log.info("Unpick");
+        action = Action.UNPICK_ITEM;
+        count++;
+    }
+
+    public void keyPressed(char keyChar) {
+        if(keyEventPtr > keyEvents.length) {
+            Log.info("Keybuffer overflow");
+            return;
+        }
+
+        keyEvents[keyEventPtr++] = 'P';
+        keyEvents[keyEventPtr++] = keyChar;
+        count++;
+    }
+
+    public void keyTyped(char keyChar) {
+        if(keyEventPtr > keyEvents.length) {
+            Log.info("Keybuffer overflow");
+            return;
+        }
+
+        keyEvents[keyEventPtr++] = 'T';
+        keyEvents[keyEventPtr++] = keyChar;
+        count++;
+    }
+
+    public void keyReleased(Character keyChar) {
+        if(keyEventPtr > keyEvents.length) {
+            Log.info("Keybuffer overflow");
+            return;
+        }
+
+        keyEvents[keyEventPtr++] = 'R';
+        keyEvents[keyEventPtr++] = keyChar;
+        count++;
+    }
 }
 

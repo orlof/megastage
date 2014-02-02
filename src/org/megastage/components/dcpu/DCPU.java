@@ -4,13 +4,12 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
-import org.megastage.util.Globals;
 import org.megastage.components.BaseComponent;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.megastage.util.ServerGlobals;
+import org.megastage.util.Time;
 
 /**
  * Experimental 1.7 update to Notch's 1.4 emulator
@@ -48,7 +47,7 @@ public class DCPU extends BaseComponent {
     public BaseComponent[] init(World world, Entity parent, Element element) {
         this.ship = parent;
         try {
-            load(new File("admiral.bin"));
+            load(new File("bootrom.bin"));
 
             for(Element hwElement: element.getChildren("hardware")) {
                 Class clazz = Class.forName("org.megastage.components." + hwElement.getAttributeValue("type"));
@@ -68,8 +67,8 @@ public class DCPU extends BaseComponent {
             e.printStackTrace();
         }
 
-        startupTime = ServerGlobals.time + 2500;
-        nextHardwareTick = ServerGlobals.time + HARDWARE_TICK_INTERVAL;
+        startupTime = Time.value + 2500;
+        nextHardwareTick = Time.value + HARDWARE_TICK_INTERVAL;
         
         return null;
     }
@@ -96,7 +95,7 @@ public class DCPU extends BaseComponent {
     }
 
     public void run_ticks() {
-        long uptime = ServerGlobals.time - startupTime;
+        long uptime = Time.value - startupTime;
         if(uptime < 0) return;
         
         long cycleTarget = uptime * KHZ;

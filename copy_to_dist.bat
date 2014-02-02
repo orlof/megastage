@@ -1,4 +1,4 @@
-copy admiral.bin dist
+copy bootrom.bin dist
 copy font.png dist
 copy boot.png dist
 copy bin\wget.exe dist

@@ -9,13 +9,15 @@ Few months ago I decided to start learning 3d programming. Progress in my learni
 
 In December 2013 I released 0.1 version of Megastage. It is only a technology demo, not ment to impress anyone, but to pace my own work and give me the feeling that I have accomplished something. This version is only about Proof of Concept type things - it has no game in it. Following instructions contain a lot of "in the future"-references that should enlighten you about my plans. 
 
+In January 2014 I released 0.2 version of Megastage. It is still not a game. The main purpose for the release is to test DCPU integration to ship controls - namely engine and gyroscopes.
+
 INSTRUCTIONS
 
 Download distribution package megastage.zip by following the link below. Distribution should work in Windows and Linux if you have recent enough java installed. (My 'java -version' reports 'Java(TM) SE Runtime Environment (build 1.7.0_25-b15)')
 
-https://github.com/orlof/megastage/releases
+    https://github.com/orlof/megastage/releases
 
-Unzip megastage.zip:
+Start server by going to megastage directory and typing:
 
     unzip -d megastage megastage.zip
     (or use something similar in Windows)
@@ -33,6 +35,8 @@ Next start client by typing
 
     ./client.sh (linux)
     client.bat (windows)
+
+In the future there will be multiplayer support but currently server supports only single client connection per server start.
  
 In the future there will be multiplayer support but currently server supports only one client connection per server start.
 

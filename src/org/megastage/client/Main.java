@@ -8,7 +8,6 @@ import com.jme3.app.state.AppState;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Geometry;
@@ -16,12 +15,13 @@ import com.jme3.scene.Node;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
+import com.jme3.ui.Picture;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.SystemPositionControl;
 import org.megastage.client.controls.SystemRotationControl;
-import org.megastage.util.ClientGlobals;
 import org.megastage.util.LogFormat;
+import org.megastage.util.Time;
 
 /**
  * test
@@ -64,7 +64,8 @@ public class Main extends SimpleApplication {
         CameraNode camNode = new CameraNode("main", cam);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         ClientGlobals.playerNode.attachChild(camNode);
-        camNode.setLocalTranslation(0, 1.5f, 0);
+        camNode.setLocalTranslation(0, 1.0f, 0);
+        ClientGlobals.cam = cam;
         
         ClientGlobals.rootNode = rootNode;
         //cam.setLocation(new Vector3f(16, 6, 60));
@@ -105,11 +106,13 @@ public class Main extends SimpleApplication {
         Geometry body = new Geometry("MARKER", new Box(.1f, .1f, .1f));
         body.setMaterial(mat);
         rootNode.attachChild(body);
+        
+        attachCenterMark();
 }
 
     @Override
     public void simpleUpdate(float tpf) {
-        ClientGlobals.time = System.currentTimeMillis() + ClientGlobals.timeDiff;
+        Time.value = System.currentTimeMillis() + ClientGlobals.timeDiff;
 
         if(Log.TRACE) {
             Log.info("Camera coords: " + cam.getLocation().toString());
@@ -134,4 +137,16 @@ public class Main extends SimpleApplication {
     public void simpleRender(RenderManager rm) {
         //TODO: add render code
     }
+    
+    private void attachCenterMark() {
+        Picture pic = new Picture("HUD Picture");
+        pic.setImage(assetManager, "Textures/center.png", true);
+        //pic.setWidth(settings.getWidth()/4);
+        //pic.setHeight(settings.getHeight()/4);
+        pic.setWidth(100);
+        pic.setHeight(100);
+        pic.setPosition(settings.getWidth()/2-50, settings.getHeight()/2-50);
+        guiNode.attachChild(pic);
+    }
+    
 }
