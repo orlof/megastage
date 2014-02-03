@@ -291,8 +291,8 @@ public class SpatialManager {
         ImageRaster raster = ImageRaster.create(img2);
         
         Texture2D tex = new Texture2D(img2);
-//        tex.setMagFilter(Texture.MagFilter.Nearest);
-//        tex.setMinFilter(Texture.MinFilter.Trilinear);
+        tex.setMagFilter(Texture.MagFilter.Nearest);
+        tex.setMinFilter(Texture.MinFilter.Trilinear);
 
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setTexture("ColorMap", tex);
