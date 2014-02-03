@@ -5,9 +5,9 @@
 
 DCPU-16 Hardware Info:
     Name: Pulsar Positioning System (navigator)
-    ID: 0xcb4c0cb7
+    ID: 0x3c7742c2
     Version: 0x6509
-    Manufacturer: 0x91a2b24c (TALON NAVIGATION SYSTEMS)
+    Manufacturer: 0x982d3e46 (TALON NAVIGATION SYSTEMS)
 
 Description:
     PPS can determine it's position using signals from x-ray pulsars. PPS can

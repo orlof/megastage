@@ -13,7 +13,7 @@ public class PPS extends DCPUHardware {
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_PPS;
-        revision = 0x2222;
+        revision = 0x6509;
         manufactorer = MANUFACTORER_TALON_NAVIGATION;
 
         super.init(world, parent, element);
@@ -28,29 +28,25 @@ public class PPS extends DCPUHardware {
         Log.debug("a=" + Integer.toHexString(a) + ", b=" + Integer.toHexString(b));
 
         if (a == 0) {
+            dcpu.registers[1] = (char) 0;
+        } else if(a == 1) {
             Position position = ship.getComponent(Position.class);
 
-            dcpu.ram[b++ & 0xffff] = (char) (position.x >> 48 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (position.x >> 32 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (position.x >> 16 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (position.x >> 00 & 0xffff);
+            long x = position.x / 100000; // 100m
+            dcpu.ram[b++ & 0xffff] = (char) (x >> 16 & 0xffff);
+            dcpu.ram[b++ & 0xffff] = (char) (x >> 00 & 0xffff);
 
-            dcpu.ram[b++ & 0xffff] = (char) (position.y >> 48 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (position.y >> 32 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (position.y >> 16 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (position.y >> 00 & 0xffff);
+            long y = position.y / 100000; // 100m
+            dcpu.ram[b++ & 0xffff] = (char) (y >> 16 & 0xffff);
+            dcpu.ram[b++ & 0xffff] = (char) (y >> 00 & 0xffff);
 
-            dcpu.ram[b++ & 0xffff] = (char) (position.z >> 48 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (position.z >> 32 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (position.z >> 16 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (position.z >> 00 & 0xffff);
+            long z = position.z / 100000; // 100m
+            dcpu.ram[b++ & 0xffff] = (char) (z >> 16 & 0xffff);
+            dcpu.ram[b++ & 0xffff] = (char) (z >> 00 & 0xffff);
 
-            dcpu.ram[b++ & 0xffff] = (char) (Time.value >> 48 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (Time.value >> 32 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (Time.value >> 16 & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (Time.value >> 00 & 0xffff);
+            dcpu.ram[b++ & 0xffff] = (char) (Time.value & 0xffff);
 
-            dcpu.cycles += 16;
+            dcpu.cycles += 7;
         }
     }
 

@@ -180,6 +180,10 @@
                 <component type="dcpu.Gyroscope" x="1" y="0" z="0" torque="50000"/>
                 <component type="gfx.BindTo"/>
             </entity>
+            <entity>
+                <component type="dcpu.PPS"/>
+                <component type="gfx.BindTo"/>
+            </entity>
         </entity>
         <entity name="Enemy">
             <component type="Position" dx="3" dy="1" dz="8"/>
@@ -301,9 +305,10 @@
                 <component type="dcpu.Gyroscope" x="0" y="0" z="1" torque="50000"/>
                 <component type="gfx.BindTo"/>
             </entity>
-            <!--entity>
+            <entity>
                 <component type="dcpu.PPS"/>
-            </entity-->
+                <component type="gfx.BindTo"/>
+            </entity>
         </entity>
     </entity-template>
 
