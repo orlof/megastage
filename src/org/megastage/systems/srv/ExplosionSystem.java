@@ -8,8 +8,6 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
-import org.megastage.protocol.Network.ComponentMessage;
-import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
 
 /**
@@ -59,7 +57,7 @@ public class ExplosionSystem extends EntityProcessingSystem {
                     break;
             }
             explosion.serverState++;
-            Log.info("serverState advance " + explosion.serverState);
+            Log.trace("serverState advance " + explosion.serverState);
         }
     }
 
@@ -87,7 +85,6 @@ public class ExplosionSystem extends EntityProcessingSystem {
 
     public boolean stateExpired(Explosion explosion) {
         long time = Time.value - explosion.startTime;
-        Log.info("Elapsed time since explosion start: " + time);
         return time > delay[explosion.serverState];
     }
 }

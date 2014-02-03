@@ -4,7 +4,6 @@ import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.client.ClientGlobals;
-import org.megastage.components.BaseComponent;
 import org.megastage.protocol.Network;
 import org.megastage.util.Time;
 
@@ -43,7 +42,7 @@ public class Explosion extends BaseComponent {
 
     @Override
     public Network.ComponentMessage create(Entity entity) {
-        Log.info(entity.toString() + " clientState from " + clientState + " to " + serverState);
+        Log.trace(entity.toString() + " clientState from " + clientState + " to " + serverState);
 
         clientState = serverState;
         return new Network.ComponentMessage(entity, copy());
