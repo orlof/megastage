@@ -1,5 +1,7 @@
 package org.megastage.util;
 
+import org.megastage.components.Position;
+
 /**
  * Created with IntelliJ IDEA. User: contko3 Date: 8/14/13 Time: 8:35 AM To
  * change this template use File | Settings | File Templates.
@@ -30,6 +32,12 @@ public class Vector {
         this.x = q.x;
         this.y = q.y;
         this.z = q.z;
+    }
+    
+    public Vector(Position pos) {
+        this.x = pos.x / 1000;
+        this.y = pos.y / 1000;
+        this.z = pos.z / 1000;
     }
 
     // return a string representation of the invoking object
@@ -117,5 +125,21 @@ public class Vector {
         Vector p = new Vector(10, 0, 0);
         
         System.out.println(v.distance(p));
+    }
+
+    public double distanceSquared(Vector pos) {
+        double dx = Math.abs(pos.x - x);
+        double dy = Math.abs(pos.y - y);
+        double dz = Math.abs(pos.z - z);
+        
+        return dx*dx + dy*dy + dz*dz;
+    }
+
+    public double distanceSquared(Position pos) {
+        double dx = Math.abs(pos.x - x) / 1000.0;
+        double dy = Math.abs(pos.y - y) / 1000.0;
+        double dz = Math.abs(pos.z - z) / 1000.0;
+        
+        return dx*dx + dy*dy + dz*dz;
     }
 }

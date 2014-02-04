@@ -46,7 +46,7 @@ public class Gyroscope extends DCPUHardware {
     public void interrupt() {
         char a = dcpu.registers[0];
 
-        Log.trace("axis: " + axis.toString() + " a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
+        Log.info("axis: " + axis.toString() + " a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
 
         if (a == 0) {
 

@@ -9,6 +9,7 @@ import org.megastage.components.BaseComponent;
 
 public abstract class DCPUHardware extends BaseComponent {
     public static final int TYPE_LEM = 0x7349F615;
+    public static final int TYPE_RADAR = 0x3442980F;
     public static final int TYPE_FLOPPY = 0x4fd524c5;
     public static final int TYPE_KEYBOARD = 0x30CF7406;
     public static final int TYPE_CLOCK = 0x12D0B402;
@@ -24,6 +25,7 @@ public abstract class DCPUHardware extends BaseComponent {
     public static final int MANUFACTORER_PRECISION_RESEARCH = 0x352ad8bf;
     public static final int MANUFACTORER_SEIKORION = 0xcf115b97;
     public static final int MANUFACTORER_OTEC = 0xb8badde8;
+    public static final int MANUFACTORER_ENDER_INNOVATIONS = 0xE142A1FA;
 
     public int type;
     public int revision;

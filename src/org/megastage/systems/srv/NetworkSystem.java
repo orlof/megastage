@@ -265,23 +265,24 @@ public class NetworkSystem extends VoidEntitySystem {
 
         if(cmd.keyEventPtr > 0 && connection.item != null) {
             VirtualKeyboard kbd = (VirtualKeyboard) connection.item;
-
-            for(int i=0; i < cmd.keyEventPtr; /*NOP*/ ) {
-                switch(cmd.keyEvents[i++]) {
-                    case 'T':
-                        kbd.keyTyped(cmd.keyEvents[i++]);
-                        break;
-                    case 'P':
-                        kbd.keyPressed(cmd.keyEvents[i++]);
-                        break;
-                    case 'R':
-                        kbd.keyReleased(cmd.keyEvents[i++]);
-                        break;
+            if(!kbd.dcpu.ship.isActive()) {
+                unpickItem(connection, cmd);
+            } else {
+                for(int i=0; i < cmd.keyEventPtr; /*NOP*/ ) {
+                    switch(cmd.keyEvents[i++]) {
+                        case 'T':
+                            kbd.keyTyped(cmd.keyEvents[i++]);
+                            break;
+                        case 'P':
+                            kbd.keyPressed(cmd.keyEvents[i++]);
+                            break;
+                        case 'R':
+                            kbd.keyReleased(cmd.keyEvents[i++]);
+                            break;
+                    }
                 }
             }
         }
-        
-        //connection.sendUDP(shipRotation.create(ship));
     }
 
     private void unpickItem(PlayerConnection connection, UserCommand cmd) {

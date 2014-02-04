@@ -3,6 +3,7 @@ package org.megastage.util;
 import com.artemis.utils.Bag;
 import org.megastage.components.BaseComponent;
 import org.megastage.protocol.Message;
+import org.megastage.systems.srv.RadarEchoSystem.RadarEcho;
 
 /**
  * MegaStage
@@ -11,6 +12,8 @@ import org.megastage.protocol.Message;
  * Time: 20:50
  */
 public class ServerGlobals {
+    public static Bag<RadarEcho> radarEchoes = new Bag(0);
+    
     public static Bag updates = new Bag(100);
     public static Bag<Message> componentEvents = new Bag<>();
     
