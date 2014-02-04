@@ -34,7 +34,7 @@ public class PositionControl extends AbstractControl {
             if(ClientGlobals.shipEntity == entity) {
                 spatial.setLocalTranslation(0,0,0);
             } else {
-                Vector3f vpos = position.getAsVector();
+                Vector3f vpos = position.getVector3f();
                 spatial.setLocalTranslation(vpos);
             }            
             if(Log.TRACE) Log.trace(position.toString());

@@ -8,6 +8,7 @@ import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.srv.Identifier;
+import org.megastage.components.srv.InitializeFlag;
 import org.megastage.components.srv.UninitializedFlag;
 
 
@@ -43,6 +44,7 @@ public class EntityFactory {
                     }
                 }
             }
+            entity.addComponent(new InitializeFlag());
 
             for(Element e: element.getChildren("group")) {
                 String groupName = e.getAttributeValue("name");

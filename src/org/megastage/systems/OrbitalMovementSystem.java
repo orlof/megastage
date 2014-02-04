@@ -9,15 +9,8 @@ import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
 import org.megastage.util.Time;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
-/**
- * Created with IntelliJ IDEA.
- * User: contko3
- * Date: 8/19/13
- * Time: 12:09 PM
- * To change this template use File | Settings | File Templates.
- */
 public class OrbitalMovementSystem extends EntityProcessingSystem {
     @Mapper ComponentMapper<Position> POSITION;
     @Mapper ComponentMapper<Orbit> ORBIT;
@@ -35,7 +28,7 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
         
         Entity center = world.getEntity(orbit.center);
         Mass centerMass = MASS.get(center);        
-        Vector localSum = orbit.getLocalCoordinates(time, centerMass.mass);
+        Vector3d localSum = orbit.getLocalCoordinates(time, centerMass.mass);
         
         while(!isInFixedPosition(center)) {
             orbit = ORBIT.get(center);

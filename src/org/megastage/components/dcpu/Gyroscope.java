@@ -8,14 +8,14 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.Explosion;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
 public class Gyroscope extends DCPUHardware {
     public static final char STATUS_OFF = 0;
     public static final char STATUS_ON = 1;
     public static final char STATUS_NO_POWER = 2;
 
-    public Vector axis;
+    public Vector3d axis;
 
     public double maxTorque;
     public double curTorque = 0;
@@ -33,7 +33,7 @@ public class Gyroscope extends DCPUHardware {
 
         super.init(world, parent, element);
 
-        axis = new Vector(
+        axis = new Vector3d(
                 getIntegerValue(element, "x", 0) & 0xf,
                 getIntegerValue(element, "y", 0) & 0xf,
                 getIntegerValue(element, "z", 1) & 0xf);

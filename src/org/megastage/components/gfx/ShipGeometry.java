@@ -15,7 +15,7 @@ import org.megastage.client.ClientGlobals;
 import org.megastage.components.srv.CollisionType;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.Time;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
 /**
  *
@@ -72,7 +72,7 @@ public class ShipGeometry extends BaseComponent {
         return adds;
     }
 
-    public double getInertia(Vector axis) {
+    public double getInertia(Vector3d axis) {
         double xc = xCenter - 0.5;
         double yc = yCenter - 0.5;
         double zc = zCenter - 0.5;
@@ -82,8 +82,8 @@ public class ShipGeometry extends BaseComponent {
             for(int y=0; y < map.ysize; y++) {
                 for(int z=0; z < map.zsize; z++) {
                     if(map.get(x, y, z) == '#') {
-                        Vector point = new Vector(x - xc, y - yc, z - zc);
-                        inertia += 1000.0 * axis.distance(point);
+                        Vector3d point = new Vector3d(x - xc, y - yc, z - zc);
+                        inertia += 1000.0 * axis.distanceToPoint(point);
                     }
                 }
             }

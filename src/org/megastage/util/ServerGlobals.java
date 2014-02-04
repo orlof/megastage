@@ -1,7 +1,7 @@
 package org.megastage.util;
 
+import com.artemis.World;
 import com.artemis.utils.Bag;
-import org.megastage.components.BaseComponent;
 import org.megastage.protocol.Message;
 import org.megastage.systems.srv.RadarEchoSystem.RadarEcho;
 
@@ -16,6 +16,7 @@ public class ServerGlobals {
     
     public static Bag updates = new Bag(100);
     public static Bag<Message> componentEvents = new Bag<>();
+    public static World world;
     
     public static synchronized void addComponentEvent(Message comp) {
         componentEvents.add(comp);

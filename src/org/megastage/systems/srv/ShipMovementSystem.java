@@ -9,15 +9,8 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.components.*;
 import org.megastage.components.srv.Acceleration;
 import org.megastage.components.srv.Velocity;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
-/**
- * Created with IntelliJ IDEA.
- * User: contko3
- * Date: 8/19/13
- * Time: 12:09 PM
- * To change this template use File | Settings | File Templates.
- */
 public class ShipMovementSystem extends EntityProcessingSystem {
     @Mapper ComponentMapper<Position> positionMapper;
     @Mapper ComponentMapper<Velocity> velocityMapper;
@@ -43,6 +36,6 @@ public class ShipMovementSystem extends EntityProcessingSystem {
 
         Log.trace(entity.toString() + velocity.toString());
 
-        acceleration.set(Vector.ZERO);
+        acceleration.set(Vector3d.ZERO);
     }
 }

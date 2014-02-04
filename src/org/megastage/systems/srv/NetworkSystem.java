@@ -33,7 +33,7 @@ import org.megastage.server.TemplateManager;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.Quaternion;
 import org.megastage.util.ServerGlobals;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
 public class NetworkSystem extends VoidEntitySystem {
     private Server server;
@@ -229,7 +229,7 @@ public class NetworkSystem extends VoidEntitySystem {
         Rotation shipRotation = ship.getComponent(Rotation.class);
         Quaternion shipRotationQuaternion = shipRotation.getQuaternion();
         
-        Vector vel = new Vector(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
+        Vector3d vel = new Vector3d(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
         
         vel = vel.multiply(50000);
         
@@ -239,13 +239,13 @@ public class NetworkSystem extends VoidEntitySystem {
         shipPos.z += vel.z;
 
         // rotate rotation axis by fixedEntity rotation
-        Vector yAxis = new Vector(0, 1, 0).multiply(shipRotationQuaternion);
+        Vector3d yAxis = new Vector3d(0, 1, 0).multiply(shipRotationQuaternion);
         Quaternion yRotation = new Quaternion(yAxis, cmd.shipYaw);
         
-        Vector zAxis = new Vector(0, 0, 1).multiply(shipRotationQuaternion);
+        Vector3d zAxis = new Vector3d(0, 0, 1).multiply(shipRotationQuaternion);
         Quaternion zRotation = new Quaternion(zAxis, cmd.shipRoll);
 
-        Vector xAxis = new Vector(1, 0, 0).multiply(shipRotationQuaternion);
+        Vector3d xAxis = new Vector3d(1, 0, 0).multiply(shipRotationQuaternion);
         Quaternion xRotation = new Quaternion(xAxis, cmd.shipPitch);
 
         shipRotationQuaternion = yRotation.multiply(shipRotationQuaternion).normalize();

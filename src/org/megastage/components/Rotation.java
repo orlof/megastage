@@ -7,7 +7,7 @@ import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
 import org.megastage.util.Quaternion;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
 /**
  * MegaStage
@@ -24,9 +24,9 @@ public class Rotation extends BaseComponent {
         double y = Math.toRadians(getDoubleValue(element, "y", 0.0));
         double z = Math.toRadians(getDoubleValue(element, "z", 0.0));
 
-        Quaternion q = rotate(getQuaternion(), Vector.UNIT_Y, y);
-        q = rotate(q, Vector.UNIT_Z, z);
-        q = rotate(q, Vector.UNIT_X, x);
+        Quaternion q = rotate(getQuaternion(), Vector3d.UNIT_Y, y);
+        q = rotate(q, Vector3d.UNIT_Z, z);
+        q = rotate(q, Vector3d.UNIT_X, x);
         set(q);
         
         return null;
@@ -60,7 +60,7 @@ public class Rotation extends BaseComponent {
         return new Quaternion(w, x, y, z);
     }
     
-    public static Quaternion rotate(Quaternion q, Vector axis, double radians) {
+    public static Quaternion rotate(Quaternion q, Vector3d axis, double radians) {
         if(radians == 0.0) {
             return q;
         } 

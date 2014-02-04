@@ -29,7 +29,7 @@ import org.megastage.components.UsableFlag;
 import org.megastage.components.Explosion;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.RAM;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
 /**
  * Created with IntelliJ IDEA.
@@ -80,7 +80,7 @@ public class Network {
         kryo.register(SunGeometry.class);
         kryo.register(UsableFlag.class);
         kryo.register(UserCommand.class);
-        kryo.register(Vector.class);
+        kryo.register(Vector3d.class);
         kryo.register(VoidGeometry.class);
     }
 

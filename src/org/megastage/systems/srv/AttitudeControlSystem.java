@@ -10,7 +10,7 @@ import org.megastage.components.Rotation;
 import org.megastage.components.dcpu.Gyroscope;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.util.Quaternion;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,7 +41,7 @@ public class AttitudeControlSystem extends EntityProcessingSystem {
         Rotation rotation = ROTATION.get(gyro.ship);
         Quaternion shipRotation = rotation.getQuaternion();
 
-        Vector axis = gyro.axis.multiply(shipRotation);
+        Vector3d axis = gyro.axis.multiply(shipRotation);
 
         Quaternion gyroRotation = new Quaternion(axis, angle);
         shipRotation = gyroRotation.multiply(shipRotation).normalize();

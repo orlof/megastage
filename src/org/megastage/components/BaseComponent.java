@@ -27,6 +27,8 @@ public abstract class BaseComponent extends Component {
     public boolean synchronize() {
         return false;
     }
+
+    public void initialize(World world, Entity entity) {}
     
     public Network.ComponentMessage create(Entity entity) {
         return new Network.ComponentMessage(entity, this);

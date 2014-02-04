@@ -10,7 +10,7 @@ import org.megastage.components.BaseComponent;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.protocol.Network;
 import org.megastage.util.Time;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
 public class Engine extends DCPUHardware {
     public static final char STATUS_OFF = 0;
@@ -83,18 +83,18 @@ public class Engine extends DCPUHardware {
         return powerActual / 65535.0d;
     }
 
-    public Vector getAcceleration(double shipMass) {
+    public Vector3d getAcceleration(double shipMass) {
         double mult = maxForce * getPowerLevel() / shipMass;
-        return new Vector(x * mult, y * mult, z * mult);
+        return new Vector3d(x * mult, y * mult, z * mult);
     }
 
     public boolean isActive() {
         return status != STATUS_OFF;
     }
 
-    public Vector getForceVector() {
+    public Vector3d getForceVector() {
         double mult = maxForce * getPowerLevel();
-        return new Vector(x * mult, y * mult, z * mult);
+        return new Vector3d(x * mult, y * mult, z * mult);
     }
 
     private long getIgnitionTime() {

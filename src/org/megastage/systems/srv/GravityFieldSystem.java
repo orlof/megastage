@@ -11,7 +11,7 @@ import org.megastage.components.srv.GravityFieldFlag;
 import org.megastage.components.Mass;
 import org.megastage.components.Position;
 import org.megastage.util.Globals;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,9 +42,9 @@ public class GravityFieldSystem extends EntitySystem {
         return true;
     }
     
-    public Vector getGravityField(Position coordinates) {
+    public Vector3d getGravityField(Position coordinates) {
         Log.trace("Calculating gravity field in position " + coordinates.toString());
-        Vector acc = new Vector();
+        Vector3d acc = new Vector3d();
 
         for(int i=0; i < entitiesWithGravityField.size(); i++) {
             Entity entity = entitiesWithGravityField.get(i);

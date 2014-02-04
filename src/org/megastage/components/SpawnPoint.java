@@ -6,7 +6,7 @@ import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
 /**
  * MegaStage

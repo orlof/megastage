@@ -9,7 +9,7 @@ import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.*;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
 public class GravityAccelerationSystem extends EntityProcessingSystem {
     @Mapper ComponentMapper<Acceleration> ACCELERATION;
@@ -31,7 +31,7 @@ public class GravityAccelerationSystem extends EntityProcessingSystem {
         Position position = POSITION.get(entity);
         Acceleration acceleration = ACCELERATION.get(entity);
 
-        Vector gravityField = gravityFieldSystem.getGravityField(position);
+        Vector3d gravityField = gravityFieldSystem.getGravityField(position);
         Log.trace(entity.toString() + " in gravity field " + gravityField.toString());
         acceleration.add(gravityField);
     }

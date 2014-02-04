@@ -18,7 +18,7 @@ import com.jme3.scene.Node;
 
 
 
-public class Explosion extends SimpleApplication {
+public class ExplosionTestApp extends SimpleApplication {
 
     private float time = 0;
     private int state = 0;
@@ -29,7 +29,7 @@ public class Explosion extends SimpleApplication {
             fire, smoke, embers;
 
     public static void main(String[] args) {
-        Explosion app = new Explosion();
+        ExplosionTestApp app = new ExplosionTestApp();
         app.start();
     }
 
