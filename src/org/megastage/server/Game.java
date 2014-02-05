@@ -20,7 +20,9 @@ import org.megastage.systems.srv.CollisionSystem;
 import org.megastage.systems.srv.ExplosionSystem;
 import org.megastage.systems.srv.InitializeSystem;
 import org.megastage.systems.srv.PrevPositionSystem;
+import org.megastage.systems.srv.RadarEchoSystem;
 import org.megastage.systems.srv.ShipMovementSystem;
+import org.megastage.systems.srv.SphereOfInfluenceSystem;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
 
@@ -58,7 +60,10 @@ public class Game {
 
         world.setSystem(new ShipMovementSystem());
         world.setSystem(new CollisionSystem(200));
-        world.setSystem(new ExplosionSystem(200));
+        world.setSystem(new ExplosionSystem(201));
+        
+        world.setSystem(new RadarEchoSystem(1000));
+        world.setSystem(new SphereOfInfluenceSystem(10000));
 
         world.setSystem(new DCPUSystem());
 

@@ -15,9 +15,13 @@ import com.jme3.effect.ParticleEmitter;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.LightNode;
+import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
 import com.jme3.scene.shape.Quad;
@@ -27,6 +31,7 @@ import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
 import com.jme3.texture.image.ImageRaster;
 import com.jme3.texture.plugins.AWTLoader;
+import com.jme3.util.BufferUtils;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
@@ -47,6 +52,7 @@ import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.gfx.VoidGeometry;
 import org.megastage.components.Explosion;
+import org.megastage.components.gfx.ImposterGeometry;
 
 /**
  *
@@ -143,7 +149,7 @@ public class SpatialManager {
                 ClientGlobals.gfxQuality.SPHERE_RADIAL_SAMPLES, 
                 radius);
         
-        Geometry geom = new Geometry();
+        Geometry geom = new Geometry("gfx");
         geom.setMesh(mesh);
 
         if(shaded) {
@@ -401,6 +407,71 @@ public class SpatialManager {
                 Log.info("Attached explosion node " + entity + " " + node);
                 getNode(entity).attachChild(node);
                 node.addControl(new ExplosionControl(explosion, node));
+                return null;
+            }
+        });
+    }
+
+    
+    public void imposter(Entity entity, final boolean visible) {
+        final Node node = nodes.get(entity.getId());
+
+        if(node != null) {
+            app.enqueue(new Callable() {
+                @Override
+                public Object call() throws Exception {
+                    for(Spatial s: node.getChildren()) {
+                        if(s.getName().equals("imposter")) {
+                            if(visible) {
+                                s.setCullHint(Spatial.CullHint.Always);
+                            } else {
+                                s.setCullHint(Spatial.CullHint.Inherit);
+                            }
+                        } else {
+                            if(visible) {
+                                s.setCullHint(Spatial.CullHint.Inherit);
+                            } else {
+                                s.setCullHint(Spatial.CullHint.Always);
+                            }
+                        }
+                    }
+                    return null;
+                }
+            });
+        }
+    }
+    
+    private Geometry createImposter(float size, ColorRGBA color) {
+        Mesh q = new Mesh();
+
+        Vector3f [] vertices = new Vector3f[] { new Vector3f(0,0,0) };
+        q.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(vertices));
+
+        q.setMode(Mesh.Mode.Points);
+        q.setPointSize(size);
+        q.updateBound();
+        q.setStatic();
+
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", color);
+        
+        Geometry geom = new Geometry("imposter", q);
+        geom.setMaterial(mat);
+
+        return geom;
+    }
+
+    public void setupImposter(final Entity entity, final ImposterGeometry data) {
+        ColorRGBA colorRGBA = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
+
+        final Geometry imposter = createImposter(data.radius, colorRGBA);
+        final Node node = getNode(entity);
+
+        app.enqueue(new Callable() {
+            @Override
+            public Object call() throws Exception {
+                node.attachChild(imposter);
+                //node.addControl(new Control(explosion, node));
                 return null;
             }
         });

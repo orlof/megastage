@@ -16,6 +16,7 @@ import org.megastage.systems.client.ClientFixedRotationSystem;
 import org.megastage.systems.client.ClientMonitorRenderSystem;
 import org.megastage.systems.client.ClientNetworkSystem;
 import org.megastage.systems.OrbitalMovementSystem;
+import org.megastage.systems.client.ImposterSystem;
 import org.megastage.util.Time;
 
 /**
@@ -29,7 +30,8 @@ public class ArtemisState extends AbstractAppState {
     public void initialize(AppStateManager stateManager, Application app) {
         world = new World();
 
-        world.setSystem(new ClientMonitorRenderSystem(), false);
+        world.setSystem(new ImposterSystem(1000));
+        world.setSystem(new ClientMonitorRenderSystem());
         world.setSystem(new OrbitalMovementSystem());
         world.setSystem(new ClientFixedRotationSystem());
 

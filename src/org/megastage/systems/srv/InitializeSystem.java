@@ -24,7 +24,7 @@ public class InitializeSystem extends EntityProcessingSystem {
 
         for(int i=0; i < bag.size(); i++) {
             BaseComponent c = (BaseComponent) bag.get(i);
-            c.initialize(world);
+            c.initialize(world, e);
         }
 
         e.removeComponent(InitializeFlag.class);

@@ -37,9 +37,9 @@ Interrupt behavior:
     1 - SET_TRACKING_TARGET
         Sets the tracking target to the object with the signature in B.
 
-        Sets 
-            B: 0xffff if target is locked
-            B: 0x0000 if target locking fails 
+        Returns
+            C: 0xffff if target is locked
+            C: 0x0000 if target locking fails 
 
     2 - STORE_TARGET_DATA
         Sets a 7 word area of ram starting at B to radar data of target. 
@@ -52,6 +52,10 @@ Interrupt behavior:
         Words 4 and 5 = [FLOAT] distance in meters between ship and target.
         Words 6 and 7 = the pitch and yaw angles between the direction of the
             target and the direction that the ship is pointing.
+
+        Returns
+            C: 0xffff if data was provided
+            C: 0x0000 if data is not available
 
         Halts the DCPU-16 for 7 cycles.
 

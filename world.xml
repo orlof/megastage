@@ -3,6 +3,7 @@
         <component type="Position" x="0" y="0" z="0"/>
         <component type="Mass" kg="1.989e21"/>
         <component type="gfx.SunGeometry" radius="50000" light_radius="20000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
+        <component type="gfx.ImposterGeometry" radius="10" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
         <component type="srv.GravityFieldFlag"/>
         <group name="replicate"/>
         <entity name="Earth">

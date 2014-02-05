@@ -231,13 +231,15 @@ public class NetworkSystem extends VoidEntitySystem {
         
         Vector3d vel = new Vector3d(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
         
-        vel = vel.multiply(50000);
+        vel = vel.multiply(5000000);
         
         Position shipPos = ship.getComponent(Position.class);
         shipPos.x += vel.x;
         shipPos.y += vel.y;
         shipPos.z += vel.z;
 
+        Log.info("ship position " + shipPos.x / 1000 + ", " + shipPos.y / 1000 + ", " + shipPos.z / 1000);
+        
         // rotate rotation axis by fixedEntity rotation
         Vector3d yAxis = new Vector3d(0, 1, 0).multiply(shipRotationQuaternion);
         Quaternion yRotation = new Quaternion(yAxis, cmd.shipYaw);

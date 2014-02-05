@@ -12,13 +12,6 @@ import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
 
-/**
- * Created with IntelliJ IDEA.
- * User: contko3
- * Date: 8/19/13
- * Time: 12:09 PM
- * To change this template use File | Settings | File Templates.
- */
 public class AttitudeControlSystem extends EntityProcessingSystem {
     @Mapper ComponentMapper<Gyroscope> GYROSCOPE;
     @Mapper ComponentMapper<Rotation> ROTATION;

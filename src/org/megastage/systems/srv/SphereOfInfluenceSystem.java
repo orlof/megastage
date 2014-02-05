@@ -10,6 +10,7 @@ import com.artemis.utils.ImmutableBag;
 import org.megastage.components.Position;
 import org.megastage.components.Mass;
 import org.megastage.components.RadarEcho;
+import org.megastage.components.srv.SphereOfInfluence;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
@@ -20,16 +21,15 @@ import org.megastage.util.Vector3d;
  * Date: 8/19/13
  * Time: 12:09 PM
  */
-public class RadarEchoSystem extends EntitySystem {
+public class SphereOfInfluenceSystem extends EntitySystem {
     private long interval;
     private long acc;
 
     @Mapper ComponentMapper<Position> POSITION;
-    @Mapper ComponentMapper<Mass> MASS;
-    @Mapper ComponentMapper<RadarEcho> RADAR_ECHO;
+    @Mapper ComponentMapper<SphereOfInfluence> SPHERE_OF_INFLUENCE;
 
-    public RadarEchoSystem(long interval) {
-        super(Aspect.getAspectForAll(Mass.class, Position.class, RadarEcho.class));
+    public SphereOfInfluenceSystem(long interval) {
+        super(Aspect.getAspectForAll(SphereOfInfluence.class, Position.class));
         this.interval = interval;
     }
 
@@ -44,37 +44,34 @@ public class RadarEchoSystem extends EntitySystem {
 
     @Override
     protected void processEntities(ImmutableBag<Entity> entities) {
-        Bag<RadarData> next = new Bag<>(200);
+        Bag<SOIData> soiBag = new Bag<>(200);
         
         for(int i=0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
             
             Position pos = POSITION.get(entity);
-            Mass mass = MASS.get(entity);
-            RadarEcho echo = RADAR_ECHO.get(entity);
+            SphereOfInfluence soi = SPHERE_OF_INFLUENCE.get(entity);
 
-            next.add(new RadarData(entity.getId(), pos, mass, echo));
+            soiBag.add(new SOIData(entity, pos, soi));
         }
         
-        ServerGlobals.radarEchoes = next;
+        ServerGlobals.soi = soiBag;
     }
 
-    public static class RadarData {
-        public final int id;
+    public static class SOIData {
+        public final Entity entity;
 
-        public final int echo;
+        public final double radius;
         public final Vector3d coord;
-        public final double mass;
         
-        public RadarData(int id, Position position, Mass mass, RadarEcho echo) {
-            this.id = id;
-            this.echo = echo.type;
-            this.coord = new Vector3d(position.x / 1000.0, position.y / 1000.0, position.z / 1000.0);
-            this.mass = mass.mass;
+        public SOIData(Entity e, Position position, SphereOfInfluence soi) {
+            this.entity = e;
+            this.radius = soi.radius;
+            this.coord = position.getVector3d();
         }
-
-        public boolean match(char b) {
-            return (char) (id & 0xffff) == b;
+        
+        public boolean contains(Vector3d coord) {
+            return coord.distance(this.coord) < radius;
         }
     }
 }
