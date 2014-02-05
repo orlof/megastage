@@ -2,8 +2,8 @@
     <entity name="Sun">
         <component type="Position" x="0" y="0" z="0"/>
         <component type="Mass" kg="1.989e21"/>
-        <component type="gfx.SunGeometry" radius="50000" light_radius="20000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
-        <component type="gfx.ImposterGeometry" radius="10" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
+        <component type="gfx.SunGeometry" radius="40000" light_radius="20000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
+        <component type="gfx.ImposterGeometry" radius="10" cutoff="1000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
         <component type="srv.GravityFieldFlag"/>
         <group name="replicate"/>
         <entity name="Earth">
@@ -12,6 +12,7 @@
             <component type="Orbit" orbital_distance="200000"/>
             <component type="Rotation"/>
             <component type="gfx.PlanetGeometry" radius="3000" generator="Earth" color="Blue"/>
+            <component type="gfx.ImposterGeometry" radius="2" cutoff="500000" red="0.3" green="0.4" blue="0.6" alpha="1.0"/>
             <component type="FixedRotation" period_y="1.0"/>
             <component type="Position" x="0" y="0" z="0"/>
             <group name="replicate"/>
@@ -22,6 +23,7 @@
                 <component type="Rotation"/>
                 <component type="Orbit" orbital_distance="40000"/>
                 <component type="gfx.PlanetGeometry" radius="1500" generator="Moon" color="Brown"/>
+                <component type="gfx.ImposterGeometry" radius="1" cutoff="200000" red="0.3" green="0.3" blue="0.3" alpha="1.0"/>
                 <component type="FixedRotation" period_y="0.1"/>
                 <group name="replicate"/>
             </entity>
@@ -141,6 +143,7 @@
                 <z>#######</z>
             </y>
         </component>
+        <component type="gfx.ImposterGeometry" radius="1" cutoff="2000" red="1.0" green="1.0" blue="1.0" alpha="1.0"/>
         <entity name="DCPU">
             <group name="replicate"/>
             <component type="gfx.VoidGeometry"/>

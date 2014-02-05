@@ -22,8 +22,7 @@ public class Explosion extends BaseComponent {
     @Override
     public void receive(Connection pc, Entity entity) {
         if(serverState == 0) {
-            entity.addComponent(this);
-            entity.changedInWorld();
+            super.receive(pc, entity);
 
             ClientGlobals.spatialManager.setupExplosion(entity, this);
             

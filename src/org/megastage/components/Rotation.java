@@ -40,8 +40,7 @@ public class Rotation extends BaseComponent {
     public void receive(Connection pc, Entity entity) {
         Rotation rot = entity.getComponent(Rotation.class);
         if(rot == null) {
-            entity.addComponent(this);
-            entity.changedInWorld();
+            super.receive(pc, entity);
             return;
         }
 

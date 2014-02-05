@@ -99,7 +99,7 @@ public class ShipGeometry extends BaseComponent {
     
     @Override
     public void receive(Connection pc, Entity entity) {
-        entity.addComponent(this);
+        super.receive(pc, entity);
         ClientGlobals.spatialManager.setupShip(entity, this);
     }
     

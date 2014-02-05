@@ -16,6 +16,7 @@ import org.megastage.components.SpawnPoint;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.CharacterGeometry;
 import org.megastage.components.gfx.EngineGeometry;
+import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.MonitorGeometry;
 import org.megastage.components.gfx.PlanetGeometry;
 import org.megastage.components.gfx.ShipGeometry;
@@ -65,6 +66,7 @@ public class Network {
         kryo.register(EngineGeometry.class);
         kryo.register(Explosion.class);
         kryo.register(FixedRotation.class);
+        kryo.register(ImposterGeometry.class);
         kryo.register(Mass.class);
         kryo.register(Mode.class);
         kryo.register(MonitorData.class);

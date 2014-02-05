@@ -36,6 +36,7 @@ public abstract class BaseComponent extends Component {
 
     public void receive(Connection pc, Entity entity) {
         entity.addComponent(this);
+        entity.changedInWorld();
     }
 
     public void delete(Connection pc, Entity entity) {

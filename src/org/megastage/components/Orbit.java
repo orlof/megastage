@@ -46,7 +46,7 @@ public class Orbit extends BaseComponent {
     @Override
     public void receive(Connection pc, Entity entity) {
         center = ClientGlobals.artemis.toClientEntity(center).getId();
-        entity.addComponent(this);
+        super.receive(pc, entity);
     }
 
     public double getAngularSpeed(double centerMass) {

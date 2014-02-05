@@ -197,13 +197,14 @@ public class SpatialManager {
 
         
         if(ClientGlobals.gfxQuality.ENABLE_PLANETS) {
-            node.attachChild(createPlanet(data));
+            final Planet planet = createPlanet(data);
+            node.attachChild(planet);
 
             app.enqueue(new Callable() {
                 @Override
                 public Object call() throws Exception {
                     PlanetAppState appState = app.getStateManager().getState(PlanetAppState.class);
-                    if(appState != null) appState.addPlanet((Planet) node.getChild(0));
+                    if(appState != null) appState.addPlanet(planet);
 
                     if(node.getParent() == null) {
                         ClientGlobals.sysMovNode.attachChild(node);
@@ -414,6 +415,7 @@ public class SpatialManager {
 
     
     public void imposter(Entity entity, final boolean visible) {
+        Log.info(entity.toString() + " " + visible);
         final Node node = nodes.get(entity.getId());
 
         if(node != null) {

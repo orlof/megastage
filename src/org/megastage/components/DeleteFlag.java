@@ -25,6 +25,6 @@ public class DeleteFlag extends BaseComponent {
                 bc.delete(pc, entity);
             }
         }
-        ClientGlobals.artemis.world.deleteEntity(entity);
+        entity.deleteFromWorld();
     }
 }
