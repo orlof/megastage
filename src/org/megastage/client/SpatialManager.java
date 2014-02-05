@@ -40,6 +40,7 @@ import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.EngineControl;
+import org.megastage.client.controls.ImposterPositionControl;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RotationControl;
 import org.megastage.components.client.ClientRaster;
@@ -169,7 +170,7 @@ public class SpatialManager {
         final Node node = getNode(entity);
         node.addControl(new PositionControl(entity));
         node.addControl(new RotationControl(entity));
-
+        
         node.attachChild(createSphere(data.radius, colorRGBA, false));
 
         final PointLight light = new PointLight();
@@ -418,28 +419,26 @@ public class SpatialManager {
         Log.info(entity.toString() + " " + visible);
         final Node node = nodes.get(entity.getId());
 
-        if(node != null) {
-            app.enqueue(new Callable() {
-                @Override
-                public Object call() throws Exception {
-                    for(Spatial s: node.getChildren()) {
-                        if(s.getName().equals("imposter")) {
-                            if(visible) {
-                                s.setCullHint(Spatial.CullHint.Always);
-                            } else {
-                                s.setCullHint(Spatial.CullHint.Inherit);
-                            }
-                        } else {
-                            if(visible) {
-                                s.setCullHint(Spatial.CullHint.Inherit);
-                            } else {
-                                s.setCullHint(Spatial.CullHint.Always);
-                            }
-                        }
-                    }
-                    return null;
+        if(node == null) return;
+        
+        for(Spatial s: node.getChildren()) {
+            if(s.getName().equals("imposter")) {
+                if(visible && s.getCullHint() != Spatial.CullHint.Always) {
+                    s.setCullHint(Spatial.CullHint.Always);
+                    s.getParent().getControl(ImposterPositionControl.class).setEnabled(false);
+                    s.getParent().getControl(PositionControl.class).setEnabled(true);
+                } else if(!visible && s.getCullHint() != Spatial.CullHint.Inherit) {
+                    s.setCullHint(Spatial.CullHint.Inherit);
+                    s.getParent().getControl(ImposterPositionControl.class).setEnabled(true);
+                    s.getParent().getControl(PositionControl.class).setEnabled(false);
                 }
-            });
+            } else {
+                if(visible && s.getCullHint() != Spatial.CullHint.Inherit) {
+                    s.setCullHint(Spatial.CullHint.Inherit);
+                } else if(!visible && s.getCullHint() != Spatial.CullHint.Always) {
+                    s.setCullHint(Spatial.CullHint.Always);
+                }
+            }
         }
     }
     
@@ -468,12 +467,12 @@ public class SpatialManager {
 
         final Geometry imposter = createImposter(data.radius, colorRGBA);
         final Node node = getNode(entity);
-
+        
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
+                node.addControl(new ImposterPositionControl(entity));
                 node.attachChild(imposter);
-                //node.addControl(new Control(explosion, node));
                 return null;
             }
         });

@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
+import com.esotericsoftware.minlog.Log;
 
 /**
  * The most raw entity system. It should not typically be used, but you can create your own
@@ -105,7 +106,17 @@ public abstract class EntitySystem implements EntityObserver {
 			return;
 		}
 		
+                try {
 		boolean contains = e.getSystemBits().get(systemIndex);
+                } catch(Exception ex) {
+                    
+                    System.out.println(ex.toString());
+                    System.out.println(getClass().getSimpleName());
+                    System.out.println(e);
+                    System.out.println(systemIndex);
+                    if(e!=null) System.out.println(e.getSystemBits());
+                    if(e.getSystemBits()!=null) System.out.println(e.getSystemBits().get(systemIndex));
+                }
 		boolean interested = true; // possibly interested, let's try to prove it wrong.
 		
 		BitSet componentBits = e.getComponentBits();

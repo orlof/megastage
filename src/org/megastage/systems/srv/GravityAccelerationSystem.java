@@ -32,7 +32,6 @@ public class GravityAccelerationSystem extends EntityProcessingSystem {
         Acceleration acceleration = ACCELERATION.get(entity);
 
         Vector3d gravityField = gravityFieldSystem.getGravityField(position);
-        Log.trace(entity.toString() + " in gravity field " + gravityField.toString());
         acceleration.add(gravityField);
     }
 }

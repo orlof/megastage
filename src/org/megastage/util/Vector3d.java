@@ -1,5 +1,6 @@
 package org.megastage.util;
 
+import com.jme3.math.Vector3f;
 import org.megastage.components.Position;
 
 public class Vector3d {
@@ -126,5 +127,9 @@ public class Vector3d {
         double dz = pos.z - z;
         
         return dx*dx + dy*dy + dz*dz;
+    }
+
+    public Vector3f getVector3f() {
+        return new Vector3f((float) x, (float) y, (float) z);
     }
 }

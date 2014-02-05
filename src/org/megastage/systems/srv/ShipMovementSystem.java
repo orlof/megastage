@@ -26,15 +26,15 @@ public class ShipMovementSystem extends EntityProcessingSystem {
         Acceleration acceleration = accelerationMapper.get(entity);
         Position position = positionMapper.get(entity);
 
-        Log.trace(entity.toString() + acceleration.toString());
-        Log.trace(entity.toString() + velocity.toString());
-        Log.trace(entity.toString() + position.toString());
+        if(Log.TRACE) {
+            Log.info(entity.toString() + acceleration.toString());
+            Log.info(entity.toString() + velocity.toString());
+            Log.info(entity.toString() + position.toString());
+        }
         
         position.move(velocity, world.delta / 2.0f);
         velocity.accelerate(acceleration, world.delta);
         position.move(velocity, world.delta / 2.0f);
-
-        Log.trace(entity.toString() + velocity.toString());
 
         acceleration.set(Vector3d.ZERO);
     }

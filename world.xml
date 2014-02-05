@@ -2,8 +2,8 @@
     <entity name="Sun">
         <component type="Position" x="0" y="0" z="0"/>
         <component type="Mass" kg="1.989e21"/>
-        <component type="gfx.SunGeometry" radius="40000" light_radius="20000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
-        <component type="gfx.ImposterGeometry" radius="10" cutoff="1000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
+        <component type="gfx.SunGeometry" radius="35000" light_radius="10000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
+        <component type="gfx.ImposterGeometry" radius="10" cutoff="500000" red="1.0" green="1.0" blue="0.67" alpha="0.5"/>
         <component type="srv.GravityFieldFlag"/>
         <group name="replicate"/>
         <entity name="Earth">
@@ -12,7 +12,7 @@
             <component type="Orbit" orbital_distance="200000"/>
             <component type="Rotation"/>
             <component type="gfx.PlanetGeometry" radius="3000" generator="Earth" color="Blue"/>
-            <component type="gfx.ImposterGeometry" radius="2" cutoff="500000" red="0.3" green="0.4" blue="0.6" alpha="1.0"/>
+            <component type="gfx.ImposterGeometry" radius="2" cutoff="350000" red="0.3" green="0.4" blue="0.6" alpha="1.0"/>
             <component type="FixedRotation" period_y="1.0"/>
             <component type="Position" x="0" y="0" z="0"/>
             <group name="replicate"/>

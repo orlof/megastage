@@ -194,7 +194,7 @@ public class NetworkSystem extends VoidEntitySystem {
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
         if(connection.player == null) return;
         
-        Log.debug(cmd.toString());
+        Log.trace(cmd.toString());
 
         BindTo bindTo = connection.player.getComponent(BindTo.class);
         Entity ship = world.getEntity(bindTo.parent);
@@ -210,7 +210,7 @@ public class NetworkSystem extends VoidEntitySystem {
         int yprobe = probe(pos.y, (long) (1000.0 * cmd.yMove));
         int zprobe = probe(pos.z, (long) (1000.0 * cmd.zMove));
         
-        if(Log.DEBUG && (cmd.xMove != 0 || cmd.zMove != 0)) {
+        if(Log.TRACE && (cmd.xMove != 0 || cmd.zMove != 0)) {
             Log.info("" + pos.x + ", " + pos.y + ", " + pos.z);
         }
 
@@ -231,15 +231,13 @@ public class NetworkSystem extends VoidEntitySystem {
         
         Vector3d vel = new Vector3d(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
         
-        vel = vel.multiply(100000000);
+        vel = vel.multiply(10000000);
         
         Position shipPos = ship.getComponent(Position.class);
         shipPos.x += vel.x;
         shipPos.y += vel.y;
         shipPos.z += vel.z;
 
-        Log.info("ship position " + shipPos.x / 1000 + ", " + shipPos.y / 1000 + ", " + shipPos.z / 1000);
-        
         // rotate rotation axis by fixedEntity rotation
         Vector3d yAxis = new Vector3d(0, 1, 0).multiply(shipRotationQuaternion);
         Quaternion yRotation = new Quaternion(yAxis, cmd.shipYaw);

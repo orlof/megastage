@@ -36,6 +36,10 @@ public class Position extends BaseComponent {
         return true;
     }
     
+    public boolean replicate() {
+        return true;
+    }
+    
     public void add(Vector3d vector) {
         x += Math.round(vector.x);
         y += Math.round(vector.y);

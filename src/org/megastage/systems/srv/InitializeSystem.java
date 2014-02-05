@@ -15,12 +15,12 @@ public class InitializeSystem extends EntityProcessingSystem {
 
     @Override
     protected boolean checkProcessing() {
-        return false;
+        return true;
     }
 
     @Override
     protected void process(Entity e) {
-        Bag bag = e.getComponents(null);
+        Bag bag = e.getComponents(new Bag(20));
 
         for(int i=0; i < bag.size(); i++) {
             BaseComponent c = (BaseComponent) bag.get(i);

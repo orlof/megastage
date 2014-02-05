@@ -35,8 +35,6 @@ public class Orbit extends BaseComponent {
         double mass = world.getEntity(center).getComponent(Mass.class).mass;
         angularSpeed = getAngularSpeed(mass);        
     }
-
-    
     
     @Override
     public boolean replicate() {
@@ -84,6 +82,6 @@ public class Orbit extends BaseComponent {
     }
 
     public String toString() {
-        return "Orbit(" + center + ", " + distance + ")";
+        return "Orbit(" + center + ", " + distance + ", " + (2*Math.PI) / angularSpeed + ")";
     }
 }

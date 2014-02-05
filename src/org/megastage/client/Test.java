@@ -22,7 +22,7 @@ public class Test extends SimpleApplication {
     }
     Node node = new Node();
     float flickerNess = 0.1f;
-    float d = 10e2f;
+    float d = 10e20f;
     // planetary system diameter
     
     @Override
@@ -46,29 +46,26 @@ public class Test extends SimpleApplication {
         q.updateBound();
         q.setStatic();
 
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Red);
-        
-        Geometry geom = new Geometry("Twinkly Star Mother", q);
-        geom.setMaterial(mat);
-        geom.setLocalTranslation(0, 0, -1000);
-        node.attachChild(geom);
-
         for (int i = 0; i < 100; i++) {
-            geom = new Geometry("Twinkly Star " + i, q);
-            geom.setMaterial(mat);
-            geom.setLocalTranslation(nextRandomFloat() * d, nextRandomFloat() * d, nextRandomFloat() * d);
+            Geometry geom = new Geometry("Twinkly Star " + i, q);
+        Material mat2 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat2.setColor("Color", ColorRGBA.randomColor());
+            geom.setMaterial(mat2);
+            //geom.setLocalTranslation(nextRandomFloat() * d, nextRandomFloat() * d, nextRandomFloat() * d);
+            geom.setLocalTranslation(0, 0, (float) (-1000+(i/10.0)));
             node.attachChild(geom);
         }
         rootNode.attachChild(node);
         
         final long start = System.currentTimeMillis();
         
+        cam.setLocation(new Vector3f(0, 0, 00000));
+        
         node.addControl(new AbstractControl() {
             @Override
             protected void controlUpdate(float tpf) {
-                System.out.println("controlUpdate " + System.currentTimeMillis());
-                if(System.currentTimeMillis() > start + 5000) spatial.removeFromParent();
+                //System.out.println("controlUpdate " + System.currentTimeMillis());
+                //if(System.currentTimeMillis() > start + 5000) spatial.removeFromParent();
                 spatial.move(0, 0, 25*tpf);
             }
 

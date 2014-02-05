@@ -22,7 +22,7 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity entity) {
-        double time = Time.value / 1000.0d;
+        double time = Time.secs();
         
         Orbit orbit = ORBIT.get(entity);
         
@@ -40,9 +40,9 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
         Position fixedStar = POSITION.get(center);
 
         Position position = POSITION.get(entity);
-        position.x = Math.round(localSum.x) + fixedStar.x;
+        position.x = Math.round(1000 * localSum.x) + fixedStar.x;
         position.y = fixedStar.y;
-        position.z = Math.round(localSum.z) + fixedStar.z;
+        position.z = Math.round(1000* localSum.z) + fixedStar.z;
         //Log.info(position.toString());
     }
 

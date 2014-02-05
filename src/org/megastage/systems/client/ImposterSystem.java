@@ -9,6 +9,7 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.Position;
 import org.megastage.components.gfx.ImposterGeometry;
+import org.megastage.util.ID;
 import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
@@ -27,7 +28,6 @@ public class ImposterSystem extends EntityProcessingSystem {
     @Override
     protected boolean checkProcessing() {
         if(ClientGlobals.shipEntity != null && POSITION.has(ClientGlobals.shipEntity) && Time.value >= acc) {
-            Log.info("" + true);
             acc = Time.value + interval;
             return true;
         }
@@ -39,16 +39,16 @@ public class ImposterSystem extends EntityProcessingSystem {
     @Override
     protected void begin() {
         origo = POSITION.get(ClientGlobals.shipEntity).getVector3d();
-        Log.info(origo.toString());
     }
 
     @Override
     protected void process(Entity e) {
-        Log.info("");
         Vector3d coord = POSITION.get(e).getVector3d();
         double cutoff = IMPOSTER_GEOMETRY.get(e).cutoff;
 
-        boolean visible = origo.distance(coord) < cutoff;
+        double d = origo.distance(coord);
+        boolean visible = d < cutoff;
+        Log.info(ID.get(e) + d + "<" + cutoff + " -> " + visible);
         
         ClientGlobals.spatialManager.imposter(e, visible);
     }

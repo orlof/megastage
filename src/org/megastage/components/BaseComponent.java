@@ -4,9 +4,11 @@ import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.components.srv.Identifier;
 import org.megastage.protocol.Network;
 
 /**
@@ -31,6 +33,14 @@ public abstract class BaseComponent extends Component {
     public void initialize(World world, Entity entity) {}
     
     public Network.ComponentMessage create(Entity entity) {
+        if(Log.TRACE) {
+            Identifier id = entity.getComponent(Identifier.class);
+            if(id != null) {
+                Log.info(id.toString() + " " + this.toString());
+            } else {
+                Log.info(entity.toString() + " " + this.toString());
+            }
+        }
         return new Network.ComponentMessage(entity, this);
     }
 
