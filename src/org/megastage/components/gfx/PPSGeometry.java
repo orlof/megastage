@@ -9,13 +9,10 @@ import org.megastage.components.BaseComponent;
  *
  * @author Orlof
  */
-public class EngineGeometry extends BaseComponent {
+public class PPSGeometry extends BaseComponent {
     @Override
     public void receive(Connection pc, Entity entity) {
-//        if(entity != ClientGlobals.playerEntity) {
-//            ClientGlobals.spatialManager.setupEngine(entity, this);
-//        }
-        ClientGlobals.spatialManager.setupEngine(entity, this);
+        ClientGlobals.spatialManager.setupPPS(entity, this);
     }
     
     @Override

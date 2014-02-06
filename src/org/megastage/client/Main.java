@@ -38,7 +38,7 @@ public class Main extends SimpleApplication {
         Log.set(Log.LEVEL_INFO);
 
         AppSettings settings = new AppSettings(true);
-        settings.setResolution(ClientGlobals.gfxQuality.SCREEN_WIDTH, ClientGlobals.gfxQuality.SCREEN_HEIGHT);
+        settings.setResolution(ClientGlobals.gfxSettings.SCREEN_WIDTH, ClientGlobals.gfxSettings.SCREEN_HEIGHT);
         Main app = new Main();
 
         ClientGlobals.app = app;
@@ -88,7 +88,7 @@ public class Main extends SimpleApplication {
 
         // Add planet app state
         planetAppState = new PlanetAppState(null);
-        //planetAppState.setShadowsEnabled(ClientGlobals.gfxQuality.PLANET_SHADOWS_ENABLED);
+        //planetAppState.setShadowsEnabled(ClientGlobals.gfxSettings.PLANET_SHADOWS_ENABLED);
         stateManager.attach(planetAppState);
 
         // Add ECS app state
@@ -100,13 +100,6 @@ public class Main extends SimpleApplication {
         ClientGlobals.cubesSettings.setBlockSize(1);
         CubesTestAssets.registerBlocks();
 
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Black);
-
-        Geometry body = new Geometry("MARKER", new Box(.1f, .1f, .1f));
-        body.setMaterial(mat);
-        rootNode.attachChild(body);
-        
         attachCenterMark();
 }
 

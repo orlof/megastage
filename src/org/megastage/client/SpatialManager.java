@@ -54,6 +54,7 @@ import org.megastage.components.UsableFlag;
 import org.megastage.components.gfx.VoidGeometry;
 import org.megastage.components.Explosion;
 import org.megastage.components.gfx.ImposterGeometry;
+import org.megastage.components.gfx.PPSGeometry;
 import org.megastage.util.ID;
 
 /**
@@ -147,8 +148,8 @@ public class SpatialManager {
 
     private Geometry createSphere(float radius, ColorRGBA color, boolean shaded) {
         Sphere mesh = new Sphere(
-                ClientGlobals.gfxQuality.SPHERE_Z_SAMPLES,
-                ClientGlobals.gfxQuality.SPHERE_RADIAL_SAMPLES, 
+                ClientGlobals.gfxSettings.SPHERE_Z_SAMPLES,
+                ClientGlobals.gfxSettings.SPHERE_RADIAL_SAMPLES, 
                 radius);
         
         Geometry geom = new Geometry("gfx");
@@ -198,7 +199,7 @@ public class SpatialManager {
         node.addControl(new RotationControl(entity));
 
         
-        if(ClientGlobals.gfxQuality.ENABLE_PLANETS) {
+        if(ClientGlobals.gfxSettings.ENABLE_PLANETS) {
             final Planet planet = createPlanet(data);
             node.attachChild(planet);
 
@@ -300,8 +301,8 @@ public class SpatialManager {
         ImageRaster raster = ImageRaster.create(img2);
         
         Texture2D tex = new Texture2D(img2);
-//        tex.setMagFilter(Texture.MagFilter.Nearest);
-//        tex.setMinFilter(Texture.MinFilter.Trilinear);
+        tex.setMagFilter(Texture.MagFilter.Nearest);
+        tex.setMinFilter(Texture.MinFilter.Trilinear);
 
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setTexture("ColorMap", tex);
@@ -492,5 +493,16 @@ public class SpatialManager {
                 return null;
             }
         });
+    }
+
+    public void setupPPS(Entity entity, PPSGeometry aThis) {
+        final Node node = getNode(entity);
+        node.addControl(new PositionControl(entity));
+        node.addControl(new RotationControl(entity));
+
+        Geometry geom = new Geometry("Some object", new Box(0.45f, 0.45f, 0.45f));
+        geom.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
+        
+        node.attachChild(geom);
     }
 }

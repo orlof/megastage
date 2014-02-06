@@ -18,6 +18,7 @@ import org.megastage.components.gfx.EngineGeometry;
 import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.MonitorGeometry;
 import org.megastage.components.gfx.PlanetGeometry;
+import org.megastage.components.gfx.PPSGeometry;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.gfx.VoidGeometry;
@@ -75,6 +76,7 @@ public class Network {
         kryo.register(PlanetGeometry.class);
         kryo.register(PlayerIDMessage.class);
         kryo.register(Position.class);
+        kryo.register(PPSGeometry.class);
         kryo.register(RAM.class);
         kryo.register(Rotation.class);
         kryo.register(ShipGeometry.class);

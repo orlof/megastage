@@ -164,7 +164,7 @@
                 <component type="gfx.BindTo"/>
             </entity>
             <entity name="Engine">
-                <component type="dcpu.Engine" x="0" y="0" z="-1" max_power="1e6"/>
+                <component type="dcpu.Engine" x="0" y="0" z="-1" max_power="10e4"/>
                 <component type="Position" dx="3" dy="2" dz="0"/>
                 <component type="gfx.EngineGeometry"/>
                 <component type="gfx.BindTo"/>
@@ -172,20 +172,24 @@
                 <component type="Rotation" x="0" y="180" z="0"/>
                 <group name="replicate"/>
             </entity>
-            <entity>
-                <component type="dcpu.Gyroscope" x="0" y="0" z="1" torque="50000"/>
-                <component type="gfx.BindTo"/>
-            </entity>
-            <entity>
-                <component type="dcpu.Gyroscope" x="0" y="1" z="0" torque="50000"/>
-                <component type="gfx.BindTo"/>
-            </entity>
-            <entity>
+            <entity name="Gyroscope x">
                 <component type="dcpu.Gyroscope" x="1" y="0" z="0" torque="50000"/>
                 <component type="gfx.BindTo"/>
             </entity>
-            <entity>
+            <entity name="Gyroscope y">
+                <component type="dcpu.Gyroscope" x="0" y="1" z="0" torque="50000"/>
+                <component type="gfx.BindTo"/>
+            </entity>
+            <entity name="Gyroscope z">
+                <component type="dcpu.Gyroscope" x="0" y="0" z="1" torque="50000"/>
+                <component type="gfx.BindTo"/>
+            </entity>
+            <entity name="PPS">
                 <component type="dcpu.PPS"/>
+                <component type="gfx.BindTo"/>
+            </entity>
+            <entity name="Radar">
+                <component type="dcpu.VirtualRadar"/>
                 <component type="gfx.BindTo"/>
             </entity>
         </entity>
@@ -215,7 +219,7 @@
         <component type="Rotation"/>
         <component type="srv.Velocity"/>
         <component type="srv.Acceleration"/>
-        <component type="SpawnPoint"  dx="3" dy="1" dz="4"/>
+        <component type="SpawnPoint"  dx="4" dy="1" dz="8"/>
         <component type="gfx.ShipGeometry">
             <y>
                 <z>##     ##</z>
@@ -275,7 +279,7 @@
             <component type="gfx.BindTo"/>
             <component type="dcpu.DCPU" bootrom="admiral.bin"/>
             <entity name="LEM">
-                <component type="Position" dx="2" dy="2" dz="2"/>
+                <component type="Position" dx="3" dy="2" dz="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="dcpu.VirtualMonitor"/>
                 <component type="gfx.MonitorGeometry" width="3" height="2"/>
@@ -289,28 +293,40 @@
                 <component type="gfx.BindTo"/>
             </entity>
             <entity name="Engine">
-                <component type="dcpu.Engine" x="0" y="0" z="-1" max_power="1e7"/>
-                <component type="Position" dx="3" dy="2" dz="0"/>
+                <!-- engine vector specifies the direction of ship acceleration 
+                     relative to ship's starting orientation (heading +z) -->
+                <component type="dcpu.Engine" x="0" y="0" z="1" max_power="10e4"/>
+                <component type="Position" dx="4" dy="2" dz="0"/>
                 <component type="gfx.EngineGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="180" z="0"/>
                 <group name="replicate"/>
             </entity>
-            <entity>
+            <entity name="Gyroscope x">
                 <component type="dcpu.Gyroscope" x="1" y="0" z="0" torque="50000"/>
                 <component type="gfx.BindTo"/>
             </entity>
-            <entity>
+            <entity name="Gyroscope y">
                 <component type="dcpu.Gyroscope" x="0" y="1" z="0" torque="50000"/>
                 <component type="gfx.BindTo"/>
             </entity>
-            <entity>
+            <entity name="Gyroscope z">
                 <component type="dcpu.Gyroscope" x="0" y="0" z="1" torque="50000"/>
                 <component type="gfx.BindTo"/>
             </entity>
-            <entity>
+            <entity name="PPS">
                 <component type="dcpu.PPS"/>
+                <component type="gfx.BindTo"/>
+                <component type="Position" dx="3" dy="1" dz="2"/>
+                <component type="gfx.PPSGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="srv.SynchronizeFlag"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <group name="replicate"/>
+            </entity>
+            <entity name="Radar">
+                <component type="dcpu.VirtualRadar"/>
                 <component type="gfx.BindTo"/>
             </entity>
         </entity>

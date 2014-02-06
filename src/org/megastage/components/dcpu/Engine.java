@@ -35,9 +35,9 @@ public class Engine extends DCPUHardware {
 
         super.init(world, parent, element);
 
-        x = getIntegerValue(element, "x", 0) & 0xf;
-        y = getIntegerValue(element, "y", 0) & 0xf;
-        z = getIntegerValue(element, "z", -1) & 0xf;
+        x = getIntegerValue(element, "x", 0);
+        y = getIntegerValue(element, "y", 0);
+        z = getIntegerValue(element, "z", -1);
         
         maxForce = getDoubleValue(element, "max_power", 10000.0);
         
@@ -57,7 +57,7 @@ public class Engine extends DCPUHardware {
             dcpu.registers[1] = status;
         } else if (a == 2) {
             
-            char dir = (char) ((x << 8) | (y << 4) | z);
+            char dir = (char) (((x & 0xf) << 8) | ((y & 0xf) << 4) | (z & 0xf));
             dcpu.registers[1] = dir;
         }
     }
@@ -84,8 +84,8 @@ public class Engine extends DCPUHardware {
     }
 
     public Vector3d getAcceleration(double shipMass) {
-        double mult = maxForce * getPowerLevel() / shipMass;
-        return new Vector3d(x * mult, y * mult, z * mult);
+        double m = maxForce * getPowerLevel() / shipMass;
+        return new Vector3d(m*x, m*y, m*z);
     }
 
     public boolean isActive() {

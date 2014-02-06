@@ -30,7 +30,7 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
 
         boolean blink = true;
         
-        if(ClientGlobals.gfxQuality.ENABLE_LEM_BLINKING) {
+        if(ClientGlobals.gfxSettings.ENABLE_LEM_BLINKING) {
             long time = System.currentTimeMillis() / 16L;
             blink = time / 20L % 2L == 0L;
         }
@@ -58,7 +58,7 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
                     ColorRGBA colorForeground = videoMemory.colors[dat >> 12];
                     ColorRGBA colorBackground = videoMemory.colors[dat >> 8 & 0xF];
 
-                    if (ClientGlobals.gfxQuality.ENABLE_LEM_BLINKING && blink && ((dat & 0x80) > 0)) {
+                    if (ClientGlobals.gfxSettings.ENABLE_LEM_BLINKING && blink && ((dat & 0x80) > 0)) {
                         colorForeground = colorBackground;
                     }
 
