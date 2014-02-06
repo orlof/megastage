@@ -4,8 +4,7 @@ import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.managers.GroupManager;
 import com.artemis.systems.VoidEntitySystem;
-import com.artemis.utils.Bag;
-import com.artemis.utils.ImmutableBag;
+import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -15,7 +14,6 @@ import org.megastage.protocol.Network;
 import org.megastage.protocol.PlayerConnection;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Position;
@@ -27,6 +25,7 @@ import org.megastage.components.Mode;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.protocol.Action;
 import org.megastage.protocol.CharacterMode;
+import org.megastage.protocol.Message;
 import org.megastage.protocol.PlayerIDMessage;
 import org.megastage.protocol.UserCommand;
 import org.megastage.server.TemplateManager;
@@ -42,7 +41,7 @@ public class NetworkSystem extends VoidEntitySystem {
     }
     
     @Override
-    protected void initialize() {
+    public void initialize() {
         server = new Server(16*1024, 16*1024) {
             @Override
             protected Connection newConnection () {
@@ -67,10 +66,10 @@ public class NetworkSystem extends VoidEntitySystem {
     
     @Override
     protected void processSystem() {
-        Log.trace("Client state refreshed with packet size " + ServerGlobals.updates.size());
-        Bag batch = ServerGlobals.getUpdates();
+        Log.trace("Client state refreshed with packet size " + ServerGlobals.updates.size);
+        Array<Message> batch = ServerGlobals.getUpdates();
         // batch.addAll(ServerGlobals.getComponentEvents());
-        server.sendToAllUDP(batch);
+        server.sendToAllUDP(batch.toArray());
     }
 
     @Override
@@ -101,7 +100,7 @@ public class NetworkSystem extends VoidEntitySystem {
 
         // bind player to ship
         BindTo bind = new BindTo();
-        bind.parent = ship.getId();
+        bind.parent = ship.id;
         connection.player.addComponent(bind);
         connection.player.changedInWorld();
 
@@ -112,40 +111,40 @@ public class NetworkSystem extends VoidEntitySystem {
         pos.y = 1000 * sp.y;
         pos.z = 1000 * sp.z;
         
-        connection.sendTCP(new PlayerIDMessage(connection.player.getId()));
+        connection.sendTCP(new PlayerIDMessage(connection.player.id));
         Log.info("Sent player entity id: " + connection.player.toString());
     }
 
     private void replicateAllEntities(PlayerConnection connection) {
-        ImmutableBag<Entity> entities = world.getManager(GroupManager.class).getEntities("replicate");
-        Log.info("Replicate " + entities.size() + " entities for " + connection.toString());
+        Array<Entity> entities = world.getManager(GroupManager.class).getEntities("replicate");
+        Log.info("Replicate " + entities.size + " entities for " + connection.toString());
 
-        for(int i=0; i < entities.size(); i++) {
-            Entity entity = entities.get(i);
-
-            Log.info("Replicate #" + i + " entity " + entity.toString() + " for " + connection.toString());
+        for(Entity entity: entities) {
+            Log.info("Replicate entity " + entity.toString() + " for " + connection.toString());
             replicateComponents(connection, entity);
         }        
     }
     
     private void replicateComponents(PlayerConnection connection, Entity entity) {
-        Bag<Component> components = entity.getComponents(new Bag<Component>());
-        ArrayList list = new ArrayList();
+        Array<Component> all = new Array<>(20);
+        entity.getComponents(all);
+        
+        Array<Message> list = new Array<>(20);
 
-        for(int j=0; j < components.size(); j++) {
-            BaseComponent comp = (BaseComponent) components.get(j);
-            if(comp.replicate()) {
-                Object trans = comp.create(entity);                
+        for(Component c: all) {
+            BaseComponent bc = (BaseComponent) c;
+            if(bc.replicate()) {
+                Message trans = bc.create(entity);                
                 list.add(trans);
-                Log.info("Replicate " + comp.toString() + " -> " + trans.toString() + " for " + connection.toString());
+                Log.info("Replicate " + bc.toString() + " -> " + trans.toString() + " for " + connection.toString());
             }
         }
 
-        if(!list.isEmpty()) {
+        if(list.size > 0) {
             connection.sendTCP(list.toArray());
         }
 
-        Log.info("Sent " + list.size() + " components");
+        Log.info("Sent " + list.size + " components");
     }
 
     private int probe(long pos, long step) {

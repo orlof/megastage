@@ -3,12 +3,10 @@ package org.megastage.systems.client;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import com.jme3.math.Quaternion;
 import org.megastage.components.FixedRotation;
 import org.megastage.components.Rotation;
-import org.megastage.client.ClientGlobals;
 import org.megastage.util.Time;
 
 /**
@@ -19,11 +17,18 @@ import org.megastage.util.Time;
  * To change this template use File | Settings | File Templates.
  */
 public class ClientFixedRotationSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<Rotation> ROTATION;
-    @Mapper ComponentMapper<FixedRotation> FIXED_ROTATION;
+    ComponentMapper<Rotation> ROTATION;
+    ComponentMapper<FixedRotation> FIXED_ROTATION;
 
     public ClientFixedRotationSystem() {
         super(Aspect.getAspectForAll(Rotation.class, FixedRotation.class));
+    }
+
+    @Override
+    public void initialize() {
+        
+        ROTATION = world.getMapper(Rotation.class);
+        FIXED_ROTATION = world.getMapper(FixedRotation.class);
     }
 
     protected void process(Entity entity) {

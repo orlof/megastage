@@ -2,8 +2,8 @@ package org.megastage.systems;
 
 import com.artemis.Aspect;
 import com.artemis.Entity;
-import com.artemis.EntitySystem;
-import com.artemis.utils.ImmutableBag;
+import com.artemis.systems.EntitySystem;
+import com.badlogic.gdx.utils.Array;
 import org.megastage.components.dcpu.Engine;
 import org.megastage.util.Time;
 
@@ -28,9 +28,8 @@ public class ServerEngineTestSystem extends EntitySystem {
     }
 
     @Override
-    protected void processEntities(ImmutableBag<Entity> entities) {
-        for(int i=0; i < entities.size(); i++) {
-            Entity entity = entities.get(i);
+    protected void processEntities(Array<Entity> entities) {
+        for(Entity entity: entities) {
             Engine engine = entity.getComponent(Engine.class);
             switch(state++) {
                 case 0:

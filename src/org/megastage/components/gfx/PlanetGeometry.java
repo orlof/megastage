@@ -25,7 +25,7 @@ public class PlanetGeometry extends BaseComponent {
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
-        center = parent.getId();
+        center = parent.id;
 
         radius = getFloatValue(element, "radius", 10.0f);
         generator = getStringValue(element, "generator", "Earth");

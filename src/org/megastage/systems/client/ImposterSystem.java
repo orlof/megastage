@@ -3,7 +3,6 @@ package org.megastage.systems.client;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.client.ClientGlobals;
@@ -14,15 +13,22 @@ import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
 public class ImposterSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<Position> POSITION;
-    @Mapper ComponentMapper<ImposterGeometry> IMPOSTER_GEOMETRY;
+    ComponentMapper<Position> POSITION;
+    ComponentMapper<ImposterGeometry> IMPOSTER_GEOMETRY;
 
     public ImposterSystem(long interval) {
         super(Aspect.getAspectForAll(ImposterGeometry.class, Position.class));
         this.interval = interval;
     }
 
-    private long interval;
+    @Override
+    public void initialize() {
+        
+        IMPOSTER_GEOMETRY = world.getMapper(ImposterGeometry.class);
+        POSITION = world.getMapper(Position.class);
+    }
+
+private long interval;
     private long acc;
     
     @Override
@@ -48,7 +54,7 @@ public class ImposterSystem extends EntityProcessingSystem {
 
         double d = origo.distance(coord);
         boolean visible = d < cutoff;
-        Log.info(ID.get(e) + d + "<" + cutoff + " -> " + visible);
+        Log.trace(ID.get(e) + d + "<" + cutoff + " -> " + visible);
         
         ClientGlobals.spatialManager.imposter(e, visible);
     }

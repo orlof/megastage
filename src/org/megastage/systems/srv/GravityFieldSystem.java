@@ -3,31 +3,40 @@ package org.megastage.systems.srv;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.EntitySystem;
-import com.artemis.annotations.Mapper;
-import com.artemis.utils.ImmutableBag;
+import com.artemis.systems.EntitySystem;
+import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.minlog.Log;
+import org.megastage.components.DeleteFlag;
 import org.megastage.components.srv.GravityFieldFlag;
 import org.megastage.components.Mass;
 import org.megastage.components.Position;
+import org.megastage.components.srv.UninitializedFlag;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector3d;
 
 public class GravityFieldSystem extends EntitySystem {
-    @Mapper ComponentMapper<GravityFieldFlag> GRAVITY_FIELD;
-    @Mapper ComponentMapper<Position> POSITION;
-    @Mapper ComponentMapper<Mass> MASS;
+    ComponentMapper<GravityFieldFlag> GRAVITY_FIELD;
+    ComponentMapper<Position> POSITION;
+    ComponentMapper<Mass> MASS;
     
-    private ImmutableBag<Entity> entitiesWithGravityField;
+    private Array<Entity> entitiesWithGravityField;
 
     public GravityFieldSystem() {
         super(Aspect.getAspectForAll(GravityFieldFlag.class, Position.class, Mass.class));
     }
 
     @Override
-    protected void processEntities(ImmutableBag<Entity> entities) {
+    public void initialize() {
+        
+        GRAVITY_FIELD = world.getMapper(GravityFieldFlag.class);
+        POSITION = world.getMapper(Position.class);
+        MASS = world.getMapper(Mass.class);
+    }
+
+    @Override
+    protected void processEntities(Array<Entity> entities) {
         entitiesWithGravityField = entities;
-        Log.trace("Number of Gravity fields: " + entitiesWithGravityField.size());
+        Log.trace("Number of Gravity fields: " + entitiesWithGravityField.size);
     }
 
     @Override
@@ -39,9 +48,7 @@ public class GravityFieldSystem extends EntitySystem {
         Log.trace("Calculating gravity field in position " + coordinates.toString());
         Vector3d acc = new Vector3d();
 
-        for(int i=0; i < entitiesWithGravityField.size(); i++) {
-            Entity entity = entitiesWithGravityField.get(i);
-            
+        for(Entity entity: entitiesWithGravityField) {
             Position position = POSITION.get(entity);
             Mass mass = MASS.get(entity);
             
@@ -63,4 +70,5 @@ public class GravityFieldSystem extends EntitySystem {
 
         return acc;
     }    
+
 }

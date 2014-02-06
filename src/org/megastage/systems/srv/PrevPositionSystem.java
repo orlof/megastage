@@ -3,18 +3,23 @@ package org.megastage.systems.srv;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.Position;
 import org.megastage.components.PrevPosition;
 import org.megastage.util.Time;
 
 public class PrevPositionSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<Position> POSITION;
-    @Mapper ComponentMapper<PrevPosition> PREV_POSITION;
+    ComponentMapper<Position> POSITION;
+    ComponentMapper<PrevPosition> PREV_POSITION;
     
     public PrevPositionSystem() {
         super(Aspect.getAspectForAll(PrevPosition.class, Position.class));
+    }
+
+    @Override
+    public void initialize() {
+        POSITION = world.getMapper(Position.class);
+        PREV_POSITION = world.getMapper(PrevPosition.class);
     }
 
     @Override

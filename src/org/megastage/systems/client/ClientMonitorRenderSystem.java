@@ -3,7 +3,6 @@ package org.megastage.systems.client;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.ColorRGBA;
@@ -12,11 +11,18 @@ import org.megastage.components.client.ClientVideoMemory;
 import org.megastage.client.ClientGlobals;
 
 public class ClientMonitorRenderSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<ClientVideoMemory> videoMemoryMapper;
-    @Mapper ComponentMapper<ClientRaster> rasterComponentMapper;
+    ComponentMapper<ClientVideoMemory> videoMemoryMapper;
+    ComponentMapper<ClientRaster> rasterComponentMapper;
 
     public ClientMonitorRenderSystem() {
         super(Aspect.getAspectForAll(ClientVideoMemory.class, ClientRaster.class));
+    }
+
+    @Override
+    public void initialize() {
+        
+        videoMemoryMapper = world.getMapper(ClientVideoMemory.class);
+        rasterComponentMapper = world.getMapper(ClientRaster.class);
     }
 
     protected void process(Entity entity) {

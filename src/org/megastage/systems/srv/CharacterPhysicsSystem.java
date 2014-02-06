@@ -3,7 +3,6 @@ package org.megastage.systems.srv;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.Mode;
 import org.megastage.components.Position;
@@ -12,9 +11,9 @@ import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.util.Time;
 
 public class CharacterPhysicsSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<Position> POSITION;
-    @Mapper ComponentMapper<BindTo> BIND_TO;
-    @Mapper ComponentMapper<ShipGeometry> SHIP_GEOMETRY;
+    ComponentMapper<Position> POSITION;
+    ComponentMapper<BindTo> BIND_TO;
+    ComponentMapper<ShipGeometry> SHIP_GEOMETRY;
     
     private long interval;
     private long acc;
@@ -22,6 +21,13 @@ public class CharacterPhysicsSystem extends EntityProcessingSystem {
     public CharacterPhysicsSystem(long interval) {
         super(Aspect.getAspectForAll(Mode.class));
         this.interval = interval;
+    }
+
+    @Override
+    public void initialize() {
+        POSITION = world.getMapper(Position.class);
+        BIND_TO = world.getMapper(BindTo.class);
+        SHIP_GEOMETRY = world.getMapper(ShipGeometry.class);
     }
 
     @Override

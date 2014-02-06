@@ -3,9 +3,7 @@ package org.megastage.systems.srv;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
-import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Rotation;
 import org.megastage.components.dcpu.Gyroscope;
 import org.megastage.components.gfx.ShipGeometry;
@@ -13,12 +11,19 @@ import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
 
 public class AttitudeControlSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<Gyroscope> GYROSCOPE;
-    @Mapper ComponentMapper<Rotation> ROTATION;
-    @Mapper ComponentMapper<ShipGeometry> SHIP_GEOMETRY;
+    ComponentMapper<Gyroscope> GYROSCOPE;
+    ComponentMapper<Rotation> ROTATION;
+    ComponentMapper<ShipGeometry> SHIP_GEOMETRY;
 
     public AttitudeControlSystem() {
         super(Aspect.getAspectForAll(Gyroscope.class));
+    }
+
+    @Override
+    public void initialize() {
+        GYROSCOPE = world.getMapper(Gyroscope.class);
+        ROTATION = world.getMapper(Rotation.class);
+        SHIP_GEOMETRY = world.getMapper(ShipGeometry.class);
     }
 
     @Override
@@ -29,7 +34,7 @@ public class AttitudeControlSystem extends EntityProcessingSystem {
         ShipGeometry geom = SHIP_GEOMETRY.get(gyro.ship);
         if(geom == null) return;
         
-        double angle = gyro.getRotation(geom) * world.delta;
+        double angle = gyro.getRotation(geom) * world.getDelta();
         
         Rotation rotation = ROTATION.get(gyro.ship);
         Quaternion shipRotation = rotation.getQuaternion();

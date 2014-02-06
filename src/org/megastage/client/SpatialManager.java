@@ -54,6 +54,7 @@ import org.megastage.components.UsableFlag;
 import org.megastage.components.gfx.VoidGeometry;
 import org.megastage.components.Explosion;
 import org.megastage.components.gfx.ImposterGeometry;
+import org.megastage.util.ID;
 
 /**
  *
@@ -75,7 +76,7 @@ public class SpatialManager {
     }
 
     public void deleteEntity(Entity entity) {
-        int id = entity.getId();
+        int id = entity.id;
         final Node node = nodes.get(id);
 
         if(node != null) {
@@ -105,7 +106,7 @@ public class SpatialManager {
     }
     
     private Node getNode(Entity entity) {
-        int id = entity.getId();
+        int id = entity.id;
         Node node = nodes.get(id);
  
         if(node == null) {
@@ -415,31 +416,46 @@ public class SpatialManager {
     }
 
     
-    public void imposter(Entity entity, final boolean visible) {
-        Log.info(entity.toString() + " " + visible);
-        final Node node = nodes.get(entity.getId());
+    public void imposter(Entity entity, boolean gfxVisible) {
+        Node node = nodes.get(entity.id);
 
         if(node == null) return;
         
         for(Spatial s: node.getChildren()) {
+            Log.trace(ID.get(entity) + s.getName() + " " + s.getCullHint());
             if(s.getName().equals("imposter")) {
-                if(visible && s.getCullHint() != Spatial.CullHint.Always) {
+                boolean imposterVisible = !gfxVisible;
+                boolean imposterDraw = draw(s);
+                if(!imposterVisible && imposterDraw) {
+                    if(Log.INFO) Log.info(ID.get(entity) + "imposter disabled");
+
                     s.setCullHint(Spatial.CullHint.Always);
                     s.getParent().getControl(ImposterPositionControl.class).setEnabled(false);
                     s.getParent().getControl(PositionControl.class).setEnabled(true);
-                } else if(!visible && s.getCullHint() != Spatial.CullHint.Inherit) {
+                } else if(imposterVisible && !imposterDraw) {
+                    if(Log.INFO) Log.info(ID.get(entity) + "imposter enabled");
+
                     s.setCullHint(Spatial.CullHint.Inherit);
                     s.getParent().getControl(ImposterPositionControl.class).setEnabled(true);
                     s.getParent().getControl(PositionControl.class).setEnabled(false);
                 }
             } else {
-                if(visible && s.getCullHint() != Spatial.CullHint.Inherit) {
+                boolean gfxDraw = draw(s);
+                if(gfxVisible && !gfxDraw) {
+                    if(Log.INFO) Log.info(ID.get(entity) + "gfx enabled");
+
                     s.setCullHint(Spatial.CullHint.Inherit);
-                } else if(!visible && s.getCullHint() != Spatial.CullHint.Always) {
+                } else if(!gfxVisible && gfxDraw) {
+                    if(Log.INFO) Log.info(ID.get(entity) + "gfx disabled");
+
                     s.setCullHint(Spatial.CullHint.Always);
                 }
             }
         }
+    }
+    
+    private boolean draw(Spatial s) {
+        return s.getCullHint() != Spatial.CullHint.Always;
     }
     
     private Geometry createImposter(float size, ColorRGBA color) {

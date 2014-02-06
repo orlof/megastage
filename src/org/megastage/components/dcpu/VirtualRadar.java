@@ -45,7 +45,7 @@ public class VirtualRadar extends DCPUHardware {
             // STORE_SIGNATURES
             Vector3d coord = ship.getComponent(Position.class).getVector3d();
             
-            int num = ServerGlobals.radarEchoes.size();
+            int num = ServerGlobals.radarEchoes.size;
             LocalRadarEcho[] echoes = new LocalRadarEcho[num];
             
             for(int i = 0; i < num; i++) {
@@ -69,9 +69,7 @@ public class VirtualRadar extends DCPUHardware {
             dcpu.cycles += 16;
         } else if(a == 1) {
             // SET_TRACKING_TARGET
-            int num = ServerGlobals.radarEchoes.size();
-            for(int i=0; i < num; i++) {
-                RadarData echo = ServerGlobals.radarEchoes.get(i);
+            for(RadarData echo: ServerGlobals.radarEchoes) {
                 if(echo.match(b)) {
                     target = echo.id;
                     dcpu.registers[2] = (char) 0xffff;
@@ -85,10 +83,7 @@ public class VirtualRadar extends DCPUHardware {
             return;
         } else if(a == 2) {
             // STORE_TARGET_DATA
-            int num = ServerGlobals.radarEchoes.size();
-            for(int i=0; i < num; i++) {
-                RadarData echo = ServerGlobals.radarEchoes.get(i);
-                
+            for(RadarData echo: ServerGlobals.radarEchoes) {
                 if(echo.id == target) {
                     Log.info("Target found");
                     Vector3d myCoord = ship.getComponent(Position.class).getVector3d();
@@ -189,8 +184,7 @@ public class VirtualRadar extends DCPUHardware {
     }
 
     private SOIData getSOI(Vector3d coord) {
-        for(int i=0; i < ServerGlobals.soi.size(); i++) {
-            SOIData soi = ServerGlobals.soi.get(i);
+        for(SOIData soi: ServerGlobals.soi) {
             if(soi.contains(coord)) {
                 return soi;
             }

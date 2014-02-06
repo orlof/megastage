@@ -88,7 +88,7 @@ public class UserCommand {
     public void pickItem(Entity entity) {
         Log.info("Pick " + entity.toString());
         action = Action.PICK_ITEM;
-        pick = ClientGlobals.artemis.toServerID(entity.getId());
+        pick = ClientGlobals.artemis.toServerID(entity.id);
         count++;
     }
 

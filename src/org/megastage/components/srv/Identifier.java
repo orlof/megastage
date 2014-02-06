@@ -19,7 +19,12 @@ public class Identifier extends BaseComponent {
         
         return null;
     }
-    
+
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+
     public String name;
 
     public String toString() {

@@ -3,13 +3,12 @@ package org.megastage.systems.srv;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.EntitySystem;
-import com.artemis.annotations.Mapper;
-import com.artemis.utils.Bag;
-import com.artemis.utils.ImmutableBag;
+import com.artemis.systems.EntitySystem;
+import com.badlogic.gdx.utils.Array;
 import org.megastage.components.Position;
 import org.megastage.components.Mass;
 import org.megastage.components.RadarEcho;
+import org.megastage.components.srv.GravityFieldFlag;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
@@ -24,13 +23,21 @@ public class RadarEchoSystem extends EntitySystem {
     private long interval;
     private long acc;
 
-    @Mapper ComponentMapper<Position> POSITION;
-    @Mapper ComponentMapper<Mass> MASS;
-    @Mapper ComponentMapper<RadarEcho> RADAR_ECHO;
+    ComponentMapper<Position> POSITION;
+    ComponentMapper<Mass> MASS;
+    ComponentMapper<RadarEcho> RADAR_ECHO;
 
     public RadarEchoSystem(long interval) {
         super(Aspect.getAspectForAll(Mass.class, Position.class, RadarEcho.class));
         this.interval = interval;
+    }
+
+    @Override
+    public void initialize() {
+        
+        RADAR_ECHO = world.getMapper(RadarEcho.class);
+        POSITION = world.getMapper(Position.class);
+        MASS = world.getMapper(Mass.class);
     }
 
     @Override
@@ -43,17 +50,15 @@ public class RadarEchoSystem extends EntitySystem {
     }
 
     @Override
-    protected void processEntities(ImmutableBag<Entity> entities) {
-        Bag<RadarData> next = new Bag<>(200);
+    protected void processEntities(Array<Entity> entities) {
+        Array<RadarData> next = new Array<>(200);
         
-        for(int i=0; i < entities.size(); i++) {
-            Entity entity = entities.get(i);
-            
+        for(Entity entity: entities) {
             Position pos = POSITION.get(entity);
             Mass mass = MASS.get(entity);
             RadarEcho echo = RADAR_ECHO.get(entity);
 
-            next.add(new RadarData(entity.getId(), pos, mass, echo));
+            next.add(new RadarData(entity.id, pos, mass, echo));
         }
         
         ServerGlobals.radarEchoes = next;

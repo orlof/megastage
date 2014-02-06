@@ -17,7 +17,7 @@ import org.megastage.protocol.Network;
  * Date: 17.8.2013
  * Time: 20:11
  */
-public abstract class BaseComponent extends Component {
+public abstract class BaseComponent implements Component {
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
         return null;
     }
@@ -131,4 +131,7 @@ public abstract class BaseComponent extends Component {
     public String toString() {
         return getClass().getSimpleName();
     }
+
+    @Override
+    public void reset() {}
 }

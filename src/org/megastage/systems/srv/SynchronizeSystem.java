@@ -4,22 +4,21 @@ import com.artemis.Aspect;
 import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.EntitySystem;
-import com.artemis.annotations.Mapper;
-import com.artemis.utils.Bag;
-import com.artemis.utils.ImmutableBag;
+import com.artemis.systems.EntitySystem;
+import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.srv.Identifier;
 import org.megastage.components.srv.SynchronizeFlag;
 import org.megastage.components.srv.UninitializedFlag;
+import org.megastage.protocol.Message;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
 
 public class SynchronizeSystem extends EntitySystem {
-    @Mapper ComponentMapper<UninitializedFlag> UNINITIALIZED_FLAG;
-    @Mapper ComponentMapper<DeleteFlag> DELETE_FLAG;
+    ComponentMapper<UninitializedFlag> UNINITIALIZED_FLAG;
+    ComponentMapper<DeleteFlag> DELETE_FLAG;
 
     private long interval;
     private long acc;
@@ -30,7 +29,14 @@ public class SynchronizeSystem extends EntitySystem {
     }
 
     @Override
-    protected boolean checkProcessing() {
+    public void initialize() {
+        
+        UNINITIALIZED_FLAG = world.getMapper(UninitializedFlag.class);
+        DELETE_FLAG = world.getMapper(DeleteFlag.class);
+    }
+
+    @Override
+    public boolean checkProcessing() {
         if(Time.value >= acc) {
                 acc = Time.value + interval;
                 return true;
@@ -39,12 +45,10 @@ public class SynchronizeSystem extends EntitySystem {
     }
 
     @Override
-    protected void processEntities(ImmutableBag<Entity> entities) {
+    protected void processEntities(Array<Entity> entities) {
         Log.trace("" + Time.value);
 
-        for(int i=0; i < entities.size(); i++) {
-            Entity entity = entities.get(i);
-
+        for(Entity entity: entities) {
             if(DELETE_FLAG.has(entity)) {
                 world.deleteEntity(entity);
                 ServerGlobals.updates.add(new DeleteFlag().create(entity));
@@ -56,30 +60,31 @@ public class SynchronizeSystem extends EntitySystem {
             }
         }
         
-        Log.trace("Number of components to synchronize: " + ServerGlobals.updates.size());
+        Log.trace("Number of components to synchronize: " + ServerGlobals.updates.size);
     }	
 
-    private Bag<Component> _components = new Bag<>(20);
-    private Bag synchronizeComponents(Bag fillBag, Entity entity) {
+    private Array<Component> _components = new Array<>(20);
+
+    private Array<Message> synchronizeComponents(Array<Message> fillBag, Entity entity) {
         _components.clear();
         entity.getComponents(_components);
 
-        for(int j=0; j < _components.size(); j++) {
-            BaseComponent baseComponent = (BaseComponent) _components.get(j);
-            if(baseComponent.synchronize()) {
-                fillBag.add(baseComponent.create(entity));
+        for(Component c: _components) {
+            BaseComponent bc = (BaseComponent) c;
+            if(bc.synchronize()) {
+                fillBag.add(bc.create(entity));
             }
         }
         return fillBag;
     }
 
-    private Bag replicateComponents(Bag fillBag, Entity entity) {
+    private Array<Message> replicateComponents(Array<Message> fillBag, Entity entity) {
         Log.info(entity.getComponent(Identifier.class).toString());
 
         _components.clear();
         entity.getComponents(_components);
 
-        for(int j=0; j < _components.size(); j++) {
+        for(int j=0; j < _components.size; j++) {
             BaseComponent baseComponent = (BaseComponent) _components.get(j);
             if(baseComponent.replicate()) {
                 fillBag.add(baseComponent.create(entity));

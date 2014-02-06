@@ -3,7 +3,6 @@ package org.megastage.systems.srv;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.DeleteFlag;
@@ -21,11 +20,16 @@ public class ExplosionSystem extends EntityProcessingSystem {
     private long interval;
     private long acc;
 
-    @Mapper ComponentMapper<Explosion> EXPLOSION;
+    ComponentMapper<Explosion> EXPLOSION;
     
     public ExplosionSystem(long interval) {
         super(Aspect.getAspectForAll(Explosion.class));
         this.interval = interval;
+    }
+
+    @Override
+    public void initialize() {
+        EXPLOSION = world.getMapper(Explosion.class);
     }
 
     @Override

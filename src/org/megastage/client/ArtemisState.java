@@ -88,9 +88,9 @@ public class ArtemisState extends AbstractAppState {
         world.addEntity(entity);
 
         serverToClient.put(serverID, entity);
-        clientToServer.put(entity.getId(), serverID);
+        clientToServer.put(entity.id, serverID);
 
-        Log.info("Created new entity " + serverID + " -> " + entity.getId());
+        Log.info("Created new entity " + serverID + " -> " + entity.id);
         
         return entity;
     }

@@ -12,7 +12,7 @@ import org.megastage.components.dcpu.LEMUtil;
  * Date: 1.9.2013
  * Time: 21:48                                                      0
  */
-public final class ClientVideoMemory extends Component {
+public final class ClientVideoMemory implements Component {
     public char[] screenMemRam = new char[384];
     public char[] fontMemRam = new char[256];
     public ColorRGBA[] colors = new ColorRGBA[16];
@@ -63,5 +63,9 @@ public final class ClientVideoMemory extends Component {
         updateVideo(data.videoAddr == 0 ? null: data.video.mem);
         updateFont(data.font.mem);
         updatePalette(data.palette.mem);
+    }
+
+    @Override
+    public void reset() {
     }
 }

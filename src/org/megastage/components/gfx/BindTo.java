@@ -20,7 +20,7 @@ public class BindTo extends BaseComponent {
     
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
-        this.parent = parent.getId();
+        this.parent = parent.id;
         
         return null;
     }
@@ -34,7 +34,7 @@ public class BindTo extends BaseComponent {
     public void receive(Connection pc, Entity entity) {
         Entity parentEntity = ClientGlobals.artemis.toClientEntity(parent);
 
-        parent = parentEntity.getId();
+        parent = parentEntity.id;
 
         if(ClientGlobals.playerEntity == entity) {
             ClientGlobals.spatialManager.changeShip(parentEntity);

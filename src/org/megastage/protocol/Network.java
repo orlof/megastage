@@ -1,7 +1,6 @@
 package org.megastage.protocol;
 
 import com.artemis.Entity;
-import com.artemis.utils.Bag;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
@@ -28,6 +27,7 @@ import org.megastage.components.DeleteFlag;
 import org.megastage.components.Mode;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.Explosion;
+import org.megastage.components.srv.Identifier;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.RAM;
 import org.megastage.util.Vector3d;
@@ -55,7 +55,6 @@ public class Network {
         kryo.register(char[][].class);
         kryo.register(char[][][].class);
         kryo.register(Object[].class);
-        kryo.register(Bag.class);
         kryo.register(BaseComponent.class);
         kryo.register(BindTo.class);
         kryo.register(CharacterGeometry.class);
@@ -66,6 +65,7 @@ public class Network {
         kryo.register(EngineGeometry.class);
         kryo.register(Explosion.class);
         kryo.register(FixedRotation.class);
+        kryo.register(Identifier.class);
         kryo.register(ImposterGeometry.class);
         kryo.register(Mass.class);
         kryo.register(Mode.class);
@@ -96,14 +96,14 @@ public class Network {
         public ComponentMessage() { /* required for Kryo */ }
         
         public ComponentMessage(Entity entity, BaseComponent c) {
-            owner = entity.getId();
+            owner = entity.id;
             component = c;
         }
 
         @Override
         public void receive(Connection pc) {
             Entity entity = ClientGlobals.artemis.toClientEntity(owner);
-            owner = entity.getId();
+            owner = entity.id;
             
             component.receive(pc, entity);
         }

@@ -3,7 +3,6 @@ package org.megastage.systems;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
@@ -12,12 +11,20 @@ import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
 public class OrbitalMovementSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<Position> POSITION;
-    @Mapper ComponentMapper<Orbit> ORBIT;
-    @Mapper ComponentMapper<Mass> MASS;
+    ComponentMapper<Position> POSITION;
+    ComponentMapper<Orbit> ORBIT;
+    ComponentMapper<Mass> MASS;
 
     public OrbitalMovementSystem() {
         super(Aspect.getAspectForAll(Position.class, Orbit.class));
+    }
+
+    @Override
+    public void initialize() {
+        
+        ORBIT = world.getMapper(Orbit.class);
+        POSITION = world.getMapper(Position.class);
+        MASS = world.getMapper(Mass.class);
     }
 
     @Override

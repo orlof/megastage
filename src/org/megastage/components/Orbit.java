@@ -24,7 +24,7 @@ public class Orbit extends BaseComponent {
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        center = parent.getId();
+        center = parent.id;
         distance = getDoubleValue(element, "orbital_distance", 0.0);
 
         return new BaseComponent[] { new PrevPosition() };
@@ -43,7 +43,7 @@ public class Orbit extends BaseComponent {
     
     @Override
     public void receive(Connection pc, Entity entity) {
-        center = ClientGlobals.artemis.toClientEntity(center).getId();
+        center = ClientGlobals.artemis.toClientEntity(center).id;
         super.receive(pc, entity);
     }
 

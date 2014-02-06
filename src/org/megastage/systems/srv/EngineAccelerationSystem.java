@@ -3,7 +3,6 @@ package org.megastage.systems.srv;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.srv.Acceleration;
 import org.megastage.components.Mass;
@@ -20,13 +19,21 @@ import org.megastage.util.Vector3d;
  * To change this template use File | Settings | File Templates.
  */
 public class EngineAccelerationSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<Engine> ENGINE;
-    @Mapper ComponentMapper<Rotation> ROTATION;
-    @Mapper ComponentMapper<Mass> MASS;
-    @Mapper ComponentMapper<Acceleration> ACCELERATION;
+    ComponentMapper<Engine> ENGINE;
+    ComponentMapper<Rotation> ROTATION;
+    ComponentMapper<Mass> MASS;
+    ComponentMapper<Acceleration> ACCELERATION;
 
     public EngineAccelerationSystem() {
         super(Aspect.getAspectForAll(Engine.class));
+    }
+
+    @Override
+    public void initialize() {
+        ENGINE = world.getMapper(Engine.class);
+        ROTATION = world.getMapper(Rotation.class);
+        MASS = world.getMapper(Mass.class);
+        ACCELERATION = world.getMapper(Acceleration.class);
     }
 
     @Override

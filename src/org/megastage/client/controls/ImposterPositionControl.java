@@ -28,14 +28,11 @@ public class ImposterPositionControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        Log.info(ID.get(entity));
         Position position = entity.getComponent(Position.class);
         if(position != null) {
             Vector3d coord = position.getVector3d();
             Vector3d origo = ClientGlobals.shipEntity.getComponent(Position.class).getVector3d();
             
-            Log.info("origo: " + origo.toString());
-
             Vector3d line = coord.sub(origo);
 
             double distance = line.length();
@@ -47,10 +44,6 @@ public class ImposterPositionControl extends AbstractControl {
             } else {
                 spatial.setLocalTranslation(coord.getVector3f());
             }
-        }
-
-        if(Log.TRACE) {
-            Log.info("IMPOSTER " + ID.get(entity) + spatial.getLocalTranslation().toString());
         }
     }
 

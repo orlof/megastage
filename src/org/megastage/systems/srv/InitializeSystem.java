@@ -1,9 +1,10 @@
 package org.megastage.systems.srv;
 
 import com.artemis.Aspect;
+import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
-import com.artemis.utils.Bag;
+import com.badlogic.gdx.utils.Array;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.srv.InitializeFlag;
 
@@ -20,11 +21,12 @@ public class InitializeSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity e) {
-        Bag bag = e.getComponents(new Bag(20));
+        Array<Component> bag = new Array<>(20);
+        e.getComponents(bag);
 
-        for(int i=0; i < bag.size(); i++) {
-            BaseComponent c = (BaseComponent) bag.get(i);
-            c.initialize(world, e);
+        for(Component c: (Array<Component>) bag) {
+            BaseComponent bc = (BaseComponent) c;
+            bc.initialize(world, e);
         }
 
         e.removeComponent(InitializeFlag.class);

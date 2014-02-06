@@ -3,13 +3,11 @@ package org.megastage.systems.srv;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.EntitySystem;
-import com.artemis.annotations.Mapper;
-import com.artemis.utils.Bag;
-import com.artemis.utils.ImmutableBag;
-import org.megastage.components.Position;
+import com.artemis.systems.EntitySystem;
+import com.badlogic.gdx.utils.Array;
 import org.megastage.components.Mass;
-import org.megastage.components.RadarEcho;
+import org.megastage.components.Position;
+import org.megastage.components.srv.GravityFieldFlag;
 import org.megastage.components.srv.SphereOfInfluence;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
@@ -25,12 +23,19 @@ public class SphereOfInfluenceSystem extends EntitySystem {
     private long interval;
     private long acc;
 
-    @Mapper ComponentMapper<Position> POSITION;
-    @Mapper ComponentMapper<SphereOfInfluence> SPHERE_OF_INFLUENCE;
+    ComponentMapper<Position> POSITION;
+    ComponentMapper<SphereOfInfluence> SPHERE_OF_INFLUENCE;
 
     public SphereOfInfluenceSystem(long interval) {
         super(Aspect.getAspectForAll(SphereOfInfluence.class, Position.class));
         this.interval = interval;
+    }
+
+    @Override
+    public void initialize() {
+        
+        SPHERE_OF_INFLUENCE = world.getMapper(SphereOfInfluence.class);
+        POSITION = world.getMapper(Position.class);
     }
 
     @Override
@@ -43,12 +48,10 @@ public class SphereOfInfluenceSystem extends EntitySystem {
     }
 
     @Override
-    protected void processEntities(ImmutableBag<Entity> entities) {
-        Bag<SOIData> soiBag = new Bag<>(200);
+    protected void processEntities(Array<Entity> entities) {
+        Array<SOIData> soiBag = new Array<>(200);
         
-        for(int i=0; i < entities.size(); i++) {
-            Entity entity = entities.get(i);
-            
+        for(Entity entity: entities) {
             Position pos = POSITION.get(entity);
             SphereOfInfluence soi = SPHERE_OF_INFLUENCE.get(entity);
 

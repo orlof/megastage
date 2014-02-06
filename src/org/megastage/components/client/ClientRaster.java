@@ -11,6 +11,10 @@ import com.jme3.texture.image.ImageRaster;
  *
  * @author Orlof
  */
-public class ClientRaster extends Component {
+public class ClientRaster implements Component {
     public ImageRaster raster;
+
+    @Override
+    public void reset() {
+    }
 }
