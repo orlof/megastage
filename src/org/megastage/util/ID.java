@@ -7,12 +7,9 @@ package org.megastage.util;
 import com.artemis.Entity;
 import org.megastage.components.srv.Identifier;
 
-/**
- *
- * @author Teppo
- */
 public class ID {
     public static String get(Entity e) {
+        if(e == null) return "null ";
         Identifier id = e.getComponent(Identifier.class);
         if(id==null) {
             return e.toString();

@@ -28,7 +28,9 @@ import org.megastage.components.DeleteFlag;
 import org.megastage.components.Mode;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.Explosion;
+import org.megastage.components.gfx.RadarGeometry;
 import org.megastage.components.srv.Identifier;
+import org.megastage.components.transfer.RadarTargetData;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.RAM;
 import org.megastage.util.Vector3d;
@@ -77,6 +79,8 @@ public class Network {
         kryo.register(PlayerIDMessage.class);
         kryo.register(Position.class);
         kryo.register(PPSGeometry.class);
+        kryo.register(RadarGeometry.class);
+        kryo.register(RadarTargetData.class);
         kryo.register(RAM.class);
         kryo.register(Rotation.class);
         kryo.register(ShipGeometry.class);

@@ -8,13 +8,11 @@ import com.badlogic.gdx.utils.Array;
 import org.megastage.components.Position;
 import org.megastage.components.Mass;
 import org.megastage.components.RadarEcho;
-import org.megastage.components.srv.GravityFieldFlag;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
 /**
- * Created with IntelliJ IDEA.
  * User: Orlof
  * Date: 8/19/13
  * Time: 12:09 PM

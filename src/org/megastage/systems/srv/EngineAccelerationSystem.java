@@ -8,24 +8,24 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.components.srv.Acceleration;
 import org.megastage.components.Mass;
 import org.megastage.components.Rotation;
-import org.megastage.components.dcpu.Engine;
+import org.megastage.components.dcpu.VirtualEngine;
 import org.megastage.util.ID;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
 
 public class EngineAccelerationSystem extends EntityProcessingSystem {
-    ComponentMapper<Engine> ENGINE;
+    ComponentMapper<VirtualEngine> ENGINE;
     ComponentMapper<Rotation> ROTATION;
     ComponentMapper<Mass> MASS;
     ComponentMapper<Acceleration> ACCELERATION;
 
     public EngineAccelerationSystem() {
-        super(Aspect.getAspectForAll(Engine.class));
+        super(Aspect.getAspectForAll(VirtualEngine.class));
     }
 
     @Override
     public void initialize() {
-        ENGINE = world.getMapper(Engine.class);
+        ENGINE = world.getMapper(VirtualEngine.class);
         ROTATION = world.getMapper(Rotation.class);
         MASS = world.getMapper(Mass.class);
         ACCELERATION = world.getMapper(Acceleration.class);
@@ -33,7 +33,7 @@ public class EngineAccelerationSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity entity) {
-        Engine engine = ENGINE.get(entity);
+        VirtualEngine engine = ENGINE.get(entity);
 
         if(engine.isActive()) {
             Mass mass = MASS.get(engine.ship);

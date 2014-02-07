@@ -19,6 +19,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import org.megastage.components.Rotation;
 import org.megastage.protocol.CharacterMode;
+import org.megastage.util.ID;
 
 /**
  * A first person view camera controller. After creation, you must register the
@@ -73,16 +74,17 @@ public class CommandHandler implements AnalogListener, ActionListener {
             CollisionResult closest = results.getClosestCollision();
             Node target = closest.getGeometry().getParent();
             
-            Log.trace("original: " + target.toString());
-
             Entity entity = null;
             while(true) {
+                Log.info("pick node: " + target.toString());
+
                 if(target == ClientGlobals.rootNode) {
                     Log.trace("Picked rootNode");
                     return;
                 }
 
                 entity = ClientGlobals.spatialManager.getEntity(target);
+                Log.info("pick entity: " + ID.get(entity));
                 if(entity != null) break;
                 target = target.getParent();
             }

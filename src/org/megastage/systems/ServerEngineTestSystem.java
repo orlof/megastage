@@ -4,7 +4,7 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.systems.EntitySystem;
 import com.badlogic.gdx.utils.Array;
-import org.megastage.components.dcpu.Engine;
+import org.megastage.components.dcpu.VirtualEngine;
 import org.megastage.util.Time;
 
 public class ServerEngineTestSystem extends EntitySystem {
@@ -14,7 +14,7 @@ public class ServerEngineTestSystem extends EntitySystem {
     private int state = 0;
     
     public ServerEngineTestSystem(long interval) {
-        super(Aspect.getAspectForAll(Engine.class));
+        super(Aspect.getAspectForAll(VirtualEngine.class));
         this.interval = interval;
     }
 
@@ -30,16 +30,16 @@ public class ServerEngineTestSystem extends EntitySystem {
     @Override
     protected void processEntities(Array<Entity> entities) {
         for(Entity entity: entities) {
-            Engine engine = entity.getComponent(Engine.class);
+            VirtualEngine engine = entity.getComponent(VirtualEngine.class);
             switch(state++) {
                 case 0:
-                    engine.setPowerTarget((char) 0);
+                    engine.setPower((char) 0);
                     break;
                 case 1:
-                    engine.setPowerTarget((char) 0x8000);
+                    engine.setPower((char) 0x8000);
                     break;
                 case 2:
-                    engine.setPowerTarget((char) 0xffff);
+                    engine.setPower((char) 0xffff);
                     state = 0;
                     break;
             }

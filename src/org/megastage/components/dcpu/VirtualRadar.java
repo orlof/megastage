@@ -11,6 +11,8 @@ import org.megastage.components.Position;
 import org.megastage.components.PrevPosition;
 import org.megastage.components.Rotation;
 import org.megastage.components.srv.Velocity;
+import org.megastage.components.transfer.RadarTargetData;
+import org.megastage.protocol.Network;
 import org.megastage.systems.srv.RadarEchoSystem.RadarData;
 import org.megastage.systems.srv.SphereOfInfluenceSystem.SOIData;
 import org.megastage.util.Globals;
@@ -35,6 +37,7 @@ public class VirtualRadar extends DCPUHardware {
         return null;
     }
 
+    @Override
     public void interrupt() {
         char a = dcpu.registers[0];
         char b = dcpu.registers[1];
@@ -217,5 +220,27 @@ public class VirtualRadar extends DCPUHardware {
         int m = ((int) (60.0 * deg)) % 60;
         return (char) ((d << 6) | m);
     }
+
+
+    private boolean dirty = false;
+
+    @Override
+    public Network.ComponentMessage create(Entity entity) {
+        dirty = false;
+
+        RadarTargetData data = new RadarTargetData();
+        data.target = target;
+
+        return data.create(entity);
+    }
+
+    @Override
+    public boolean replicate() {
+        return true;
+    }
     
+    @Override
+    public boolean synchronize() {
+        return dirty;
+    }
 }

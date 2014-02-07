@@ -3,7 +3,6 @@ package org.megastage.components.dcpu;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
-import java.util.Random;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
@@ -12,20 +11,11 @@ import org.megastage.protocol.Network;
 import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
-public class Engine extends DCPUHardware {
-    public static final char STATUS_OFF = 0;
-    public static final char STATUS_WARMUP = 1;
-    public static final char STATUS_ON = 2;
-    
+public class VirtualEngine extends DCPUHardware {
     public int x, y, z;
-    public char status = STATUS_OFF;
-
     public double maxForce;
 
-    public char powerActual = 0;
-    public char powerTarget = 0;
-
-    private long ignitionCompleted = 0;
+    public char power = 0;
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
@@ -44,17 +34,17 @@ public class Engine extends DCPUHardware {
         return null;
     }
 
+    @Override
     public void interrupt() {
         char a = dcpu.registers[0];
 
         Log.trace("a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
 
         if (a == 0) {
-            setPowerTarget((char) (dcpu.registers[1]));
+            setPower(dcpu.registers[1]);
         } else if (a == 1) {
             
-            dcpu.registers[2] = powerActual;
-            dcpu.registers[1] = status;
+            dcpu.registers[1] = power;
         } else if (a == 2) {
             
             char dir = (char) (((x & 0xf) << 8) | ((y & 0xf) << 4) | (z & 0xf));
@@ -62,34 +52,24 @@ public class Engine extends DCPUHardware {
         }
     }
 
-    public void setPowerTarget(char power) {
-        powerTarget = power;
-        if(powerTarget == 0) {
-            ignitionCompleted = 0;
-        } else {
-            if(status == STATUS_OFF) {
-                status = STATUS_WARMUP;
-                ignitionCompleted = getIgnitionTime();
-            }
+    public void setPower(char power) {
+        if(this.power != power) {
+            this.power = power;
+            this.dirty = true;
         }
     }
     
     public double getPowerLevel() {
-        if(powerTarget != powerActual && Time.value >= ignitionCompleted) {
-            powerActual = powerTarget;
-            status = powerTarget == 0 ? STATUS_OFF: STATUS_ON;
-            dirty = true;
-        }
-        return powerActual / 65535.0d;
+        return power / 65535.0d;
     }
 
     public Vector3d getAcceleration(double shipMass) {
         double m = maxForce * getPowerLevel() / shipMass;
-        return new Vector3d(m*x, m*y, m*z);
+        return new Vector3d(m * x, m * y, m * z);
     }
 
     public boolean isActive() {
-        return status != STATUS_OFF;
+        return power != 0;
     }
 
     public Vector3d getForceVector() {
@@ -97,20 +77,15 @@ public class Engine extends DCPUHardware {
         return new Vector3d(x * mult, y * mult, z * mult);
     }
 
-    private long getIgnitionTime() {
-        return 0;
-        // return random.nextInt(40000) + 20000 + Time.value;
-    }
-
-    private static Random random = new Random();
-
-    public EngineData data = new EngineData();
+    private boolean dirty = false;
 
     @Override
     public Network.ComponentMessage create(Entity entity) {
         dirty = false;
 
-        data.power = powerActual;
+        EngineData data = new EngineData();
+        data.power = power;
+
         return data.create(entity);
     }
 
@@ -119,12 +94,8 @@ public class Engine extends DCPUHardware {
         return true;
     }
     
-    private boolean dirty = false;
-
     @Override
     public boolean synchronize() {
         return dirty;
     }
-    
-    
 }

@@ -4,7 +4,8 @@ public enum GraphicsSettings {
 
     HIGH(800, 600, true, true, 32, 32, 32, true),
     MEDIUM(640, 400, true, false, 16, 16, 16, false),
-    LOW(800, 600, false, true, 16, 16, 16, false);
+    LOW(800, 600, false, true, 16, 16, 16, false),
+    JOKE(320, 200, false, false, 12, 12, 12, false);
 
     public final int SCREEN_WIDTH;
     public final int SCREEN_HEIGHT;

@@ -24,6 +24,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
+import com.jme3.scene.shape.Dome;
 import com.jme3.scene.shape.PQTorus;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
@@ -59,6 +60,7 @@ import org.megastage.components.gfx.VoidGeometry;
 import org.megastage.components.Explosion;
 import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.PPSGeometry;
+import org.megastage.components.gfx.RadarGeometry;
 import org.megastage.util.ID;
 
 /**
@@ -173,6 +175,12 @@ public class SpatialManager {
 
         return geom;
     }
+
+    private Material getMaterial(String name) {
+        Material mat = material(ColorRGBA.Gray, true);
+        mat.setTexture("DiffuseMap", assetManager.loadTexture("Textures/" + name));
+        return mat;
+    }
     
     public void setupSunLikeBody(final Entity entity, final SunGeometry data) {
         Log.info(data.toString());
@@ -208,7 +216,6 @@ public class SpatialManager {
         node.addControl(new PositionControl(entity));
         node.addControl(new RotationControl(entity));
 
-        
         if(ClientGlobals.gfxSettings.ENABLE_PLANETS) {
             final Planet planet = createPlanet(data);
             node.attachChild(planet);
@@ -362,7 +369,7 @@ public class SpatialManager {
     }
 
     private Material material(ColorRGBA color, boolean lighting) {
-        ColorRGBA c = new ColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() * .1f);
+        ColorRGBA c = new ColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() * .3f);
         if(lighting) {
             Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
             mat.setBoolean("UseMaterialColors",true);
@@ -526,13 +533,39 @@ public class SpatialManager {
         node.addControl(new RotationControl(entity));
 
         Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
-        base.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
+        //base.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
+        base.setMaterial(getMaterial("rock09.jpg"));
         base.setLocalTranslation(0,-0.45f,0);
         node.attachChild(base);
         
         Geometry spinner = new Geometry("spinner", new Torus(12, 12, 0.05f, 0.2f));
-        spinner.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
+        spinner.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 1.0f), true));
         node.attachChild(spinner);
+        
+        spinner.addControl(new RandomSpinnerControl());
+    }
+
+    public void setupRadar(Entity entity, RadarGeometry aThis) {
+        final Node node = getNode(entity);
+        node.addControl(new PositionControl(entity));
+        node.addControl(new RotationControl(entity));
+
+        Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
+        //base.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
+        base.setMaterial(getMaterial("rock09.jpg"));
+        base.setLocalTranslation(0,-0.45f,0);
+        node.attachChild(base);
+
+        Node spinner = new Node("spinner");
+        node.attachChild(spinner);
+        
+        Geometry inside = new Geometry("inside", new Dome(Vector3f.ZERO, 12, 12, 0.38f, true));
+        inside.setMaterial(material(new ColorRGBA(0.4f, 0.4f, 0.4f, 1.0f), false));
+        spinner.attachChild(inside);
+
+        Geometry outside = new Geometry("outside", new Dome(Vector3f.ZERO, 12, 12, 0.39f, false));
+        outside.setMaterial(material(new ColorRGBA(0.8f, 0.8f, 0.8f, 1.0f), true));
+        spinner.attachChild(outside);
         
         spinner.addControl(new RandomSpinnerControl());
     }
