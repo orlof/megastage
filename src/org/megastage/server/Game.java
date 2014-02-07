@@ -56,7 +56,7 @@ public class Game {
         world.setSystem(new EngineAccelerationSystem());
         world.setSystem(new AttitudeControlSystem());
         world.setSystem(new GravityFieldSystem());
-        world.setSystem(new GravityAccelerationSystem());
+        //world.setSystem(new GravityAccelerationSystem());
 
         world.setSystem(new ShipMovementSystem());
         world.setSystem(new CollisionSystem(200));

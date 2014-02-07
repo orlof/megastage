@@ -24,8 +24,10 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
+import com.jme3.scene.shape.PQTorus;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
+import com.jme3.scene.shape.Torus;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
@@ -33,6 +35,7 @@ import com.jme3.texture.image.ImageRaster;
 import com.jme3.texture.plugins.AWTLoader;
 import com.jme3.util.BufferUtils;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import jmeplanet.FractalDataSource;
@@ -42,6 +45,7 @@ import jmeplanet.test.Utility;
 import org.megastage.client.controls.EngineControl;
 import org.megastage.client.controls.ImposterPositionControl;
 import org.megastage.client.controls.PositionControl;
+import org.megastage.client.controls.RandomSpinnerControl;
 import org.megastage.client.controls.RotationControl;
 import org.megastage.components.client.ClientRaster;
 import org.megastage.components.gfx.MonitorGeometry;
@@ -111,7 +115,7 @@ public class SpatialManager {
         Node node = nodes.get(id);
  
         if(node == null) {
-            node = new Node(entity.toString());
+            node = new Node(ID.get(entity));
             nodes.put(id, node);
             entities.put(node, entity);
         }
@@ -131,9 +135,13 @@ public class SpatialManager {
     }
     
     public void bindTo(final Entity parentEntity, final Entity childEntity) {
+        Log.info(ID.get(childEntity) + " to " + ID.get(parentEntity));
         Node tmp = getNode(parentEntity);
+        Log.info("tmp" + tmp.toString());
         Node main = (Node) tmp.getChild("offset");
         final Node parentNode = main == null ? tmp: main; 
+        Log.info("offset" + ((main == null) ? "null": main.toString()));
+        Log.info("final" + parentNode.toString());
         
         final Node childNode = getNode(childEntity);
         app.enqueue(new Callable() {
@@ -167,6 +175,8 @@ public class SpatialManager {
     }
     
     public void setupSunLikeBody(final Entity entity, final SunGeometry data) {
+        Log.info(data.toString());
+
         ColorRGBA colorRGBA = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
 
         final Node node = getNode(entity);
@@ -254,7 +264,7 @@ public class SpatialManager {
             }
         }
         
-        Node offset = new Node("offset");
+        final Node offset = new Node("offset");
         offset.addControl(blockControl);
         //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 
@@ -268,6 +278,18 @@ public class SpatialManager {
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
+                // it is possible that lem and other equipment is already BindTo ship
+                // they have been bound to wrong node -> move to offset node
+                // TODO always create main node AND offset node
+                for(Spatial s: new ArrayList<>(node.getChildren())) {
+                    if(!s.getName().equals("imposter") && !s.getName().equals("offset")) {
+                        Log.info("MOVING FROM MAIN TO OFFSET " + s.getName());
+                        offset.attachChild(s);
+                    } else {
+                        Log.info("NOT MOVING " + s.getName());
+                    }
+                }
+
                 if(node.getParent() == null) {
                     ClientGlobals.sysMovNode.attachChild(node);
                 }
@@ -294,6 +316,7 @@ public class SpatialManager {
     }
     
     public void setupMonitor(Entity entity, MonitorGeometry data) {
+        Log.info("LEM for entity " + ID.get(entity));
         Geometry geom = new Geometry(entity.toString(), new Quad(data.width, data.height, true));
         
         BufferedImage img = new BufferedImage(128, 96, BufferedImage.TYPE_INT_ARGB);
@@ -311,6 +334,7 @@ public class SpatialManager {
         final Node node = getNode(entity);
         node.addControl(new PositionControl(entity));
         node.addControl(new RotationControl(entity));
+        Log.info("LEM node " + node.toString());
 
         node.attachChild(geom);
         geom.setLocalTranslation(-0.5f, -0.5f, 0f);
@@ -338,11 +362,12 @@ public class SpatialManager {
     }
 
     private Material material(ColorRGBA color, boolean lighting) {
+        ColorRGBA c = new ColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() * .1f);
         if(lighting) {
             Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"); 
             mat.setBoolean("UseMaterialColors",true);
-            mat.setColor("Ambient", color);
-            mat.setColor("Diffuse", color);
+            mat.setColor("Ambient", c);
+            mat.setColor("Diffuse", c);
             return mat;
         } else {
             Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -500,9 +525,15 @@ public class SpatialManager {
         node.addControl(new PositionControl(entity));
         node.addControl(new RotationControl(entity));
 
-        Geometry geom = new Geometry("Some object", new Box(0.45f, 0.45f, 0.45f));
-        geom.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
+        Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
+        base.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
+        base.setLocalTranslation(0,-0.45f,0);
+        node.attachChild(base);
         
-        node.attachChild(geom);
+        Geometry spinner = new Geometry("spinner", new Torus(12, 12, 0.05f, 0.2f));
+        spinner.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
+        node.attachChild(spinner);
+        
+        spinner.addControl(new RandomSpinnerControl());
     }
 }

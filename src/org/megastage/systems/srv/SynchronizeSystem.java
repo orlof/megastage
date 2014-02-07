@@ -13,6 +13,7 @@ import org.megastage.components.srv.Identifier;
 import org.megastage.components.srv.SynchronizeFlag;
 import org.megastage.components.srv.UninitializedFlag;
 import org.megastage.protocol.Message;
+import org.megastage.util.ID;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
 
@@ -79,7 +80,7 @@ public class SynchronizeSystem extends EntitySystem {
     }
 
     private Array<Message> replicateComponents(Array<Message> fillBag, Entity entity) {
-        Log.info(entity.getComponent(Identifier.class).toString());
+        Log.info(ID.get(entity));
 
         _components.clear();
         entity.getComponents(_components);

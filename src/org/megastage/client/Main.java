@@ -5,6 +5,7 @@ import com.cubes.test.CubesTestAssets;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
+import com.jme3.light.AmbientLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
@@ -101,6 +102,10 @@ public class Main extends SimpleApplication {
         CubesTestAssets.registerBlocks();
 
         attachCenterMark();
+        
+        AmbientLight ambient = new AmbientLight();
+        ambient.setColor(ColorRGBA.DarkGray);
+        rootNode.addLight(ambient);
 }
 
     @Override

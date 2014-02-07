@@ -164,7 +164,7 @@
                 <component type="gfx.BindTo"/>
             </entity>
             <entity name="Engine">
-                <component type="dcpu.Engine" x="0" y="0" z="-1" max_power="10e4"/>
+                <component type="dcpu.Engine" x="0" y="0" z="1" max_power="10e4"/>
                 <component type="Position" dx="3" dy="2" dz="0"/>
                 <component type="gfx.EngineGeometry"/>
                 <component type="gfx.BindTo"/>
