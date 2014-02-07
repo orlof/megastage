@@ -15,6 +15,7 @@ import com.jme3.effect.ParticleEmitter;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.LightNode;
@@ -45,6 +46,7 @@ import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.EngineControl;
 import org.megastage.client.controls.ImposterPositionControl;
+import org.megastage.client.controls.LookAtControl;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RandomSpinnerControl;
 import org.megastage.client.controls.RotationControl;
@@ -112,7 +114,20 @@ public class SpatialManager {
         return null;
     }
     
-    private Node getNode(Entity entity) {
+    public Node getNode(int id) {
+        Node node = nodes.get(id);
+ 
+        if(node == null) {
+            Entity entity = ClientGlobals.artemis.world.getEntity(id);
+            node = new Node(ID.get(entity));
+            nodes.put(id, node);
+            entities.put(node, entity);
+        }
+        
+        return node;
+    }
+    
+    public Node getNode(Entity entity) {
         int id = entity.id;
         Node node = nodes.get(id);
  
@@ -137,20 +152,17 @@ public class SpatialManager {
     }
     
     public void bindTo(final Entity parentEntity, final Entity childEntity) {
-        Log.info(ID.get(childEntity) + " to " + ID.get(parentEntity));
+        Log.trace(ID.get(childEntity) + " to " + ID.get(parentEntity));
+
         Node tmp = getNode(parentEntity);
-        Log.info("tmp" + tmp.toString());
         Node main = (Node) tmp.getChild("offset");
         final Node parentNode = main == null ? tmp: main; 
-        Log.info("offset" + ((main == null) ? "null": main.toString()));
-        Log.info("final" + parentNode.toString());
         
         final Node childNode = getNode(childEntity);
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
                 parentNode.attachChild(childNode);
-                Log.info("BindTo " + childNode.getName() + " -> " + parentNode.getName());
                 return null;
             }
         });
@@ -556,8 +568,13 @@ public class SpatialManager {
         base.setLocalTranslation(0,-0.45f,0);
         node.attachChild(base);
 
+        Node spinnerRotator = new Node("Spinner Align");
+        node.attachChild(spinnerRotator);
+        
         Node spinner = new Node("spinner");
-        node.attachChild(spinner);
+        spinnerRotator.attachChild(spinner);
+        Quaternion t = new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0);
+        spinner.setLocalRotation(t);
         
         Geometry inside = new Geometry("inside", new Dome(Vector3f.ZERO, 12, 12, 0.38f, true));
         inside.setMaterial(material(new ColorRGBA(0.4f, 0.4f, 0.4f, 1.0f), false));
@@ -567,6 +584,6 @@ public class SpatialManager {
         outside.setMaterial(material(new ColorRGBA(0.8f, 0.8f, 0.8f, 1.0f), true));
         spinner.attachChild(outside);
         
-        spinner.addControl(new RandomSpinnerControl());
+        spinnerRotator.addControl(new LookAtControl(entity));
     }
 }

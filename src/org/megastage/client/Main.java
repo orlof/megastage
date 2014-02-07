@@ -57,6 +57,8 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
+        setPauseOnLostFocus(false);
+        
         ClientGlobals.cmdHandler = new CommandHandler();
         ClientGlobals.cmdHandler.registerWithInput(inputManager);
 

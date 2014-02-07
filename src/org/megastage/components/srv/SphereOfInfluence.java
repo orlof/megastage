@@ -5,7 +5,6 @@ import com.artemis.World;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
-import org.megastage.util.Vector3d;
 
 /**
  * MegaStage

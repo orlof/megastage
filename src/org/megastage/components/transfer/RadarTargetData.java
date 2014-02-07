@@ -6,18 +6,25 @@ package org.megastage.components.transfer;
 
 import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.BaseComponent;
+import org.megastage.util.ID;
 
 public class RadarTargetData extends BaseComponent {
     public int target;
 
     @Override
     public void receive(Connection pc, Entity entity) {
-        target = ClientGlobals.artemis.toClientEntity(target).id;
+        Entity targetEntity = ClientGlobals.artemis.toClientEntity(target);
+        Log.info(ID.get(entity) + " -> " + ID.get(targetEntity));
+
+        target = targetEntity.id;
 
         super.receive(pc, entity);
     }
     
-    
+    public String toString() {
+        return "RadarTargetData(target=" + target + ")";
+    }
 }

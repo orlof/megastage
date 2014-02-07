@@ -32,7 +32,6 @@ public class RadarEchoSystem extends EntitySystem {
 
     @Override
     public void initialize() {
-        
         RADAR_ECHO = world.getMapper(RadarEcho.class);
         POSITION = world.getMapper(Position.class);
         MASS = world.getMapper(Mass.class);
@@ -78,6 +77,10 @@ public class RadarEchoSystem extends EntitySystem {
 
         public boolean match(char b) {
             return (char) (id & 0xffff) == b;
+        }
+        
+        public String toString() {
+            return "RadarData(id="+id+", echo="+echo+", coord="+coord.toString()+", mass="+mass;
         }
     }
 }

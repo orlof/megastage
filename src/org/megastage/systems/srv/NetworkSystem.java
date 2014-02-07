@@ -22,6 +22,7 @@ import org.megastage.components.SpawnPoint;
 import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.Mode;
+import org.megastage.components.dcpu.VirtualRadar;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.protocol.Action;
 import org.megastage.protocol.CharacterMode;
@@ -230,7 +231,7 @@ public class NetworkSystem extends VoidEntitySystem {
         
         Vector3d vel = new Vector3d(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
         
-        vel = vel.multiply(10000000);
+        vel = vel.multiply(100000);
         
         Position shipPos = ship.getComponent(Position.class);
         shipPos.x += vel.x;
@@ -307,6 +308,18 @@ public class NetworkSystem extends VoidEntitySystem {
             Log.info("" + connection.item.toString());
             Mode mode = connection.player.getComponent(Mode.class);
             mode.setMode(CharacterMode.DCPU);
+            return;
+        }
+
+        VirtualRadar virtualRadar = target.getComponent(VirtualRadar.class);
+        if(virtualRadar != null) {
+            
+            
+            connection.item = virtualMonitor.getHardware(VirtualKeyboard.class);
+            Log.info("" + connection.item.toString());
+            Mode mode = connection.player.getComponent(Mode.class);
+            mode.setMode(CharacterMode.DCPU);
+            return;
         }
     }
 

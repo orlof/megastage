@@ -5,19 +5,16 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntitySystem;
 import com.badlogic.gdx.utils.Array;
-import org.megastage.components.Mass;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
-import org.megastage.components.srv.GravityFieldFlag;
 import org.megastage.components.srv.SphereOfInfluence;
+import org.megastage.util.ID;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
 /**
- * Created with IntelliJ IDEA.
  * User: Orlof
- * Date: 8/19/13
- * Time: 12:09 PM
  */
 public class SphereOfInfluenceSystem extends EntitySystem {
     private long interval;
@@ -33,7 +30,6 @@ public class SphereOfInfluenceSystem extends EntitySystem {
 
     @Override
     public void initialize() {
-        
         SPHERE_OF_INFLUENCE = world.getMapper(SphereOfInfluence.class);
         POSITION = world.getMapper(Position.class);
     }
@@ -49,13 +45,16 @@ public class SphereOfInfluenceSystem extends EntitySystem {
 
     @Override
     protected void processEntities(Array<Entity> entities) {
+        Log.info("");
         Array<SOIData> soiBag = new Array<>(200);
         
         for(Entity entity: entities) {
             Position pos = POSITION.get(entity);
             SphereOfInfluence soi = SPHERE_OF_INFLUENCE.get(entity);
 
-            soiBag.add(new SOIData(entity, pos, soi));
+            SOIData soiData = new SOIData(entity, pos, soi);
+            soiBag.add(soiData);
+            Log.info("SOI: " + soiData.toString());
         }
         
         ServerGlobals.soi = soiBag;
@@ -75,6 +74,10 @@ public class SphereOfInfluenceSystem extends EntitySystem {
         
         public boolean contains(Vector3d coord) {
             return coord.distance(this.coord) < radius;
+        }
+        
+        public String toString() {
+            return "SOIData(entity="+ID.get(entity)+", coord=" + coord.toString() + ", radius=" + radius +")";
         }
     }
 }

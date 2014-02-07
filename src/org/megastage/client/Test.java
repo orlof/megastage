@@ -17,8 +17,10 @@ import java.util.Random;
 public class Test extends SimpleApplication {
 
     public static void main(String[] args) {
-        Test app = new Test();
-        app.start();
+        System.out.println(-1 % 360);
+        
+        //Test app = new Test();
+        //app.start();
     }
     Node node = new Node();
     float flickerNess = 0.1f;

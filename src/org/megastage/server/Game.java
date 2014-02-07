@@ -3,7 +3,6 @@ package org.megastage.server;
 import org.megastage.systems.srv.AttitudeControlSystem;
 import org.megastage.systems.srv.DCPUSystem;
 import org.megastage.systems.srv.EngineAccelerationSystem;
-import org.megastage.systems.srv.GravityAccelerationSystem;
 import org.megastage.systems.srv.GravityFieldSystem;
 import org.megastage.systems.srv.CleanupSystem;
 import org.megastage.systems.srv.NetworkSystem;
@@ -27,11 +26,7 @@ import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
 
 /**
- * Created by IntelliJ IDEA.
  * User: Orlof
- * Date: 17.8.2013
- * Time: 19:58
- * To change this template use File | Settings | File Templates.
  */
 public class Game {
     World world;
@@ -45,6 +40,7 @@ public class Game {
 
         //world.setSystem(new ServerEngineTestSystem(5000));
         //world.setSystem(new ServerGyroTestSystem(5000));
+        world.setSystem(new ServerRadarTestSystem(5000));
         world.setSystem(new InitializeSystem());
         world.setSystem(new CleanupSystem(500));
         world.setSystem(new SynchronizeSystem(50));
