@@ -67,6 +67,20 @@ public abstract class BaseComponent implements Component {
         return defaultValue;
     }
 
+    protected static boolean getBooleanValue(Element config, String attrName, boolean defaultValue) {
+        Attribute attr = config.getAttribute(attrName);
+
+        try {
+            if(attr != null) {
+                return attr.getBooleanValue();
+            }
+        } catch (DataConversionException e) {
+            e.printStackTrace();
+        }
+
+        return defaultValue;
+    }
+
     protected static long getLongValue(Element config, String attrName, long defaultValue) {
         Attribute attr = config.getAttribute(attrName);
 

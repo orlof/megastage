@@ -39,7 +39,8 @@ public class VirtualRadar extends DCPUHardware {
         return null;
     }
 
-    private static final char[] targetDataBuf = new char[7];
+    private final char[] targetDataBuf = new char[7];
+    private final char[] orbitalStateVectorBuf = new char[12];
     
     @Override
     public void interrupt() {
@@ -67,7 +68,7 @@ public class VirtualRadar extends DCPUHardware {
             // STORE_TARGET_DATA
             RadarData echo = findTargetEcho();
             if(echo != null && storeEchoDataToBuffer(echo)) {
-                System.arraycopy(targetDataBuf, 0, dcpu.ram, b, 7);
+                copyToMemory(targetDataBuf, b);
                 dcpu.cycles += 7;
                 dcpu.registers[2] = (char) 0xffff;
             } else {
@@ -76,43 +77,14 @@ public class VirtualRadar extends DCPUHardware {
         } else if(a == 3) {
             // orbital state vector
             Vector3d ownCoord = ship.getComponent(Position.class).getVector3d();
-            Vector3d ownVeloc = ship.getComponent(Velocity.class).vector;
 
             SOIData soi = getSOI(ownCoord);
-            Log.info("SOI: " + soi.entity.toString());
-            
-            Vector3d soiCoord = soi.coord;
-            Vector3d soiVeloc = soi.entity.getComponent(PrevPosition.class).getVelocity(soiCoord);
-            
-            Vector3d coord = soiCoord.sub(ownCoord);
-            Vector3d veloc = soiVeloc.sub(ownVeloc);
+            Log.info("SOI: " + ID.get(soi.entity));
 
-            int x = (int) (coord.x / 100.0);
-            dcpu.ram[b++ & 0xffff] = (char) ((x >> 16) & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (x & 0xffff);
-
-            int y = (int) (coord.y / 100.0);
-            dcpu.ram[b++ & 0xffff] = (char) ((y >> 16) & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (y & 0xffff);
-
-            int z = (int) (coord.z / 100.0);
-            dcpu.ram[b++ & 0xffff] = (char) ((z >> 16) & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (z & 0xffff);
-
-            int dx = (int) veloc.x;
-            dcpu.ram[b++ & 0xffff] = (char) ((dx >> 16) & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (dx & 0xffff);
-
-            int dy = (int) veloc.y;
-            dcpu.ram[b++ & 0xffff] = (char) ((dy >> 16) & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (dy & 0xffff);
-
-            int dz = (int) veloc.z;
-            dcpu.ram[b++ & 0xffff] = (char) ((dz >> 16) & 0xffff);
-            dcpu.ram[b++ & 0xffff] = (char) (dz & 0xffff);
+            storeOrbitalStateVectorToBuffer(soi);
+            copyToMemory(orbitalStateVectorBuf, b);
 
             dcpu.cycles += 12;
-            return;
         }
     }
 
@@ -190,23 +162,18 @@ public class VirtualRadar extends DCPUHardware {
     }
 
     private void storeTargetDataToMemory(RadarData echo, float dist, Vector3d myCoord) {
-        char b = dcpu.registers[1];
-        
         // target type
-        dcpu.ram[b++ & 0xffff] = 0x0002;
+        targetDataBuf[0] = 0x0002;
         Log.info(" type: " + 2);
 
         // target mass
         int mass = (int) echo.mass;
-        dcpu.ram[b++ & 0xffff] = (char) ((mass >> 16) & 0xffff);
-        dcpu.ram[b++ & 0xffff] = (char) (mass & 0xffff);
+        targetDataBuf[1] = (char) ((mass >> 16) & 0xffff);
+        targetDataBuf[2] = (char) (mass & 0xffff);
         Log.info(" mass: " + mass);
 
         // distance (float)
-        int bits = Float.floatToIntBits(dist);
-
-        dcpu.ram[b++ & 0xffff] = (char) ((bits >> 16) & 0xffff);
-        dcpu.ram[b++ & 0xffff] = (char) (bits & 0xffff);
+        writeFloatToArray(dist, targetDataBuf, 3);
         Log.info(" distance: " + dist);
 
         // direction
@@ -220,8 +187,8 @@ public class VirtualRadar extends DCPUHardware {
         double pitch = Math.atan2(d.y, d.x*d.x + d.z*d.z);
         double yaw = -Math.atan2(d.z, d.x) - Globals.PI_HALF;
 
-        dcpu.ram[b++ & 0xffff] = convertToDegMin(pitch);
-        dcpu.ram[b++ & 0xffff] = convertToDegMin(yaw);
+        targetDataBuf[5] = convertToDegMin(pitch);
+        targetDataBuf[6] = convertToDegMin(yaw);
 
         Log.info(" pitch: " + Math.toDegrees(pitch) );
         Log.info(" yaw: " + Math.toDegrees(yaw));
@@ -236,6 +203,78 @@ public class VirtualRadar extends DCPUHardware {
             return true;
         }
         return false;
+    }
+
+    public void storeOrbitalStateVectorToBuffer(SOIData soi) {
+        Entity targetEntity = ServerGlobals.world.getEntity(target);
+        
+        Vector3d targetCoord = targetEntity.getComponent(Position.class).getVector3d();
+        Vector3d targetVeloc = targetEntity.getComponent(Velocity.class).vector;
+
+        Vector3d soiCoord = soi.coord;
+        Vector3d soiVeloc = soi.entity.getComponent(PrevPosition.class).getVelocity(soiCoord);
+        
+        Vector3d coord = soiCoord.sub(targetCoord);
+        Vector3d veloc = soiVeloc.sub(targetVeloc);
+
+        int x = (int) (coord.x / 100.0);
+        orbitalStateVectorBuf[0] = (char) ((x >> 16) & 0xffff);
+        orbitalStateVectorBuf[1] = (char) (x & 0xffff);
+
+        int y = (int) (coord.y / 100.0);
+        orbitalStateVectorBuf[2] = (char) ((y >> 16) & 0xffff);
+        orbitalStateVectorBuf[3] = (char) (y & 0xffff);
+
+        int z = (int) (coord.z / 100.0);
+        orbitalStateVectorBuf[4] = (char) ((z >> 16) & 0xffff);
+        orbitalStateVectorBuf[5] = (char) (z & 0xffff);
+
+        int dx = (int) veloc.x;
+        orbitalStateVectorBuf[6] = (char) ((dx >> 16) & 0xffff);
+        orbitalStateVectorBuf[7] = (char) (dx & 0xffff);
+
+        int dy = (int) veloc.y;
+        orbitalStateVectorBuf[8] = (char) ((dy >> 16) & 0xffff);
+        orbitalStateVectorBuf[9] = (char) (dy & 0xffff);
+
+        int dz = (int) veloc.z;
+        orbitalStateVectorBuf[10] = (char) ((dz >> 16) & 0xffff);
+        orbitalStateVectorBuf[11] = (char) (dz & 0xffff);
+    }
+
+    public void storeOrbitalStateVectorToBuffer2(SOIData soi) {
+        Entity targetEntity = ServerGlobals.world.getEntity(target);
+        
+        Vector3d targetCoord = targetEntity.getComponent(Position.class).getVector3d();
+        Vector3d targetVeloc = targetEntity.getComponent(Velocity.class).vector;
+
+        Vector3d soiCoord = soi.coord;
+        Vector3d soiVeloc = soi.entity.getComponent(PrevPosition.class).getVelocity(soiCoord);
+        
+        Vector3d coord = soiCoord.sub(targetCoord);
+        Vector3d veloc = soiVeloc.sub(targetVeloc);
+
+        writeFloatToArray((float) coord.x, orbitalStateVectorBuf, 0);
+        writeFloatToArray((float) coord.y, orbitalStateVectorBuf, 2);
+        writeFloatToArray((float) coord.z, orbitalStateVectorBuf, 4);
+
+        writeFloatToArray((float) veloc.x, orbitalStateVectorBuf, 6);
+        writeFloatToArray((float) veloc.y, orbitalStateVectorBuf, 8);
+        writeFloatToArray((float) veloc.z, orbitalStateVectorBuf, 10);
+
+    }
+
+    private void copyToMemory(char[] src, char b) {
+        for(int i=0; i < targetDataBuf.length; i++) {
+            dcpu.ram[b++ & 0xffff] = src[i];
+        }
+    }
+
+    private void writeFloatToArray(float src, char[] dst, int index) {
+        int bits = Float.floatToIntBits(src);
+
+        dst[index++] = (char) ((bits >> 16) & 0xffff);
+        dst[index] = (char) (bits & 0xffff);
     }
 
     public static class LocalRadarEcho implements Comparable {

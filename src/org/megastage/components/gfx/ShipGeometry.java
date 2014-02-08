@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.components.gfx;
 
 import com.artemis.Entity;
@@ -17,10 +13,6 @@ import org.megastage.util.Cube3dMap;
 import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
-/**
- *
- * @author Orlof
- */
 public class ShipGeometry extends BaseComponent {
     public float xCenter, yCenter, zCenter;
     public long updateTime;

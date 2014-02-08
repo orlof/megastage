@@ -46,38 +46,52 @@ public class SphereOfInfluenceSystem extends EntitySystem {
     @Override
     protected void processEntities(Array<Entity> entities) {
         Log.info("");
-        Array<SOIData> soiBag = new Array<>(200);
+        Array<SOIData> soiArray = new Array<>(200);
         
         for(Entity entity: entities) {
             Position pos = POSITION.get(entity);
             SphereOfInfluence soi = SPHERE_OF_INFLUENCE.get(entity);
 
             SOIData soiData = new SOIData(entity, pos, soi);
-            soiBag.add(soiData);
-            Log.info("SOI: " + soiData.toString());
+            soiArray.add(soiData);
         }
         
-        ServerGlobals.soi = soiBag;
+        soiArray.sort();
+        if(Log.INFO) {
+            for(SOIData d: soiArray) {
+                Log.info("SOI: " + d.toString());
+            }
+        }
+        
+        ServerGlobals.soi = soiArray;
     }
 
-    public static class SOIData {
+    public static class SOIData implements Comparable<SOIData> {
         public final Entity entity;
 
         public final double radius;
+        public final int priority;
         public final Vector3d coord;
         
         public SOIData(Entity e, Position position, SphereOfInfluence soi) {
             this.entity = e;
             this.radius = soi.radius;
+            this.priority = soi.priority;
             this.coord = position.getVector3d();
         }
         
         public boolean contains(Vector3d coord) {
-            return coord.distance(this.coord) < radius;
+            return priority == -1 || coord.distance(this.coord) < radius;
         }
         
+        @Override
         public String toString() {
-            return "SOIData(entity="+ID.get(entity)+", coord=" + coord.toString() + ", radius=" + radius +")";
+            return "SOIData(entity="+ID.get(entity)+", coord=" + coord.toString() + ", radius=" + radius +", priority=" + priority +")";
+        }
+
+        @Override
+        public int compareTo(SOIData o) {
+            return o.priority - priority;
         }
     }
 }
