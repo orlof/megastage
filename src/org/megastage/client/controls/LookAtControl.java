@@ -1,16 +1,13 @@
 package org.megastage.client.controls;
 
 import com.artemis.Entity;
-import com.esotericsoftware.minlog.Log;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.client.ClientGlobals;
-import org.megastage.components.Position;
 import org.megastage.components.transfer.RadarTargetData;
-import org.megastage.util.ID;
 
 public class LookAtControl extends AbstractControl {
     private final Entity entity;

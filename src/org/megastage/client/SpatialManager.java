@@ -45,6 +45,7 @@ import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.EngineControl;
+import org.megastage.client.controls.GyroscopeControl;
 import org.megastage.client.controls.ImposterPositionControl;
 import org.megastage.client.controls.LookAtControl;
 import org.megastage.client.controls.PositionControl;
@@ -60,6 +61,7 @@ import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.gfx.VoidGeometry;
 import org.megastage.components.Explosion;
+import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.PPSGeometry;
 import org.megastage.components.gfx.RadarGeometry;
@@ -585,5 +587,26 @@ public class SpatialManager {
         spinner.attachChild(outside);
         
         spinnerRotator.addControl(new LookAtControl(entity));
+    }
+
+    public void setupGyroscope(Entity entity, GyroscopeGeometry aThis) {
+        final Node node = getNode(entity);
+        node.addControl(new PositionControl(entity));
+        node.addControl(new RotationControl(entity));
+
+        Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
+        //base.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
+        base.setMaterial(getMaterial("rock09.jpg"));
+        base.setLocalTranslation(0, -0.45f, 0);
+        node.attachChild(base);
+
+        Node spinnerRotator = new Node("Spinner Align");
+        node.attachChild(spinnerRotator);
+        
+        Geometry wheel = new Geometry("wheel", new Cylinder(5, 5, 0.05f, 0.35f, 0.45f, true, false));
+        base.setMaterial(getMaterial("rock09.jpg"));
+        node.attachChild(wheel);
+
+        wheel.addControl(new GyroscopeControl(entity));
     }
 }

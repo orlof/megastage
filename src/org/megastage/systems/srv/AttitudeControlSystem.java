@@ -5,30 +5,30 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.Rotation;
-import org.megastage.components.dcpu.Gyroscope;
+import org.megastage.components.dcpu.VirtualGyroscope;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
 
 public class AttitudeControlSystem extends EntityProcessingSystem {
-    ComponentMapper<Gyroscope> GYROSCOPE;
+    ComponentMapper<VirtualGyroscope> GYROSCOPE;
     ComponentMapper<Rotation> ROTATION;
     ComponentMapper<ShipGeometry> SHIP_GEOMETRY;
 
     public AttitudeControlSystem() {
-        super(Aspect.getAspectForAll(Gyroscope.class));
+        super(Aspect.getAspectForAll(VirtualGyroscope.class));
     }
 
     @Override
     public void initialize() {
-        GYROSCOPE = world.getMapper(Gyroscope.class);
+        GYROSCOPE = world.getMapper(VirtualGyroscope.class);
         ROTATION = world.getMapper(Rotation.class);
         SHIP_GEOMETRY = world.getMapper(ShipGeometry.class);
     }
 
     @Override
     protected void process(Entity entity) {
-        Gyroscope gyro = GYROSCOPE.get(entity);
+        VirtualGyroscope gyro = GYROSCOPE.get(entity);
         if(gyro.power == 0) return;
 
         ShipGeometry geom = SHIP_GEOMETRY.get(gyro.ship);

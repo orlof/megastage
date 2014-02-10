@@ -8,9 +8,11 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.Explosion;
+import org.megastage.components.transfer.GyroscopeData;
+import org.megastage.protocol.Network;
 import org.megastage.util.Vector3d;
 
-public class Gyroscope extends DCPUHardware {
+public class VirtualGyroscope extends DCPUHardware {
     public static final char STATUS_OFF = 0;
     public static final char STATUS_ON = 1;
     public static final char STATUS_NO_POWER = 2;
@@ -74,12 +76,15 @@ public class Gyroscope extends DCPUHardware {
             ship.addComponent(new Explosion());
             ship.changedInWorld();
             return;
-        }
-        
-        power = torque;
+        } 
 
-        double tmp = torque < 0x8000 ? torque: torque - 65536;
-        curTorque = maxTorque * tmp / 0x7fff;
+        if(power != torque) {
+            power = torque;
+
+            double tmp = torque < 0x8000 ? torque: torque - 65536;
+            curTorque = maxTorque * tmp / 0x7fff;
+            dirty = true;
+        }
     }
     
     public double getRotation(ShipGeometry geom) {
@@ -95,7 +100,7 @@ public class Gyroscope extends DCPUHardware {
     }
     
     public static void main(String[] args) throws Exception {
-        Gyroscope gyro = new Gyroscope();
+        VirtualGyroscope gyro = new VirtualGyroscope();
         gyro.maxTorque = 100;
         
         gyro.setTorque((char) 0x0000);
@@ -111,4 +116,25 @@ public class Gyroscope extends DCPUHardware {
         System.out.println(gyro.curTorque);
     }
 
+    private boolean dirty = false;
+
+    @Override
+    public Network.ComponentMessage create(Entity entity) {
+        dirty = false;
+
+        GyroscopeData data = new GyroscopeData();
+        data.power = power;
+
+        return data.create(entity);
+    }
+
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+    
+    @Override
+    public boolean synchronize() {
+        return dirty;
+    }
 }

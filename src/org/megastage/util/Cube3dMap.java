@@ -112,4 +112,41 @@ public class Cube3dMap {
 
         return capacity;
     }
+
+    public double getBoundingSphere() {
+        return getCenter().length();
+    }
+
+    public double getMass() {
+        return 1000.0 * count;
+    }
+
+    public double getInertia(Vector3d axis) {
+        // I = mr2
+        double xc = getCenter(xtotal);
+        double yc = getCenter(ytotal);
+        double zc = getCenter(ztotal);
+        
+        double inertia = 0;
+        for(int x=0; x <= xsize; x++) {
+                    System.out.println("" + x);
+            for(int y=0; y <= ysize; y++) {
+                    System.out.println("" + x+y);
+                for(int z=0; z <= zsize; z++) {
+                    System.out.println("" + x+y+z);
+                        
+                    if(get(x, y, z) == '#') {
+                        // mass = 1000kg
+                        
+                        Vector3d point = new Vector3d(x - xc, y - yc, z - zc);
+                        double distance = axis.distanceToPoint(point);
+
+                        inertia += 1000.0 * distance * distance;
+                    }
+                }
+            }
+        }
+        
+        return inertia;
+    }
 }
