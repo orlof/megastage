@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.client;
 
 import com.artemis.Entity;
@@ -21,14 +17,6 @@ import org.megastage.components.Rotation;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.util.ID;
 
-/**
- * A first person view camera controller. After creation, you must register the
- * camera controller with the dispatcher using #registerWithDispatcher().
- *
- * Controls: - Move the mouse to rotate the camera - Mouse wheel for zooming in
- * or out - WASD keys for moving forward/backward and strafing - QZ keys raise
- * or lower the camera
- */
 public class CommandHandler implements AnalogListener, ActionListener {
 
     private static String[] dcpuMappings = new String[]{
@@ -315,51 +303,39 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     protected void lookUp(float value) {
-        Rotation playerRotation = ClientGlobals.playerEntity.getComponent(Rotation.class);
-        if (playerRotation == null) {
+        Rotation rot = ClientGlobals.playerEntity.getComponent(Rotation.class);
+        if (rot == null) {
             return;
         }
 
-        Quaternion playerQuaternion = new Quaternion(
-                (float) playerRotation.x, (float) playerRotation.y,
-                (float) playerRotation.z, (float) playerRotation.w);
+        Quaternion q = rot.getQuaternion3f();
 
-        float[] eulerAngles = playerQuaternion.toAngles(null);
+        float[] eulerAngles = q.toAngles(null);
         eulerAngles[0] = FastMath.clamp(eulerAngles[0] + value, -0.9f * FastMath.HALF_PI, 0.9f * FastMath.HALF_PI);
         eulerAngles[2] = 0f;
 
-        playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
+        q.fromAngles(eulerAngles).normalizeLocal();
 
-        playerRotation.x = playerQuaternion.getX();
-        playerRotation.y = playerQuaternion.getY();
-        playerRotation.z = playerQuaternion.getZ();
-        playerRotation.w = playerQuaternion.getW();
+        rot.set(q);
 
-        ClientGlobals.userCommand.look(playerRotation);
+        ClientGlobals.userCommand.look(rot);
     }
 
     protected void lookLeft(float value) {
-        Rotation playerRotation = ClientGlobals.playerEntity.getComponent(Rotation.class);
-        if (playerRotation == null) {
+        Rotation rot = ClientGlobals.playerEntity.getComponent(Rotation.class);
+        if (rot == null) {
             return;
         }
 
-        Quaternion playerQuaternion = new Quaternion(
-                (float) playerRotation.x, (float) playerRotation.y,
-                (float) playerRotation.z, (float) playerRotation.w);
-
-        float[] eulerAngles = playerQuaternion.toAngles(null);
+        Quaternion q = rot.getQuaternion3f();
+        float[] eulerAngles = q.toAngles(null);
         eulerAngles[1] = (eulerAngles[1] + value) % FastMath.TWO_PI;
         eulerAngles[2] = 0f;
 
-        playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
+        q.fromAngles(eulerAngles).normalizeLocal();
+        rot.set(q);
 
-        playerRotation.x = playerQuaternion.getX();
-        playerRotation.y = playerQuaternion.getY();
-        playerRotation.z = playerQuaternion.getZ();
-        playerRotation.w = playerQuaternion.getW();
-
-        ClientGlobals.userCommand.look(playerRotation);
+        ClientGlobals.userCommand.look(rot);
     }
 
     protected void move(float value, boolean sideways) {

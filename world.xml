@@ -282,11 +282,16 @@
             <y>
                 <z>         </z>
                 <z> ####### </z>
-                <z>   P     </z>
+                <z>   P R   </z>
                 <z>         </z>
                 <z>         </z>
                 <z>         </z>
                 <z> #     # </z>
+                <z>         </z>
+                <z>         </z>
+                <z>         </z>
+                <z>         </z>
+                <z>   GGG   </z>
             </y>
             <y>
                 <z>##     ##</z>
@@ -335,30 +340,30 @@
                 <group name="replicate"/>
             </entity>
             <entity name="Gyroscope x">
-                <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" torque="50000"/>
+                <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" torque="600000"/>
                 <component type="gfx.GyroscopeGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="Position" dx="5" dy="1" dz="11"/>
                 <component type="srv.SynchronizeFlag"/>
-                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="Rotation" x="0" y="-90" z="0"/>
                 <group name="replicate"/>
             </entity>
             <entity name="Gyroscope y">
-                <component type="dcpu.VirtualGyroscope" x="0" y="1" z="0" torque="50000"/>
+                <component type="dcpu.VirtualGyroscope" x="0" y="1" z="0" torque="200000"/>
                 <component type="gfx.GyroscopeGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="Position" dx="4" dy="1" dz="11"/>
                 <component type="srv.SynchronizeFlag"/>
-                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="Rotation" x="90" y="0" z="0"/>
                 <group name="replicate"/>
             </entity>
             <entity name="Gyroscope z">
-                <component type="dcpu.VirtualGyroscope" x="0" y="0" z="1" torque="50000"/>
+                <component type="dcpu.VirtualGyroscope" x="0" y="0" z="1" torque="1600000"/>
                 <component type="gfx.GyroscopeGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="Position" dx="3" dy="1" dz="11"/>
                 <component type="srv.SynchronizeFlag"/>
-                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="Rotation" x="0" y="180" z="0"/>
                 <group name="replicate"/>
             </entity>
             <entity name="PPS">

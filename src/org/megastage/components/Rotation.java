@@ -17,6 +17,7 @@ import org.megastage.util.Vector3d;
  */
 public class Rotation extends BaseComponent {
     public double x=0, y=0, z=0, w=1;
+    public boolean dirty = true;
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
@@ -24,7 +25,7 @@ public class Rotation extends BaseComponent {
         double y = Math.toRadians(getDoubleValue(element, "y", 0.0));
         double z = Math.toRadians(getDoubleValue(element, "z", 0.0));
 
-        Quaternion q = rotate(getQuaternion(), Vector3d.UNIT_Y, y);
+        Quaternion q = rotate(getQuaternion4d(), Vector3d.UNIT_Y, y);
         q = rotate(q, Vector3d.UNIT_Z, z);
         q = rotate(q, Vector3d.UNIT_X, x);
         set(q);
@@ -55,8 +56,12 @@ public class Rotation extends BaseComponent {
         return "Rotation(" + x + ", " + y + ", " + z + ", " + w + ")";
     }
 
-    public Quaternion getQuaternion() {
+    public Quaternion getQuaternion4d() {
         return new Quaternion(w, x, y, z);
+    }
+    
+    public com.jme3.math.Quaternion getQuaternion3f() {
+        return new com.jme3.math.Quaternion((float) x, (float) y, (float) z, (float) w);
     }
     
     public static Quaternion rotate(Quaternion q, Vector3d axis, double radians) {
@@ -73,10 +78,23 @@ public class Rotation extends BaseComponent {
         w = q.w;
     }
     
+    public void set(com.jme3.math.Quaternion q) {
+        x = q.getX();
+        y = q.getY();
+        z = q.getZ();
+        w = q.getW();
+
+        dirty = true;
+    }
+    
     public void set(Rotation rot) {
-        x = rot.x;
-        y = rot.y;
-        z = rot.z;
-        w = rot.w;
+        if(x != rot.x || y != rot.y || z != rot.z || w != rot.w) {
+            x = rot.x;
+            y = rot.y;
+            z = rot.z;
+            w = rot.w;
+
+            dirty = true;
+        }
     }
 }

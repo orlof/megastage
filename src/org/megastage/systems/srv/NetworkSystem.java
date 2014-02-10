@@ -227,7 +227,7 @@ public class NetworkSystem extends VoidEntitySystem {
         rot.w = cmd.qw;
         
         Rotation shipRotation = ship.getComponent(Rotation.class);
-        Quaternion shipRotationQuaternion = shipRotation.getQuaternion();
+        Quaternion shipRotationQuaternion = shipRotation.getQuaternion4d();
         
         Vector3d vel = new Vector3d(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
         

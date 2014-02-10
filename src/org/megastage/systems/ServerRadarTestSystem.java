@@ -46,7 +46,8 @@ public class ServerRadarTestSystem extends EntitySystem {
             
             if(candidate != null) {
                 radar.setTrackingTarget(candidate);
-                radar.storeEchoDataToBuffer(candidate);
+                char[] mem = new char[7];
+                radar.storeTargetDataToArray(candidate, mem, (char) 0);
             }
         }
     }	

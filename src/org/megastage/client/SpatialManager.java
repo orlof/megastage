@@ -592,7 +592,6 @@ public class SpatialManager {
     public void setupGyroscope(Entity entity, GyroscopeGeometry aThis) {
         final Node node = getNode(entity);
         node.addControl(new PositionControl(entity));
-        node.addControl(new RotationControl(entity));
 
         Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         //base.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
@@ -600,13 +599,11 @@ public class SpatialManager {
         base.setLocalTranslation(0, -0.45f, 0);
         node.attachChild(base);
 
-        Node spinnerRotator = new Node("Spinner Align");
-        node.attachChild(spinnerRotator);
-        
-        Geometry wheel = new Geometry("wheel", new Cylinder(5, 5, 0.05f, 0.35f, 0.45f, true, false));
-        base.setMaterial(getMaterial("rock09.jpg"));
+        Geometry wheel = new Geometry("wheel", new Cylinder(5, 5, 0.35f, 0.35f, 0.45f, true, false));
+        wheel.setMaterial(getMaterial("rock09.jpg"));
         node.attachChild(wheel);
 
         wheel.addControl(new GyroscopeControl(entity));
+        wheel.addControl(new RotationControl(entity));
     }
 }

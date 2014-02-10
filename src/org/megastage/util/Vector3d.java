@@ -37,6 +37,12 @@ public class Vector3d {
         this.z = pos.z / 1000.0;
     }
 
+    public Vector3d(Vector3d vec) {
+        this.x = vec.x;
+        this.y = vec.y;
+        this.z = vec.z;
+    }
+
     // return a string representation of the invoking object
     public String toString() {
         return "[" + x + ", " + y + ", " + z + "]";

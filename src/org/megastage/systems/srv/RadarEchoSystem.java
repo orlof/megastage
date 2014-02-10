@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array;
 import org.megastage.components.Position;
 import org.megastage.components.Mass;
 import org.megastage.components.RadarEcho;
+import org.megastage.components.srv.Velocity;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
@@ -22,6 +23,7 @@ public class RadarEchoSystem extends EntitySystem {
     private long acc;
 
     ComponentMapper<Position> POSITION;
+    ComponentMapper<Velocity> VELOCITY;
     ComponentMapper<Mass> MASS;
     ComponentMapper<RadarEcho> RADAR_ECHO;
 
@@ -34,6 +36,7 @@ public class RadarEchoSystem extends EntitySystem {
     public void initialize() {
         RADAR_ECHO = world.getMapper(RadarEcho.class);
         POSITION = world.getMapper(Position.class);
+        VELOCITY = world.getMapper(Velocity.class);
         MASS = world.getMapper(Mass.class);
     }
 
@@ -52,10 +55,11 @@ public class RadarEchoSystem extends EntitySystem {
         
         for(Entity entity: entities) {
             Position pos = POSITION.get(entity);
+            Velocity vel = VELOCITY.get(entity);
             Mass mass = MASS.get(entity);
             RadarEcho echo = RADAR_ECHO.get(entity);
 
-            next.add(new RadarData(entity.id, pos, mass, echo));
+            next.add(new RadarData(entity.id, pos, vel, mass, echo));
         }
         
         ServerGlobals.radarEchoes = next;
@@ -66,12 +70,14 @@ public class RadarEchoSystem extends EntitySystem {
 
         public final int echo;
         public final Vector3d coord;
+        public final Vector3d veloc;
         public final double mass;
         
-        public RadarData(int id, Position position, Mass mass, RadarEcho echo) {
+        public RadarData(int id, Position pos, Velocity vel, Mass mass, RadarEcho echo) {
             this.id = id;
             this.echo = echo.type;
-            this.coord = new Vector3d(position.x / 1000.0, position.y / 1000.0, position.z / 1000.0);
+            this.coord = new Vector3d(pos.x / 1000.0, pos.y / 1000.0, pos.z / 1000.0);
+            this.veloc = new Vector3d(vel.vector);
             this.mass = mass.mass;
         }
 
