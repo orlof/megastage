@@ -6,15 +6,12 @@ import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
 import com.jme3.light.AmbientLight;
-import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.CameraNode;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.CameraControl.ControlDirection;
-import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import com.jme3.ui.Picture;
 import jmeplanet.PlanetAppState;
@@ -24,10 +21,6 @@ import org.megastage.client.controls.SystemRotationControl;
 import org.megastage.util.LogFormat;
 import org.megastage.util.Time;
 
-/**
- * test
- * @author normenhansen
- */
 public class Main extends SimpleApplication {
 
     public static void main(String[] args) {
@@ -115,12 +108,16 @@ public class Main extends SimpleApplication {
         Time.value = System.currentTimeMillis() + ClientGlobals.timeDiff;
 
         if(Log.TRACE) {
-            Log.info("Camera coords: " + cam.getLocation().toString());
-            Log.info("Player coords:" + ClientGlobals.playerNode.getLocalTranslation().toString());
-            Log.info("Parent:" + ClientGlobals.playerNode.getParent().toString());
-            Log.info("Parent coords:" + ClientGlobals.playerNode.getParent().getLocalTranslation().toString());
+//            Log.info("Camera coords: " + cam.getLocation().toString());
+//            Log.info("Player coords:" + ClientGlobals.playerNode.getLocalTranslation().toString());
+//            Log.info("Parent:" + ClientGlobals.playerNode.getParent().toString());
+//            Log.info("Parent coords:" + ClientGlobals.playerNode.getParent().getLocalTranslation().toString());
             float[] eulerAngles = cam.getRotation().toAngles(null);
-            Log.info("Camera(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
+            Log.info("Camera(pitch="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", yaw="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
+            eulerAngles = ClientGlobals.playerNode.getLocalRotation().toAngles(null);
+            Log.info("Player(pitch="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", yaw="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
+            eulerAngles = ClientGlobals.playerNode.getParent().getLocalRotation().toAngles(null);
+            Log.info("Parent(pitch="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", yaw="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
         }
         
         // slow camera down as we approach a planet

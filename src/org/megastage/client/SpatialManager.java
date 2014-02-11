@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.client;
 
 import org.megastage.client.controls.ExplosionControl;
@@ -337,9 +333,10 @@ public class SpatialManager {
     }
     
     public void setupMonitor(Entity entity, MonitorGeometry data) {
-        Log.info("LEM for entity " + ID.get(entity));
-        Geometry geom = new Geometry(entity.toString(), new Quad(data.width, data.height, true));
-        
+        final Node node = getNode(entity);
+        final PositionControl positionControl = new PositionControl(entity);
+        final RotationControl rotationControl = new RotationControl(entity);
+
         BufferedImage img = new BufferedImage(128, 96, BufferedImage.TYPE_INT_ARGB);
         Image img2 = new AWTLoader().load(img, false);
         ImageRaster raster = ImageRaster.create(img2);
@@ -350,36 +347,50 @@ public class SpatialManager {
 
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setTexture("ColorMap", tex);
-        geom.setMaterial(mat);
-        
-        final Node node = getNode(entity);
-        node.addControl(new PositionControl(entity));
-        node.addControl(new RotationControl(entity));
-        Log.info("LEM node " + node.toString());
 
-        node.attachChild(geom);
-        geom.setLocalTranslation(-0.5f, -0.5f, 0f);
+        final Geometry panel = new Geometry(entity.toString(), new Quad(data.width-0.2f, data.height-0.2f, true));
+        panel.setMaterial(mat);
+        panel.setLocalTranslation(-0.5f+0.1f, -0.5f+0.1f, 0f);
 
         ClientRaster rasterComponent = ClientGlobals.artemis.getComponent(entity, ClientRaster.class);
         rasterComponent.raster = raster;
+
+        final Geometry box = new Geometry(entity.toString(), new Box(data.width/2.0f, data.height/2.0f, 0.1f));
+        box.setMaterial(material(ColorRGBA.Gray, true));
+        box.setLocalTranslation(-0.5f + data.width/2.0f, -0.5f + data.height/2.0f, -0.3f);
+
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            node.addControl(rotationControl);
+
+            node.attachChild(panel);
+            node.attachChild(box);
+            return null;
+        }});
     }
 
     public void setupCharacter(Entity entity, CharacterGeometry data) {
+        final Node node = getNode(entity);
+        final PositionControl positionControl = new PositionControl(entity);
+        final RotationControl rotationControl = new RotationControl(entity);
+
         Material mat = material(new ColorRGBA(data.red, data.green, data.blue, data.alpha), true);
 
-        Geometry body = new Geometry(entity.toString(), new Box(0.25f, 0.5f, 0.25f));
+        final Geometry body = new Geometry(entity.toString(), new Box(0.25f, 0.5f, 0.25f));
         body.setMaterial(mat);
 
-        Geometry head = new Geometry(entity.toString(), new Box(0.25f, 0.25f, 0.25f));
+        final Geometry head = new Geometry(entity.toString(), new Box(0.25f, 0.25f, 0.25f));
         head.setMaterial(mat);
         head.setLocalTranslation(0, 1.0f, 0);
         
-        final Node node = getNode(entity);
-        node.addControl(new PositionControl(entity));
-        node.addControl(new RotationControl(entity));
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            node.addControl(rotationControl);
 
-        node.attachChild(body);
-        node.attachChild(head);
+            node.attachChild(body);
+            node.attachChild(head);
+            return null;
+        }});
     }
 
     private Material material(ColorRGBA color, boolean lighting) {
@@ -439,27 +450,23 @@ public class SpatialManager {
     }
 
     public void setupPlayer(final Entity entity) {
-        app.enqueue(new Callable() {
-            @Override
-            public Object call() throws Exception {
-                ClientGlobals.playerNode.addControl(new PositionControl(entity));
-                ClientGlobals.playerNode.addControl(new RotationControl(entity));
-                return null;
-            }
-        });
+        app.enqueue(new Callable() { @Override public Object call() throws Exception {
+            ClientGlobals.playerNode.addControl(new PositionControl(entity));
+            ClientGlobals.playerNode.addControl(new RotationControl(entity));
+            return null;
+        }});
     }
 
     public void setupExplosion(final Entity entity, final Explosion explosion) {
-        final ExplosionNode node = new ExplosionNode("ExplosionFX");
-        app.enqueue(new Callable() {
-            @Override
-            public Object call() throws Exception {
-                Log.info("Attached explosion node " + entity + " " + node);
-                getNode(entity).attachChild(node);
-                node.addControl(new ExplosionControl(explosion, node));
-                return null;
-            }
-        });
+        final Node node = getNode(entity);
+        final ExplosionNode explosionNode = new ExplosionNode("ExplosionFX");
+
+        explosionNode.addControl(new ExplosionControl(explosion, explosionNode));
+
+        app.enqueue(new Callable() { @Override public Object call() throws Exception {
+            node.attachChild(explosionNode);
+            return null;
+        }});
     }
 
     
@@ -531,47 +538,47 @@ public class SpatialManager {
         final Geometry imposter = createImposter(data.radius, colorRGBA);
         final Node node = getNode(entity);
         
-        app.enqueue(new Callable() {
-            @Override
-            public Object call() throws Exception {
-                node.addControl(new ImposterPositionControl(entity));
-                node.attachChild(imposter);
-                return null;
-            }
-        });
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(new ImposterPositionControl(entity));
+            node.attachChild(imposter);
+            return null;
+        }});
     }
 
     public void setupPPS(Entity entity, PPSGeometry aThis) {
         final Node node = getNode(entity);
-        node.addControl(new PositionControl(entity));
-        node.addControl(new RotationControl(entity));
+        final PositionControl positionControl = new PositionControl(entity);
+        final RotationControl rotationControl = new RotationControl(entity);
 
-        Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
-        //base.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
+        final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         base.setMaterial(getMaterial("rock09.jpg"));
         base.setLocalTranslation(0,-0.45f,0);
-        node.attachChild(base);
         
-        Geometry spinner = new Geometry("spinner", new Torus(12, 12, 0.05f, 0.2f));
+        final Geometry spinner = new Geometry("spinner", new Torus(12, 12, 0.05f, 0.2f));
         spinner.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 1.0f), true));
-        node.attachChild(spinner);
         
         spinner.addControl(new RandomSpinnerControl());
+
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            node.addControl(rotationControl);
+
+            node.attachChild(base);
+            node.attachChild(spinner);
+            return null;
+        }});
     }
 
     public void setupRadar(Entity entity, RadarGeometry aThis) {
         final Node node = getNode(entity);
-        node.addControl(new PositionControl(entity));
-        node.addControl(new RotationControl(entity));
+        final PositionControl positionControl = new PositionControl(entity);
+        final RotationControl rotationControl = new RotationControl(entity);
 
-        Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
-        //base.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
+        final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         base.setMaterial(getMaterial("rock09.jpg"));
         base.setLocalTranslation(0,-0.45f,0);
-        node.attachChild(base);
 
-        Node spinnerRotator = new Node("Spinner Align");
-        node.attachChild(spinnerRotator);
+        final Node spinnerRotator = new Node("Spinner Align");
         
         Node spinner = new Node("spinner");
         spinnerRotator.attachChild(spinner);
@@ -587,23 +594,38 @@ public class SpatialManager {
         spinner.attachChild(outside);
         
         spinnerRotator.addControl(new LookAtControl(entity));
+
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            node.addControl(rotationControl);
+
+            node.attachChild(base);
+            node.attachChild(spinnerRotator);
+            return null;
+        }});
     }
 
     public void setupGyroscope(Entity entity, GyroscopeGeometry aThis) {
         final Node node = getNode(entity);
-        node.addControl(new PositionControl(entity));
+        final PositionControl positionControl = new PositionControl(entity);
 
-        Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
+        final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         //base.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
         base.setMaterial(getMaterial("rock09.jpg"));
         base.setLocalTranslation(0, -0.45f, 0);
-        node.attachChild(base);
 
-        Geometry wheel = new Geometry("wheel", new Cylinder(5, 5, 0.35f, 0.35f, 0.45f, true, false));
+        final Geometry wheel = new Geometry("wheel", new Cylinder(5, 5, 0.35f, 0.35f, 0.45f, true, false));
         wheel.setMaterial(getMaterial("rock09.jpg"));
-        node.attachChild(wheel);
 
         wheel.addControl(new GyroscopeControl(entity));
         wheel.addControl(new RotationControl(entity));
+
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+
+            node.attachChild(base);
+            node.attachChild(wheel);
+            return null;
+        }});
     }
 }

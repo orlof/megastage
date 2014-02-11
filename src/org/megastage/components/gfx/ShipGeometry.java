@@ -4,6 +4,8 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import java.util.List;
+import org.jdom2.Attribute;
+import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Mass;
@@ -77,25 +79,28 @@ public class ShipGeometry extends BaseComponent {
         System.out.println("Z-inertia: " + map.getInertia(new Vector3d(0, 0, 1)));
     }
 
-    public void createMapFromXML(Element element) {
-        List<Element> yList = element.getChildren("y");
-        int index = yList.size();
+    public void createMapFromXML(Element element) throws DataConversionException {
+        int y = 0, z = 0;
+        
+        List<Element> mapElements = element.getChildren("map");
+        for(Element elem: mapElements) {
+            Attribute attr = elem.getAttribute("y");
+            if(attr != null) {
+                y = attr.getIntValue();
+            }
 
-        for(Element yElem: yList) {
-            index--;
-
-            List<Element> zList = yElem.getChildren("z");
-            for(int z=0; z < zList.size(); z++) {
-                Element zElem = zList.get(z);
-                
-                String xString = zElem.getText();
-                for(int x=0; x < xString.length(); x++) {
-                    if(xString.charAt(x) != ' ') {
-                        map.set(x, index, z, xString.charAt(x));
-                    }
+            attr = elem.getAttribute("z");
+            if(attr != null) {
+                z = attr.getIntValue();
+            }
+            
+            String blocks = elem.getText();
+            for(int x=0; x < blocks.length(); x++) {
+                char c = blocks.charAt(x);
+                if(c != ' ') {
+                    map.set(x, y, z, c);
                 }
             }
         }
     }
-    
 }

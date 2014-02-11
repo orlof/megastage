@@ -3,14 +3,16 @@ package org.megastage.components;
 import org.megastage.components.srv.Velocity;
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.util.Globals;
+import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
 public class Position extends BaseComponent {
-    public long x, y, z;
+    public long x, y, z, t;
     
     public Position() {
         super();
@@ -36,8 +38,20 @@ public class Position extends BaseComponent {
         return true;
     }
     
+    @Override
     public boolean replicate() {
         return true;
+    }
+
+    @Override
+    public void receive(Connection pc, Entity entity) {
+        Position pos = entity.getComponent(Position.class);
+        if(pos == null) {
+            super.receive(pc, entity);
+            return;
+        }
+        pos.set(this);
+        pos.t = Time.value;
     }
     
     public void add(Vector3d vector) {
@@ -56,6 +70,12 @@ public class Position extends BaseComponent {
     
     public Vector3d getVector3d() {
         return new Vector3d(x / Globals.UNIT_D, y / Globals.UNIT_D, z / Globals.UNIT_D);
+    }
+    
+    public void set(Position pos) {
+        x = pos.x;
+        y = pos.y;
+        z = pos.z;
     }
 
     @Override

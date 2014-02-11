@@ -87,7 +87,7 @@
         </entity-->
     </entity>
 
-    <entity name="Borg Ship">
+    <!--entity name="Borg Ship">
         <group name="replicate"/>
         <component type="srv.SynchronizeFlag"/>
         <component type="Position" x="20" y="0" z="-250000"/>
@@ -208,7 +208,6 @@
                 <component type="gfx.PPSGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="Position" dx="0" dy="1" dz="9"/>
-                <!--component type="srv.SynchronizeFlag"/-->
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <group name="replicate"/>
             </entity>
@@ -231,12 +230,12 @@
             <component type="srv.SynchronizeFlag"/>
             <group name="replicate"/>
         </entity>
-    </entity>
+    </entity-->
 
     <entity-template name="Player">
         <component type="Mode"/>
         <component type="Position" x="0" y="0" z="0"/>
-        <component type="Rotation"/>
+        <component type="Rotation" x="0" y="180" z="0"/>
         <component type="gfx.CharacterGeometry"/>
         <component type="srv.SynchronizeFlag"/>
         <group name="replicate"/>
@@ -245,68 +244,115 @@
     <entity-template name="Apollo 13">
         <group name="replicate"/>
         <component type="srv.SynchronizeFlag"/>
-        <component type="Position" x="0" y="0" z="-250000"/>
+        <component type="Position" x="0" y="0" z="250000"/>
         <component type="Rotation"/>
         <component type="srv.Velocity"/>
         <component type="srv.Acceleration"/>
-        <component type="SpawnPoint"  dx="4" dy="1" dz="8"/>
+        <component type="SpawnPoint"  dx="7" dy="1" dz="6"/>
         <component type="RadarEcho" echo="0"/>
         <component type="gfx.ShipGeometry">
-            <y>
-                <z>##     ##</z>
-                <z>#########</z>
-                <z>##     ##</z>
-                <z>##     ##</z>
-                <z>#########</z>
-                <z>#########</z>
-                <z>#########</z>
-            </y>
-            <y>
-                <z>         </z>
-                <z> ####### </z>
-                <z>   LLL   </z>
-                <z>         </z>
-                <z>         </z>
-                <z>         </z>
-                <z> #     # </z>
-            </y>
-            <y>
-                <z>    e    </z>
-                <z> ####### </z>
-                <z>   LLL   </z>
-                <z>         </z>
-                <z>         </z>
-                <z>         </z>
-                <z> #     # </z>
-            </y>
-            <y>
-                <z>         </z>
-                <z> ####### </z>
-                <z>   P R   </z>
-                <z>         </z>
-                <z>         </z>
-                <z>         </z>
-                <z> #     # </z>
-                <z>         </z>
-                <z>         </z>
-                <z>         </z>
-                <z>         </z>
-                <z>   GGG   </z>
-            </y>
-            <y>
-                <z>##     ##</z>
-                <z>#########</z>
-                <z>#########</z>
-                <z>#########</z>
-                <z>#########</z>
-                <z>#########</z>
-                <z>#########</z>
-                <z>#########</z>
-                <z>#########</z>
-                <z>#########</z>
-                <z>#########</z>
-                <z>#########</z>
-            </y>
+          <map y="0" x="012345678901234"/>
+            <map z="00">     #####     </map>
+            <map z="01">   #########   </map>
+            <map z="02"> ############# </map>
+            <map z="03">###############</map>
+            <map z="04">#  #########  #</map>
+            <map z="05">   #########   </map>
+            <map z="06">  ###########  </map>
+            <map z="07">  ###########  </map>
+            <map z="08">  ###########  </map>
+            <map z="09"> ############# </map>
+            <map z="10"> ############# </map>
+            <map z="11"> ############# </map>
+            <map z="12"> ############# </map>
+            <map z="13">###############</map>
+            <map z="14">###############</map>
+            <map z="15">  ###     ###  </map>
+          <map y="1" x="012345678901234"/>
+            <map z="00">               </map>
+            <map z="01">               </map>
+            <map z="02">               </map>
+            <map z="03">      LLL      </map>
+            <map z="04">               </map>
+            <map z="05">               </map>
+            <map z="06">  #    S    #  </map>
+            <map z="07">               </map>
+            <map z="08">               </map>
+            <map z="09">               </map>
+            <map z="10">   ###   ###   </map>
+            <map z="11">   #       #   </map>
+            <map z="12">   #       #   </map>
+            <map z="13">   #  GGG  #   </map>
+            <map z="14">   #########   </map>
+            <map z="15">               </map>
+          <map y="2" x="012345678901234"/>
+            <map z="00">               </map>
+            <map z="01">               </map>
+            <map z="02">               </map>
+            <map z="03">               </map>
+            <map z="04">               </map>
+            <map z="05">               </map>
+            <map z="06">  #         #  </map>
+            <map z="07">               </map>
+            <map z="08">               </map>
+            <map z="09">               </map>
+            <map z="10">   ###   ###   </map>
+            <map z="11">   #       #   </map>
+            <map z="12">   #       #   </map>
+            <map z="13">   #       #   </map>
+            <map z="14">   #########   </map>
+            <map z="15">       E       </map>
+          <map y="3" x="012345678901234"/>
+            <map z="00">               </map>
+            <map z="01">               </map>
+            <map z="02">               </map>
+            <map z="03">               </map>
+            <map z="04">               </map>
+            <map z="05">               </map>
+            <map z="06">  #         #  </map>
+            <map z="07">               </map>
+            <map z="08">               </map>
+            <map z="09">               </map>
+            <map z="10">   ###   ###   </map>
+            <map z="11">   #       #   </map>
+            <map z="12">   #       #   </map>
+            <map z="13">   #       #   </map>
+            <map z="14">   #########   </map>
+            <map z="15">               </map>
+          <map y="4" x="012345678901234"/>
+            <map z="00">               </map>
+            <map z="01">               </map>
+            <map z="02">               </map>
+            <map z="03">               </map>
+            <map z="04">               </map>
+            <map z="05">               </map>
+            <map z="06">  ###########  </map>
+            <map z="07">  ###########  </map>
+            <map z="08">  ###########  </map>
+            <map z="09">  ###########  </map>
+            <map z="10">   #########   </map>
+            <map z="11">   #########   </map>
+            <map z="12">   #########   </map>
+            <map z="13">   #########   </map>
+            <map z="14">   #########   </map>
+            <map z="15">               </map>
+          <map y="5" x="012345678901234"/>
+            <map z="00">               </map>
+            <map z="01">               </map>
+            <map z="02">               </map>
+            <map z="03">               </map>
+            <map z="04">               </map>
+            <map z="05">               </map>
+            <map z="06">   R       P   </map>
+            <map z="07">               </map>
+            <map z="08">               </map>
+            <map z="09">               </map>
+            <map z="10">               </map>
+            <map z="11">               </map>
+            <map z="12">               </map>
+            <map z="13">               </map>
+            <map z="14">               </map>
+            <map z="15">               </map>
         </component>
         <!--component type="Mass" mass="1e6"/-->
         <entity name="DCPU">
@@ -315,7 +361,7 @@
             <component type="gfx.BindTo"/>
             <component type="dcpu.DCPU" bootrom="admiral.bin"/>
             <entity name="LEM">
-                <component type="Position" dx="3" dy="2" dz="2"/>
+                <component type="Position" dx="6" dy="1" dz="3"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="dcpu.VirtualMonitor"/>
                 <component type="gfx.MonitorGeometry" width="3" height="2"/>
@@ -329,30 +375,30 @@
                 <component type="gfx.BindTo"/>
             </entity>
             <entity name="Engine">
-                <!-- engine vector specifies the direction of ship acceleration 
+                <!-- engine vector specifies the direction of ship acceleration.
                      relative to ship's starting orientation (heading +z) -->
-                <component type="dcpu.VirtualEngine" x="0" y="0" z="1" max_power="10e4"/>
-                <component type="Position" dx="4" dy="2" dz="0"/>
+                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_power="10e8"/>
+                <component type="Position" dx="7" dy="2" dz="15"/>
                 <component type="gfx.EngineGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
-                <component type="Rotation" x="0" y="180" z="0"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
                 <group name="replicate"/>
             </entity>
             <entity name="Gyroscope x">
                 <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" torque="600000"/>
                 <component type="gfx.GyroscopeGeometry"/>
                 <component type="gfx.BindTo"/>
-                <component type="Position" dx="5" dy="1" dz="11"/>
+                <component type="Position" dx="6" dy="1" dz="13"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="-90" z="0"/>
                 <group name="replicate"/>
             </entity>
             <entity name="Gyroscope y">
-                <component type="dcpu.VirtualGyroscope" x="0" y="1" z="0" torque="200000"/>
+                <component type="dcpu.VirtualGyroscope" x="0" y="1" z="0" torque="2000000"/>
                 <component type="gfx.GyroscopeGeometry"/>
                 <component type="gfx.BindTo"/>
-                <component type="Position" dx="4" dy="1" dz="11"/>
+                <component type="Position" dx="7" dy="1" dz="13"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="90" y="0" z="0"/>
                 <group name="replicate"/>
@@ -361,7 +407,7 @@
                 <component type="dcpu.VirtualGyroscope" x="0" y="0" z="1" torque="1600000"/>
                 <component type="gfx.GyroscopeGeometry"/>
                 <component type="gfx.BindTo"/>
-                <component type="Position" dx="3" dy="1" dz="11"/>
+                <component type="Position" dx="8" dy="1" dz="13"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="180" z="0"/>
                 <group name="replicate"/>
@@ -370,8 +416,7 @@
                 <component type="dcpu.PPS"/>
                 <component type="gfx.PPSGeometry"/>
                 <component type="gfx.BindTo"/>
-                <component type="Position" dx="3" dy="1" dz="2"/>
-                <!--component type="srv.SynchronizeFlag"/-->
+                <component type="Position" dx="11" dy="5" dz="6"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <group name="replicate"/>
             </entity>
@@ -379,7 +424,7 @@
                 <component type="dcpu.VirtualRadar"/>
                 <component type="gfx.RadarGeometry"/>
                 <component type="gfx.BindTo"/>
-                <component type="Position" dx="5" dy="1" dz="2"/>
+                <component type="Position" dx="3" dy="5" dz="6"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <group name="replicate"/>

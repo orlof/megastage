@@ -181,10 +181,15 @@ public class VirtualRadar extends DCPUHardware {
             // direction
             Quaternion myRot = ship.getComponent(Rotation.class).getQuaternion4d();
 
-            Vector3d d = echo.coord.sub(myCoord).multiply(myRot.inverse());
+            // vector from me to target in global coordinate system
+            Vector3d d = echo.coord.sub(myCoord);
+            Log.info("Global: " + d.toString());
 
-            double pitch = Math.atan2(d.y, d.x*d.x + d.z*d.z);
-            double yaw = -Math.atan2(d.z, d.x) - Globals.PI_HALF;
+            d = d.multiply(myRot);
+            Log.info("Local: " + d.toString());
+
+            double pitch = -Math.atan2(d.y, d.x*d.x + d.z*d.z);
+            double yaw = Math.atan2(d.z, d.x) - Globals.PI_HALF;
 
             mem[ptr++ & 0xffff] = convertToDegMin(pitch);
             mem[ptr++ & 0xffff] = convertToDegMin(yaw);
