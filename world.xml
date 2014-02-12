@@ -11,11 +11,11 @@
             <component type="Mass" kg="5.972e15"/>
             <component type="srv.GravityFieldFlag"/>
             <component type="Orbit" orbital_distance="200000"/>
+            <component type="Position" x="0" y="0" z="0"/>
             <component type="Rotation"/>
             <component type="gfx.PlanetGeometry" radius="3000" generator="Earth" color="Blue"/>
             <component type="gfx.ImposterGeometry" radius="2" cutoff="350000" red="0.3" green="0.4" blue="0.6" alpha="1.0"/>
             <component type="FixedRotation" period_y="1.0"/>
-            <component type="Position" x="0" y="0" z="0"/>
             <component type="srv.SphereOfInfluence"/>
             <group name="replicate"/>
             <entity name="Moon">

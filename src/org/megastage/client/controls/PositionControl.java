@@ -18,13 +18,16 @@ import org.megastage.util.Time;
 public class PositionControl extends AbstractControl {
     private final Entity entity;
     private Position pos;
-    private Interpolator interpolator = new Interpolator();
+    private Interpolator interpolator = null;
 
     long lastUpdateTime;
     
-    public PositionControl(Entity entity) {
+    public PositionControl(Entity entity, boolean useInterpolator) {
         this.entity = entity;
-        setEnabled(true);
+
+        if(useInterpolator) {
+            interpolator = new Interpolator();
+        }
     }
 
     @Override
@@ -45,6 +48,11 @@ public class PositionControl extends AbstractControl {
             // position updated
             pos.dirty = false;
 
+            if(interpolator == null) {
+                spatial.setLocalTranslation(pos.getVector3f());
+                return;
+            }
+            
             long duration = Time.value - lastUpdateTime; 
             lastUpdateTime = Time.value;
 

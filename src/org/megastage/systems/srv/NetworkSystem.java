@@ -178,17 +178,18 @@ public class NetworkSystem extends VoidEntitySystem {
                 map.get(x, y-1, z) != '#';
     }
     
-    private boolean detectCollision(Cube3dMap map, int cx, int cy, int cz, int px, int py, int pz) {
+    private int collisionXZ(Cube3dMap map, int cx, int cy, int cz, int px, int py, int pz) {
+        int result = 0;
         if(cx != px && blocked(map, px, cy, cz)) {
-            return true;
+            result |= 1;
         }
         if(cz != pz && blocked(map, cx, cy, pz)) {
-            return true;
+            result |= 2;
         }
         if(cx != px && cz != pz && blocked(map, px, cy, pz)) {
-            return true;
+            result |= 4;
         }
-        return false;
+        return result;
     }
     
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
@@ -214,9 +215,13 @@ public class NetworkSystem extends VoidEntitySystem {
             Log.info("" + pos.x + ", " + pos.y + ", " + pos.z);
         }
 
-        if(!detectCollision(geom.map, cx, cy, cz, xprobe, yprobe, zprobe)) {
+        int collision = collisionXZ(geom.map, cx, cy, cz, xprobe, yprobe, zprobe);
+        if(collision == 0) {
             pos.x += 1000 * cmd.xMove;
-            pos.y += 1000 * cmd.yMove;
+            pos.z += 1000 * cmd.zMove;
+        } else if((collision & 1) == 0) {
+            pos.x += 1000 * cmd.xMove;
+        } else if((collision & 2) == 0) {
             pos.z += 1000 * cmd.zMove;
         }
 
@@ -231,7 +236,7 @@ public class NetworkSystem extends VoidEntitySystem {
         
         Vector3d vel = new Vector3d(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
         
-        vel = vel.multiply(10e4);
+        vel = vel.multiply(10e6);
         
         Position shipPos = ship.getComponent(Position.class);
         shipPos.x += vel.x;

@@ -11,14 +11,22 @@ import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Rotation;
 
-public class CharacterRotationControl extends AbstractControl {
+public class AxisRotationControl extends AbstractControl {
     private final Entity entity;
     private Rotation rot;
     
-    float[] angles = new float[3];
+    private final float[] angles = new float[3];
+    private final boolean pitch;
+    private final boolean yaw;
+    private final boolean roll;
     
-    public CharacterRotationControl(Entity entity) {
+    double x=0, y=0, z=0, w=0;
+    
+    public AxisRotationControl(Entity entity, boolean pitch, boolean yaw, boolean roll) {
         this.entity = entity;
+        this.pitch = pitch;
+        this.yaw = yaw;
+        this.roll = roll;
     }
 
     @Override
@@ -30,15 +38,17 @@ public class CharacterRotationControl extends AbstractControl {
             }
         }
 
-        if (rot.dirty) {
-            rot.dirty = false;
+        if (rot.x != x || rot.y != y || rot.z != z || rot.w != w) {
+            x = rot.x; y = rot.y; z = rot.z; w = rot.w;
 
             Quaternion q = new Quaternion((float) rot.x, (float) rot.y, (float) rot.z, (float) rot.w);
             q.toAngles(angles);
             
-            ((Node) spatial).getChild("head").setLocalRotation(q.clone().fromAngles(angles[0], 0, 0));
-            spatial.setLocalRotation(q.fromAngles(0, angles[1], 0));
+            if(!pitch) angles[0] = 0;
+            if(!yaw) angles[1] = 0;
+            if(!roll) angles[2] = 0;
             
+            spatial.setLocalRotation(q.fromAngles(angles));
 
             if(Log.TRACE) {
                 float[] eulerAngles = spatial.getLocalRotation().toAngles(null);

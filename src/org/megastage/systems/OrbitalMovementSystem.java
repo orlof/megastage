@@ -4,9 +4,11 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
+import org.megastage.util.ID;
 import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
@@ -50,7 +52,8 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
         position.x = Math.round(1000 * localSum.x) + fixedStar.x;
         position.y = fixedStar.y;
         position.z = Math.round(1000* localSum.z) + fixedStar.z;
-        //Log.info(position.toString());
+        position.dirty = true;
+        //Log.info(ID.get(entity) + position.toString());
     }
 
     private boolean isInFixedPosition(Entity center) {

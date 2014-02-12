@@ -8,7 +8,6 @@ import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.util.Globals;
-import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
 public class Position extends BaseComponent {
@@ -81,6 +80,6 @@ public class Position extends BaseComponent {
 
     @Override
     public String toString() {
-        return "Position(" + x + ", " + y + ", " + z + ")";
+        return "Position(" + x + ", " + y + ", " + z + ", " + dirty + ")";
     }
 }
