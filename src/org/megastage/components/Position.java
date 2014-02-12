@@ -12,7 +12,8 @@ import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
 public class Position extends BaseComponent {
-    public long x, y, z, t;
+    public long x, y, z;
+    public boolean dirty;
     
     public Position() {
         super();
@@ -51,7 +52,7 @@ public class Position extends BaseComponent {
             return;
         }
         pos.set(this);
-        pos.t = Time.value;
+        pos.dirty = true;
     }
     
     public void add(Vector3d vector) {

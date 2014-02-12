@@ -8,6 +8,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Position;
 import org.megastage.client.ClientGlobals;
+import org.megastage.util.ID;
 import org.megastage.util.Time;
 
 /**
@@ -17,11 +18,9 @@ import org.megastage.util.Time;
 public class PositionControl extends AbstractControl {
     private final Entity entity;
     private Position pos;
+    private Interpolator interpolator = new Interpolator();
 
-    private double st, sx, sy, sz;
-    private double et, ex, ey, ez;
-
-    private long x, y, z, t, t2;
+    long lastUpdateTime;
     
     public PositionControl(Entity entity) {
         this.entity = entity;
@@ -42,49 +41,64 @@ public class PositionControl extends AbstractControl {
             return;
         }
 
-        if(pos.x != x || pos.y != y || pos.z != z) {
+        if(pos.dirty) {
             // position updated
-            Vector3f cpos = spatial.getLocalTranslation();
-            sx = cpos.x; sy = cpos.y; sz = cpos.z;
-            st = Time.value;
+            pos.dirty = false;
 
-            ex = x = pos.x; ey = y = pos.y; ez = z = pos.z; 
+            long duration = Time.value - lastUpdateTime; 
+            lastUpdateTime = Time.value;
+
+            Vector3f curpos = spatial.getLocalTranslation();
+            Vector3f tgtpos = pos.getVector3f();
             
-            et = t2 = Time.value + (Time.value - t);
+            interpolator.update(Time.value, Time.value + duration, curpos, tgtpos);
         }
-        t = pos.t;
         
-        
-        apply(Time.value);
+        interpolator.apply();
     }
 
-    public boolean apply( long now ) {
-        if( now >= t2) {
-            Log.info("no more");
-            // Force the spatial to the last position
-            spatial.setLocalTranslation((float) ex, (float) ey, (float) ez);
-            //spatial.setLocalRotation(endRot);
+    private class Interpolator {
+        private double sx,sy,sz,st;
+        private double ex,ey,ez,et;
+        private double dx,dy,dz,dt;
+        
+        private long startTime;
+        private long endTime;
+        
+        void update(long startTime, long endTime, Vector3f start, Vector3f end) {
+            sx=start.x; ex=end.x; dx=ex-sx;
+            sy=start.y; ey=end.y; dy=ey-sy;
+            sz=start.z; ez=end.z; dz=ez-sz;
 
-            return false; // no more to go
-        } else {
+            dt = endTime - startTime;
+            st=startTime; et=endTime;
+            
+            this.startTime = startTime;
+            this.endTime = endTime;
+
+            if(Log.TRACE)
+                Log.info(ID.get(entity) + start.toString() + "/" + (startTime % 100000) + ", " + end.toString() + "/" + (endTime % 100000));
+        }
+
+        public final void apply() {
+            if( Time.value <= startTime) {
+                spatial.setLocalTranslation((float) sx, (float) sy, (float) sz);
+                return;
+            } 
+            
+            if( Time.value >= endTime) {
+                spatial.setLocalTranslation((float) ex, (float) ey, (float) ez);
+                return;
+            } 
+            
             // Interpolate... guaranteed to have a non-zero time delta here
-            double part = (double) (now - st) / (double) (et - st);                
-            Log.info("interpolate: " + part);
+            double part = (Time.value - st) / dt;                
 
-            // Do our own interp calculation because Vector3f's is inaccurate and
-            // can return values out of range... especially in cases where part is
-            // small and delta between coordinates is 0.  (Though this probably
-            // wasn't the issue I was trying to fix, it is worrying in general.)                
-            double x = sx + (ex - sx) * part;
-            double y = sy + (ey - sy) * part;
-            double z = sz + (ez - sz) * part;
-            spatial.setLocalTranslation((float)x, (float)y, (float)z);
+            double x = sx + dx * part;
+            double y = sy + dy * part;
+            double z = sz + dz * part;
 
-            //Quaternion rot = startRot.clone();
-            //rot.nlerp(endRot, (float)part);
-            //spatial.setLocalRotation(rot);
-
-            return true; // still have more to go
+            spatial.setLocalTranslation((float) x, (float) y, (float) z);
         }
     }
     

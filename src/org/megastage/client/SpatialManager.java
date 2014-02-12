@@ -40,6 +40,7 @@ import jmeplanet.FractalDataSource;
 import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
+import org.megastage.client.controls.CharacterRotationControl;
 import org.megastage.client.controls.EngineControl;
 import org.megastage.client.controls.GyroscopeControl;
 import org.megastage.client.controls.ImposterPositionControl;
@@ -372,23 +373,26 @@ public class SpatialManager {
     public void setupCharacter(Entity entity, CharacterGeometry data) {
         final Node node = getNode(entity);
         final PositionControl positionControl = new PositionControl(entity);
-        final RotationControl rotationControl = new RotationControl(entity);
+        final CharacterRotationControl characterRotationControl = new CharacterRotationControl(entity);
+        final CharacterRotationControl headRotationControl = new CharacterRotationControl(entity);
 
         Material mat = material(new ColorRGBA(data.red, data.green, data.blue, data.alpha), true);
 
-        final Geometry body = new Geometry(entity.toString(), new Box(0.25f, 0.5f, 0.25f));
+        final Geometry body = new Geometry("body", new Box(0.25f, 0.5f, 0.25f));
         body.setMaterial(mat);
 
-        final Geometry head = new Geometry(entity.toString(), new Box(0.25f, 0.25f, 0.25f));
+        final Geometry head = new Geometry("head", new Box(0.25f, 0.25f, 0.25f));
         head.setMaterial(mat);
         head.setLocalTranslation(0, 1.0f, 0);
         
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
-            node.addControl(positionControl);
-            node.addControl(rotationControl);
-
             node.attachChild(body);
             node.attachChild(head);
+
+            node.addControl(positionControl);
+            node.addControl(characterRotationControl);
+            head.addControl(headRotationControl);
+
             return null;
         }});
     }
