@@ -47,8 +47,6 @@ public class SynchronizeSystem extends EntitySystem {
 
     @Override
     protected void processEntities(Array<Entity> entities) {
-        Log.trace("" + Time.value);
-
         for(Entity entity: entities) {
             if(DELETE_FLAG.has(entity)) {
                 world.deleteEntity(entity);
@@ -60,8 +58,6 @@ public class SynchronizeSystem extends EntitySystem {
                 synchronizeComponents(ServerGlobals.updates, entity);
             }
         }
-        
-        Log.trace("Number of components to synchronize: " + ServerGlobals.updates.size);
     }	
 
     private Array<Component> _components = new Array<>(20);
@@ -80,8 +76,6 @@ public class SynchronizeSystem extends EntitySystem {
     }
 
     private Array<Message> replicateComponents(Array<Message> fillBag, Entity entity) {
-        Log.info(ID.get(entity));
-
         _components.clear();
         entity.getComponents(_components);
 
@@ -89,10 +83,6 @@ public class SynchronizeSystem extends EntitySystem {
             BaseComponent baseComponent = (BaseComponent) _components.get(j);
             if(baseComponent.replicate()) {
                 fillBag.add(baseComponent.create(entity));
-
-                if(Log.INFO) {
-                    Log.info(" " + baseComponent.toString());
-                }
             }
         }
 

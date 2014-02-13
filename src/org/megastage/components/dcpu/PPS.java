@@ -25,8 +25,6 @@ public class PPS extends DCPUHardware {
         char a = dcpu.registers[0];
         char b = dcpu.registers[1];
 
-        Log.debug("a=" + Integer.toHexString(a) + ", b=" + Integer.toHexString(b));
-
         if (a == 0) {
             dcpu.registers[1] = (char) 0;
         } else if(a == 1) {

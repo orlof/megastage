@@ -49,8 +49,6 @@ public class EngineAccelerationSystem extends EntityProcessingSystem {
                 acc = acc.multiply(shipRot);
             }
 
-            Log.trace(ID.get(entity) + acc.toString());
-            
             ACCELERATION.get(engine.ship).add(acc);
         }
     }

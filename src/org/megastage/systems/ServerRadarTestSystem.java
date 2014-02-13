@@ -32,13 +32,10 @@ public class ServerRadarTestSystem extends EntitySystem {
     @Override
     protected void processEntities(Array<Entity> entities) {
         for(Entity entity: entities) {
-            Log.info(ID.get(entity));
-
             RadarData candidate = null;
             VirtualRadar radar = entity.getComponent(VirtualRadar.class);
             
             for(LocalRadarEcho lre: radar.getSignatures()) {
-                Log.info(lre.toString());
                 if(lre.distanceSquared > 0) {
                     candidate = lre.echo;
                 }

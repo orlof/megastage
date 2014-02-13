@@ -17,6 +17,7 @@ import org.megastage.systems.*;
 import java.io.IOException;
 import org.megastage.systems.srv.CollisionSystem;
 import org.megastage.systems.srv.ExplosionSystem;
+import org.megastage.systems.srv.GravityAccelerationSystem;
 import org.megastage.systems.srv.InitializeSystem;
 import org.megastage.systems.srv.PrevPositionSystem;
 import org.megastage.systems.srv.RadarEchoSystem;
@@ -40,7 +41,7 @@ public class Game {
 
         //world.setSystem(new ServerEngineTestSystem(5000));
         //world.setSystem(new ServerGyroTestSystem(5000));
-        world.setSystem(new ServerRadarTestSystem(5000));
+        //world.setSystem(new ServerRadarTestSystem(5000));
         world.setSystem(new InitializeSystem());
         world.setSystem(new CleanupSystem(500));
         world.setSystem(new SynchronizeSystem(50));
@@ -52,7 +53,7 @@ public class Game {
         world.setSystem(new EngineAccelerationSystem());
         world.setSystem(new AttitudeControlSystem());
         world.setSystem(new GravityFieldSystem());
-        //world.setSystem(new GravityAccelerationSystem());
+        world.setSystem(new GravityAccelerationSystem());
 
         world.setSystem(new ShipMovementSystem());
         world.setSystem(new CollisionSystem(200));

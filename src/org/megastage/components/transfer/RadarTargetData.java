@@ -17,7 +17,6 @@ public class RadarTargetData extends BaseComponent {
     @Override
     public void receive(Connection pc, Entity entity) {
         Entity targetEntity = ClientGlobals.artemis.toClientEntity(target);
-        Log.info(ID.get(entity) + " -> " + ID.get(targetEntity));
 
         target = targetEntity.id;
 

@@ -48,8 +48,6 @@ public class VirtualGyroscope extends DCPUHardware {
     public void interrupt() {
         char a = dcpu.registers[0];
 
-        Log.info("axis: " + axis.toString() + " a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
-
         if (a == 0) {
 
             setTorque(dcpu.registers[1]);
@@ -71,7 +69,6 @@ public class VirtualGyroscope extends DCPUHardware {
     }
 
     public void setTorque(char torque) {
-        Log.trace("" + (int) torque);
         if(torque == 0x8000) {
             ship.addComponent(new Explosion());
             ship.changedInWorld();
@@ -93,7 +90,6 @@ public class VirtualGyroscope extends DCPUHardware {
             //     calculated only for changed block
             inertiaTime = geom.updateTime;
             inertia = geom.getInertia(axis);
-            Log.info("Inertia: " + inertia);
         }
         
         return curTorque / inertia;

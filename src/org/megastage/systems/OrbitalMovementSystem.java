@@ -53,7 +53,6 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
         position.y = fixedStar.y;
         position.z = Math.round(1000* localSum.z) + fixedStar.z;
         position.dirty = true;
-        //Log.info(ID.get(entity) + position.toString());
     }
 
     private boolean isInFixedPosition(Entity center) {

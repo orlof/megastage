@@ -64,15 +64,12 @@ public class CommandHandler implements AnalogListener, ActionListener {
             
             Entity entity = null;
             while(true) {
-                Log.info("pick node: " + target.toString());
-
                 if(target == ClientGlobals.rootNode) {
-                    Log.trace("Picked rootNode");
                     return;
                 }
 
                 entity = ClientGlobals.spatialManager.getEntity(target);
-                Log.info("pick entity: " + ID.get(entity));
+                Log.info("Pick entity: " + ID.get(entity));
                 if(entity != null) break;
                 target = target.getParent();
             }
@@ -179,11 +176,8 @@ public class CommandHandler implements AnalogListener, ActionListener {
     @Override
     public void onAnalog(String name, float value, float tpf) {
         if (ClientGlobals.playerEntity == null) {
-            Log.warn("playerEntity=null, not processed: " + name);
             return;
         }
-
-        Log.trace(name + ", " + value + ", " + tpf);
 
         switch (name) {
             case "WALK_LookLeft":
@@ -251,8 +245,6 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
     @Override
     public void onAction(String name, boolean value, float tpf) {
-        Log.trace(name);
-
         switch (name) {
             case "WALK_InvertY":
                 // Toggle on the up.

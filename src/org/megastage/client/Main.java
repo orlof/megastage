@@ -96,7 +96,7 @@ public class Main extends SimpleApplication {
         ClientGlobals.cubesSettings.setBlockSize(1);
         CubesTestAssets.registerBlocks();
 
-        attachCenterMark();
+        createCrosshair();
         
         AmbientLight ambient = new AmbientLight();
         ambient.setColor(ColorRGBA.DarkGray);
@@ -106,28 +106,6 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         Time.value = System.currentTimeMillis() + ClientGlobals.timeDiff;
-
-        if(Log.TRACE) {
-//            Log.info("Camera coords: " + cam.getLocation().toString());
-//            Log.info("Player coords:" + ClientGlobals.playerNode.getLocalTranslation().toString());
-//            Log.info("Parent:" + ClientGlobals.playerNode.getParent().toString());
-//            Log.info("Parent coords:" + ClientGlobals.playerNode.getParent().getLocalTranslation().toString());
-            float[] eulerAngles = cam.getRotation().toAngles(null);
-            Log.info("Camera(pitch="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", yaw="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
-            eulerAngles = ClientGlobals.playerNode.getLocalRotation().toAngles(null);
-            Log.info("Player(pitch="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", yaw="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
-            eulerAngles = ClientGlobals.playerNode.getParent().getLocalRotation().toAngles(null);
-            Log.info("Parent(pitch="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", yaw="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
-        }
-        
-        // slow camera down as we approach a planet
-//        Planet planet = planetAppState.getNearestPlanet();
-//        if (planet != null && planet.getPlanetToCamera() != null) {
-//            this.spectatorCam.setMoveSpeed(
-//                    FastMath.clamp(planet.getDistanceToCamera(), 100, 100000));
-//        } else {
-//            this.spectatorCam.setMoveSpeed(100000);
-//        }
     }
 
     @Override
@@ -135,9 +113,9 @@ public class Main extends SimpleApplication {
         //TODO: add render code
     }
     
-    private void attachCenterMark() {
+    private void createCrosshair() {
         Picture pic = new Picture("HUD Picture");
-        pic.setImage(assetManager, "Textures/center.png", true);
+        pic.setImage(assetManager, "Textures/red_crosshair.png", true);
         //pic.setWidth(settings.getWidth()/4);
         //pic.setHeight(settings.getHeight()/4);
         pic.setWidth(100);

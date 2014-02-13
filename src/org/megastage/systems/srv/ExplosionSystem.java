@@ -61,7 +61,6 @@ public class ExplosionSystem extends EntityProcessingSystem {
                     break;
             }
             explosion.serverState++;
-            Log.trace("serverState advance " + explosion.serverState);
         }
     }
 

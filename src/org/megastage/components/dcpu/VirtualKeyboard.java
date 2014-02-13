@@ -40,8 +40,6 @@ public class VirtualKeyboard extends DCPUHardware {
     }
 
     public void keyTyped(int key) {
-        Log.trace("KeyTyped(" + Integer.toHexString(key) + ")");
-
         if (key < 20 || key >= 127) return;
         if (keyBuffer[kwp & 0x3F] == 0) {
             Log.trace(String.format("write keyBuffer[%d]=%s", kwp, Integer.toHexString(key)));
@@ -51,12 +49,9 @@ public class VirtualKeyboard extends DCPUHardware {
     }
 
     public void keyPressed(int key) {
-        Log.trace("KeyPressed(" + Integer.toHexString(key) + ")");
-
         int i = key; //keyMapping.getKey(key);
         if (i < 0) return;
         if ((i < 20 || i >= 127) && keyBuffer[kwp & 0x3F] == 0) {
-            Log.trace(String.format("write keyBuffer[%d]=%s", kwp, Integer.toHexString(key)));
             keyBuffer[kwp++ & 0x3F] = (char) i;
         }
         isDown[i] = true;
@@ -64,8 +59,6 @@ public class VirtualKeyboard extends DCPUHardware {
     }
 
     public void keyReleased(int key) {
-        Log.trace("KeyReleased(" + Integer.toHexString(key) + ")");
-
         int i = key; //keyMapping.getKey(key);
         if (i < 0) return;
         isDown[i] = false;
@@ -75,7 +68,6 @@ public class VirtualKeyboard extends DCPUHardware {
     public void interrupt() {
         int a = dcpu.registers[0];
         if (a == 0) {
-            Log.trace("reset keyBuffer");
             for (int i = 0; i < keyBuffer.length; i++) {
                 keyBuffer[i] = 0;
             }
@@ -84,7 +76,6 @@ public class VirtualKeyboard extends DCPUHardware {
         } else if (a == 1) {
             dcpu.registers[2] = keyBuffer[(krp & 0x3F)];
             if (dcpu.registers[2] != 0) {
-                Log.trace(String.format("read %s = keyBuffer[%d]", Integer.toHexString(dcpu.registers[2]), krp));
                 keyBuffer[(krp++ & 0x3F)] = 0;
             }
         } else if (a == 2) {

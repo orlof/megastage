@@ -54,7 +54,7 @@ Interrupt behavior:
             target and the direction that the ship is pointing.
 
         Returns
-            C: 0xffff if data was provided
+            C: 0xffff if data is available
             C: 0x0000 if data is not available
 
         Halts the DCPU-16 for 7 cycles.

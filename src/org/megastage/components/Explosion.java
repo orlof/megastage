@@ -30,8 +30,6 @@ public class Explosion extends BaseComponent {
             Explosion expl = entity.getComponent(Explosion.class);
             expl.serverState = serverState;
         }
-
-        Log.info("received explosion "+entity.toString()+" state: " + serverState);
     }
 
     @Override
@@ -41,8 +39,6 @@ public class Explosion extends BaseComponent {
 
     @Override
     public Network.ComponentMessage create(Entity entity) {
-        Log.trace(entity.toString() + " clientState from " + clientState + " to " + serverState);
-
         clientState = serverState;
         return new Network.ComponentMessage(entity, copy());
     }

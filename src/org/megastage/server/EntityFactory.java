@@ -48,19 +48,15 @@ public class EntityFactory {
 
             for(Element e: element.getChildren("group")) {
                 String groupName = e.getAttributeValue("name");
-                Log.debug(" Group " + groupName);
 
                 world.getManager(GroupManager.class).add(entity, groupName);
                 if(groupName.equals("replicate")) {
-                    Log.info(" Component: UninitializedFlag");
                     entity.addComponent(new UninitializedFlag());
                 }
             }
 
             for(Element e: element.getChildren("tag")) {
                 String tagName = e.getAttributeValue("name");
-                Log.debug(" Tag: " + tagName);
-
                 world.getManager(TagManager.class).register(tagName, entity);
             }
 

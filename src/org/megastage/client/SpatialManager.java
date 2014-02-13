@@ -151,8 +151,6 @@ public class SpatialManager {
     }
     
     public void bindTo(final Entity parentEntity, final Entity childEntity) {
-        Log.trace(ID.get(childEntity) + " to " + ID.get(parentEntity));
-
         Node tmp = getNode(parentEntity);
         Node main = (Node) tmp.getChild("offset");
         final Node parentNode = main == null ? tmp: main; 
@@ -194,8 +192,6 @@ public class SpatialManager {
     }
     
     public void setupSunLikeBody(final Entity entity, final SunGeometry data) {
-        Log.info(data.toString());
-
         ColorRGBA colorRGBA = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
 
         final Node node = getNode(entity);
@@ -273,8 +269,6 @@ public class SpatialManager {
     }
     
     public void setupShip(Entity entity, ShipGeometry data) {
-        Log.info("" + entity.toString());
-
         BlockTerrainControl blockControl = new BlockTerrainControl(ClientGlobals.cubesSettings, data.map.getChunkSizes());
         for(int x = 0; x <= data.map.xsize; x++) {
             for(int y = 0; y <= data.map.ysize; y++) {
@@ -305,10 +299,7 @@ public class SpatialManager {
                 // TODO always create main node AND offset node
                 for(Spatial s: new ArrayList<>(node.getChildren())) {
                     if(!s.getName().equals("imposter") && !s.getName().equals("offset")) {
-                        Log.info("MOVING FROM MAIN TO OFFSET " + s.getName());
                         offset.attachChild(s);
-                    } else {
-                        Log.info("NOT MOVING " + s.getName());
                     }
                 }
 
@@ -417,7 +408,6 @@ public class SpatialManager {
     }
     
     private Planet createPlanet(PlanetGeometry data) {
-        Log.info(data.toString());
         if(data.generator.equalsIgnoreCase("Earth")) {
             FractalDataSource planetDataSource = new FractalDataSource(4);
             planetDataSource.setHeightScale(data.radius / 100f);
@@ -437,8 +427,6 @@ public class SpatialManager {
         Entity shipEntity = ClientGlobals.shipEntity;
         
         if(shipEntity != null) {
-            Log.debug(shipEntity.toString());
-
             ClientGlobals.shipEntity = null;
 
             Node shipNode = getNode(shipEntity);
@@ -448,8 +436,6 @@ public class SpatialManager {
     }
 
     private void enterShip(Entity shipEntity) {
-        Log.info(shipEntity.toString());
-
         ClientGlobals.shipEntity = shipEntity;
 
         Node shipNode = getNode(shipEntity);
@@ -489,19 +475,14 @@ public class SpatialManager {
         if(node == null) return;
         
         for(Spatial s: node.getChildren()) {
-            Log.trace(ID.get(entity) + s.getName() + " " + s.getCullHint());
             if(s.getName().equals("imposter")) {
                 boolean imposterVisible = !gfxVisible;
                 boolean imposterDraw = draw(s);
                 if(!imposterVisible && imposterDraw) {
-                    if(Log.INFO) Log.info(ID.get(entity) + "imposter disabled");
-
                     s.setCullHint(Spatial.CullHint.Always);
                     s.getParent().getControl(ImposterPositionControl.class).setEnabled(false);
                     s.getParent().getControl(PositionControl.class).setEnabled(true);
                 } else if(imposterVisible && !imposterDraw) {
-                    if(Log.INFO) Log.info(ID.get(entity) + "imposter enabled");
-
                     s.setCullHint(Spatial.CullHint.Inherit);
                     s.getParent().getControl(ImposterPositionControl.class).setEnabled(true);
                     s.getParent().getControl(PositionControl.class).setEnabled(false);
@@ -509,12 +490,8 @@ public class SpatialManager {
             } else {
                 boolean gfxDraw = draw(s);
                 if(gfxVisible && !gfxDraw) {
-                    if(Log.INFO) Log.info(ID.get(entity) + "gfx enabled");
-
                     s.setCullHint(Spatial.CullHint.Inherit);
                 } else if(!gfxVisible && gfxDraw) {
-                    if(Log.INFO) Log.info(ID.get(entity) + "gfx disabled");
-
                     s.setCullHint(Spatial.CullHint.Always);
                 }
             }

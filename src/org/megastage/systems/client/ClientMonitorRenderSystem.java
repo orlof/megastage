@@ -45,7 +45,6 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
     }
 
     public void render(ClientVideoMemory videoMemory, boolean blink, ClientRaster rasterComponent) {
-        Log.trace("rendering");
         try {
             for (int row = 0; row < 12; row++) {
                 for (int col = 0; col < 32; col++) {

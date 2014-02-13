@@ -45,9 +45,7 @@ public class ClientNetworkSystem extends EntitySystem {
         kryoThread.start();
 
         try {
-            Log.info("Connecting");
             client.connect(5000, ClientGlobals.serverHost, Network.serverPort, Network.serverPort+1);
-            Log.info("Connected");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,7 +60,6 @@ public class ClientNetworkSystem extends EntitySystem {
             } catch (InterruptedException ex) {
             }
         }
-        Log.info("RTT: "+ client.getReturnTripTime());
         ClientGlobals.timeDiff -= client.getReturnTripTime();
         */
     }
@@ -74,14 +71,12 @@ public class ClientNetworkSystem extends EntitySystem {
 
     protected void processSystem() {
         if(ClientGlobals.userCommand.count > 0) {
-            Log.trace(ClientGlobals.userCommand.toString());
             client.sendUDP(ClientGlobals.userCommand);
             ClientGlobals.userCommand.reset();
         }
     }
 
     public void sendLogin() {
-        Log.info("");
         Network.Login msg = new Network.Login();
         client.sendTCP(msg);
     }
@@ -114,7 +109,6 @@ public class ClientNetworkSystem extends EntitySystem {
         }
         
         public void handlePacket(final Connection pc, final Object o) {
-            Log.trace("Received: " + o.toString());
             if(o instanceof Message) {
                 final Message msg = (Message) o;
                 msg.receive(pc);

@@ -45,7 +45,6 @@ public class SphereOfInfluenceSystem extends EntitySystem {
 
     @Override
     protected void processEntities(Array<Entity> entities) {
-        Log.info("");
         Array<SOIData> soiArray = new Array<>(200);
         
         for(Entity entity: entities) {
@@ -57,11 +56,6 @@ public class SphereOfInfluenceSystem extends EntitySystem {
         }
         
         soiArray.sort();
-        if(Log.INFO) {
-            for(SOIData d: soiArray) {
-                Log.info("SOI: " + d.toString());
-            }
-        }
         
         ServerGlobals.soi = soiArray;
     }

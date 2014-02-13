@@ -13,15 +13,35 @@ import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.util.BufferUtils;
 import java.util.Random;
+import org.megastage.util.Globals;
 
 public class Test extends SimpleApplication {
 
     public static void main(String[] args) {
-        System.out.println(-1 % 360);
-        
-        //Test app = new Test();
-        //app.start();
+        calc(1,1,-1, "right up forward"); // ruf
+        //calc(1,-1,-1, "right down forward"); // rdf
+        calc(1,1,1, "right up back"); // rub
+        //calc(1,-1,1, "right down back"); // rdb
+        calc(-1,1,-1, "left up forward"); // ruf
+        //calc(-1,-1,-1, "left down forward"); // rdf
+        calc(-1,1,1, "left up back"); // rub
+        //calc(-1,-1,1, "left down back"); // rdb
     }
+
+    public static void calc(double x, double y, double z, String name) {
+        System.out.println(name);
+        //pitch(x, y, z);
+        yaw(x, y, z);
+    }
+    
+    public static void pitch(double x, double y, double z) {
+        System.out.println(" pitch: [" + x + ", " + y + ", " + z + "] " + Math.toDegrees(Math.atan2(y, Math.sqrt(x*x + z*z))));
+    }
+    
+    public static void yaw(double x, double y, double z) {
+        System.out.println(" yaw:   [" + x + ", " + y + ", " + z + "] " + Math.toDegrees(Math.atan2(x, -z)));
+    }
+    
     Node node = new Node();
     float flickerNess = 0.1f;
     float d = 10e20f;

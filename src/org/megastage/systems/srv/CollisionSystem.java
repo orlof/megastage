@@ -9,18 +9,9 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
 import org.megastage.components.srv.CollisionType;
 import org.megastage.components.Explosion;
-import org.megastage.components.Mass;
-import org.megastage.components.srv.GravityFieldFlag;
 import org.megastage.components.srv.Identifier;
 import org.megastage.util.Time;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Orlof
- * Date: 8/19/13
- * Time: 12:09 PM
- * To change this template use File | Settings | File Templates.
- */
 public class CollisionSystem extends EntitySystem {
     private long interval;
     private long acc;

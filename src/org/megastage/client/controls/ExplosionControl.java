@@ -23,7 +23,6 @@ public class ExplosionControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(explosion.clientState != explosion.serverState) {
-            Log.info("clientState " + explosion.clientState+ " to " + explosion.serverState);
             explosion.clientState = explosion.serverState;
             switch(explosion.clientState) {
                 case 0:
@@ -45,15 +44,10 @@ public class ExplosionControl extends AbstractControl {
                     node.light.setRadius(10000);
                     break;
                 case 4:
-                    Log.trace(node.getParent().toString());
                     List<Spatial> children = new ArrayList<>( node.getParent().getChildren() );
                     for(Spatial s: children) {
                         if(s != spatial) {
-                            Log.trace("remove spatial " + s.toString());
                             s.removeFromParent();
-                        }
-                        else {
-                            Log.trace("dont remove " + s.toString());
                         }
                     }
                     break;

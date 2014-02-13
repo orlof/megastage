@@ -40,7 +40,6 @@ public class SphereOfInfluence extends BaseComponent {
 
             radius = calculateSOI(orbit.distance, mass.mass, centerMass.mass);
         }
-        Log.info(ID.get(entity) + toString());
     }
 
     @Override

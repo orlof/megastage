@@ -37,8 +37,6 @@ public class VirtualEngine extends DCPUHardware {
     public void interrupt() {
         char a = dcpu.registers[0];
 
-        Log.trace("a=" + Integer.toHexString(dcpu.registers[0]) + ", b=" + Integer.toHexString(dcpu.registers[1]));
-
         if (a == 0) {
             setPower(dcpu.registers[1]);
         } else if (a == 1) {

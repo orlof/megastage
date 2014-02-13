@@ -10,6 +10,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.srv.Identifier;
 import org.megastage.protocol.Network;
+import org.megastage.util.ID;
 
 /**
  * MegaStage
@@ -34,12 +35,7 @@ public abstract class BaseComponent implements Component {
     
     public Network.ComponentMessage create(Entity entity) {
         if(Log.TRACE) {
-            Identifier id = entity.getComponent(Identifier.class);
-            if(id != null) {
-                Log.info(id.toString() + " " + this.toString());
-            } else {
-                Log.info(entity.toString() + " " + this.toString());
-            }
+            Log.info(ID.get(entity) + this.toString());
         }
         return new Network.ComponentMessage(entity, this);
     }

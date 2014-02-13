@@ -15,7 +15,6 @@ public class GyroscopeData extends BaseComponent {
 
     @Override
     public void receive(Connection pc, Entity entity) {
-        Log.info(ID.get(entity) + ((int) power));
         GyroscopeData data = entity.getComponent(GyroscopeData.class);
         if(data == null) {
             entity.addComponent(this);

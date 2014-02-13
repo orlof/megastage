@@ -8,6 +8,7 @@ import com.artemis.Entity;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.Rotation;
+import org.megastage.util.ID;
 
 public class UserCommand {
     public double xMove, yMove, zMove;
@@ -86,7 +87,7 @@ public class UserCommand {
     }
 
     public void pickItem(Entity entity) {
-        Log.info("Pick " + entity.toString());
+        Log.info("Pick " + ID.get(entity));
         action = Action.PICK_ITEM;
         pick = ClientGlobals.artemis.toServerID(entity.id);
         count++;

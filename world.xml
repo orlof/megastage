@@ -6,6 +6,7 @@
         <component type="gfx.ImposterGeometry" radius="10" cutoff="500000" red="1.0" green="1.0" blue="0.67" alpha="0.5"/>
         <component type="srv.GravityFieldFlag"/>
         <component type="srv.SphereOfInfluence"/>
+        <component type="srv.CollisionType" radius="50000" item="CELESTIAL"/>
         <group name="replicate"/>
         <entity name="Earth">
             <component type="Mass" kg="5.972e15"/>
@@ -17,6 +18,7 @@
             <component type="gfx.ImposterGeometry" radius="2" cutoff="350000" red="0.3" green="0.4" blue="0.6" alpha="1.0"/>
             <component type="FixedRotation" period_y="1.0"/>
             <component type="srv.SphereOfInfluence"/>
+            <component type="srv.CollisionType" radius="5000" item="CELESTIAL"/>
             <group name="replicate"/>
             <entity name="Moon">
                 <component type="Mass" kg="7.3e13"/>
@@ -28,6 +30,7 @@
                 <component type="gfx.ImposterGeometry" radius="1" cutoff="200000" red="0.3" green="0.3" blue="0.3" alpha="1.0"/>
                 <component type="FixedRotation" period_y="0.1"/>
                 <component type="srv.SphereOfInfluence"/>
+                <component type="srv.CollisionType" radius="1600" item="CELESTIAL"/>
                 <group name="replicate"/>
             </entity>
         </entity>

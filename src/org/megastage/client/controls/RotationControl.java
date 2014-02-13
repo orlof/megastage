@@ -33,13 +33,6 @@ public class RotationControl extends AbstractControl {
             Quaternion q = new Quaternion((float) rot.x, (float) rot.y, (float) rot.z, (float) rot.w);
             spatial.setLocalRotation(q);
             rot.dirty = false;
-
-            if(Log.TRACE) {
-                float[] eulerAngles = spatial.getLocalRotation().toAngles(null);
-                Log.info("Local(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
-                spatial.getWorldRotation().toAngles(eulerAngles);
-                Log.info("World(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
-            }
         }
     }
 

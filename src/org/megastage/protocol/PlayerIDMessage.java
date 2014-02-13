@@ -20,7 +20,6 @@ public class PlayerIDMessage extends EventMessage {
 
     @Override
     public void receive(Connection pc) {
-        Log.info(toString());
         Entity entity = ClientGlobals.artemis.toClientEntity(id);
         ClientGlobals.playerEntity = entity;
         ClientGlobals.spatialManager.setupPlayer(entity);

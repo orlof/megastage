@@ -67,7 +67,6 @@ public class NetworkSystem extends VoidEntitySystem {
     
     @Override
     protected void processSystem() {
-        Log.trace("Client state refreshed with packet size " + ServerGlobals.updates.size);
         Array<Message> batch = ServerGlobals.getUpdates();
         // batch.addAll(ServerGlobals.getComponentEvents());
         server.sendToAllUDP(batch.toArray());
@@ -113,15 +112,12 @@ public class NetworkSystem extends VoidEntitySystem {
         pos.z = 1000 * sp.z + 500;
         
         connection.sendTCP(new PlayerIDMessage(connection.player.id));
-        Log.info("Sent player entity id: " + connection.player.toString());
     }
 
     private void replicateAllEntities(PlayerConnection connection) {
         Array<Entity> entities = world.getManager(GroupManager.class).getEntities("replicate");
-        Log.info("Replicate " + entities.size + " entities for " + connection.toString());
 
         for(Entity entity: entities) {
-            Log.info("Replicate entity " + entity.toString() + " for " + connection.toString());
             replicateComponents(connection, entity);
         }        
     }
@@ -137,15 +133,12 @@ public class NetworkSystem extends VoidEntitySystem {
             if(bc.replicate()) {
                 Message trans = bc.create(entity);                
                 list.add(trans);
-                Log.info("Replicate " + bc.toString() + " -> " + trans.toString() + " for " + connection.toString());
             }
         }
 
         if(list.size > 0) {
             connection.sendTCP(list.toArray());
         }
-
-        Log.info("Sent " + list.size + " components");
     }
 
     private int probe(long pos, long step) {
@@ -195,8 +188,6 @@ public class NetworkSystem extends VoidEntitySystem {
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
         if(connection.player == null) return;
         
-        Log.trace(cmd.toString());
-
         BindTo bindTo = connection.player.getComponent(BindTo.class);
         Entity ship = world.getEntity(bindTo.parent);
 
@@ -211,10 +202,6 @@ public class NetworkSystem extends VoidEntitySystem {
         int yprobe = probe(pos.y, (long) (1000.0 * cmd.yMove));
         int zprobe = probe(pos.z, (long) (1000.0 * cmd.zMove));
         
-        if(Log.TRACE && (cmd.xMove != 0 || cmd.zMove != 0)) {
-            Log.info("" + pos.x + ", " + pos.y + ", " + pos.z);
-        }
-
         int collision = collisionXZ(geom.map, cx, cy, cz, xprobe, yprobe, zprobe);
         if(collision == 0) {
             pos.x += 1000 * cmd.xMove;
@@ -299,7 +286,6 @@ public class NetworkSystem extends VoidEntitySystem {
     private void pickItem(PlayerConnection connection, UserCommand cmd) {
         Entity target = world.getEntity(cmd.pick);
         if(target == null) {
-            Log.info("pick for null item!!!");
             return;
         }
         
@@ -310,7 +296,6 @@ public class NetworkSystem extends VoidEntitySystem {
         VirtualMonitor virtualMonitor = target.getComponent(VirtualMonitor.class);
         if(virtualMonitor != null) {
             connection.item = virtualMonitor.getHardware(VirtualKeyboard.class);
-            Log.info("" + connection.item.toString());
             Mode mode = connection.player.getComponent(Mode.class);
             mode.setMode(CharacterMode.DCPU);
             return;
@@ -321,7 +306,6 @@ public class NetworkSystem extends VoidEntitySystem {
             
             
             connection.item = virtualMonitor.getHardware(VirtualKeyboard.class);
-            Log.info("" + connection.item.toString());
             Mode mode = connection.player.getComponent(Mode.class);
             mode.setMode(CharacterMode.DCPU);
             return;

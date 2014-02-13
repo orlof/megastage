@@ -9,14 +9,12 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Position;
 import org.megastage.components.PrevPosition;
-import org.megastage.components.RadarEcho;
 import org.megastage.components.Rotation;
 import org.megastage.components.srv.Velocity;
 import org.megastage.components.transfer.RadarTargetData;
 import org.megastage.protocol.Network;
 import org.megastage.systems.srv.RadarEchoSystem.RadarData;
 import org.megastage.systems.srv.SphereOfInfluenceSystem.SOIData;
-import org.megastage.util.Globals;
 import org.megastage.util.ID;
 import org.megastage.util.Quaternion;
 import org.megastage.util.ServerGlobals;
@@ -43,8 +41,6 @@ public class VirtualRadar extends DCPUHardware {
     public void interrupt() {
         char a = dcpu.registers[0];
         char b = dcpu.registers[1];
-
-        Log.info("a=" + Integer.toHexString(a) + ", b=" + Integer.toHexString(b));
 
         if (a == 0) {
             // GET LIST OF SIGNATURES
@@ -73,13 +69,11 @@ public class VirtualRadar extends DCPUHardware {
         } else if(a == 3) {
             // GET_ORBITAL_STATE_VECTOR
             RadarData echo = getRadarData(target);
-            if(echo != null && storeTargetDataToArray(echo, dcpu.ram, b)) {
+            if(echo != null) {
                 Vector3d ownCoord = ship.getComponent(Position.class).getVector3d();
 
                 SOIData soi = getSOI(ownCoord);
-                Log.info("SOI: " + ID.get(soi.entity));
-
-                storeOrbitalStateVectorToArray(soi, dcpu.ram, b);
+                storeOrbitalStateVectorToArray(soi, target, dcpu.ram, b);
                 dcpu.cycles += 12;
             }
         }
@@ -119,10 +113,8 @@ public class VirtualRadar extends DCPUHardware {
         for(int i = 0; i < 16; i++) {
             if(i >= echoes.length || echoes[i].distanceSquared > RANGE_SQUARED) {
                 dcpu.ram[mem++ & 0xffff] = 0;
-                Log.info(i + ": " + 0);
             } else {
                 dcpu.ram[mem++ & 0xffff] = (char) (echoes[i].echo.id & 0xffff);
-                Log.info(i + ": " + echoes[i].echo.id);
             }
         }
     }
@@ -137,8 +129,6 @@ public class VirtualRadar extends DCPUHardware {
     }
 
     public boolean setTrackingTarget(RadarData echo) {
-        Log.info("Tracking target " + target);
-
         int id = echo == null ? 0: echo.id;
         if(target != id) {
             target = id;
@@ -172,36 +162,30 @@ public class VirtualRadar extends DCPUHardware {
             int mass = (int) echo.mass;
             mem[ptr++ & 0xffff] = (char) ((mass >> 16) & 0xffff);
             mem[ptr++ & 0xffff] = (char) (mass & 0xffff);
-            Log.info(" mass: " + mass);
 
             // distance (float)
             ptr = writeFloatToArray(dist, mem, ptr);
-            Log.info(" distance: " + dist);
 
             // direction
             Quaternion myRot = ship.getComponent(Rotation.class).getQuaternion4d();
 
             // vector from me to target in global coordinate system
             Vector3d d = echo.coord.sub(myCoord);
-            Log.info("Global: " + d.toString());
 
             d = d.multiply(myRot);
-            Log.info("Local: " + d.toString());
 
-            double pitch = -Math.atan2(d.y, d.x*d.x + d.z*d.z);
-            double yaw = Math.atan2(d.z, d.x) - Globals.PI_HALF;
+            double pitch = Math.atan2(d.y, Math.sqrt(d.x*d.x + d.z*d.z));
+            double yaw = Math.atan2(d.x, -d.z);
 
             mem[ptr++ & 0xffff] = convertToDegMin(pitch);
             mem[ptr++ & 0xffff] = convertToDegMin(yaw);
 
-            Log.info(" pitch: " + Math.toDegrees(pitch) );
-            Log.info(" yaw: " + Math.toDegrees(yaw));
             return true;
         }
         return false;
     }
 
-    public boolean storeOrbitalStateVectorToArray(SOIData soi, char[] mem, char ptr) {
+    public boolean storeOrbitalStateVectorToArray(SOIData soi, int target, char[] mem, char ptr) {
         Entity targetEntity = ServerGlobals.world.getEntity(target);
         if(targetEntity == null) return false;
         
@@ -211,8 +195,8 @@ public class VirtualRadar extends DCPUHardware {
         Vector3d soiCoord = soi.coord;
         Vector3d soiVeloc = soi.entity.getComponent(PrevPosition.class).getVelocity(soiCoord);
         
-        Vector3d coord = soiCoord.sub(targetCoord);
-        Vector3d veloc = soiVeloc.sub(targetVeloc);
+        Vector3d coord = targetCoord.sub(soiCoord);
+        Vector3d veloc = targetVeloc.sub(soiVeloc);
 
         int x = (int) (coord.x / 100.0);
         mem[ptr++ & 0xffff] = (char) ((x >> 16) & 0xffff);
@@ -241,7 +225,7 @@ public class VirtualRadar extends DCPUHardware {
         return true;
     }
 
-    public boolean storeOrbitalStateVectorToBuffer2(SOIData soi, char[] mem, char ptr) {
+    public boolean storeOrbitalStateVectorToArray2(SOIData soi, int target, char[] mem, char ptr) {
         Entity targetEntity = ServerGlobals.world.getEntity(target);
         if(targetEntity == null) return false;
         
@@ -251,8 +235,8 @@ public class VirtualRadar extends DCPUHardware {
         Vector3d soiCoord = soi.coord;
         Vector3d soiVeloc = soi.entity.getComponent(PrevPosition.class).getVelocity(soiCoord);
         
-        Vector3d coord = soiCoord.sub(targetCoord);
-        Vector3d veloc = soiVeloc.sub(targetVeloc);
+        Vector3d coord = targetCoord.sub(soiCoord);
+        Vector3d veloc = targetVeloc.sub(soiVeloc);
 
         ptr = writeFloatToArray((float) coord.x, mem, ptr);
         ptr = writeFloatToArray((float) coord.y, mem, ptr);
@@ -299,11 +283,15 @@ public class VirtualRadar extends DCPUHardware {
     
     public static char convertToDegMin(double rad) {
         double deg = Math.toDegrees(rad);
-        if(deg < 0) deg += 360.0;
+        int negative = 0;
+        if(deg < 0) {
+            negative = 1;
+            deg = -deg;
+        }
 
         int d = ((int) deg) % 360;
         int m = ((int) (60.0 * deg)) % 60;
-        return (char) ((d << 6) | m);
+        return (char) ((negative << 15) | (d << 6) | m);
     }
 
 
@@ -316,8 +304,6 @@ public class VirtualRadar extends DCPUHardware {
         RadarTargetData data = new RadarTargetData();
         data.target = target;
         
-        Log.info(ID.get(entity) + data.toString());
-
         return data.create(entity);
     }
 

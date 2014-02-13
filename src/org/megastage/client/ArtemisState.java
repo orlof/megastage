@@ -90,13 +90,10 @@ public class ArtemisState extends AbstractAppState {
         serverToClient.put(serverID, entity);
         clientToServer.put(entity.id, serverID);
 
-        Log.trace("Created new entity " + serverID + " -> " + entity.id);
-        
         return entity;
     }
 
     private <T extends Component> T createComponent(Entity entity, Class<T> type) {
-        Log.info("Add component " + type.getSimpleName() + " to " + entity.toString());
         T component = null;
         
         try {

@@ -19,6 +19,10 @@ public class CollisionType extends BaseComponent {
     public int item;
     public double radius;
 
+    public CollisionType() {
+        this(SHIP, 0);
+    }
+    
     public CollisionType(int type, double radius) {
         this.item = type;
         this.radius = radius;

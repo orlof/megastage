@@ -36,7 +36,6 @@ public class GravityFieldSystem extends EntitySystem {
     @Override
     protected void processEntities(Array<Entity> entities) {
         entitiesWithGravityField = entities;
-        Log.trace("Number of Gravity fields: " + entitiesWithGravityField.size);
     }
 
     @Override
@@ -45,15 +44,12 @@ public class GravityFieldSystem extends EntitySystem {
     }
     
     public Vector3d getGravityField(Position coordinates) {
-        Log.trace("Calculating gravity field in position " + coordinates.toString());
         Vector3d acc = new Vector3d();
 
         for(Entity entity: entitiesWithGravityField) {
             Position position = POSITION.get(entity);
             Mass mass = MASS.get(entity);
             
-            Log.trace(entity.toString() + " position " + position.toString() + " mass " + mass.toString());
-
             double dx = (position.x - coordinates.x) / 1000.0;
             double dy = (position.y - coordinates.y) / 1000.0;
             double dz = (position.z - coordinates.z) / 1000.0;
@@ -64,8 +60,6 @@ public class GravityFieldSystem extends EntitySystem {
             double multiplier = gravitationalField / distance;
 
             acc = acc.add(multiplier * dx, multiplier * dy, multiplier * dz);
-            
-            Log.trace("Acceleration: " + acc.toString());
         }
 
         return acc;

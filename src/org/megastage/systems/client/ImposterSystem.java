@@ -54,7 +54,6 @@ private long interval;
 
         double d = origo.distance(coord);
         boolean visible = d < cutoff;
-        Log.trace(ID.get(e) + d + "<" + cutoff + " -> " + visible);
         
         ClientGlobals.spatialManager.imposter(e, visible);
     }
