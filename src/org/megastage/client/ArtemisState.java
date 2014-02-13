@@ -17,6 +17,7 @@ import org.megastage.systems.client.ClientMonitorRenderSystem;
 import org.megastage.systems.client.ClientNetworkSystem;
 import org.megastage.systems.OrbitalMovementSystem;
 import org.megastage.systems.client.ImposterSystem;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
 /**
@@ -39,6 +40,7 @@ public class ArtemisState extends AbstractAppState {
         world.setSystem(ClientGlobals.network);
 
         world.initialize();
+        Mapper.init(world);
 
         ClientGlobals.network.sendLogin();
         //world.getSystem(ClientNetworkSystem.class).sendUseEntity();

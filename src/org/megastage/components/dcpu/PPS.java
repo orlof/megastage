@@ -7,6 +7,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Position;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
 public class PPS extends DCPUHardware {
@@ -28,7 +29,7 @@ public class PPS extends DCPUHardware {
         if (a == 0) {
             dcpu.registers[1] = (char) 0;
         } else if(a == 1) {
-            Position position = ship.getComponent(Position.class);
+            Position position = Mapper.POSITION.get(ship);
 
             long x = position.x / 100000; // 100m
             dcpu.ram[b++ & 0xffff] = (char) (x >> 16 & 0xffff);

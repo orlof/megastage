@@ -9,6 +9,7 @@ import org.megastage.components.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.util.ID;
+import org.megastage.util.Mapper;
 
 public class SphereOfInfluence extends BaseComponent {
     public double radius;
@@ -20,21 +21,22 @@ public class SphereOfInfluence extends BaseComponent {
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
+        radius = getDoubleValue(element, "radius", 0.0);
         return null;
     }
 
     @Override
     public void initialize(World world, Entity entity) {
-        Orbit orbit = entity.getComponent(Orbit.class);
+        Orbit orbit = Mapper.ORBIT.get(entity);
         if(orbit == null) {
             priority = -1;
         } else {
-            Mass mass = entity.getComponent(Mass.class);
+            Mass mass = Mapper.MASS.get(entity);
 
             Entity center = world.getEntity(orbit.center);        
-            Mass centerMass = center.getComponent(Mass.class);
+            Mass centerMass = Mapper.MASS.get(center);
 
-            if(center.getComponent(Orbit.class) != null) {
+            if(Mapper.ORBIT.get(center) != null) {
                 priority++;
             }
 

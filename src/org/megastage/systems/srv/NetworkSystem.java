@@ -31,6 +31,7 @@ import org.megastage.protocol.PlayerIDMessage;
 import org.megastage.protocol.UserCommand;
 import org.megastage.server.TemplateManager;
 import org.megastage.util.Cube3dMap;
+import org.megastage.util.Mapper;
 import org.megastage.util.Quaternion;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector3d;
@@ -78,7 +79,7 @@ public class NetworkSystem extends VoidEntitySystem {
     }
 
     private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
-        BindTo bindTo = connection.player.getComponent(BindTo.class);
+        BindTo bindTo = Mapper.BIND_TO.get(connection.player);
         if(bindTo != null) {
             Entity e = world.getEntity(bindTo.parent);
             e.addComponent(new DeleteFlag());
@@ -104,9 +105,9 @@ public class NetworkSystem extends VoidEntitySystem {
         connection.player.addComponent(bind);
         connection.player.changedInWorld();
 
-        SpawnPoint sp = ship.getComponent(SpawnPoint.class);
+        SpawnPoint sp = Mapper.SPAWN_POINT.get(ship);
         
-        Position pos = connection.player.getComponent(Position.class);
+        Position pos = Mapper.POSITION.get(connection.player);
         pos.x = 1000 * sp.x + 500;
         pos.y = 1000 * sp.y + 500;
         pos.z = 1000 * sp.z + 500;
@@ -188,12 +189,12 @@ public class NetworkSystem extends VoidEntitySystem {
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
         if(connection.player == null) return;
         
-        BindTo bindTo = connection.player.getComponent(BindTo.class);
+        BindTo bindTo = Mapper.BIND_TO.get(connection.player);
         Entity ship = world.getEntity(bindTo.parent);
 
-        ShipGeometry geom = ship.getComponent(ShipGeometry.class);
+        ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(ship);
         
-        Position pos = connection.player.getComponent(Position.class);
+        Position pos = Mapper.POSITION.get(connection.player);
         int cx = block(pos.x);
         int cy = block(pos.y);
         int cz = block(pos.z);
@@ -212,20 +213,20 @@ public class NetworkSystem extends VoidEntitySystem {
             pos.z += 1000 * cmd.zMove;
         }
 
-        Rotation rot = connection.player.getComponent(Rotation.class);
+        Rotation rot = Mapper.ROTATION.get(connection.player);
         rot.x = cmd.qx;
         rot.y = cmd.qy;
         rot.z = cmd.qz;
         rot.w = cmd.qw;
         
-        Rotation shipRotation = ship.getComponent(Rotation.class);
+        Rotation shipRotation = Mapper.ROTATION.get(ship);
         Quaternion shipRotationQuaternion = shipRotation.getQuaternion4d();
         
         Vector3d vel = new Vector3d(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
         
         vel = vel.multiply(10e6);
         
-        Position shipPos = ship.getComponent(Position.class);
+        Position shipPos = Mapper.POSITION.get(ship);
         shipPos.x += vel.x;
         shipPos.y += vel.y;
         shipPos.z += vel.z;
@@ -279,7 +280,7 @@ public class NetworkSystem extends VoidEntitySystem {
 
     private void unpickItem(PlayerConnection connection, UserCommand cmd) {
         connection.item = null;
-        Mode mode = connection.player.getComponent(Mode.class);
+        Mode mode = Mapper.MODE.get(connection.player);
         mode.setMode(CharacterMode.WALK);
     }
     
@@ -293,20 +294,20 @@ public class NetworkSystem extends VoidEntitySystem {
         // Position pos = connection.player.getComponent(Position.class);
         // ===================
 
-        VirtualMonitor virtualMonitor = target.getComponent(VirtualMonitor.class);
+        VirtualMonitor virtualMonitor = Mapper.VIRTUAL_MONITOR.get(target);
         if(virtualMonitor != null) {
             connection.item = virtualMonitor.getHardware(VirtualKeyboard.class);
-            Mode mode = connection.player.getComponent(Mode.class);
+            Mode mode = Mapper.MODE.get(connection.player);
             mode.setMode(CharacterMode.DCPU);
             return;
         }
 
-        VirtualRadar virtualRadar = target.getComponent(VirtualRadar.class);
+        VirtualRadar virtualRadar = Mapper.VIRTUAL_RADAR.get(target);
         if(virtualRadar != null) {
             
             
             connection.item = virtualMonitor.getHardware(VirtualKeyboard.class);
-            Mode mode = connection.player.getComponent(Mode.class);
+            Mode mode = Mapper.MODE.get(connection.player);
             mode.setMode(CharacterMode.DCPU);
             return;
         }

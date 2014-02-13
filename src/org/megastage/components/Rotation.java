@@ -6,6 +6,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
+import org.megastage.util.Mapper;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
 
@@ -39,7 +40,7 @@ public class Rotation extends BaseComponent {
     
     @Override
     public void receive(Connection pc, Entity entity) {
-        Rotation rot = entity.getComponent(Rotation.class);
+        Rotation rot = Mapper.ROTATION.get(entity);
         if(rot == null) {
             super.receive(pc, entity);
             return;

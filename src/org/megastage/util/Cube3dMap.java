@@ -129,12 +129,8 @@ public class Cube3dMap {
         
         double inertia = 0;
         for(int x=0; x <= xsize; x++) {
-                    System.out.println("" + x);
             for(int y=0; y <= ysize; y++) {
-                    System.out.println("" + x+y);
                 for(int z=0; z <= zsize; z++) {
-                    System.out.println("" + x+y+z);
-                        
                     if(get(x, y, z) == '#') {
                         // mass = 1000kg
                         

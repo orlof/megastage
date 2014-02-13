@@ -8,6 +8,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
 import org.megastage.util.Globals;
+import org.megastage.util.Mapper;
 import org.megastage.util.Vector3d;
 
 /**
@@ -32,7 +33,7 @@ public class Orbit extends BaseComponent {
 
     @Override
     public void initialize(World world, Entity entity) {
-        double mass = world.getEntity(center).getComponent(Mass.class).mass;
+        double mass = Mapper.MASS.get(world.getEntity(center)).mass;
         angularSpeed = getAngularSpeed(mass);        
     }
     

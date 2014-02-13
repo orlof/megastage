@@ -12,6 +12,7 @@ import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Position;
 import org.megastage.client.ClientGlobals;
 import org.megastage.util.ID;
+import org.megastage.util.Mapper;
 import org.megastage.util.Vector3d;
 
 /**
@@ -28,10 +29,10 @@ public class ImposterPositionControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        Position position = entity.getComponent(Position.class);
+        Position position = Mapper.POSITION.get(entity);
         if(position != null) {
             Vector3d coord = position.getVector3d();
-            Vector3d origo = ClientGlobals.shipEntity.getComponent(Position.class).getVector3d();
+            Vector3d origo = Mapper.POSITION.get(ClientGlobals.shipEntity).getVector3d();
             
             Vector3d line = coord.sub(origo);
 

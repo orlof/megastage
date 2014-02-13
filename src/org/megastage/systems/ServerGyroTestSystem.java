@@ -5,6 +5,7 @@ import com.artemis.Entity;
 import com.artemis.systems.EntitySystem;
 import com.badlogic.gdx.utils.Array;
 import org.megastage.components.dcpu.VirtualGyroscope;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
 public class ServerGyroTestSystem extends EntitySystem {
@@ -30,7 +31,7 @@ public class ServerGyroTestSystem extends EntitySystem {
     @Override
     protected void processEntities(Array<Entity> entities) {
         for(Entity entity: entities) {
-            VirtualGyroscope gyro = entity.getComponent(VirtualGyroscope.class);
+            VirtualGyroscope gyro = Mapper.VIRTUAL_GYROSCOPE.get(entity);
             switch(state) {
                 case 0:
                     gyro.setTorque((char) 0);

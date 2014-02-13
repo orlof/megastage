@@ -8,6 +8,7 @@ import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.util.Globals;
+import org.megastage.util.Mapper;
 import org.megastage.util.Vector3d;
 
 public class Position extends BaseComponent {
@@ -45,7 +46,7 @@ public class Position extends BaseComponent {
 
     @Override
     public void receive(Connection pc, Entity entity) {
-        Position pos = entity.getComponent(Position.class);
+        Position pos = Mapper.POSITION.get(entity);
         if(pos == null) {
             super.receive(pc, entity);
             return;

@@ -12,6 +12,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Rotation;
 import org.megastage.client.ClientGlobals;
+import org.megastage.util.Mapper;
 
 public class SystemRotationControl extends AbstractControl {
     
@@ -25,7 +26,7 @@ public class SystemRotationControl extends AbstractControl {
             return;
         }
 
-        Rotation rotation = ClientGlobals.shipEntity.getComponent(Rotation.class);
+        Rotation rotation = Mapper.ROTATION.get(ClientGlobals.shipEntity);
         if(rotation == null) {
             spatial.setLocalRotation(Quaternion.IDENTITY);            
             ClientGlobals.sceneNode.setLocalRotation(Quaternion.IDENTITY);

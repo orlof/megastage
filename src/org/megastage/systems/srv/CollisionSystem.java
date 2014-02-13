@@ -10,6 +10,7 @@ import org.megastage.components.Position;
 import org.megastage.components.srv.CollisionType;
 import org.megastage.components.Explosion;
 import org.megastage.components.srv.Identifier;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
 public class CollisionSystem extends EntitySystem {
@@ -66,8 +67,8 @@ public class CollisionSystem extends EntitySystem {
                     if(range * range > dx*dx + dy*dy + dz*dz) {
                         // we have an impact
                         
-                        Identifier ida = a.getComponent(Identifier.class);
-                        Identifier idb = b.getComponent(Identifier.class);
+                        Identifier ida = Mapper.IDENTIFIER.get(a);
+                        Identifier idb = Mapper.IDENTIFIER.get(b);
 
                         if(cola.isShip() && !EXPLOSION.has(a)) {
                             a.addComponent(new Explosion());

@@ -6,6 +6,7 @@ import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
+import org.megastage.util.Mapper;
 
 public abstract class DCPUHardware extends BaseComponent {
     public static final int TYPE_LEM = 0x7349F615;
@@ -34,7 +35,7 @@ public abstract class DCPUHardware extends BaseComponent {
     public Entity ship;
 
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        dcpu = parent.getComponent(DCPU.class);
+        dcpu = Mapper.DCPU.get(parent);
         dcpu.connectHardware(this);
 
         ship = dcpu.ship;

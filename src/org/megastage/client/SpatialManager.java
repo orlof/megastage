@@ -63,6 +63,7 @@ import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.PPSGeometry;
 import org.megastage.components.gfx.RadarGeometry;
 import org.megastage.util.ID;
+import org.megastage.util.Mapper;
 
 /**
  *
@@ -105,7 +106,7 @@ public class SpatialManager {
             return null;
         }
 
-        UsableFlag use = entity.getComponent(UsableFlag.class);
+        UsableFlag use = Mapper.USABLE_FLAG.get(entity);
         if(use != null) {
             return entity;
         }

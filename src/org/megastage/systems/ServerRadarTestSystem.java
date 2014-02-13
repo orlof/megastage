@@ -9,6 +9,7 @@ import org.megastage.components.dcpu.VirtualRadar;
 import org.megastage.components.dcpu.VirtualRadar.LocalRadarEcho;
 import org.megastage.systems.srv.RadarEchoSystem.RadarData;
 import org.megastage.util.ID;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
 public class ServerRadarTestSystem extends EntitySystem {
@@ -33,7 +34,7 @@ public class ServerRadarTestSystem extends EntitySystem {
     protected void processEntities(Array<Entity> entities) {
         for(Entity entity: entities) {
             RadarData candidate = null;
-            VirtualRadar radar = entity.getComponent(VirtualRadar.class);
+            VirtualRadar radar = Mapper.VIRTUAL_RADAR.get(entity);
             
             for(LocalRadarEcho lre: radar.getSignatures()) {
                 if(lre.distanceSquared > 0) {

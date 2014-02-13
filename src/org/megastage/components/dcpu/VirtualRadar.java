@@ -16,6 +16,7 @@ import org.megastage.protocol.Network;
 import org.megastage.systems.srv.RadarEchoSystem.RadarData;
 import org.megastage.systems.srv.SphereOfInfluenceSystem.SOIData;
 import org.megastage.util.ID;
+import org.megastage.util.Mapper;
 import org.megastage.util.Quaternion;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector3d;
@@ -70,7 +71,7 @@ public class VirtualRadar extends DCPUHardware {
             // GET_ORBITAL_STATE_VECTOR
             RadarData echo = getRadarData(target);
             if(echo != null) {
-                Vector3d ownCoord = ship.getComponent(Position.class).getVector3d();
+                Vector3d ownCoord = Mapper.POSITION.get(ship).getVector3d();
 
                 SOIData soi = getSOI(ownCoord);
                 storeOrbitalStateVectorToArray(soi, target, dcpu.ram, b);
@@ -89,7 +90,7 @@ public class VirtualRadar extends DCPUHardware {
     }
 
     public LocalRadarEcho[] getSignatures() {
-        Position pos = ship.getComponent(Position.class);
+        Position pos = Mapper.POSITION.get(ship);
         if(pos == null) {
             return new LocalRadarEcho[0];
         }
@@ -148,7 +149,7 @@ public class VirtualRadar extends DCPUHardware {
     }
 
     public boolean storeTargetDataToArray(RadarData echo, char[] mem, char ptr) {
-        Vector3d myCoord = ship.getComponent(Position.class).getVector3d();
+        Vector3d myCoord = Mapper.POSITION.get(ship).getVector3d();
         float dist = (float) echo.coord.distance(myCoord);
 
         if(dist < RANGE) {
@@ -167,7 +168,7 @@ public class VirtualRadar extends DCPUHardware {
             ptr = writeFloatToArray(dist, mem, ptr);
 
             // direction
-            Quaternion myRot = ship.getComponent(Rotation.class).getQuaternion4d();
+            Quaternion myRot = Mapper.ROTATION.get(ship).getQuaternion4d();
 
             // vector from me to target in global coordinate system
             Vector3d d = echo.coord.sub(myCoord);
@@ -189,11 +190,11 @@ public class VirtualRadar extends DCPUHardware {
         Entity targetEntity = ServerGlobals.world.getEntity(target);
         if(targetEntity == null) return false;
         
-        Vector3d targetCoord = targetEntity.getComponent(Position.class).getVector3d();
-        Vector3d targetVeloc = targetEntity.getComponent(Velocity.class).vector;
+        Vector3d targetCoord = Mapper.POSITION.get(targetEntity).getVector3d();
+        Vector3d targetVeloc = Mapper.VELOCITY.get(targetEntity).vector;
 
         Vector3d soiCoord = soi.coord;
-        Vector3d soiVeloc = soi.entity.getComponent(PrevPosition.class).getVelocity(soiCoord);
+        Vector3d soiVeloc = Mapper.PREV_POSITION.get(soi.entity).getVelocity(soiCoord);
         
         Vector3d coord = targetCoord.sub(soiCoord);
         Vector3d veloc = targetVeloc.sub(soiVeloc);
@@ -229,11 +230,11 @@ public class VirtualRadar extends DCPUHardware {
         Entity targetEntity = ServerGlobals.world.getEntity(target);
         if(targetEntity == null) return false;
         
-        Vector3d targetCoord = targetEntity.getComponent(Position.class).getVector3d();
-        Vector3d targetVeloc = targetEntity.getComponent(Velocity.class).vector;
+        Vector3d targetCoord = Mapper.POSITION.get(targetEntity).getVector3d();
+        Vector3d targetVeloc = Mapper.VELOCITY.get(targetEntity).vector;
 
         Vector3d soiCoord = soi.coord;
-        Vector3d soiVeloc = soi.entity.getComponent(PrevPosition.class).getVelocity(soiCoord);
+        Vector3d soiVeloc = Mapper.PREV_POSITION.get(soi.entity).getVelocity(soiCoord);
         
         Vector3d coord = targetCoord.sub(soiCoord);
         Vector3d veloc = targetVeloc.sub(soiVeloc);

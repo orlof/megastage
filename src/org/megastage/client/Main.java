@@ -5,6 +5,7 @@ import com.cubes.test.CubesTestAssets;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
+import com.jme3.audio.AudioNode;
 import com.jme3.light.AmbientLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
@@ -50,6 +51,8 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
+        SoundManager.init(assetManager);
+
         setPauseOnLostFocus(false);
         
         ClientGlobals.cmdHandler = new CommandHandler();

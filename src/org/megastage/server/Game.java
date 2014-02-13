@@ -23,6 +23,7 @@ import org.megastage.systems.srv.PrevPositionSystem;
 import org.megastage.systems.srv.RadarEchoSystem;
 import org.megastage.systems.srv.ShipMovementSystem;
 import org.megastage.systems.srv.SphereOfInfluenceSystem;
+import org.megastage.util.Mapper;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
 
@@ -53,7 +54,7 @@ public class Game {
         world.setSystem(new EngineAccelerationSystem());
         world.setSystem(new AttitudeControlSystem());
         world.setSystem(new GravityFieldSystem());
-        world.setSystem(new GravityAccelerationSystem());
+        //world.setSystem(new GravityAccelerationSystem());
 
         world.setSystem(new ShipMovementSystem());
         world.setSystem(new CollisionSystem(200));
@@ -65,7 +66,8 @@ public class Game {
         world.setSystem(new DCPUSystem());
 
         world.initialize();
-
+        Mapper.init(world);
+        
         for(Element element: root.getChildren("entity")) {
             EntityFactory.create(world, element, null);
         }

@@ -10,6 +10,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Rotation;
+import org.megastage.util.Mapper;
 
 public class AxisRotationControl extends AbstractControl {
     private final Entity entity;
@@ -32,7 +33,7 @@ public class AxisRotationControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(rot == null) {
-            rot = entity.getComponent(Rotation.class);
+            rot = Mapper.ROTATION.get(entity);
             if(rot == null) {
                 return;
             }

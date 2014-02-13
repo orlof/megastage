@@ -16,6 +16,7 @@ import com.jme3.scene.Node;
 import org.megastage.components.Rotation;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.util.ID;
+import org.megastage.util.Mapper;
 
 public class CommandHandler implements AnalogListener, ActionListener {
 
@@ -295,7 +296,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     protected void lookUp(float value) {
-        Rotation rot = ClientGlobals.playerEntity.getComponent(Rotation.class);
+        Rotation rot = Mapper.ROTATION.get(ClientGlobals.playerEntity);
         if (rot == null) {
             return;
         }
@@ -314,7 +315,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     protected void lookLeft(float value) {
-        Rotation rot = ClientGlobals.playerEntity.getComponent(Rotation.class);
+        Rotation rot = Mapper.ROTATION.get(ClientGlobals.playerEntity);
         if (rot == null) {
             return;
         }
@@ -331,7 +332,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     protected void move(float value, boolean sideways) {
-        Rotation playerRotation = ClientGlobals.playerEntity.getComponent(Rotation.class);
+        Rotation playerRotation = Mapper.ROTATION.get(ClientGlobals.playerEntity);
         if (playerRotation == null) {
             return;
         }

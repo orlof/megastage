@@ -9,6 +9,7 @@ import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Position;
 import org.megastage.client.ClientGlobals;
 import org.megastage.util.ID;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
 /**
@@ -33,7 +34,7 @@ public class PositionControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(pos == null) {
-            pos = entity.getComponent(Position.class);
+            pos = Mapper.POSITION.get(entity);
             if(pos == null) {
                 return;
             }

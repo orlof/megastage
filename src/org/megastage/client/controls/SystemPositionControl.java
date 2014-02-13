@@ -11,6 +11,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Position;
 import org.megastage.client.ClientGlobals;
+import org.megastage.util.Mapper;
 
 public class SystemPositionControl extends AbstractControl {
 
@@ -24,7 +25,7 @@ public class SystemPositionControl extends AbstractControl {
             return;
         }
 
-        Position position = ClientGlobals.shipEntity.getComponent(Position.class);
+        Position position = Mapper.POSITION.get(ClientGlobals.shipEntity);
         if(position == null) {
             spatial.setLocalTranslation(Vector3f.ZERO);
         } else {

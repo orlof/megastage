@@ -5,6 +5,7 @@ import com.artemis.Entity;
 import com.artemis.systems.EntitySystem;
 import com.badlogic.gdx.utils.Array;
 import org.megastage.components.dcpu.VirtualEngine;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
 public class ServerEngineTestSystem extends EntitySystem {
@@ -30,7 +31,7 @@ public class ServerEngineTestSystem extends EntitySystem {
     @Override
     protected void processEntities(Array<Entity> entities) {
         for(Entity entity: entities) {
-            VirtualEngine engine = entity.getComponent(VirtualEngine.class);
+            VirtualEngine engine = Mapper.VIRTUAL_ENGINE.get(entity);
             switch(state++) {
                 case 0:
                     engine.setPower((char) 0);

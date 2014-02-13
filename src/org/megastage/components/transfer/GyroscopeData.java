@@ -9,13 +9,14 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.BaseComponent;
 import org.megastage.util.ID;
+import org.megastage.util.Mapper;
 
 public class GyroscopeData extends BaseComponent {
     public char power = 0;
 
     @Override
     public void receive(Connection pc, Entity entity) {
-        GyroscopeData data = entity.getComponent(GyroscopeData.class);
+        GyroscopeData data = Mapper.GYROSCOPE_DATA.get(entity);
         if(data == null) {
             entity.addComponent(this);
             entity.changedInWorld();
