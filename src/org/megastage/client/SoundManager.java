@@ -10,8 +10,9 @@ public class SoundManager {
     public static final int RETRO_COMPUTER = 2;
     public static final int SPACE_ENGINE = 3;
     public static final int FANFARE = 4;
+    public static final int EXPLOSION = 5;
     
-    public static AudioData[] audioData;
+    private static AudioData[] audioData;
     
     public static void init(AssetManager am) {
         assetManager = am;
@@ -21,7 +22,8 @@ public class SoundManager {
             new AudioData("keyboard.ogg", false),
             new AudioData("retro-computer.ogg", false),
             new AudioData("space-engine.ogg", false),
-            new AudioData("fanfare.ogg", true)
+            new AudioData("fanfare.ogg", true),
+            new AudioData("explosion.ogg", false)
         };
     }
     

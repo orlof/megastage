@@ -25,7 +25,7 @@ public class EngineControl extends AbstractControl {
 
     public EngineControl(Entity entity) {
         this.entity = entity;
-        this.an = SoundManager.get(SoundManager.GYROSCOPE).clone();
+        this.an = SoundManager.get(SoundManager.SPACE_ENGINE).clone();
         an.setLooping(true);
      }
 

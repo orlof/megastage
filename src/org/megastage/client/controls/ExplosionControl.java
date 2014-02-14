@@ -1,6 +1,7 @@
 package org.megastage.client.controls;
 
 import com.esotericsoftware.minlog.Log;
+import com.jme3.audio.AudioNode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -9,6 +10,7 @@ import com.jme3.scene.control.AbstractControl;
 import java.util.ArrayList;
 import java.util.List;
 import org.megastage.client.ExplosionNode;
+import org.megastage.client.SoundManager;
 import org.megastage.components.Explosion;
 
 public class ExplosionControl extends AbstractControl {
@@ -31,11 +33,17 @@ public class ExplosionControl extends AbstractControl {
                     node.sparks.emitAllParticles();
                     break;
                 case 2:
+                    AudioNode an = SoundManager.get(SoundManager.EXPLOSION);
+                    an.setVolume(1);
+                    an.playInstance();
                     node.burst.emitAllParticles();
                     node.light.setColor(ColorRGBA.Red);
                     node.light.setRadius(5000);
                     break;
                 case 3:
+                    an = SoundManager.get(SoundManager.EXPLOSION);
+                    an.setVolume(5);
+                    an.playInstance();
                     node.shockwave.emitAllParticles();
                     node.fire.emitAllParticles();
                     node.embers.emitAllParticles();
