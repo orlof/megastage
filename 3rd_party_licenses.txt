@@ -1,0 +1,27 @@
+
+java runtime -> Oracle Binary Code License
+
+
+
+    JME3 -> BSD
+    libgdx -> Apache 2.0 (I may get rid of it before release 1.0)
+    kryo -> new BSD
+    kryonet -> new BSD
+    asm -> bsd
+    gdx-artemis -> gamadu . com
+    jdom -> apache style
+    jsonbeans -> new bsd
+    minlog -> bsd
+    objenesis -> apache 2
+    reflectasm -> new bsd
+    jmecubes -> bsd?
+    jmeplanet -> bsd?
+
+
+
+
+
+Fanfare for space Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 3.0
+http://creativecommons.org/licenses/by/3.0/
+

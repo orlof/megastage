@@ -83,7 +83,7 @@ public class PlanetAppState extends AbstractAppState {
         float aspect = (float) farCam.getWidth() / farCam.getHeight();
         farCam.setFrustumPerspective(45f, aspect, 0.1f, 1e7f);
 
-        if(ClientGlobals.gfxQuality.PLANET_FAR_FILTER_ENABLED) {
+        if(ClientGlobals.gfxSettings.ENABLE_PLANET_FAR_FILTER) {
             farFilter=new FilterPostProcessor(app.getAssetManager());
             farViewPort.addProcessor(farFilter);
 
@@ -113,7 +113,7 @@ public class PlanetAppState extends AbstractAppState {
             planet.setCameraPosition(this.app.getCamera().getLocation());
         }
         
-        if(ClientGlobals.gfxQuality.PLANET_FAR_FILTER_ENABLED) {
+        if(ClientGlobals.gfxSettings.ENABLE_PLANET_FAR_FILTER) {
             updateFogAndBloom();
         }
     }

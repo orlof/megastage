@@ -3,7 +3,6 @@ package org.megastage.systems.client;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.ColorRGBA;
@@ -12,11 +11,18 @@ import org.megastage.components.client.ClientVideoMemory;
 import org.megastage.client.ClientGlobals;
 
 public class ClientMonitorRenderSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<ClientVideoMemory> videoMemoryMapper;
-    @Mapper ComponentMapper<ClientRaster> rasterComponentMapper;
+    ComponentMapper<ClientVideoMemory> videoMemoryMapper;
+    ComponentMapper<ClientRaster> rasterComponentMapper;
 
     public ClientMonitorRenderSystem() {
         super(Aspect.getAspectForAll(ClientVideoMemory.class, ClientRaster.class));
+    }
+
+    @Override
+    public void initialize() {
+        
+        videoMemoryMapper = world.getMapper(ClientVideoMemory.class);
+        rasterComponentMapper = world.getMapper(ClientRaster.class);
     }
 
     protected void process(Entity entity) {
@@ -24,7 +30,7 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
 
         boolean blink = true;
         
-        if(ClientGlobals.gfxQuality.ENABLE_LEM_BLINKING) {
+        if(ClientGlobals.gfxSettings.ENABLE_LEM_BLINKING) {
             long time = System.currentTimeMillis() / 16L;
             blink = time / 20L % 2L == 0L;
         }
@@ -39,7 +45,6 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
     }
 
     public void render(ClientVideoMemory videoMemory, boolean blink, ClientRaster rasterComponent) {
-        Log.trace("rendering");
         try {
             for (int row = 0; row < 12; row++) {
                 for (int col = 0; col < 32; col++) {
@@ -52,7 +57,7 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
                     ColorRGBA colorForeground = videoMemory.colors[dat >> 12];
                     ColorRGBA colorBackground = videoMemory.colors[dat >> 8 & 0xF];
 
-                    if (ClientGlobals.gfxQuality.ENABLE_LEM_BLINKING && blink && ((dat & 0x80) > 0)) {
+                    if (ClientGlobals.gfxSettings.ENABLE_LEM_BLINKING && blink && ((dat & 0x80) > 0)) {
                         colorForeground = colorBackground;
                     }
 

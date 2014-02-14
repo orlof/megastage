@@ -2,9 +2,10 @@ package org.megastage.systems;
 
 import com.artemis.Aspect;
 import com.artemis.Entity;
-import com.artemis.EntitySystem;
-import com.artemis.utils.ImmutableBag;
-import org.megastage.components.dcpu.Engine;
+import com.artemis.systems.EntitySystem;
+import com.badlogic.gdx.utils.Array;
+import org.megastage.components.dcpu.VirtualEngine;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
 public class ServerEngineTestSystem extends EntitySystem {
@@ -14,7 +15,7 @@ public class ServerEngineTestSystem extends EntitySystem {
     private int state = 0;
     
     public ServerEngineTestSystem(long interval) {
-        super(Aspect.getAspectForAll(Engine.class));
+        super(Aspect.getAspectForAll(VirtualEngine.class));
         this.interval = interval;
     }
 
@@ -28,19 +29,18 @@ public class ServerEngineTestSystem extends EntitySystem {
     }
 
     @Override
-    protected void processEntities(ImmutableBag<Entity> entities) {
-        for(int i=0; i < entities.size(); i++) {
-            Entity entity = entities.get(i);
-            Engine engine = entity.getComponent(Engine.class);
+    protected void processEntities(Array<Entity> entities) {
+        for(Entity entity: entities) {
+            VirtualEngine engine = Mapper.VIRTUAL_ENGINE.get(entity);
             switch(state++) {
                 case 0:
-                    engine.setPowerTarget((char) 0);
+                    engine.setPower((char) 0);
                     break;
                 case 1:
-                    engine.setPowerTarget((char) 0x8000);
+                    engine.setPower((char) 0x8000);
                     break;
                 case 2:
-                    engine.setPowerTarget((char) 0xffff);
+                    engine.setPower((char) 0xffff);
                     state = 0;
                     break;
             }

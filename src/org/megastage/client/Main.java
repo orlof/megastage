@@ -5,15 +5,14 @@ import com.cubes.test.CubesTestAssets;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
-import com.jme3.material.Material;
+import com.jme3.audio.AudioNode;
+import com.jme3.light.AmbientLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.CameraNode;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.CameraControl.ControlDirection;
-import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import com.jme3.ui.Picture;
 import jmeplanet.PlanetAppState;
@@ -23,10 +22,6 @@ import org.megastage.client.controls.SystemRotationControl;
 import org.megastage.util.LogFormat;
 import org.megastage.util.Time;
 
-/**
- * test
- * @author normenhansen
- */
 public class Main extends SimpleApplication {
 
     public static void main(String[] args) {
@@ -38,7 +33,7 @@ public class Main extends SimpleApplication {
         Log.set(Log.LEVEL_INFO);
 
         AppSettings settings = new AppSettings(true);
-        settings.setResolution(ClientGlobals.gfxQuality.SCREEN_WIDTH, ClientGlobals.gfxQuality.SCREEN_HEIGHT);
+        settings.setResolution(ClientGlobals.gfxSettings.SCREEN_WIDTH, ClientGlobals.gfxSettings.SCREEN_HEIGHT);
         Main app = new Main();
 
         ClientGlobals.app = app;
@@ -56,6 +51,10 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
+        SoundManager.init(assetManager);
+
+        setPauseOnLostFocus(false);
+        
         ClientGlobals.cmdHandler = new CommandHandler();
         ClientGlobals.cmdHandler.registerWithInput(inputManager);
 
@@ -88,7 +87,7 @@ public class Main extends SimpleApplication {
 
         // Add planet app state
         planetAppState = new PlanetAppState(null);
-        //planetAppState.setShadowsEnabled(ClientGlobals.gfxQuality.PLANET_SHADOWS_ENABLED);
+        //planetAppState.setShadowsEnabled(ClientGlobals.gfxSettings.PLANET_SHADOWS_ENABLED);
         stateManager.attach(planetAppState);
 
         // Add ECS app state
@@ -100,37 +99,16 @@ public class Main extends SimpleApplication {
         ClientGlobals.cubesSettings.setBlockSize(1);
         CubesTestAssets.registerBlocks();
 
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Black);
-
-        Geometry body = new Geometry("MARKER", new Box(.1f, .1f, .1f));
-        body.setMaterial(mat);
-        rootNode.attachChild(body);
+        createCrosshair();
         
-        attachCenterMark();
+        AmbientLight ambient = new AmbientLight();
+        ambient.setColor(ColorRGBA.DarkGray);
+        rootNode.addLight(ambient);
 }
 
     @Override
     public void simpleUpdate(float tpf) {
         Time.value = System.currentTimeMillis() + ClientGlobals.timeDiff;
-
-        if(Log.TRACE) {
-            Log.info("Camera coords: " + cam.getLocation().toString());
-            Log.info("Player coords:" + ClientGlobals.playerNode.getLocalTranslation().toString());
-            Log.info("Parent:" + ClientGlobals.playerNode.getParent().toString());
-            Log.info("Parent coords:" + ClientGlobals.playerNode.getParent().getLocalTranslation().toString());
-            float[] eulerAngles = cam.getRotation().toAngles(null);
-            Log.info("Camera(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
-        }
-        
-        // slow camera down as we approach a planet
-//        Planet planet = planetAppState.getNearestPlanet();
-//        if (planet != null && planet.getPlanetToCamera() != null) {
-//            this.spectatorCam.setMoveSpeed(
-//                    FastMath.clamp(planet.getDistanceToCamera(), 100, 100000));
-//        } else {
-//            this.spectatorCam.setMoveSpeed(100000);
-//        }
     }
 
     @Override
@@ -138,9 +116,9 @@ public class Main extends SimpleApplication {
         //TODO: add render code
     }
     
-    private void attachCenterMark() {
+    private void createCrosshair() {
         Picture pic = new Picture("HUD Picture");
-        pic.setImage(assetManager, "Textures/center.png", true);
+        pic.setImage(assetManager, "Textures/red_crosshair.png", true);
         //pic.setWidth(settings.getWidth()/4);
         //pic.setHeight(settings.getHeight()/4);
         pic.setWidth(100);

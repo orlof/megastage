@@ -4,8 +4,8 @@ import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.client.ClientGlobals;
-import org.megastage.components.BaseComponent;
 import org.megastage.protocol.Network;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
 /**
@@ -23,17 +23,14 @@ public class Explosion extends BaseComponent {
     @Override
     public void receive(Connection pc, Entity entity) {
         if(serverState == 0) {
-            entity.addComponent(this);
-            entity.changedInWorld();
+            super.receive(pc, entity);
 
             ClientGlobals.spatialManager.setupExplosion(entity, this);
             
         } else {
-            Explosion expl = entity.getComponent(Explosion.class);
+            Explosion expl = Mapper.EXPLOSION.get(entity);
             expl.serverState = serverState;
         }
-
-        Log.info("received explosion "+entity.toString()+" state: " + serverState);
     }
 
     @Override
@@ -43,8 +40,6 @@ public class Explosion extends BaseComponent {
 
     @Override
     public Network.ComponentMessage create(Entity entity) {
-        Log.info(entity.toString() + " clientState from " + clientState + " to " + serverState);
-
         clientState = serverState;
         return new Network.ComponentMessage(entity, copy());
     }

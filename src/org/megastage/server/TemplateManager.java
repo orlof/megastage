@@ -5,7 +5,7 @@
 package org.megastage.server;
 
 import com.artemis.Entity;
-import com.artemis.Manager;
+import com.artemis.managers.Manager;
 import java.util.HashMap;
 import org.jdom2.Element;
 
@@ -17,7 +17,7 @@ public class TemplateManager extends Manager {
     private HashMap<String, Element> templates = new HashMap<>();
     
     @Override
-    protected void initialize() {
+    public void initialize() {
     }
 
     public void addTemplate(Element elem) {
@@ -32,4 +32,8 @@ public class TemplateManager extends Manager {
         }
         return EntityFactory.create(world, element, null);
     }    
+
+    @Override
+    public void dispose() {
+    }
 }

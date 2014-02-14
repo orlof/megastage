@@ -3,13 +3,10 @@ package org.megastage.systems.srv;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
-import org.megastage.protocol.Network.ComponentMessage;
-import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
 
 /**
@@ -23,11 +20,16 @@ public class ExplosionSystem extends EntityProcessingSystem {
     private long interval;
     private long acc;
 
-    @Mapper ComponentMapper<Explosion> EXPLOSION;
+    ComponentMapper<Explosion> EXPLOSION;
     
     public ExplosionSystem(long interval) {
         super(Aspect.getAspectForAll(Explosion.class));
         this.interval = interval;
+    }
+
+    @Override
+    public void initialize() {
+        EXPLOSION = world.getMapper(Explosion.class);
     }
 
     @Override
@@ -59,7 +61,6 @@ public class ExplosionSystem extends EntityProcessingSystem {
                     break;
             }
             explosion.serverState++;
-            Log.info("serverState advance " + explosion.serverState);
         }
     }
 
@@ -87,7 +88,6 @@ public class ExplosionSystem extends EntityProcessingSystem {
 
     public boolean stateExpired(Explosion explosion) {
         long time = Time.value - explosion.startTime;
-        Log.info("Elapsed time since explosion start: " + time);
         return time > delay[explosion.serverState];
     }
 }

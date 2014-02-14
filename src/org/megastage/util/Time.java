@@ -8,5 +8,9 @@ package org.megastage.util;
  */
 public class Time {
     public static long value = System.currentTimeMillis();
+    
+    public static double secs() {
+        return value / 1000.0;
+    }
 }
 

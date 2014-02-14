@@ -1,13 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.components.gfx;
 
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import java.util.List;
+import org.jdom2.Attribute;
+import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Mass;
@@ -15,81 +13,29 @@ import org.megastage.client.ClientGlobals;
 import org.megastage.components.srv.CollisionType;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.Time;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
-/**
- *
- * @author Orlof
- */
 public class ShipGeometry extends BaseComponent {
-    public float xCenter, yCenter, zCenter;
     public long updateTime;
 
     public Cube3dMap map = new Cube3dMap();
     
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
-        List<Element> yList = element.getChildren("y");
-        int index = yList.size();
 
-        float blockCount = 0;
+        createMapFromXML(element);
         
-        for(Element yElem: yList) {
-            index--;
-
-            List<Element> zList = yElem.getChildren("z");
-            for(int z=0; z < zList.size(); z++) {
-                Element zElem = zList.get(z);
-                
-                String xString = zElem.getText();
-                for(int x=0; x < xString.length(); x++) {
-                    if(xString.charAt(x) != ' ') {
-                        map.set(x, index, z, xString.charAt(x));
-                        xCenter += x; yCenter += index; zCenter += z; blockCount++;
-                    }
-                }
-            }
-        }
-
-        // calculate center of mass (for rotation)
-        xCenter /= blockCount; yCenter /= blockCount; zCenter /= blockCount;
-        xCenter += 0.5; yCenter += 0.5; zCenter += 0.5;
-
-        BaseComponent[] adds = new BaseComponent[2];
-
-        double sphere = Math.sqrt(xCenter * xCenter + yCenter * yCenter + zCenter * zCenter);
-        CollisionType ct = new CollisionType();
-        ct.item = CollisionType.SHIP;
-        ct.radius = sphere;
-        adds[1] = ct;
-        
-        Mass mass = new Mass();
-        mass.mass = 1000 * blockCount;
-        adds[0] = mass;
+        BaseComponent[] extraComponents = new BaseComponent[2];
+        extraComponents[0] = new Mass(map.getMass());
+        extraComponents[1] = new CollisionType(CollisionType.SHIP, map.getBoundingSphere());
         
         updateTime = Time.value;
 
-        return adds;
+        return extraComponents;
     }
 
-    public double getInertia(Vector axis) {
-        double xc = xCenter - 0.5;
-        double yc = yCenter - 0.5;
-        double zc = zCenter - 0.5;
-        
-        double inertia = 0;
-        for(int x=0; x < map.xsize; x++) {
-            for(int y=0; y < map.ysize; y++) {
-                for(int z=0; z < map.zsize; z++) {
-                    if(map.get(x, y, z) == '#') {
-                        Vector point = new Vector(x - xc, y - yc, z - zc);
-                        inertia += 1000.0 * axis.distance(point);
-                    }
-                }
-            }
-        }
-        
-        return inertia;
+    public double getInertia(Vector3d axis) {
+        return map.getInertia(axis);
     }
     
     @Override
@@ -99,7 +45,7 @@ public class ShipGeometry extends BaseComponent {
     
     @Override
     public void receive(Connection pc, Entity entity) {
-        entity.addComponent(this);
+        super.receive(pc, entity);
         ClientGlobals.spatialManager.setupShip(entity, this);
     }
     
@@ -114,4 +60,47 @@ public class ShipGeometry extends BaseComponent {
         return "ShipGeometry()";
     }
 
+    public static void main(String[] args) throws Exception {
+        Cube3dMap map = new Cube3dMap();
+        map.set(1,0,0,'#');
+        map.set(1,1,0,'#');
+        map.set(1,2,0,'#');
+        map.set(1,3,0,'#');
+        map.set(1,4,0,'#');
+
+        map.set(0,2,0,'#');
+        map.set(2,2,0,'#');
+        
+        System.out.println("Mass: " + map.getMass());
+        System.out.println("Center of mass: " + map.getCenter());
+        System.out.println("Bounding sphere radius: " + map.getBoundingSphere());
+        System.out.println("X-inertia: " + map.getInertia(new Vector3d(1, 0, 0)));
+        System.out.println("Y-inertia: " + map.getInertia(new Vector3d(0, 1, 0)));
+        System.out.println("Z-inertia: " + map.getInertia(new Vector3d(0, 0, 1)));
+    }
+
+    public void createMapFromXML(Element element) throws DataConversionException {
+        int y = 0, z = 0;
+        
+        List<Element> mapElements = element.getChildren("map");
+        for(Element elem: mapElements) {
+            Attribute attr = elem.getAttribute("y");
+            if(attr != null) {
+                y = attr.getIntValue();
+            }
+
+            attr = elem.getAttribute("z");
+            if(attr != null) {
+                z = attr.getIntValue();
+            }
+            
+            String blocks = elem.getText();
+            for(int x=0; x < blocks.length(); x++) {
+                char c = blocks.charAt(x);
+                if(c != ' ') {
+                    map.set(x, y, z, c);
+                }
+            }
+        }
+    }
 }

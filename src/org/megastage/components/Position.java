@@ -3,20 +3,17 @@ package org.megastage.components;
 import org.megastage.components.srv.Velocity;
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.client.ClientGlobals;
-import org.megastage.util.Vector;
+import org.megastage.util.Globals;
+import org.megastage.util.Mapper;
+import org.megastage.util.Vector3d;
 
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:58
- */
 public class Position extends BaseComponent {
     public long x, y, z;
+    public boolean dirty;
     
     public Position() {
         super();
@@ -42,7 +39,23 @@ public class Position extends BaseComponent {
         return true;
     }
     
-    public void add(Vector vector) {
+    @Override
+    public boolean replicate() {
+        return true;
+    }
+
+    @Override
+    public void receive(Connection pc, Entity entity) {
+        Position pos = Mapper.POSITION.get(entity);
+        if(pos == null) {
+            super.receive(pc, entity);
+            return;
+        }
+        pos.set(this);
+        pos.dirty = true;
+    }
+    
+    public void add(Vector3d vector) {
         x += Math.round(vector.x);
         y += Math.round(vector.y);
         z += Math.round(vector.z);
@@ -52,11 +65,22 @@ public class Position extends BaseComponent {
         add(velocity.getPositionChange(time));
     }
     
-    public Vector3f getAsVector() {
-        return new Vector3f((float) (x / ClientGlobals.scale), (float) (y / ClientGlobals.scale), (float) (z / ClientGlobals.scale));
+    public Vector3f getVector3f() {
+        return new Vector3f(x / Globals.UNIT_F, y / Globals.UNIT_F, z / Globals.UNIT_F);
     }
     
+    public Vector3d getVector3d() {
+        return new Vector3d(x / Globals.UNIT_D, y / Globals.UNIT_D, z / Globals.UNIT_D);
+    }
+    
+    public void set(Position pos) {
+        x = pos.x;
+        y = pos.y;
+        z = pos.z;
+    }
+
+    @Override
     public String toString() {
-        return "Position(" + x + ", " + y + ", " + z + ")";
+        return "Position(" + x + ", " + y + ", " + z + ", " + dirty + ")";
     }
 }

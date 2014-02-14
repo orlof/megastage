@@ -14,6 +14,12 @@ import org.jdom2.Element;
 public class Mass extends BaseComponent {
     public double mass;
 
+    public Mass() {}
+    
+    public Mass(double mass) {
+        this.mass = mass;
+    }
+
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         mass = getDoubleValue(element, "kg", 0.0);

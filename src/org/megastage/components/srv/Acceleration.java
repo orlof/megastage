@@ -1,7 +1,7 @@
 package org.megastage.components.srv;
 
 import org.megastage.components.BaseComponent;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
 /**
  * MegaStage
@@ -10,13 +10,13 @@ import org.megastage.util.Vector;
  * Time: 20:58
  */
 public class Acceleration extends BaseComponent {
-    public Vector vector = Vector.ZERO;
+    public Vector3d vector = Vector3d.ZERO;
 
     public Acceleration() {
         super();
     }
 
-    public void add(Vector v) {
+    public void add(Vector3d v) {
         vector = vector.add(v);
     }
 
@@ -24,11 +24,11 @@ public class Acceleration extends BaseComponent {
         vector = vector.add(ax, ay, az);
     }
 
-    public void set(Vector v) {
+    public void set(Vector3d v) {
         vector = v;
     }
 
-    public Vector getVelocityChange(float time) {
+    public Vector3d getVelocityChange(float time) {
         return vector.multiply(time);
     }
 

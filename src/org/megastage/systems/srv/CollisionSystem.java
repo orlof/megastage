@@ -3,34 +3,35 @@ package org.megastage.systems.srv;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.EntitySystem;
-import com.artemis.annotations.Mapper;
-import com.artemis.utils.ImmutableBag;
+import com.artemis.systems.EntitySystem;
+import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
 import org.megastage.components.srv.CollisionType;
 import org.megastage.components.Explosion;
 import org.megastage.components.srv.Identifier;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Orlof
- * Date: 8/19/13
- * Time: 12:09 PM
- * To change this template use File | Settings | File Templates.
- */
 public class CollisionSystem extends EntitySystem {
     private long interval;
     private long acc;
 
-    @Mapper ComponentMapper<CollisionType> COLLISION_TYPE;
-    @Mapper ComponentMapper<Position> POSITION;
-    @Mapper ComponentMapper<Explosion> EXPLOSION;
+    ComponentMapper<CollisionType> COLLISION_TYPE;
+    ComponentMapper<Position> POSITION;
+    ComponentMapper<Explosion> EXPLOSION;
     
     public CollisionSystem(long interval) {
         super(Aspect.getAspectForAll(CollisionType.class, Position.class));
         this.interval = interval;
+    }
+
+    @Override
+    public void initialize() {
+        
+        COLLISION_TYPE = world.getMapper(CollisionType.class);
+        POSITION = world.getMapper(Position.class);
+        EXPLOSION = world.getMapper(Explosion.class);
     }
 
     @Override
@@ -43,14 +44,14 @@ public class CollisionSystem extends EntitySystem {
     }
 
     @Override
-    protected void processEntities(ImmutableBag<Entity> entities) {
-        for(int i=0; i < entities.size(); i++) {
+    protected void processEntities(Array<Entity> entities) {
+        for(int i=0; i < entities.size; i++) {
             Entity a = entities.get(i);
             
             CollisionType cola = COLLISION_TYPE.get(a);
             Position posa = POSITION.get(a);
             
-            for(int j=i+1; j < entities.size(); j++) {
+            for(int j=i+1; j < entities.size; j++) {
                 Entity b = entities.get(j);
 
                 CollisionType colb = COLLISION_TYPE.get(b);
@@ -66,8 +67,8 @@ public class CollisionSystem extends EntitySystem {
                     if(range * range > dx*dx + dy*dy + dz*dz) {
                         // we have an impact
                         
-                        Identifier ida = a.getComponent(Identifier.class);
-                        Identifier idb = b.getComponent(Identifier.class);
+                        Identifier ida = Mapper.IDENTIFIER.get(a);
+                        Identifier idb = Mapper.IDENTIFIER.get(b);
 
                         if(cola.isShip() && !EXPLOSION.has(a)) {
                             a.addComponent(new Explosion());

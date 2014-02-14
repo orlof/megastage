@@ -16,8 +16,17 @@ public class CollisionType extends BaseComponent {
     public static final int SHIP = 0;
     public static final int CELESTIAL = 1;
     
-    public double radius;
     public int item;
+    public double radius;
+
+    public CollisionType() {
+        this(SHIP, 0);
+    }
+    
+    public CollisionType(int type, double radius) {
+        this.item = type;
+        this.radius = radius;
+    }
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {

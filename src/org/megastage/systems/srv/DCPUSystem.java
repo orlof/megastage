@@ -3,7 +3,6 @@ package org.megastage.systems.srv;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.annotations.Mapper;
 import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.dcpu.*;
 
@@ -15,10 +14,15 @@ import org.megastage.components.dcpu.*;
  * To change this template use File | Settings | File Templates.
  */
 public class DCPUSystem extends EntityProcessingSystem {
-    @Mapper ComponentMapper<DCPU> dcpuMapper;
+    ComponentMapper<DCPU> dcpuMapper;
 
     public DCPUSystem() {
         super(Aspect.getAspectForAll(DCPU.class));
+    }
+
+    @Override
+    public void initialize() {
+        dcpuMapper = world.getMapper(DCPU.class);
     }
 
     @Override

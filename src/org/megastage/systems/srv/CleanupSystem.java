@@ -5,6 +5,7 @@ import com.artemis.Entity;
 import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.gfx.BindTo;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
 public class CleanupSystem extends EntityProcessingSystem {
@@ -27,7 +28,7 @@ public class CleanupSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity e) {
-        BindTo bindTo = e.getComponent(BindTo.class);
+        BindTo bindTo = Mapper.BIND_TO.get(e);
         if(world.getEntity(bindTo.parent) == null) {
             e.addComponent(new DeleteFlag());
         }

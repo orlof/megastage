@@ -4,10 +4,13 @@ import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.components.srv.Identifier;
 import org.megastage.protocol.Network;
+import org.megastage.util.ID;
 
 /**
  * MegaStage
@@ -15,7 +18,7 @@ import org.megastage.protocol.Network;
  * Date: 17.8.2013
  * Time: 20:11
  */
-public abstract class BaseComponent extends Component {
+public abstract class BaseComponent implements Component {
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
         return null;
     }
@@ -27,13 +30,23 @@ public abstract class BaseComponent extends Component {
     public boolean synchronize() {
         return false;
     }
+
+    public void initialize(World world, Entity entity) {}
     
     public Network.ComponentMessage create(Entity entity) {
+        if(Log.TRACE) {
+            Log.info(ID.get(entity) + this.toString());
+        }
         return new Network.ComponentMessage(entity, this);
     }
 
     public void receive(Connection pc, Entity entity) {
+        if(Log.INFO) {
+            Log.info(ID.get(entity) + this.toString());
+        }
+                
         entity.addComponent(this);
+        entity.changedInWorld();
     }
 
     public void delete(Connection pc, Entity entity) {
@@ -49,6 +62,20 @@ public abstract class BaseComponent extends Component {
 
         if(attr != null) {
             return attr.getValue();
+        }
+
+        return defaultValue;
+    }
+
+    protected static boolean getBooleanValue(Element config, String attrName, boolean defaultValue) {
+        Attribute attr = config.getAttribute(attrName);
+
+        try {
+            if(attr != null) {
+                return attr.getBooleanValue();
+            }
+        } catch (DataConversionException e) {
+            e.printStackTrace();
         }
 
         return defaultValue;
@@ -118,4 +145,7 @@ public abstract class BaseComponent extends Component {
     public String toString() {
         return getClass().getSimpleName();
     }
+
+    @Override
+    public void reset() {}
 }

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.client.controls;
 
 import com.artemis.Entity;
@@ -10,13 +6,14 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
-import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Rotation;
 import org.megastage.client.ClientGlobals;
+import org.megastage.util.Mapper;
 
 public class RotationControl extends AbstractControl {
     private final Entity entity;
+    private Rotation rot;
     
     public RotationControl(Entity entity) {
         this.entity = entity;
@@ -24,33 +21,19 @@ public class RotationControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        if(Log.TRACE) {
-            Log.info("============== ROTATION " + entity.toString() + "==============");
-            Log.info("Parent: " + spatial.getParent().getName());
-        }
-
-        Rotation rotation = entity.getComponent(Rotation.class);
-        if(rotation == null || ClientGlobals.shipEntity == entity) {
-            spatial.setLocalRotation(Quaternion.IDENTITY);            
-        } else {
-            Quaternion q = new Quaternion((float) rotation.x, (float) rotation.y, (float) rotation.z, (float) rotation.w);
-
-            /*
-            Node main = (Node) ((Node) spatial).getChild("main");
-            if(main == null) {
-                main = (Node) spatial;
-                Log.info("rotation node is spatial itself");
-            } else {
-                Log.info("rotation node is called main");                
+        if(rot == null) {
+            rot = Mapper.ROTATION.get(entity);
+            if(rot == null) {
+                return;
             }
-            */
-            spatial.setLocalRotation(q);
         }
-        if(Log.TRACE) {
-            float[] eulerAngles = spatial.getLocalRotation().toAngles(null);
-            Log.info("Local(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
-            spatial.getWorldRotation().toAngles(eulerAngles);
-            Log.info("World(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
+
+        if(ClientGlobals.shipEntity == entity) {
+            spatial.setLocalRotation(Quaternion.IDENTITY);            
+        } else if (rot.dirty) {
+            Quaternion q = new Quaternion((float) rot.x, (float) rot.y, (float) rot.z, (float) rot.w);
+            spatial.setLocalRotation(q);
+            rot.dirty = false;
         }
     }
 

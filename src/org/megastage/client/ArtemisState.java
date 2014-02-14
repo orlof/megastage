@@ -16,6 +16,8 @@ import org.megastage.systems.client.ClientFixedRotationSystem;
 import org.megastage.systems.client.ClientMonitorRenderSystem;
 import org.megastage.systems.client.ClientNetworkSystem;
 import org.megastage.systems.OrbitalMovementSystem;
+import org.megastage.systems.client.ImposterSystem;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
 /**
@@ -29,7 +31,8 @@ public class ArtemisState extends AbstractAppState {
     public void initialize(AppStateManager stateManager, Application app) {
         world = new World();
 
-        world.setSystem(new ClientMonitorRenderSystem(), false);
+        world.setSystem(new ImposterSystem(1000));
+        world.setSystem(new ClientMonitorRenderSystem());
         world.setSystem(new OrbitalMovementSystem());
         world.setSystem(new ClientFixedRotationSystem());
 
@@ -37,6 +40,7 @@ public class ArtemisState extends AbstractAppState {
         world.setSystem(ClientGlobals.network);
 
         world.initialize();
+        Mapper.init(world);
 
         ClientGlobals.network.sendLogin();
         //world.getSystem(ClientNetworkSystem.class).sendUseEntity();
@@ -86,15 +90,12 @@ public class ArtemisState extends AbstractAppState {
         world.addEntity(entity);
 
         serverToClient.put(serverID, entity);
-        clientToServer.put(entity.getId(), serverID);
+        clientToServer.put(entity.id, serverID);
 
-        Log.info("Created new entity " + serverID + " -> " + entity.getId());
-        
         return entity;
     }
 
     private <T extends Component> T createComponent(Entity entity, Class<T> type) {
-        Log.info("Add component " + type.getSimpleName() + " to " + entity.toString());
         T component = null;
         
         try {

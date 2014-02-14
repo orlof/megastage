@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.client;
 
 import com.artemis.Entity;
@@ -19,15 +15,9 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import org.megastage.components.Rotation;
 import org.megastage.protocol.CharacterMode;
+import org.megastage.util.ID;
+import org.megastage.util.Mapper;
 
-/**
- * A first person view camera controller. After creation, you must register the
- * camera controller with the dispatcher using #registerWithDispatcher().
- *
- * Controls: - Move the mouse to rotate the camera - Mouse wheel for zooming in
- * or out - WASD keys for moving forward/backward and strafing - QZ keys raise
- * or lower the camera
- */
 public class CommandHandler implements AnalogListener, ActionListener {
 
     private static String[] dcpuMappings = new String[]{
@@ -73,16 +63,14 @@ public class CommandHandler implements AnalogListener, ActionListener {
             CollisionResult closest = results.getClosestCollision();
             Node target = closest.getGeometry().getParent();
             
-            Log.trace("original: " + target.toString());
-
             Entity entity = null;
             while(true) {
                 if(target == ClientGlobals.rootNode) {
-                    Log.trace("Picked rootNode");
                     return;
                 }
 
                 entity = ClientGlobals.spatialManager.getEntity(target);
+                Log.info("Pick entity: " + ID.get(entity));
                 if(entity != null) break;
                 target = target.getParent();
             }
@@ -189,11 +177,8 @@ public class CommandHandler implements AnalogListener, ActionListener {
     @Override
     public void onAnalog(String name, float value, float tpf) {
         if (ClientGlobals.playerEntity == null) {
-            Log.warn("playerEntity=null, not processed: " + name);
             return;
         }
-
-        Log.trace(name + ", " + value + ", " + tpf);
 
         switch (name) {
             case "WALK_LookLeft":
@@ -221,10 +206,10 @@ public class CommandHandler implements AnalogListener, ActionListener {
                 move(-value, true);
                 break;
             case "SHIP_MoveForward":
-                moveShip(0, 0, value);
+                moveShip(0, 0, -value);
                 break;
             case "SHIP_MoveBackward":
-                moveShip(0, 0, -value);
+                moveShip(0, 0, value);
                 break;
             case "SHIP_MoveUp":
                 moveShip(0, value, 0);
@@ -233,10 +218,10 @@ public class CommandHandler implements AnalogListener, ActionListener {
                 moveShip(0, -value, 0);
                 break;
             case "SHIP_MoveLeft":
-                moveShip(value, 0, 0);
+                moveShip(-value, 0, 0);
                 break;
             case "SHIP_MoveRight":
-                moveShip(-value, 0, 0);
+                moveShip(value, 0, 0);
                 break;
             case "SHIP_PitchUp":
                 pitch(value);
@@ -261,8 +246,6 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
     @Override
     public void onAction(String name, boolean value, float tpf) {
-        Log.trace(name);
-
         switch (name) {
             case "WALK_InvertY":
                 // Toggle on the up.
@@ -313,55 +296,43 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     protected void lookUp(float value) {
-        Rotation playerRotation = ClientGlobals.playerEntity.getComponent(Rotation.class);
-        if (playerRotation == null) {
+        Rotation rot = Mapper.ROTATION.get(ClientGlobals.playerEntity);
+        if (rot == null) {
             return;
         }
 
-        Quaternion playerQuaternion = new Quaternion(
-                (float) playerRotation.x, (float) playerRotation.y,
-                (float) playerRotation.z, (float) playerRotation.w);
+        Quaternion q = rot.getQuaternion3f();
 
-        float[] eulerAngles = playerQuaternion.toAngles(null);
+        float[] eulerAngles = q.toAngles(null);
         eulerAngles[0] = FastMath.clamp(eulerAngles[0] + value, -0.9f * FastMath.HALF_PI, 0.9f * FastMath.HALF_PI);
         eulerAngles[2] = 0f;
 
-        playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
+        q.fromAngles(eulerAngles).normalizeLocal();
 
-        playerRotation.x = playerQuaternion.getX();
-        playerRotation.y = playerQuaternion.getY();
-        playerRotation.z = playerQuaternion.getZ();
-        playerRotation.w = playerQuaternion.getW();
+        rot.set(q);
 
-        ClientGlobals.userCommand.look(playerRotation);
+        ClientGlobals.userCommand.look(rot);
     }
 
     protected void lookLeft(float value) {
-        Rotation playerRotation = ClientGlobals.playerEntity.getComponent(Rotation.class);
-        if (playerRotation == null) {
+        Rotation rot = Mapper.ROTATION.get(ClientGlobals.playerEntity);
+        if (rot == null) {
             return;
         }
 
-        Quaternion playerQuaternion = new Quaternion(
-                (float) playerRotation.x, (float) playerRotation.y,
-                (float) playerRotation.z, (float) playerRotation.w);
-
-        float[] eulerAngles = playerQuaternion.toAngles(null);
+        Quaternion q = rot.getQuaternion3f();
+        float[] eulerAngles = q.toAngles(null);
         eulerAngles[1] = (eulerAngles[1] + value) % FastMath.TWO_PI;
         eulerAngles[2] = 0f;
 
-        playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
+        q.fromAngles(eulerAngles).normalizeLocal();
+        rot.set(q);
 
-        playerRotation.x = playerQuaternion.getX();
-        playerRotation.y = playerQuaternion.getY();
-        playerRotation.z = playerQuaternion.getZ();
-        playerRotation.w = playerQuaternion.getW();
-
-        ClientGlobals.userCommand.look(playerRotation);
+        ClientGlobals.userCommand.look(rot);
     }
 
     protected void move(float value, boolean sideways) {
-        Rotation playerRotation = ClientGlobals.playerEntity.getComponent(Rotation.class);
+        Rotation playerRotation = Mapper.ROTATION.get(ClientGlobals.playerEntity);
         if (playerRotation == null) {
             return;
         }

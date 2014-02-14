@@ -1,7 +1,6 @@
 package org.megastage.protocol;
 
 import com.artemis.Entity;
-import com.artemis.utils.Bag;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
@@ -16,8 +15,10 @@ import org.megastage.components.SpawnPoint;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.CharacterGeometry;
 import org.megastage.components.gfx.EngineGeometry;
+import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.MonitorGeometry;
 import org.megastage.components.gfx.PlanetGeometry;
+import org.megastage.components.gfx.PPSGeometry;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.gfx.VoidGeometry;
@@ -27,9 +28,14 @@ import org.megastage.components.DeleteFlag;
 import org.megastage.components.Mode;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.Explosion;
+import org.megastage.components.gfx.GyroscopeGeometry;
+import org.megastage.components.gfx.RadarGeometry;
+import org.megastage.components.srv.Identifier;
+import org.megastage.components.transfer.GyroscopeData;
+import org.megastage.components.transfer.RadarTargetData;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.RAM;
-import org.megastage.util.Vector;
+import org.megastage.util.Vector3d;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,7 +60,6 @@ public class Network {
         kryo.register(char[][].class);
         kryo.register(char[][][].class);
         kryo.register(Object[].class);
-        kryo.register(Bag.class);
         kryo.register(BaseComponent.class);
         kryo.register(BindTo.class);
         kryo.register(CharacterGeometry.class);
@@ -65,6 +70,10 @@ public class Network {
         kryo.register(EngineGeometry.class);
         kryo.register(Explosion.class);
         kryo.register(FixedRotation.class);
+        kryo.register(GyroscopeData.class);
+        kryo.register(GyroscopeGeometry.class);
+        kryo.register(Identifier.class);
+        kryo.register(ImposterGeometry.class);
         kryo.register(Mass.class);
         kryo.register(Mode.class);
         kryo.register(MonitorData.class);
@@ -73,6 +82,9 @@ public class Network {
         kryo.register(PlanetGeometry.class);
         kryo.register(PlayerIDMessage.class);
         kryo.register(Position.class);
+        kryo.register(PPSGeometry.class);
+        kryo.register(RadarGeometry.class);
+        kryo.register(RadarTargetData.class);
         kryo.register(RAM.class);
         kryo.register(Rotation.class);
         kryo.register(ShipGeometry.class);
@@ -80,7 +92,7 @@ public class Network {
         kryo.register(SunGeometry.class);
         kryo.register(UsableFlag.class);
         kryo.register(UserCommand.class);
-        kryo.register(Vector.class);
+        kryo.register(Vector3d.class);
         kryo.register(VoidGeometry.class);
     }
 
@@ -94,14 +106,14 @@ public class Network {
         public ComponentMessage() { /* required for Kryo */ }
         
         public ComponentMessage(Entity entity, BaseComponent c) {
-            owner = entity.getId();
+            owner = entity.id;
             component = c;
         }
 
         @Override
         public void receive(Connection pc) {
             Entity entity = ClientGlobals.artemis.toClientEntity(owner);
-            owner = entity.getId();
+            owner = entity.id;
             
             component.receive(pc, entity);
         }

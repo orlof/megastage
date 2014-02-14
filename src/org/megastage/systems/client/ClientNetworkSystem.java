@@ -2,9 +2,8 @@ package org.megastage.systems.client;
 
 import com.artemis.Aspect;
 import com.artemis.Entity;
-import com.artemis.EntitySystem;
-import com.artemis.utils.Bag;
-import com.artemis.utils.ImmutableBag;
+import com.artemis.systems.EntitySystem;
+import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -37,7 +36,7 @@ public class ClientNetworkSystem extends EntitySystem {
     }
 
     @Override
-    protected void initialize() {
+    public void initialize() {
         client = new Client(16*1024, 8*1024);
         Network.register(client);
 
@@ -46,9 +45,7 @@ public class ClientNetworkSystem extends EntitySystem {
         kryoThread.start();
 
         try {
-            Log.info("Connecting");
             client.connect(5000, ClientGlobals.serverHost, Network.serverPort, Network.serverPort+1);
-            Log.info("Connected");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,26 +60,23 @@ public class ClientNetworkSystem extends EntitySystem {
             } catch (InterruptedException ex) {
             }
         }
-        Log.info("RTT: "+ client.getReturnTripTime());
         ClientGlobals.timeDiff -= client.getReturnTripTime();
         */
     }
 
     @Override
-    protected final void processEntities(ImmutableBag<Entity> entities) {
+    protected void processEntities(Array<Entity> entities) {
         processSystem();
     }
-	
+
     protected void processSystem() {
         if(ClientGlobals.userCommand.count > 0) {
-            Log.trace(ClientGlobals.userCommand.toString());
             client.sendUDP(ClientGlobals.userCommand);
             ClientGlobals.userCommand.reset();
         }
     }
 
     public void sendLogin() {
-        Log.info("");
         Network.Login msg = new Network.Login();
         client.sendTCP(msg);
     }
@@ -105,12 +99,7 @@ public class ClientNetworkSystem extends EntitySystem {
 
         @Override
         public void received(Connection pc, Object o) {
-            if(o instanceof Bag) {
-                Bag bag = (Bag) o;
-                for(int i = 0; i < bag.size(); i++) {
-                    handlePacket(pc, bag.get(i));
-                }
-            } else if(o instanceof Object[]) {
+            if(o instanceof Object[]) {
                 for(Object packet: (Object[]) o) {
                     handlePacket(pc, packet);
                 }
@@ -120,7 +109,6 @@ public class ClientNetworkSystem extends EntitySystem {
         }
         
         public void handlePacket(final Connection pc, final Object o) {
-            Log.trace("Received: " + o.toString());
             if(o instanceof Message) {
                 final Message msg = (Message) o;
                 msg.receive(pc);

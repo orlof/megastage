@@ -5,6 +5,8 @@
 package org.megastage.client;
 
 import com.esotericsoftware.minlog.Log;
+import com.jme3.audio.AudioNode;
+import com.jme3.audio.AudioSource;
 import com.jme3.input.RawInputListener;
 import com.jme3.input.event.JoyAxisEvent;
 import com.jme3.input.event.JoyButtonEvent;
@@ -104,11 +106,14 @@ public class DCPURawInputListener implements RawInputListener {
         }
 
         pressed.put(keyCode, keyChar);
-        Log.trace("KeyPressed(keyChar=" + Integer.toHexString(keyChar) + ")");
         ClientGlobals.userCommand.keyPressed(keyChar);
 
-        Log.trace("KeyTyped(keyChar=" + Integer.toHexString(keyChar) + ")");
         ClientGlobals.userCommand.keyTyped(keyChar);
+        
+        AudioNode an = SoundManager.get(SoundManager.KEYBOARD);
+        an.setVolume(1);
+        an.playInstance();
+        
         return true;
     }
 
@@ -117,7 +122,6 @@ public class DCPURawInputListener implements RawInputListener {
         Character keyChar = pressed.get(keyCode);
 
         if(keyChar != null) {
-            Log.trace("KeyReleased(keyChar=" + Integer.toHexString(keyChar) + ")");
             ClientGlobals.userCommand.keyReleased(keyChar);
         }
 

@@ -79,7 +79,6 @@ public class DCPU extends BaseComponent {
     }
 
     public boolean connectHardware(DCPUHardware hw) {
-        Log.debug("connect hardware " + hw.toString());
         hw.dcpu = this;
         hardware.add(hw);
         return true;

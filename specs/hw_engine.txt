@@ -18,7 +18,8 @@ Description:
     Engine is equipped with safety mechanism that protects against power
     intake failures. Engine's laser ignition system will not trigger the 
     reaction unless sufficient amount of energy is already reserved for 
-    controlling the reaction energies.
+    controlling the reaction energies. Insufficient power makes engine's
+    power level to immediately drop to zero.
 
 Interrupt behavior:
     When a HWI is received by the S8MD, it reads the A register and does one
@@ -31,8 +32,7 @@ Interrupt behavior:
        state takes 20 to 60 seconds.
 
     1: GET_STATUS
-       Engine's current status is set to B register and engine power level to C
-       register.
+       Engine's power level is set to B register.
 
     2: GET_IMPULSE_VECTOR
        Engine's impulse direction vector is set to B register. Vector has the
