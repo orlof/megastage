@@ -1,3 +1,4 @@
+116kbit/s
 Cryptix's help with hw specifications was invaluable (...and I hope more contributions are on their way in the form of dcpu code - ship control system). I more than welcome all other help also.
 
 I have not yet made any plans concerning the product tree. I have some vague ideas that I would like to see in the game, but those are subject to change as soon as we start designing the system and learn more about it.

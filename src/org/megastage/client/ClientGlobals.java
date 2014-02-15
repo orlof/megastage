@@ -28,9 +28,8 @@ public class ClientGlobals {
     public static final Node fixedNode = new Node("fixed_node");
     public static final Node playerNode = new Node("player");
 
-    public static GraphicsSettings gfxSettings = GraphicsSettings.HIGH;
+    public static GraphicsSettings gfxSettings = GraphicsSettings.JOKE;
     public static double scale = 1000.0;
-    public static CubesSettings cubesSettings;
     public static final UserCommand userCommand = new UserCommand();
     public static Main app;
     public static CommandHandler cmdHandler;

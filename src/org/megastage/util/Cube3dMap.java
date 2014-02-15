@@ -75,10 +75,6 @@ public class Cube3dMap {
         data[x][y][z] = value;
     }
 
-    public Vector3Int getChunkSizes() {
-        return new Vector3Int(xsize / 16 + 1, ysize / 256 + 1, zsize / 16 + 1);
-    }
-    
     public Vector3f getCenter() {
         return new Vector3f(
                 getCenter(xtotal),

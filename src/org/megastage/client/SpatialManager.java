@@ -3,7 +3,6 @@ package org.megastage.client;
 import org.megastage.client.controls.ExplosionControl;
 import com.artemis.Entity;
 import com.cubes.BlockTerrainControl;
-import com.cubes.test.blocks.Block_Wood;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
@@ -40,6 +39,8 @@ import jmeplanet.FractalDataSource;
 import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
+import org.megastage.client.CubesManager.Metal;
+import org.megastage.client.CubesManager.Stone;
 import org.megastage.client.controls.AxisRotationControl;
 import org.megastage.client.controls.EngineControl;
 import org.megastage.client.controls.GyroscopeControl;
@@ -270,12 +271,12 @@ public class SpatialManager {
     }
     
     public void setupShip(Entity entity, ShipGeometry data) {
-        BlockTerrainControl blockControl = new BlockTerrainControl(ClientGlobals.cubesSettings, data.map.getChunkSizes());
+        BlockTerrainControl blockControl = CubesManager.getControl(data.map);
         for(int x = 0; x <= data.map.xsize; x++) {
             for(int y = 0; y <= data.map.ysize; y++) {
                 for(int z = 0; z <= data.map.zsize; z++) {
                     if(data.map.get(x, y, z) == '#') {
-                        blockControl.setBlock(x, y, z, Block_Wood.class);
+                        blockControl.setBlock(x, y, z, Metal.class);
                     }
                 }
             }

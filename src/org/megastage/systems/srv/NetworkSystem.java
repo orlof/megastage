@@ -69,8 +69,10 @@ public class NetworkSystem extends VoidEntitySystem {
     @Override
     protected void processSystem() {
         Array<Message> batch = ServerGlobals.getUpdates();
-        // batch.addAll(ServerGlobals.getComponentEvents());
-        server.sendToAllUDP(batch.toArray());
+        if(batch != null) {
+            // batch.addAll(ServerGlobals.getComponentEvents());
+            server.sendToAllUDP(batch.toArray());
+        }
     }
 
     @Override

@@ -47,6 +47,7 @@ public class SynchronizeSystem extends EntitySystem {
 
     @Override
     protected void processEntities(Array<Entity> entities) {
+//        Log.info("" + System.currentTimeMillis() % 10000);
         for(Entity entity: entities) {
             if(DELETE_FLAG.has(entity)) {
                 world.deleteEntity(entity);

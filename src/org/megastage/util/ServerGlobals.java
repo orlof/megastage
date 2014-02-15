@@ -32,6 +32,9 @@ public class ServerGlobals {
 //    }
 //
     public static Array<Message> getUpdates() {
+        if(updates.size == 0) {
+            return null;
+        }
         Array<Message> old = updates;
         updates = new Array<>(100);
         return old;

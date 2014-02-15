@@ -19,6 +19,7 @@ import com.esotericsoftware.kryo.util.IntMap;
 import com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterTCP;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP;
+import com.esotericsoftware.minlog.Log;
 
 import static com.esotericsoftware.minlog.Log.*;
 
@@ -474,8 +475,9 @@ public class Server implements EndPoint {
 	public void sendToAllUDP (Object object) {
 		Connection[] connections = this.connections;
 		for (int i = 0, n = connections.length; i < n; i++) {
-			Connection connection = connections[i];
-			connection.sendUDP(object);
+                    // Log.info("" + System.currentTimeMillis() % 10000);
+                    Connection connection = connections[i];
+                    connection.sendUDP(object);
 		}
 	}
 

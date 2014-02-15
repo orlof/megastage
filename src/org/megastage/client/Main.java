@@ -94,9 +94,7 @@ public class Main extends SimpleApplication {
         ClientGlobals.artemis = new ArtemisState();
         stateManager.attach(ClientGlobals.artemis);
         
-        ClientGlobals.cubesSettings = new CubesSettings(this);
-        ClientGlobals.cubesSettings.setBlockMaterial(CubesTestAssets.getSettings(this).getBlockMaterial());
-        ClientGlobals.cubesSettings.setBlockSize(1);
+        CubesManager.init(this);
         CubesTestAssets.registerBlocks();
 
         createCrosshair();
