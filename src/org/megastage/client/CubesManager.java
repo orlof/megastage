@@ -7,6 +7,7 @@ import com.cubes.BlockSkin_TextureLocation;
 import com.cubes.BlockTerrainControl;
 import com.cubes.CubesSettings;
 import com.cubes.Vector3Int;
+import com.cubes.test.CubesTestAssets;
 import com.jme3.app.SimpleApplication;
 import org.megastage.util.Cube3dMap;
 
@@ -23,9 +24,11 @@ public class CubesManager {
         settings.setChunkSizeX(CHUNK_SIZE_X);
         settings.setChunkSizeY(CHUNK_SIZE_Y);
         settings.setChunkSizeZ(CHUNK_SIZE_Z);
-        
-        BlockManager.register(Stone.class, new BlockSkin(new BlockSkin_TextureLocation(6, 0), false));
-        BlockManager.register(Metal.class, new BlockSkin(new BlockSkin_TextureLocation(5, 0), false));
+
+        int fx=6,fy=0,wx=6,wy=1;
+        BlockManager.register(Combi.class, new BlockSkin(new BlockSkin_TextureLocation[] { new BlockSkin_TextureLocation(fx, fy), new BlockSkin_TextureLocation(fx, fy), new BlockSkin_TextureLocation(wx, wy), new BlockSkin_TextureLocation(wx, wy), new BlockSkin_TextureLocation(wx, wy), new BlockSkin_TextureLocation(wx, wy) }, false));
+        BlockManager.register(Floor.class, new BlockSkin(new BlockSkin_TextureLocation(0, 0), false));
+        BlockManager.register(Wall.class, new BlockSkin(new BlockSkin_TextureLocation(0, 3), false));
     }
 
     public static BlockTerrainControl getControl(Cube3dMap map) {
@@ -36,7 +39,18 @@ public class CubesManager {
 
         return new BlockTerrainControl(settings, chunkSizes);
     }
+
+    static Class<? extends Block> getBlock(char c) {
+        switch(c) {
+            case '#':
+                return Combi.class;
+            case 'W':
+                return Wall.class;
+        }
+        return null;
+    }
     
-    public class Stone extends Block {}
-    public class Metal extends Block {}
+    public class Floor extends Block {}
+    public class Combi extends Block {}
+    public class Wall extends Block {}
 }

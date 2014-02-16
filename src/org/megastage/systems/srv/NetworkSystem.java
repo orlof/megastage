@@ -226,7 +226,7 @@ public class NetworkSystem extends VoidEntitySystem {
         
         Vector3d vel = new Vector3d(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
         
-        vel = vel.multiply(10e6);
+        vel = vel.multiply(10e8);
         
         Position shipPos = Mapper.POSITION.get(ship);
         shipPos.set(

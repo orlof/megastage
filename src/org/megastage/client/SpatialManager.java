@@ -2,6 +2,7 @@ package org.megastage.client;
 
 import org.megastage.client.controls.ExplosionControl;
 import com.artemis.Entity;
+import com.cubes.Block;
 import com.cubes.BlockTerrainControl;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
@@ -12,6 +13,7 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.LightNode;
 import com.jme3.scene.Mesh;
@@ -39,8 +41,6 @@ import jmeplanet.FractalDataSource;
 import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
-import org.megastage.client.CubesManager.Metal;
-import org.megastage.client.CubesManager.Stone;
 import org.megastage.client.controls.AxisRotationControl;
 import org.megastage.client.controls.EngineControl;
 import org.megastage.client.controls.GyroscopeControl;
@@ -100,18 +100,18 @@ public class SpatialManager {
         }
     }
     
-    public Entity getUsableEntity(Node node) {
+    public Entity getUsableEntity(Node node, boolean onlyUsable) {
         Entity entity = entities.get(node);
         if(entity == null) {
             return null;
         }
 
-        UsableFlag use = Mapper.USABLE_FLAG.get(entity);
-        if(use != null) {
-            return entity;
+        if(onlyUsable) {
+            UsableFlag usable = Mapper.USABLE_FLAG.get(entity);
+            return usable == null ? null: entity;
         }
         
-        return null;
+        return entity;
     }
     
     public Node getNode(int id) {
@@ -283,8 +283,10 @@ public class SpatialManager {
         for(int x = 0; x <= data.map.xsize; x++) {
             for(int y = 0; y <= data.map.ysize; y++) {
                 for(int z = 0; z <= data.map.zsize; z++) {
-                    if(data.map.get(x, y, z) == '#') {
-                        blockControl.setBlock(x, y, z, Metal.class);
+                    char c = data.map.get(x, y, z);
+                    Class<? extends Block> block = CubesManager.getBlock(c);
+                    if(block != null) {
+                        blockControl.setBlock(x, y, z, block);
                     }
                 }
             }
@@ -293,6 +295,10 @@ public class SpatialManager {
         final Node node = getNode(entity);
         node.addControl(new PositionControl(entity, true));
         node.addControl(new RotationControl(entity));
+
+        if(ClientGlobals.gfxSettings.ENABLE_SHIP_SHADOWS) {
+            node.setShadowMode(ShadowMode.CastAndReceive);
+        }
 
         offset(node).addControl(blockControl);
         //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);

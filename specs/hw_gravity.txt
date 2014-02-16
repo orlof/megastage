@@ -49,6 +49,9 @@ Interrupt behavior:
 
         Halts DCPU for 4 cycles.
 
+    3: GET_SOI_FIELD_SIGNATURE
+        Return current SOI's field signature in B. 
+
 
 Orbital State Vector:
     The binary format for defining an orbital state vector is: 

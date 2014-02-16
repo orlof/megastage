@@ -110,6 +110,7 @@ public class PositionControl extends AbstractControl {
             double z = sz + dz * part;
 
             spatial.setLocalTranslation((float) x, (float) y, (float) z);
+            Log.trace(x + ", " + y + ", " + z);
         }
     }
     
