@@ -69,7 +69,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
                     return;
                 }
 
-                entity = ClientGlobals.spatialManager.getEntity(target);
+                entity = ClientGlobals.spatialManager.getUsableEntity(target);
                 Log.info("Pick entity: " + ID.get(entity));
                 if(entity != null) break;
                 target = target.getParent();

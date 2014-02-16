@@ -110,9 +110,10 @@ public class NetworkSystem extends VoidEntitySystem {
         SpawnPoint sp = Mapper.SPAWN_POINT.get(ship);
         
         Position pos = Mapper.POSITION.get(connection.player);
-        pos.x = 1000 * sp.x + 500;
-        pos.y = 1000 * sp.y + 500;
-        pos.z = 1000 * sp.z + 500;
+        pos.set(
+                1000 * sp.x + 500,
+                1000 * sp.y + 500,
+                1000 * sp.z + 500);
         
         connection.sendTCP(new PlayerIDMessage(connection.player.id));
     }
@@ -207,12 +208,11 @@ public class NetworkSystem extends VoidEntitySystem {
         
         int collision = collisionXZ(geom.map, cx, cy, cz, xprobe, yprobe, zprobe);
         if(collision == 0) {
-            pos.x += 1000 * cmd.xMove;
-            pos.z += 1000 * cmd.zMove;
+            pos.set(pos.x + (long) (1000 * cmd.xMove + 0.5), pos.y, pos.z + (long) (1000 * cmd.zMove + 0.5));
         } else if((collision & 1) == 0) {
-            pos.x += 1000 * cmd.xMove;
+            pos.set(pos.x + (long) (1000 * cmd.xMove + 0.5), pos.y, pos.z);
         } else if((collision & 2) == 0) {
-            pos.z += 1000 * cmd.zMove;
+            pos.set(pos.x, pos.y, pos.z + (long) (1000 * cmd.zMove + 0.5));
         }
 
         Rotation rot = Mapper.ROTATION.get(connection.player);
@@ -229,10 +229,11 @@ public class NetworkSystem extends VoidEntitySystem {
         vel = vel.multiply(10e6);
         
         Position shipPos = Mapper.POSITION.get(ship);
-        shipPos.x += vel.x;
-        shipPos.y += vel.y;
-        shipPos.z += vel.z;
-
+        shipPos.set(
+                shipPos.x + (long) (vel.x + 0.5),
+                shipPos.y + (long) (vel.y + 0.5),
+                shipPos.z + (long) (vel.z + 0.5));
+                
         // rotate rotation axis by fixedEntity rotation
         Vector3d yAxis = new Vector3d(0, 1, 0).multiply(shipRotationQuaternion);
         Quaternion yRotation = new Quaternion(yAxis, cmd.shipYaw);

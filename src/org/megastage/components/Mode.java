@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.components;
 
 import com.artemis.Entity;
@@ -10,13 +6,9 @@ import org.megastage.client.ClientGlobals;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.Network;
 
-/**
- * This entity's position and rotation are relative to parent
- * @author Orlof
- */
 public class Mode extends BaseComponent {
     public int value = CharacterMode.WALK; 
-    public boolean isDirty = true;
+    public transient boolean isDirty = true;
 
     @Override
     public boolean replicate() {

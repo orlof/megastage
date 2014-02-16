@@ -86,8 +86,7 @@ public class SpatialManager {
     }
 
     public void deleteEntity(Entity entity) {
-        int id = entity.id;
-        final Node node = nodes.get(id);
+        final Node node = nodes.get(entity.id);
 
         if(node != null) {
             app.enqueue(new Callable() {
@@ -101,7 +100,7 @@ public class SpatialManager {
         }
     }
     
-    public Entity getEntity(Node node) {
+    public Entity getUsableEntity(Node node) {
         Entity entity = entities.get(node);
         if(entity == null) {
             return null;
@@ -120,24 +119,27 @@ public class SpatialManager {
  
         if(node == null) {
             Entity entity = ClientGlobals.artemis.world.getEntity(id);
-            node = new Node(ID.get(entity));
-            nodes.put(id, node);
-            entities.put(node, entity);
+            node = createNode(entity);
         }
         
         return node;
     }
     
     public Node getNode(Entity entity) {
-        int id = entity.id;
-        Node node = nodes.get(id);
+        Node node = nodes.get(entity.id);
  
         if(node == null) {
-            node = new Node(ID.get(entity));
-            nodes.put(id, node);
-            entities.put(node, entity);
+            node = createNode(entity);
         }
         
+        return node;
+    }
+
+    private Node createNode(Entity entity) {
+        Node node = new Node(ID.get(entity));
+        node.attachChild(new Node("offset"));
+        nodes.put(entity.id, node);
+        entities.put(node, entity);
         return node;
     }
     
@@ -153,15 +155,13 @@ public class SpatialManager {
     }
     
     public void bindTo(final Entity parentEntity, final Entity childEntity) {
-        Node tmp = getNode(parentEntity);
-        Node main = (Node) tmp.getChild("offset");
-        final Node parentNode = main == null ? tmp: main; 
-        
-        final Node childNode = getNode(childEntity);
+        final Node parent = getNode(parentEntity);
+        final Node child = getNode(childEntity);
+
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
-                parentNode.attachChild(childNode);
+                attach(parent, child);
                 return null;
             }
         });
@@ -193,6 +193,14 @@ public class SpatialManager {
         return mat;
     }
     
+    private void attach(Node parent, Spatial child) {
+        ((Node) parent.getChild(0)).attachChild(child);
+    }
+    
+    private Node offset(Node node) {
+        return (Node) node.getChild(0);
+    }
+    
     public void setupSunLikeBody(final Entity entity, final SunGeometry data) {
         ColorRGBA colorRGBA = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
 
@@ -200,14 +208,14 @@ public class SpatialManager {
         node.addControl(new PositionControl(entity, true));
         node.addControl(new RotationControl(entity));
         
-        node.attachChild(createSphere(data.radius, colorRGBA, false));
+        attach(node, createSphere(data.radius, colorRGBA, false));
 
         final PointLight light = new PointLight();
         light.setColor(colorRGBA);
         light.setRadius(data.lightRadius);
 
         LightNode lightNode = new LightNode(entity.toString() + " LightNode", light);
-        node.attachChild(lightNode);
+        attach(node, lightNode);
 
         app.enqueue(new Callable() {
             @Override
@@ -230,7 +238,7 @@ public class SpatialManager {
             final Planet planet = createPlanet(data);
 
             app.enqueue(new Callable() { @Override public Object call() throws Exception {
-                node.attachChild(planet);
+                attach(node, planet);
 
                 PlanetAppState appState = app.getStateManager().getState(PlanetAppState.class);
                 if(appState != null) appState.addPlanet(planet);
@@ -253,7 +261,7 @@ public class SpatialManager {
             
             final Geometry geom = createSphere(data.radius, color, true);
             app.enqueue(new Callable() { @Override public Object call() throws Exception {
-                node.attachChild(geom);
+                attach(node, geom);
 
                 node.addControl(positionControl);
                 node.addControl(rotationControl);
@@ -282,52 +290,44 @@ public class SpatialManager {
             }
         }
         
-        final Node offset = new Node("offset");
-        offset.addControl(blockControl);
-        //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
-
         final Node node = getNode(entity);
         node.addControl(new PositionControl(entity, true));
         node.addControl(new RotationControl(entity));
 
-        node.attachChild(offset);
-        offset.setLocalTranslation(data.map.getCenter().negateLocal());
+        offset(node).addControl(blockControl);
+        //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 
-        app.enqueue(new Callable() {
-            @Override
-            public Object call() throws Exception {
-                // it is possible that lem and other equipment is already BindTo ship
-                // they have been bound to wrong node -> move to offset node
-                // TODO always create main node AND offset node
-                for(Spatial s: new ArrayList<>(node.getChildren())) {
-                    if(!s.getName().equals("imposter") && !s.getName().equals("offset")) {
-                        offset.attachChild(s);
-                    }
-                }
-
-                if(node.getParent() == null) {
-                    ClientGlobals.sysMovNode.attachChild(node);
-                }
-                return null;
+        setOffsetTranslation(node, data.map.getCenter().negateLocal());
+        
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            if(node.getParent() == null) {
+                ClientGlobals.sysMovNode.attachChild(node);
             }
-        });
+            return null;
+        }});
     }
 
     public void setupEngine(Entity entity, EngineGeometry data) {
         final Node node = getNode(entity);
-        node.addControl(new PositionControl(entity, true));
-        node.addControl(new RotationControl(entity));
+        final PositionControl positionControl = new  PositionControl(entity, true);
+        final RotationControl rotationControl = new  RotationControl(entity);
 
-        Node burn = (Node) assetManager.loadModel("Scenes/testScene.j3o"); 
+        final Node burn = (Node) assetManager.loadModel("Scenes/testScene.j3o"); 
         ParticleEmitter emitter = (ParticleEmitter) burn.getChild("Emitter");
         emitter.addControl(new EngineControl(entity));
         emitter.setEnabled(true);
-        node.attachChild(burn);
 
-        Geometry geom = new Geometry("", new Cylinder(16, 16, 0.5f, 1, true));
+        final Geometry geom = new Geometry("", new Cylinder(16, 16, 0.5f, 1, true));
         geom.setMaterial(material(ColorRGBA.Gray, true));
         
-        node.attachChild(geom);
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            node.addControl(rotationControl);
+
+            attach(node, burn);
+            attach(node, geom);
+            return null;
+        }});
     }
     
     public void setupMonitor(Entity entity, MonitorGeometry data) {
@@ -361,8 +361,8 @@ public class SpatialManager {
             node.addControl(positionControl);
             node.addControl(rotationControl);
 
-            node.attachChild(panel);
-            node.attachChild(box);
+            attach(node, panel);
+            attach(node, box);
             return null;
         }});
     }
@@ -383,8 +383,8 @@ public class SpatialManager {
         head.setLocalTranslation(0, 1.0f, 0);
         
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
-            node.attachChild(body);
-            node.attachChild(head);
+            attach(node, body);
+            attach(node, head);
 
             node.addControl(positionControl);
             node.addControl(bodyRotationControl);
@@ -426,23 +426,24 @@ public class SpatialManager {
     }
 
     private void leaveShip() {
-        Entity shipEntity = ClientGlobals.shipEntity;
-        
-        if(shipEntity != null) {
+        if(ClientGlobals.shipEntity != null) {
+            Log.info(ID.get(ClientGlobals.shipEntity));
             ClientGlobals.shipEntity = null;
 
-            Node shipNode = getNode(shipEntity);
+            Node shipNode = getNode(ClientGlobals.shipEntity);
             ClientGlobals.sysMovNode.attachChild(shipNode);
             ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
         }
     }
 
     private void enterShip(Entity shipEntity) {
+        Log.info(ID.get(shipEntity));
+
         ClientGlobals.shipEntity = shipEntity;
 
         Node shipNode = getNode(shipEntity);
         ClientGlobals.fixedNode.attachChild(shipNode);
-        ((Node) shipNode.getChild("offset")).attachChild(ClientGlobals.playerNode);
+        attach(shipNode, ClientGlobals.playerNode);
     }
 
     public void setupPlayer(final Entity entity) {
@@ -450,7 +451,6 @@ public class SpatialManager {
         final AxisRotationControl headRotationControl = new AxisRotationControl(entity, true, false, false);
 
         app.enqueue(new Callable() { @Override public Object call() throws Exception {
-
             ClientGlobals.playerNode.addControl(new PositionControl(entity, true));
             ClientGlobals.playerNode.addControl(bodyRotationControl);
             ClientGlobals.playerNode.getChild(0).addControl(headRotationControl);
@@ -465,17 +465,15 @@ public class SpatialManager {
         explosionNode.addControl(new ExplosionControl(explosion, explosionNode));
 
         app.enqueue(new Callable() { @Override public Object call() throws Exception {
-            node.attachChild(explosionNode);
+            attach(node, explosionNode);
             return null;
         }});
     }
 
     
     public void imposter(Entity entity, boolean gfxVisible) {
-        Node node = nodes.get(entity.id);
+        Node node = getNode(entity);
 
-        if(node == null) return;
-        
         for(Spatial s: node.getChildren()) {
             if(s.getName().equals("imposter")) {
                 boolean imposterVisible = !gfxVisible;
@@ -555,8 +553,8 @@ public class SpatialManager {
             node.addControl(positionControl);
             node.addControl(rotationControl);
 
-            node.attachChild(base);
-            node.attachChild(spinner);
+            attach(node, base);
+            attach(node, spinner);
             return null;
         }});
     }
@@ -591,8 +589,8 @@ public class SpatialManager {
             node.addControl(positionControl);
             node.addControl(rotationControl);
 
-            node.attachChild(base);
-            node.attachChild(spinnerRotator);
+            attach(node, base);
+            attach(node, spinnerRotator);
             return null;
         }});
     }
@@ -615,9 +613,13 @@ public class SpatialManager {
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
             node.addControl(positionControl);
 
-            node.attachChild(base);
-            node.attachChild(wheel);
+            attach(node, base);
+            attach(node, wheel);
             return null;
         }});
+    }
+
+    private void setOffsetTranslation(Node node, Vector3f value) {
+        offset(node).setLocalTranslation(value);
     }
 }

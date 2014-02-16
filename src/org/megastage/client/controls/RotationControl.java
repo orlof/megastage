@@ -31,7 +31,7 @@ public class RotationControl extends AbstractControl {
         if(ClientGlobals.shipEntity == entity) {
             spatial.setLocalRotation(Quaternion.IDENTITY);            
         } else if (rot.dirty) {
-            Quaternion q = new Quaternion((float) rot.x, (float) rot.y, (float) rot.z, (float) rot.w);
+            Quaternion q = rot.getQuaternion3f();
             spatial.setLocalRotation(q);
             rot.dirty = false;
         }

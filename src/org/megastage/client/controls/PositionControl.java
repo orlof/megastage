@@ -54,13 +54,15 @@ public class PositionControl extends AbstractControl {
                 return;
             }
             
-            long duration = Time.value - lastUpdateTime; 
+            Vector3f cpos = spatial.getLocalTranslation();
+            Vector3f tpos = pos.getVector3f();
+            
+            long duration = 
+                    (cpos.x == 0f && cpos.y == 0f && cpos.z == 0f) ? 
+                    0: Time.value - lastUpdateTime; 
             lastUpdateTime = Time.value;
 
-            Vector3f curpos = spatial.getLocalTranslation();
-            Vector3f tgtpos = pos.getVector3f();
-            
-            interpolator.update(Time.value, Time.value + duration, curpos, tgtpos);
+            interpolator.update(Time.value, Time.value + duration, cpos, tpos);
         }
         
         interpolator.apply();
@@ -90,13 +92,13 @@ public class PositionControl extends AbstractControl {
         }
 
         public final void apply() {
-            if( Time.value <= startTime) {
-                spatial.setLocalTranslation((float) sx, (float) sy, (float) sz);
+            if( Time.value >= endTime) {
+                spatial.setLocalTranslation((float) ex, (float) ey, (float) ez);
                 return;
             } 
             
-            if( Time.value >= endTime) {
-                spatial.setLocalTranslation((float) ex, (float) ey, (float) ez);
+            if( Time.value <= startTime) {
+                spatial.setLocalTranslation((float) sx, (float) sy, (float) sz);
                 return;
             } 
             

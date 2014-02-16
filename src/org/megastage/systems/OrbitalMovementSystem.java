@@ -49,9 +49,10 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
         Position fixedStar = POSITION.get(center);
 
         Position position = POSITION.get(entity);
-        position.x = Math.round(1000 * localSum.x) + fixedStar.x;
-        position.y = fixedStar.y;
-        position.z = Math.round(1000* localSum.z) + fixedStar.z;
+        position.set(
+                Math.round(1000 * localSum.x) + fixedStar.x,
+                fixedStar.y,
+                Math.round(1000* localSum.z) + fixedStar.z);
         position.dirty = true;
     }
 

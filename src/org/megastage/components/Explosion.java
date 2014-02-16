@@ -17,7 +17,7 @@ import org.megastage.util.Time;
 public class Explosion extends BaseComponent {
     public long startTime = Time.value;
     
-    public int clientState = -1;
+    public transient int clientState = -1;
     public int serverState = 0;
 
     @Override

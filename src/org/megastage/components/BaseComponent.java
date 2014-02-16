@@ -41,10 +41,6 @@ public abstract class BaseComponent implements Component {
     }
 
     public void receive(Connection pc, Entity entity) {
-        if(Log.INFO) {
-            Log.info(ID.get(entity) + this.toString());
-        }
-                
         entity.addComponent(this);
         entity.changedInWorld();
     }

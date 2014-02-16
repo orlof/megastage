@@ -4,6 +4,7 @@ import com.artemis.Entity;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.components.Mass;
 import org.megastage.components.transfer.MonitorData;
@@ -34,6 +35,7 @@ import org.megastage.components.srv.Identifier;
 import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.components.transfer.RadarTargetData;
 import org.megastage.util.Cube3dMap;
+import org.megastage.util.ID;
 import org.megastage.util.RAM;
 import org.megastage.util.Vector3d;
 
@@ -118,6 +120,7 @@ public class Network {
             component.receive(pc, entity);
         }
         
+        @Override
         public String toString() {
             return "ComponentMessage(" + owner + ", " + component.toString() + ")";
         }

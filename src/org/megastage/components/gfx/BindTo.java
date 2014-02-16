@@ -7,9 +7,11 @@ package org.megastage.components.gfx;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.client.ClientGlobals;
+import org.megastage.util.ID;
 
 /**
  * This entity's position and rotation are relative to parent
@@ -36,6 +38,9 @@ public class BindTo extends BaseComponent {
 
         parent = parentEntity.id;
 
+        //Log.info(ID.get(entity));
+        //Log.info(ID.get(parentEntity));
+        
         if(ClientGlobals.playerEntity == entity) {
             ClientGlobals.spatialManager.changeShip(parentEntity);
         } else {

@@ -7,13 +7,14 @@ import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.protocol.Network;
 import org.megastage.util.Globals;
 import org.megastage.util.Mapper;
 import org.megastage.util.Vector3d;
 
 public class Position extends BaseComponent {
     public long x, y, z;
-    public boolean dirty;
+    public transient boolean dirty = true;
     
     public Position() {
         super();
@@ -36,7 +37,13 @@ public class Position extends BaseComponent {
 
     @Override
     public boolean synchronize() {
-        return true;
+        return dirty;
+    }
+
+    @Override
+    public Network.ComponentMessage create(Entity entity) {
+        dirty = false;
+        return super.create(entity);
     }
     
     @Override
@@ -56,9 +63,9 @@ public class Position extends BaseComponent {
     }
     
     public void add(Vector3d vector) {
-        x += Math.round(vector.x);
-        y += Math.round(vector.y);
-        z += Math.round(vector.z);
+        set(x + Math.round(vector.x), 
+                y + Math.round(vector.y),
+                z + Math.round(vector.z));
     }
 
     public void move(Velocity velocity, float time) {
@@ -74,9 +81,16 @@ public class Position extends BaseComponent {
     }
     
     public void set(Position pos) {
-        x = pos.x;
-        y = pos.y;
-        z = pos.z;
+        set(pos.x, pos.y, pos.z);
+    }
+
+    public void set(long x, long y, long z) {
+        if(this.x != x || this.y != y || this.z != z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.dirty = true;
+        }
     }
 
     @Override
