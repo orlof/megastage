@@ -7,7 +7,6 @@ import org.megastage.components.Mass;
 import org.megastage.components.Mode;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
-import org.megastage.components.PrevPosition;
 import org.megastage.components.Rotation;
 import org.megastage.components.SpawnPoint;
 import org.megastage.components.UsableFlag;
@@ -21,7 +20,8 @@ import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.srv.Acceleration;
 import org.megastage.components.srv.Identifier;
-import org.megastage.components.srv.Velocity;
+import org.megastage.components.srv.SphereOfInfluence;
+import org.megastage.components.Velocity;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.components.transfer.RadarTargetData;
@@ -29,7 +29,6 @@ import org.megastage.components.transfer.RadarTargetData;
 public class Mapper {
     public static ComponentMapper<Acceleration> ACCELERATION;
     public static ComponentMapper<Position> POSITION;
-    public static ComponentMapper<PrevPosition> PREV_POSITION;
     public static ComponentMapper<Rotation> ROTATION;
     public static ComponentMapper<UsableFlag> USABLE_FLAG;
     public static ComponentMapper<EngineData> ENGINE_DATA;
@@ -49,11 +48,11 @@ public class Mapper {
     public static ComponentMapper<SpawnPoint> SPAWN_POINT;
     public static ComponentMapper<ShipGeometry> SHIP_GEOMETRY;
     public static ComponentMapper<Mode> MODE;
+    public static ComponentMapper<SphereOfInfluence> SPHERE_OF_INFLUENCE;
 
     public static void init(World world) {
         ACCELERATION = world.getMapper(Acceleration.class);
         POSITION = world.getMapper(Position.class);
-        PREV_POSITION = world.getMapper(PrevPosition.class);
         ROTATION = world.getMapper(Rotation.class);
         VELOCITY = world.getMapper(Velocity.class);
         USABLE_FLAG = world.getMapper(UsableFlag.class);
@@ -73,5 +72,6 @@ public class Mapper {
         SPAWN_POINT = world.getMapper(SpawnPoint.class);
         SHIP_GEOMETRY = world.getMapper(ShipGeometry.class);
         MODE = world.getMapper(Mode.class);
+        SPHERE_OF_INFLUENCE = world.getMapper(SphereOfInfluence.class);
     }
 }

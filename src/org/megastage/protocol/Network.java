@@ -29,6 +29,7 @@ import org.megastage.components.DeleteFlag;
 import org.megastage.components.Mode;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.Explosion;
+import org.megastage.components.Velocity;
 import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.RadarGeometry;
 import org.megastage.components.srv.Identifier;
@@ -39,13 +40,6 @@ import org.megastage.util.ID;
 import org.megastage.util.RAM;
 import org.megastage.util.Vector3d;
 
-/**
- * Created with IntelliJ IDEA.
- * User: contko3
- * Date: 10/2/13
- * Time: 7:50 AM
- * To change this template use File | Settings | File Templates.
- */
 public class Network {
     public static String networkInterface = "localhost";
 
@@ -95,6 +89,7 @@ public class Network {
         kryo.register(UsableFlag.class);
         kryo.register(UserCommand.class);
         kryo.register(Vector3d.class);
+        kryo.register(Velocity.class);
         kryo.register(VoidGeometry.class);
     }
 

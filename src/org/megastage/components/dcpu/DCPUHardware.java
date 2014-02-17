@@ -6,7 +6,10 @@ import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
+import org.megastage.util.Globals;
 import org.megastage.util.Mapper;
+import org.megastage.util.Quaternion;
+import org.megastage.util.Vector3d;
 
 public abstract class DCPUHardware extends BaseComponent {
     public static final int TYPE_LEM = 0x7349F615;
@@ -66,4 +69,48 @@ public abstract class DCPUHardware extends BaseComponent {
         
         return null;
     }
+
+    protected static final char writeFloatToMemory(char[] mem, char ptr, float val) {
+        int bits = Float.floatToIntBits(val);
+
+        mem[ptr++] = (char) (bits >> 16);
+        mem[ptr++] = (char) bits;
+        
+        return ptr;
+    }
+
+    public static final char writeRadiansToMemory(char[] mem, char ptr, double rad) {
+        // sign bit
+        char result = rad < 0 ? (char) 0x8000: 0x0000;
+
+        double degrees = Math.abs(Math.toDegrees(rad));
+        result |= (Math.round(degrees) % 360) << 6;
+        result |= Math.round(60.0 * degrees) % 60;
+        
+        mem[ptr++] = result;
+        
+        return ptr;
+    }
+
+    public static final char writePitchAndYawToMemory(char[] mem, char ptr, Entity ship, Entity target) {
+        // target direction
+        Quaternion rot = Mapper.ROTATION.get(ship).getQuaternion4d();
+
+        // vector from me to target in global coordinate system
+        Vector3d ownCoord = Mapper.POSITION.get(ship).getVector3d();
+        Vector3d othCoord = Mapper.POSITION.get(target).getVector3d();
+        
+        Vector3d delta = othCoord.sub(ownCoord);
+
+        delta = delta.multiply(rot);
+
+        double pitch = Math.atan2(delta.y, Math.sqrt(delta.x*delta.x + delta.z*delta.z));
+        double yaw = Math.atan2(delta.x, -delta.z);
+
+        ptr = writeRadiansToMemory(mem, ptr, pitch);
+        ptr = writeRadiansToMemory(mem, ptr, yaw);
+        
+        return ptr;
+    }
+
 }

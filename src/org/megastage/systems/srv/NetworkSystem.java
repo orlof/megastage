@@ -12,7 +12,6 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.components.dcpu.VirtualKeyboard;
 import org.megastage.protocol.Network;
 import org.megastage.protocol.PlayerConnection;
-
 import java.io.IOException;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.DeleteFlag;
@@ -22,7 +21,6 @@ import org.megastage.components.SpawnPoint;
 import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.Mode;
-import org.megastage.components.dcpu.VirtualRadar;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.protocol.Action;
 import org.megastage.protocol.CharacterMode;
@@ -305,13 +303,9 @@ public class NetworkSystem extends VoidEntitySystem {
             return;
         }
 
-        VirtualRadar virtualRadar = Mapper.VIRTUAL_RADAR.get(target);
-        if(virtualRadar != null) {
-            
-            
-            connection.item = virtualMonitor.getHardware(VirtualKeyboard.class);
-            Mode mode = Mapper.MODE.get(connection.player);
-            mode.setMode(CharacterMode.DCPU);
+        SpawnPoint spawnPoint = Mapper.SPAWN_POINT.get(target);
+        if(spawnPoint != null) {
+            //TODO
             return;
         }
     }

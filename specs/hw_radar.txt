@@ -63,4 +63,8 @@ Interrupt behavior:
         Sets a 12 word area of ram starting at B to [ORBITAL_STATE_VECTOR]
         of target in _ship's_ SOI.
 
+        Returns
+            C: 0xffff if data is available
+            C: 0x0000 if data is not available
+
         Halts the DCPU-16 for 12 cycles.

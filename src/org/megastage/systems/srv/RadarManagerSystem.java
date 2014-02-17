@@ -5,19 +5,22 @@ import com.artemis.Entity;
 import com.artemis.systems.EntitySystem;
 import com.badlogic.gdx.utils.Array;
 import org.megastage.components.Position;
-import org.megastage.components.srv.SphereOfInfluence;
-import org.megastage.server.SOIManager;
+import org.megastage.components.Mass;
+import org.megastage.components.RadarEcho;
+import org.megastage.server.RadarManager;
 import org.megastage.util.Time;
 
 /**
  * User: Orlof
+ * Date: 8/19/13
+ * Time: 12:09 PM
  */
-public class SphereOfInfluenceSystem extends EntitySystem {
+public class RadarManagerSystem extends EntitySystem {
     private long interval;
     private long acc;
 
-    public SphereOfInfluenceSystem(long interval) {
-        super(Aspect.getAspectForAll(SphereOfInfluence.class, Position.class));
+    public RadarManagerSystem(long interval) {
+        super(Aspect.getAspectForAll(Mass.class, Position.class, RadarEcho.class));
         this.interval = interval;
     }
 
@@ -32,6 +35,7 @@ public class SphereOfInfluenceSystem extends EntitySystem {
 
     @Override
     protected void processEntities(Array<Entity> entities) {
-        SOIManager.update(entities);
+        RadarManager.update(entities);
     }
+
 }

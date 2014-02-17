@@ -28,7 +28,8 @@ public class Orbit extends BaseComponent {
         center = parent.id;
         distance = getDoubleValue(element, "orbital_distance", 0.0);
 
-        return new BaseComponent[] { new PrevPosition() };
+        return null;
+        //return new BaseComponent[] { new PrevPosition() };
     }
 
     @Override
@@ -82,6 +83,7 @@ public class Orbit extends BaseComponent {
         );
     }
 
+    @Override
     public String toString() {
         return "Orbit(" + center + ", " + distance + ", " + (2*Math.PI) / angularSpeed + ")";
     }

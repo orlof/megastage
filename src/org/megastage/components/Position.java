@@ -1,6 +1,5 @@
 package org.megastage.components;
 
-import org.megastage.components.srv.Velocity;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;

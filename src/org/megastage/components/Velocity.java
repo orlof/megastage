@@ -1,11 +1,11 @@
-package org.megastage.components.srv;
+package org.megastage.components;
 
-import org.megastage.components.srv.Acceleration;
 import com.artemis.Entity;
 import com.artemis.World;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.components.srv.Acceleration;
+import org.megastage.protocol.Network;
 import org.megastage.util.Vector3d;
 
 /**
@@ -26,6 +26,11 @@ public class Velocity extends BaseComponent {
         vector = new Vector3d(x, y, z);
         
         return null;
+    }
+
+    @Override
+    public boolean replicate() {
+        return true;
     }
 
     public void add(Vector3d v) {

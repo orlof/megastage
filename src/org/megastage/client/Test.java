@@ -18,14 +18,16 @@ import org.megastage.util.Globals;
 public class Test extends SimpleApplication {
 
     public static void main(String[] args) {
-        calc(1,1,-1, "right up forward"); // ruf
-        //calc(1,-1,-1, "right down forward"); // rdf
-        calc(1,1,1, "right up back"); // rub
-        //calc(1,-1,1, "right down back"); // rdb
-        calc(-1,1,-1, "left up forward"); // ruf
-        //calc(-1,-1,-1, "left down forward"); // rdf
-        calc(-1,1,1, "left up back"); // rub
-        //calc(-1,-1,1, "left down back"); // rdb
+        System.out.println((int) (char) 65535 << 2);
+        
+//        calc(1,1,-1, "right up forward"); // ruf
+//        //calc(1,-1,-1, "right down forward"); // rdf
+//        calc(1,1,1, "right up back"); // rub
+//        //calc(1,-1,1, "right down back"); // rdb
+//        calc(-1,1,-1, "left up forward"); // ruf
+//        //calc(-1,-1,-1, "left down forward"); // rdf
+//        calc(-1,1,1, "left up back"); // rub
+//        //calc(-1,-1,1, "left down back"); // rdb
     }
 
     public static void calc(double x, double y, double z, String name) {
