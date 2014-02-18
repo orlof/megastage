@@ -434,10 +434,11 @@ public class SpatialManager {
     private void leaveShip() {
         if(ClientGlobals.shipEntity != null) {
             Log.info(ID.get(ClientGlobals.shipEntity));
-            ClientGlobals.shipEntity = null;
 
             Node shipNode = getNode(ClientGlobals.shipEntity);
             ClientGlobals.sysMovNode.attachChild(shipNode);
+
+            ClientGlobals.shipEntity = null;
             ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
         }
     }
@@ -450,6 +451,7 @@ public class SpatialManager {
         Node shipNode = getNode(shipEntity);
         ClientGlobals.fixedNode.attachChild(shipNode);
         attach(shipNode, ClientGlobals.playerNode);
+        ClientGlobals.playerNode.setLocalTranslation(0, 0, 0);
     }
 
     public void setupPlayer(final Entity entity) {

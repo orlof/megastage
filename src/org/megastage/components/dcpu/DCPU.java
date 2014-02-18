@@ -206,6 +206,7 @@ public class DCPU extends BaseComponent {
                         }
                         break;
                     case 16: //HWN
+                        //Log.info("HWN " + hardware.size());
                         cycles++;
                         set(aaddr, (char) hardware.size());
                         break;
@@ -213,7 +214,10 @@ public class DCPU extends BaseComponent {
                         cycles += 3;
                         synchronized (hardware) {
                             if ((a >= 0) && (a < hardware.size())) {
+                                //Log.info("HWQ " + ((int) a) + " " + hardware.get(a).toString());
                                 hardware.get(a).query();
+                            } else {
+                                Log.info("HWQ " + (int) a);
                             }
                         }
                         break;
@@ -221,7 +225,10 @@ public class DCPU extends BaseComponent {
                         cycles += 3;
                         synchronized (hardware) {
                             if ((a >= 0) && (a < hardware.size())) {
+                                //if(a!=1)Log.info("HWI " + ((int) a) + " " + hardware.get(a).toString());
                                 hardware.get(a).interrupt();
+                            } else {
+                                Log.info("HWI " + (int) a);
                             }
                         }
                         break;

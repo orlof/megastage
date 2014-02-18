@@ -69,7 +69,7 @@ public class VirtualPPS extends DCPUHardware {
     }
 
     private boolean getSectorNumber() {
-        Log.info("" + (int) dcpu.registers[1]);
+        Log.info("");
         dcpu.registers[1] = 0x0000;
         return true;
     }

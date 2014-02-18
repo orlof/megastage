@@ -2,13 +2,19 @@ package org.megastage.client;
 
 import com.cubes.Block;
 import com.cubes.BlockManager;
+import com.cubes.BlockNavigator;
 import com.cubes.BlockSkin;
 import com.cubes.BlockSkin_TextureLocation;
 import com.cubes.BlockTerrainControl;
 import com.cubes.CubesSettings;
 import com.cubes.Vector3Int;
 import com.cubes.test.CubesTestAssets;
+import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
+import com.jme3.collision.CollisionResults;
+import com.jme3.math.Vector2f;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Node;
 import org.megastage.util.Cube3dMap;
 
 public class CubesManager {
@@ -49,7 +55,22 @@ public class CubesManager {
         }
         return null;
     }
-    
+
+    public static Vector3Int getCurrentPointedBlockLocation(Node terrainNode, boolean getNeighborLocation){
+        CollisionResults results = ClientGlobals.app.getRayCastingResults(terrainNode);
+        if(results.size() > 0) {
+            Vector3f collisionContactPoint = results.getClosestCollision().getContactPoint();
+            collisionContactPoint.subtractLocal(terrainNode.getLocalTranslation());
+            BlockTerrainControl ctrl = terrainNode.getControl(BlockTerrainControl.class);
+            Log.info(""+terrainNode.getLocalTranslation());
+            Log.info(""+ctrl);
+            Log.info(""+collisionContactPoint);
+            Log.info(""+getNeighborLocation);
+            return BlockNavigator.getPointedBlockLocation(ctrl, collisionContactPoint, getNeighborLocation);
+        }
+        return null;
+    }
+
     public class Floor extends Block {}
     public class Combi extends Block {}
     public class Wall extends Block {}

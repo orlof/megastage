@@ -11,6 +11,7 @@ import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.client.ClientGlobals;
+import org.megastage.protocol.Network;
 import org.megastage.util.ID;
 
 /**
@@ -19,6 +20,7 @@ import org.megastage.util.ID;
  */
 public class BindTo extends BaseComponent {
     public int parent; 
+    private transient boolean dirty = false;
     
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
@@ -30,6 +32,22 @@ public class BindTo extends BaseComponent {
     @Override
     public boolean replicate() {
         return true;
+    }
+
+    @Override
+    public boolean synchronize() {
+        return dirty;
+    }
+
+    @Override
+    public Network.ComponentMessage create(Entity entity) {
+        dirty = false;
+        return super.create(entity);
+    }
+
+    public void setParent(int eid) {
+        this.dirty = true;
+        this.parent = eid;
     }
     
     @Override

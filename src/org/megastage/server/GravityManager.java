@@ -23,7 +23,7 @@ public class GravityManager {
                 return entity;
             }
         }
-        throw new EntityComponentSystemException("No gravity field signature: " + (int) signature);
+        return null;
     }
 
     public static boolean match(Entity entity, char signature) {

@@ -103,6 +103,7 @@
         <component type="srv.Acceleration"/>
         <component type="SpawnPoint"  dx="7" dy="1" dz="6"/>
         <component type="RadarEcho" echo="0"/>
+        <component type="UsableFlag"/>
         <component type="gfx.ShipGeometry">
           <map y="0" x="012345678901234"/>
             <map z="00">     #####     </map>
@@ -261,6 +262,10 @@
                 <component type="dcpu.VirtualKeyboard"/>
                 <component type="gfx.BindTo"/>
             </entity>
+            <entity name="Clock">
+                <component type="dcpu.VirtualClock"/>
+                <component type="gfx.BindTo"/>
+            </entity>
             <entity name="Engine">
                 <!-- engine vector specifies the direction of ship acceleration.
                      relative to ship's starting orientation (heading +z) -->
@@ -316,6 +321,10 @@
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <group name="replicate"/>
+            </entity>
+            <entity name="Gravity Sensor">
+                <component type="dcpu.VirtualGravitySensor"/>
+                <component type="gfx.BindTo"/>
             </entity>
         </entity>
         <entity name="Enemy">
@@ -347,6 +356,7 @@
         <component type="srv.Acceleration"/>
         <component type="SpawnPoint"  dx="7" dy="1" dz="6"/>
         <component type="RadarEcho" echo="0"/>
+        <component type="UsableFlag"/>
         <component type="gfx.ShipGeometry">
           <map y="0" x="012345678901234"/>
             <map z="00">     #####     </map>
@@ -505,6 +515,10 @@
                 <component type="dcpu.VirtualKeyboard"/>
                 <component type="gfx.BindTo"/>
             </entity>
+            <entity name="Clock">
+                <component type="dcpu.VirtualClock"/>
+                <component type="gfx.BindTo"/>
+            </entity>
             <entity name="Engine">
                 <!-- engine vector specifies the direction of ship acceleration.
                      relative to ship's starting orientation (heading +z) -->
@@ -560,6 +574,10 @@
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <group name="replicate"/>
+            </entity>
+            <entity name="Gravity Sensor">
+                <component type="dcpu.VirtualGravitySensor"/>
+                <component type="gfx.BindTo"/>
             </entity>
         </entity>
     </entity-template>

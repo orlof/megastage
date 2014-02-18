@@ -1,6 +1,8 @@
 package org.megastage.client;
 
 import com.artemis.Entity;
+import com.cubes.BlockTerrainControl;
+import com.cubes.Vector3Int;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -14,6 +16,7 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import org.megastage.components.Rotation;
+import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
@@ -51,11 +54,12 @@ public class CommandHandler implements AnalogListener, ActionListener {
         "SHIP_YawLeft",
         "SHIP_YawRight",
         "WALK_InvertY",
-        "ITEM_Use",
+        "ITEM_Pick",
+        "ITEM_RightPick",
         "GAME_Exit",
     };
 
-    private void pickItem() {
+    private void pickItem(boolean right) {
         CollisionResults results = new CollisionResults();
         Ray ray = new Ray(ClientGlobals.cam.getLocation(), ClientGlobals.cam.getDirection());
         ClientGlobals.rootNode.collideWith(ray, results);
@@ -75,7 +79,28 @@ public class CommandHandler implements AnalogListener, ActionListener {
                 target = target.getParent();
             }
 
-            ClientGlobals.userCommand.pickItem(entity);
+            ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(entity);
+            if(geom != null) {
+                if(entity == ClientGlobals.shipEntity) {
+                    Node offset = (Node) target.getChild("offset");
+                    Vector3Int loc = CubesManager.getCurrentPointedBlockLocation(offset, !right);
+                    if(loc != null) {
+                        BlockTerrainControl ctrl = offset.getControl(BlockTerrainControl.class);
+                        if(!right) {
+                            ClientGlobals.userCommand.build(loc);
+                            ctrl.setBlock(loc, CubesManager.Combi.class);
+                        } else {
+                            ClientGlobals.userCommand.unbuild(loc);
+                            ctrl.removeBlock(loc);
+                        }
+                    }
+                } else {
+                    // TELEPORT
+                    ClientGlobals.userCommand.teleport(entity);
+                    Log.info("TELEPORT");
+                }
+            } else                 
+                ClientGlobals.userCommand.pickItem(entity);
         }
     }
     
@@ -151,7 +176,8 @@ public class CommandHandler implements AnalogListener, ActionListener {
         inputManager.addMapping("SHIP_YawLeft", new KeyTrigger(KeyInput.KEY_U));
         inputManager.addMapping("SHIP_YawRight", new KeyTrigger(KeyInput.KEY_O));
 
-        inputManager.addMapping("ITEM_Use", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping("ITEM_Pick", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping("ITEM_RightPick", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
 
         inputManager.addListener(this, walkMappings);
@@ -253,11 +279,18 @@ public class CommandHandler implements AnalogListener, ActionListener {
                     invertY = !invertY;
                 }
                 break;
-            case "ITEM_Use":
+            case "ITEM_Pick":
                 // Toggle on the up.
                 if (!value) {
                     //initDCPUMode();
-                    pickItem();
+                    pickItem(false);
+                }
+                break;
+            case "ITEM_RightPick":
+                // Toggle on the up.
+                if (!value) {
+                    //initDCPUMode();
+                    pickItem(true);
                 }
                 break;
             case "DCPU_Exit":

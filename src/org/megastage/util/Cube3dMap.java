@@ -13,7 +13,7 @@ import com.jme3.math.Vector3f;
  * @author Orlof
  */
 public class Cube3dMap {
-    private final static int INITIAL_CAPACITY = 16;
+    private final static transient int INITIAL_CAPACITY = 16;
 
     public char[][][] data;
     public int xsize, ysize, zsize;
@@ -36,7 +36,13 @@ public class Cube3dMap {
     }
 
     public void set(int x, int y, int z, char value) {
-        if(value == '#') {
+        char old = get(x, y, z);
+        
+        if(value == old) {
+            return;
+        }
+        
+        if(value != 0) {
             if(x > xsize) xsize = x;
             if(y > ysize) ysize = y;
             if(z > zsize) zsize = z;
@@ -46,6 +52,12 @@ public class Cube3dMap {
             ztotal += z;
 
             count++;
+        } else {
+            xtotal -= x;
+            ytotal -= y;
+            ztotal -= z;
+            
+            count--;
         }
         
         if(data == null || data.length <= x) {

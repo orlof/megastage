@@ -2,11 +2,9 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
-import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.util.Globals;
 import org.megastage.util.Mapper;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
@@ -19,6 +17,7 @@ public abstract class DCPUHardware extends BaseComponent {
     public static final int TYPE_CLOCK = 0x12D0B402;
     public static final int TYPE_ENGINE = 0xa8fb6730;
     public static final int TYPE_PPS = 0x3c7742c2;
+//    public static final int TYPE_PPS = 0x0cb7cb4c;
     public static final int TYPE_GYRO = 0xeec6c4de;
     public static final int TYPE_GRAVITATION_SENSOR = 0x3846bc64;
     public static final int MANUFACTORER_NYA_ELEKTRISKA = 0x1C6C8B36;
