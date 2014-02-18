@@ -85,7 +85,7 @@ public class NetworkSystem extends VoidEntitySystem {
         BindTo bindTo = Mapper.BIND_TO.get(connection.player);
         if(bindTo != null) {
             Entity e = world.getEntity(bindTo.parent);
-            e.addComponent(new DeleteFlag());
+            if(e != null) e.addComponent(new DeleteFlag());
         }
         
         connection.player.addComponent(new DeleteFlag());

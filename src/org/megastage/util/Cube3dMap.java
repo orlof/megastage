@@ -19,6 +19,7 @@ public class Cube3dMap {
     public int xsize, ysize, zsize;
     public int xtotal, ytotal, ztotal;
     public int count;
+    public int version = 0;
     
     public char get(int x, int y, int z) {
         if(data == null || x < 0 || data.length <= x) {
@@ -85,6 +86,7 @@ public class Cube3dMap {
         }
 
         data[x][y][z] = value;
+        version++;
     }
 
     public Vector3f getCenter() {

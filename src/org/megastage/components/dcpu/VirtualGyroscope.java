@@ -24,7 +24,7 @@ public class VirtualGyroscope extends DCPUHardware {
 
     public char   power = 0;
 
-    public long   inertiaTime;
+    public int    mapVersion;
     public double inertia;
 
     @Override
@@ -85,10 +85,10 @@ public class VirtualGyroscope extends DCPUHardware {
     }
     
     public double getRotation(ShipGeometry geom) {
-        if(inertiaTime < geom.updateTime) {
+        if(mapVersion < geom.map.version) {
             //TODO this is huge perf problem, inertia change should be 
             //     calculated only for changed block
-            inertiaTime = geom.updateTime;
+            mapVersion = geom.map.version;
             inertia = geom.getInertia(axis);
         }
         

@@ -11,14 +11,14 @@ import org.megastage.components.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.srv.CollisionType;
+import org.megastage.protocol.Network;
 import org.megastage.util.Cube3dMap;
-import org.megastage.util.Time;
+import org.megastage.util.Mapper;
 import org.megastage.util.Vector3d;
 
 public class ShipGeometry extends BaseComponent {
-    public long updateTime;
-
     public Cube3dMap map = new Cube3dMap();
+    public int version;
     
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
@@ -29,8 +29,6 @@ public class ShipGeometry extends BaseComponent {
         extraComponents[0] = new Mass(map.getMass());
         extraComponents[1] = new CollisionType(CollisionType.SHIP, map.getBoundingSphere());
         
-        updateTime = Time.value;
-
         return extraComponents;
     }
 
@@ -42,11 +40,26 @@ public class ShipGeometry extends BaseComponent {
     public boolean replicate() {
         return true;
     }
+
+    @Override
+    public boolean synchronize() {
+        return version < map.version;
+    }
+
+    @Override
+    public Network.ComponentMessage create(Entity entity) {
+        version = map.version;
+        return super.create(entity);
+    }
     
     @Override
     public void receive(Connection pc, Entity entity) {
-        super.receive(pc, entity);
-        ClientGlobals.spatialManager.setupShip(entity, this);
+        if(Mapper.SHIP_GEOMETRY.has(entity)) {
+            ClientGlobals.spatialManager.updateShip(entity, this);
+        } else {
+            super.receive(pc, entity);
+            ClientGlobals.spatialManager.setupShip(entity, this);
+        }
     }
     
     @Override

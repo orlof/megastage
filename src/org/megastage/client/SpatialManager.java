@@ -63,6 +63,7 @@ import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.PPSGeometry;
 import org.megastage.components.gfx.RadarGeometry;
+import org.megastage.util.Cube3dMap;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
 
@@ -278,6 +279,34 @@ public class SpatialManager {
         getNode(entity);
     }
     
+    public void updateShip(Entity entity, ShipGeometry data) {
+        Cube3dMap theMap = Mapper.SHIP_GEOMETRY.get(entity).map;
+        
+        final Node node = getNode(entity);
+        BlockTerrainControl ctrl = offset(node).getControl(BlockTerrainControl.class);
+
+        int xsize = Math.max(data.map.xsize, theMap.xsize);
+        int ysize = Math.max(data.map.ysize, theMap.ysize);
+        int zsize = Math.max(data.map.zsize, theMap.zsize);
+        
+        for(int x = 0; x <= xsize; x++) {
+            for(int y = 0; y <= ysize; y++) {
+                for(int z = 0; z <= zsize; z++) {
+                    char c = data.map.get(x, y, z);
+                    if(c != theMap.get(x, y, z)) {
+                        theMap.set(x, y, z, c);
+                        if(c == 0) {
+                            ctrl.removeBlock(x, y, z);
+                        } else {
+                            Class<? extends Block> block = CubesManager.getBlock(c);
+                            ctrl.setBlock(x, y, z, block);
+                        }
+                    }
+                }
+            }
+        }
+    }
+        
     public void setupShip(Entity entity, ShipGeometry data) {
         BlockTerrainControl blockControl = CubesManager.getControl(data.map);
         for(int x = 0; x <= data.map.xsize; x++) {
