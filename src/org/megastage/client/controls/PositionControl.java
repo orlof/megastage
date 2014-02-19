@@ -45,15 +45,15 @@ public class PositionControl extends AbstractControl {
             return;
         }
 
+        if(interpolator == null) {
+            spatial.setLocalTranslation(pos.getVector3f());
+            return;
+        }
+
         if(pos.dirty) {
             // position updated
             pos.dirty = false;
 
-            if(interpolator == null) {
-                spatial.setLocalTranslation(pos.getVector3f());
-                return;
-            }
-            
             Vector3f cpos = spatial.getLocalTranslation();
             Vector3f tpos = pos.getVector3f();
             

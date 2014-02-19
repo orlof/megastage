@@ -206,7 +206,7 @@ public class SpatialManager {
         ColorRGBA colorRGBA = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
 
         final Node node = getNode(entity);
-        node.addControl(new PositionControl(entity, true));
+        node.addControl(new PositionControl(entity, false));
         node.addControl(new RotationControl(entity));
         
         attach(node, createSphere(data.radius, colorRGBA, false));
@@ -344,7 +344,7 @@ public class SpatialManager {
 
     public void setupEngine(Entity entity, EngineGeometry data) {
         final Node node = getNode(entity);
-        final PositionControl positionControl = new  PositionControl(entity, true);
+        final PositionControl positionControl = new  PositionControl(entity, false);
         final RotationControl rotationControl = new  RotationControl(entity);
 
         final Node burn = (Node) assetManager.loadModel("Scenes/testScene.j3o"); 
@@ -367,7 +367,7 @@ public class SpatialManager {
     
     public void setupMonitor(Entity entity, MonitorGeometry data) {
         final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, true);
+        final PositionControl positionControl = new PositionControl(entity, false);
         final RotationControl rotationControl = new RotationControl(entity);
 
         BufferedImage img = new BufferedImage(128, 96, BufferedImage.TYPE_INT_ARGB);
@@ -574,7 +574,7 @@ public class SpatialManager {
 
     public void setupPPS(Entity entity, PPSGeometry aThis) {
         final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, true);
+        final PositionControl positionControl = new PositionControl(entity, false);
         final RotationControl rotationControl = new RotationControl(entity);
 
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
@@ -598,7 +598,7 @@ public class SpatialManager {
 
     public void setupRadar(Entity entity, RadarGeometry aThis) {
         final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, true);
+        final PositionControl positionControl = new PositionControl(entity, false);
         final RotationControl rotationControl = new RotationControl(entity);
 
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
@@ -634,7 +634,7 @@ public class SpatialManager {
 
     public void setupGyroscope(Entity entity, GyroscopeGeometry aThis) {
         final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, true);
+        final PositionControl positionControl = new PositionControl(entity, false);
 
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         //base.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
