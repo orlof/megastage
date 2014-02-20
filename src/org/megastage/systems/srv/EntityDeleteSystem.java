@@ -31,11 +31,12 @@ public class EntityDeleteSystem extends EntityProcessingSystem {
 
     @Override
     public boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
-                return true;
-        }
-        return false;
+        return true;
+//        if(Time.value >= acc) {
+//                acc = Time.value + interval;
+//                return true;
+//        }
+//        return false;
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.megastage.components.gfx;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.minlog.Log;
 import java.util.List;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -44,8 +45,9 @@ public class ShipGeometry extends BaseComponent {
 
     @Override
     public Message synchronize(Entity entity) {
-        if(map.pending.size > 0) {
-            BlockChange change = map.pending.pop();
+        if(map.pending != null && map.pending.size() > 0) {
+            Log.info(""+map.pending.toString());
+            BlockChange change = map.pending.remove();
             return change.always(entity);
         }
         return null;
@@ -53,7 +55,7 @@ public class ShipGeometry extends BaseComponent {
 
     @Override
     public void initialize(World world, Entity entity) {
-        map.pending.clear();
+        map.trackChanges();
     }
 
     

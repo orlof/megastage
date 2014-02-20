@@ -10,6 +10,7 @@ import com.cubes.Vector3Int;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.Vector3f;
+import java.util.LinkedList;
 import org.megastage.components.BaseComponent;
 import org.megastage.protocol.Message;
 
@@ -27,7 +28,11 @@ public class Cube3dMap {
     public int count;
     public int version = 0;
     
-    public transient Array<BlockChange> pending = new Array<>(100);
+    public transient LinkedList<BlockChange> pending;
+    
+    public void trackChanges() {
+        pending = new LinkedList<>();
+    }
     
     public char get(int x, int y, int z) {
         if(data == null || x < 0 || data.length <= x) {
@@ -45,6 +50,7 @@ public class Cube3dMap {
     }
 
     public void set(int x, int y, int z, char value) {
+        Log.info("");
         char old = get(x, y, z);
         
         if(value == old) {
@@ -94,7 +100,7 @@ public class Cube3dMap {
         }
 
         data[x][y][z] = value;
-        pending.add(new BlockChange(x, y, z, value));
+        if(pending != null) pending.add(new BlockChange(x, y, z, value));
         version++;
     }
 
@@ -180,7 +186,11 @@ public class Cube3dMap {
 
         @Override
         public void receive(Connection pc, Entity entity) {
-            Log.info("");
+            Log.info(ID.get(entity) + toString());
+        }
+        
+        public String toString() {
+            return "BlockChange[" + x + ", " + y + ", " + z + "] = " + (int) type;
         }
     }
 }

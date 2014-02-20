@@ -31,8 +31,10 @@ public class ExplosionSystem extends EntityProcessingSystem {
     @Override
     protected void process(Entity e) {
         Explosion explosion = Mapper.EXPLOSION.get(e);
+        
+        explosion.setState(currentState(explosion));
 
-        if(!explosion.dirty && stateExpired(explosion)) {
+        if(explosion.dirty) {
             switch(explosion.state) {
                 case 0: // create spatial
                 case 1: // particles
@@ -47,8 +49,6 @@ public class ExplosionSystem extends EntityProcessingSystem {
                     e.addComponent(new DeleteFlag());
                     break;
             }
-            explosion.dirty = true;
-            explosion.state++;
         }
     }
 
@@ -67,11 +67,15 @@ public class ExplosionSystem extends EntityProcessingSystem {
     
     private static final long[] delay = new long[] {
 //        1500, 3500, 3700, 8000, 8000, 13000, 14000, 15000
-        0, 1500, 3500, 3700, 8000, 13000, 13000, 13000
+        0, 1500, 3500, 3700, 4000, 13000, 13000, 13000
     };
 
-    public boolean stateExpired(Explosion explosion) {
-        long time = Time.value - explosion.startTime;
-        return time > delay[explosion.state];
+    public int currentState(Explosion exp) {
+        for(int state = -1; state+1 < delay.length; state++) {
+            if(Time.value < exp.startTime + delay[state+1]) {
+                return state;
+            }
+        }
+        return delay.length-1;
     }
 }

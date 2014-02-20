@@ -43,8 +43,6 @@ public class CubesManager {
                 map.ysize / CHUNK_SIZE_Y + 1, 
                 map.zsize / CHUNK_SIZE_Z + 1);
 
-        Log.info(chunkSizes.toString());
-        
         return new BlockTerrainControl(settings, chunkSizes);
     }
 

@@ -5,6 +5,7 @@ import com.jme3.audio.AudioNode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ public class ExplosionControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         while(state < explosion.state) {
+            state++;
+            Log.info("explosion state: "+ state + "/" + explosion.state);
             switch(state) {
                 case 0:
                     break;
@@ -52,10 +55,14 @@ public class ExplosionControl extends AbstractControl {
                     node.light.setRadius(10000);
                     break;
                 case 4:
-                    List<Spatial> children = new ArrayList<>( node.getParent().getChildren() );
+                    Node shipNode = node.getParent();
+                    List<Spatial> children = new ArrayList<>( shipNode.getChildren() );
                     for(Spatial s: children) {
                         if(s != spatial) {
+                            Log.info("remove: " + s.getName());
                             s.removeFromParent();
+                        } else {
+                            Log.info("don't remove: " + s.getName());
                         }
                     }
                     break;

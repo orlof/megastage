@@ -16,9 +16,8 @@ import org.megastage.util.Time;
  */
 public class Explosion extends BaseComponent {
     public transient long startTime = Time.value;
-    public transient boolean dirty = true;
 
-    public int state = 0;
+    public int state = -1;
 
     @Override
     public void receive(Connection pc, Entity entity) {
@@ -29,17 +28,19 @@ public class Explosion extends BaseComponent {
 
             ClientGlobals.spatialManager.setupExplosion(entity, this);
         } else {
-            comp.state = state;
+            comp.setState(state);
         }
     }
 
     @Override
     public Message synchronize(Entity entity) {
-        if(dirty) {
-            dirty = false;
-            return new ComponentMessage(entity, this);
-        }
+        return ifDirty(entity);
+    }
 
-        return null;
+    public void setState(int currentState) {
+        if(currentState != state) {
+            state = currentState;
+            dirty = true;
+        }
     }
 }

@@ -196,6 +196,8 @@ public class NetworkSystem extends VoidEntitySystem {
         
         BindTo bindTo = Mapper.BIND_TO.get(connection.player);
         Entity ship = world.getEntity(bindTo.parent);
+        if(ship == null) return;
+
         ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(ship);
 
         updatePlayerPosition(geom.map, connection.player, cmd);

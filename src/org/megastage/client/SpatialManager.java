@@ -162,7 +162,7 @@ public class SpatialManager {
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
-                attach(parent, child);
+                attach(parent, child, true);
                 return null;
             }
         });
@@ -194,8 +194,12 @@ public class SpatialManager {
         return mat;
     }
     
-    private void attach(Node parent, Spatial child) {
-        ((Node) parent.getChild(0)).attachChild(child);
+    private void attach(Node parent, Spatial child, boolean useOffset) {
+        if(useOffset) {
+            offset(parent).attachChild(child);
+        } else {
+            parent.attachChild(child);
+        }
     }
     
     private Node offset(Node node) {
@@ -209,14 +213,14 @@ public class SpatialManager {
         node.addControl(new PositionControl(entity, false));
         node.addControl(new RotationControl(entity));
         
-        attach(node, createSphere(data.radius, colorRGBA, false));
+        attach(node, createSphere(data.radius, colorRGBA, false), true);
 
         final PointLight light = new PointLight();
         light.setColor(colorRGBA);
         light.setRadius(data.lightRadius);
 
         LightNode lightNode = new LightNode(entity.toString() + " LightNode", light);
-        attach(node, lightNode);
+        attach(node, lightNode, true);
 
         app.enqueue(new Callable() {
             @Override
@@ -239,7 +243,7 @@ public class SpatialManager {
             final Planet planet = createPlanet(data);
 
             app.enqueue(new Callable() { @Override public Object call() throws Exception {
-                attach(node, planet);
+                attach(node, planet, true);
 
                 PlanetAppState appState = app.getStateManager().getState(PlanetAppState.class);
                 if(appState != null) appState.addPlanet(planet);
@@ -262,7 +266,7 @@ public class SpatialManager {
             
             final Geometry geom = createSphere(data.radius, color, true);
             app.enqueue(new Callable() { @Override public Object call() throws Exception {
-                attach(node, geom);
+                attach(node, geom, true);
 
                 node.addControl(positionControl);
                 node.addControl(rotationControl);
@@ -359,8 +363,8 @@ public class SpatialManager {
             node.addControl(positionControl);
             node.addControl(rotationControl);
 
-            attach(node, burn);
-            attach(node, geom);
+            attach(node, burn, true);
+            attach(node, geom, true);
             return null;
         }});
     }
@@ -393,12 +397,11 @@ public class SpatialManager {
         box.setLocalTranslation(-0.5f + data.width/2.0f, -0.5f + data.height/2.0f, -0.3f);
 
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
-            Log.info("");
             node.addControl(positionControl);
             node.addControl(rotationControl);
 
-            attach(node, panel);
-            attach(node, box);
+            attach(node, panel, true);
+            attach(node, box, true);
             return null;
         }});
     }
@@ -419,8 +422,8 @@ public class SpatialManager {
         head.setLocalTranslation(0, 1.0f, 0);
         
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
-            attach(node, body);
-            attach(node, head);
+            attach(node, body, true);
+            attach(node, head, true);
 
             node.addControl(positionControl);
             node.addControl(bodyRotationControl);
@@ -480,7 +483,7 @@ public class SpatialManager {
 
         Node shipNode = getNode(shipEntity);
         ClientGlobals.fixedNode.attachChild(shipNode);
-        attach(shipNode, ClientGlobals.playerNode);
+        attach(shipNode, ClientGlobals.playerNode, true);
         ClientGlobals.playerNode.setLocalTranslation(0, 0, 0);
     }
 
@@ -503,7 +506,7 @@ public class SpatialManager {
         explosionNode.addControl(new ExplosionControl(explosion, explosionNode));
 
         app.enqueue(new Callable() { @Override public Object call() throws Exception {
-            attach(node, explosionNode);
+            attach(node, explosionNode, false);
             return null;
         }});
     }
@@ -591,8 +594,8 @@ public class SpatialManager {
             node.addControl(positionControl);
             node.addControl(rotationControl);
 
-            attach(node, base);
-            attach(node, spinner);
+            attach(node, base, true);
+            attach(node, spinner, true);
             return null;
         }});
     }
@@ -627,8 +630,8 @@ public class SpatialManager {
             node.addControl(positionControl);
             node.addControl(rotationControl);
 
-            attach(node, base);
-            attach(node, spinnerRotator);
+            attach(node, base, true);
+            attach(node, spinnerRotator, true);
             return null;
         }});
     }
@@ -651,8 +654,8 @@ public class SpatialManager {
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
             node.addControl(positionControl);
 
-            attach(node, base);
-            attach(node, wheel);
+            attach(node, base, true);
+            attach(node, wheel, true);
             return null;
         }});
     }
