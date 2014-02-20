@@ -72,5 +72,20 @@
     nbproject/build-impl.xml file. 
 
     -->
-    
+
+<target name="-post-jar">
+<copy todir="${dist.jar.dir}">
+  <fileset dir="bin">
+    <include name="server.sh"/>
+    <include name="client.sh"/>
+    <include name="server.bat"/>
+    <include name="client.bat"/>
+    <include name="full.bat"/>
+    <include name="world.xml"/>
+    <include name="bootrom.bin"/>
+    <include name="font.png"/>
+    <include name="boot.png"/>
+  </fileset>
+</copy></target>
+
 </project>

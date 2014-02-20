@@ -133,11 +133,10 @@ public class NetworkSystem extends VoidEntitySystem {
         
         Array<Message> list = new Array<>(20);
 
-        for(Component c: all) {
-            BaseComponent bc = (BaseComponent) c;
-            if(bc.replicate()) {
-                Message trans = bc.create(entity);                
-                list.add(trans);
+        for(Component comp: all) {
+            Message msg = ((BaseComponent) comp).replicate(entity);
+            if(msg != null) {
+                list.add(msg);
             }
         }
 

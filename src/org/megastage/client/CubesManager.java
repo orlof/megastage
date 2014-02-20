@@ -64,10 +64,6 @@ public class CubesManager {
             Vector3f collisionContactPoint = results.getClosestCollision().getContactPoint();
             collisionContactPoint.subtractLocal(terrainNode.getLocalTranslation());
             BlockTerrainControl ctrl = terrainNode.getControl(BlockTerrainControl.class);
-            Log.info(""+terrainNode.getLocalTranslation());
-            Log.info(""+ctrl);
-            Log.info(""+collisionContactPoint);
-            Log.info(""+getNeighborLocation);
             return BlockNavigator.getPointedBlockLocation(ctrl, collisionContactPoint, getNeighborLocation);
         }
         return null;

@@ -4,6 +4,7 @@ import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.BaseComponent;
+import org.megastage.protocol.Message;
     
 /**
  *
@@ -16,7 +17,7 @@ public class GyroscopeGeometry extends BaseComponent {
     }
     
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
 }

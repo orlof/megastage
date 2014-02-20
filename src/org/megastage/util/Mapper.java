@@ -1,7 +1,10 @@
 package org.megastage.util;
 
+import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.World;
+import org.megastage.components.BaseComponent;
+import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
 import org.megastage.components.Mass;
 import org.megastage.components.Mode;
@@ -27,6 +30,7 @@ import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.components.transfer.RadarTargetData;
 
 public class Mapper {
+    public static ComponentMapper<DeleteFlag> DELETE_FLAG;
     public static ComponentMapper<Acceleration> ACCELERATION;
     public static ComponentMapper<Position> POSITION;
     public static ComponentMapper<Rotation> ROTATION;
@@ -51,6 +55,7 @@ public class Mapper {
     public static ComponentMapper<SphereOfInfluence> SPHERE_OF_INFLUENCE;
 
     public static void init(World world) {
+        DELETE_FLAG = world.getMapper(DeleteFlag.class);
         ACCELERATION = world.getMapper(Acceleration.class);
         POSITION = world.getMapper(Position.class);
         ROTATION = world.getMapper(Rotation.class);

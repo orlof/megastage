@@ -10,5 +10,5 @@ import org.megastage.components.BaseComponent;
  *
  * @author Orlof
  */
-public class UninitializedFlag extends BaseComponent {
+public class ReplicateFlag extends BaseComponent {
 }

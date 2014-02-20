@@ -4,13 +4,11 @@ import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.components.srv.Identifier;
+import org.megastage.protocol.Message;
 import org.megastage.protocol.Network;
-import org.megastage.util.ID;
 
 /**
  * MegaStage
@@ -19,28 +17,56 @@ import org.megastage.util.ID;
  * Time: 20:11
  */
 public abstract class BaseComponent implements Component {
+    public transient boolean dirty = true;
+
+    // TODO change to static create(...)
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
         return null;
     }
-    
-    public boolean replicate() {
-        return false;
-    }
 
-    public boolean synchronize() {
-        return false;
-    }
-
+    /** This method is called after world is ready **/
     public void initialize(World world, Entity entity) {}
-    
-    public Network.ComponentMessage create(Entity entity) {
-        if(Log.TRACE) {
-            Log.info(ID.get(entity) + this.toString());
+
+    public Message replicate(Entity entity) {
+        return null;
+    }
+
+    public Message synchronize(Entity entity) {
+        return null;
+    }
+
+    public final Message ifDirty(Entity entity) {
+        if(dirty) {
+            dirty = false;
+            return new Network.ComponentMessage(entity, this);
         }
+        return null;
+    }
+
+    public final Message replicateIfDirty(Entity entity) {
+        if(dirty) {
+            dirty = false;
+            return replicate(entity);
+        }
+        return null;
+    }
+
+    public final Message replicateIfTrue(Entity entity, boolean check) {
+        if(check) {
+            dirty = false;
+            return replicate(entity);
+        }
+        return null;
+    }
+
+    public final Message always(Entity entity) {
+        dirty = false;
         return new Network.ComponentMessage(entity, this);
     }
 
     public void receive(Connection pc, Entity entity) {
+        this.dirty = true;
+
         entity.addComponent(this);
         entity.changedInWorld();
     }

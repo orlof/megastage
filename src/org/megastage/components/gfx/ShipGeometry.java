@@ -11,14 +11,15 @@ import org.megastage.components.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.srv.CollisionType;
+import org.megastage.protocol.Message;
 import org.megastage.protocol.Network;
 import org.megastage.util.Cube3dMap;
+import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.Mapper;
 import org.megastage.util.Vector3d;
 
 public class ShipGeometry extends BaseComponent {
     public Cube3dMap map = new Cube3dMap();
-    public int version;
     
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
@@ -37,20 +38,25 @@ public class ShipGeometry extends BaseComponent {
     }
     
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
 
     @Override
-    public boolean synchronize() {
-        return version < map.version;
+    public Message synchronize(Entity entity) {
+        if(map.pending.size > 0) {
+            BlockChange change = map.pending.pop();
+            return change.always(entity);
+        }
+        return null;
     }
 
     @Override
-    public Network.ComponentMessage create(Entity entity) {
-        version = map.version;
-        return super.create(entity);
+    public void initialize(World world, Entity entity) {
+        map.pending.clear();
     }
+
+    
     
     @Override
     public void receive(Connection pc, Entity entity) {

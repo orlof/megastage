@@ -2,6 +2,7 @@ package org.megastage.server;
 
 import com.artemis.Entity;
 import com.badlogic.gdx.utils.Array;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
 import static org.megastage.server.RadarManager.match;
 import static org.megastage.server.RadarManager.targets;
@@ -103,26 +104,32 @@ public class GravityManager {
         int x = (int) (coord.x / 100.0);
         mem[ptr++] = (char) (x >> 16);
         mem[ptr++] = (char) x;
+        Log.info(""+x);
 
         int y = (int) (coord.y / 100.0);
         mem[ptr++] = (char) (y >> 16);
         mem[ptr++] = (char) y;
+        Log.info(""+y);
 
         int z = (int) (coord.z / 100.0);
         mem[ptr++] = (char) (z >> 16);
         mem[ptr++] = (char) z;
+        Log.info(""+z);
 
         int dx = (int) veloc.x;
         mem[ptr++] = (char) (dx >> 16);
         mem[ptr++] = (char) dx;
+        Log.info(""+dx);
 
         int dy = (int) veloc.y;
         mem[ptr++] = (char) (dy >> 16);
         mem[ptr++] = (char) dy;
+        Log.info(""+dy);
 
         int dz = (int) veloc.z;
         mem[ptr++] = (char) (dz >> 16);
         mem[ptr++] = (char) dz;
+        Log.info(""+dz);
     }
 
     public static void writeOrbitalStateVectorToMemoryFloat(char[] mem, char ptr, Vector3d coord, Vector3d veloc) {

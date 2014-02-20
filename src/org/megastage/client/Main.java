@@ -57,7 +57,7 @@ public class Main extends SimpleApplication {
     public void simpleInitApp() {
         SoundManager.init(assetManager);
 
-        setPauseOnLostFocus(false);
+        //setPauseOnLostFocus(false);
         
         ClientGlobals.cmdHandler = new CommandHandler();
         ClientGlobals.cmdHandler.registerWithInput(inputManager);

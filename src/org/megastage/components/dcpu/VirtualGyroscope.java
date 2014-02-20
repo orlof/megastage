@@ -8,7 +8,9 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.Explosion;
+import org.megastage.components.transfer.EngineData;
 import org.megastage.components.transfer.GyroscopeData;
+import org.megastage.protocol.Message;
 import org.megastage.protocol.Network;
 import org.megastage.util.Vector3d;
 
@@ -95,42 +97,18 @@ public class VirtualGyroscope extends DCPUHardware {
         return curTorque / inertia;
     }
     
-    public static void main(String[] args) throws Exception {
-        VirtualGyroscope gyro = new VirtualGyroscope();
-        gyro.maxTorque = 100;
-        
-        gyro.setTorque((char) 0x0000);
-        System.out.println((int) gyro.power);
-        System.out.println(gyro.curTorque);
-    
-        gyro.setTorque((char) 0x7fff);
-        System.out.println((int) gyro.power);
-        System.out.println(gyro.curTorque);
-        
-        gyro.setTorque((char) 0x8000);
-        System.out.println((int) gyro.power);
-        System.out.println(gyro.curTorque);
-    }
-
-    private boolean dirty = false;
-
     @Override
-    public Network.ComponentMessage create(Entity entity) {
+    public Message replicate(Entity entity) {
         dirty = false;
 
         GyroscopeData data = new GyroscopeData();
         data.power = power;
 
-        return data.create(entity);
-    }
-
-    @Override
-    public boolean replicate() {
-        return true;
+        return data.always(entity);
     }
     
     @Override
-    public boolean synchronize() {
-        return dirty;
+    public Message synchronize(Entity entity) {
+        return replicateIfDirty(entity);
     }
 }

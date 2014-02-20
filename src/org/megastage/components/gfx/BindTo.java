@@ -7,20 +7,17 @@ package org.megastage.components.gfx;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.client.ClientGlobals;
-import org.megastage.protocol.Network;
-import org.megastage.util.ID;
+import org.megastage.protocol.Message;
 
 /**
- * This entity's position and rotation are relative to parent
+ * This entity's position and rotation become relative to parent
  * @author Orlof
  */
 public class BindTo extends BaseComponent {
     public int parent; 
-    private transient boolean dirty = false;
     
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
@@ -30,19 +27,13 @@ public class BindTo extends BaseComponent {
     }
 
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
-
+    
     @Override
-    public boolean synchronize() {
-        return dirty;
-    }
-
-    @Override
-    public Network.ComponentMessage create(Entity entity) {
-        dirty = false;
-        return super.create(entity);
+    public Message synchronize(Entity entity) {
+        return ifDirty(entity);
     }
 
     public void setParent(int eid) {
@@ -56,9 +47,6 @@ public class BindTo extends BaseComponent {
 
         parent = parentEntity.id;
 
-        //Log.info(ID.get(entity));
-        //Log.info(ID.get(parentEntity));
-        
         if(ClientGlobals.playerEntity == entity) {
             ClientGlobals.spatialManager.changeShip(parentEntity);
         } else {

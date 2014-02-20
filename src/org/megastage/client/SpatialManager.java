@@ -393,6 +393,7 @@ public class SpatialManager {
         box.setLocalTranslation(-0.5f + data.width/2.0f, -0.5f + data.height/2.0f, -0.3f);
 
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            Log.info("");
             node.addControl(positionControl);
             node.addControl(rotationControl);
 

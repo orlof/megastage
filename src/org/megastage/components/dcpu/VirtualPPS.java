@@ -43,7 +43,6 @@ public class VirtualPPS extends DCPUHardware {
     }
     
     private boolean storeCoordinates() {
-        Log.info(""+(int)dcpu.registers[1]);
         writeCoordinatesToMemory(dcpu.ram, dcpu.registers[1], ship);
         return true;
     }

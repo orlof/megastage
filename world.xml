@@ -327,14 +327,6 @@
                 <component type="gfx.BindTo"/>
             </entity>
         </entity>
-        <entity name="Enemy">
-            <component type="Position" dx="3" dy="1" dz="8"/>
-            <component type="Rotation"/>
-            <component type="gfx.CharacterGeometry" red="1.0" green="0.0" blue="0.5" alpha="1.0"/>
-            <component type="gfx.BindTo"/>
-            <component type="srv.SynchronizeFlag"/>
-            <group name="replicate"/>
-        </entity>
     </entity>
 
     <entity-template name="Player">

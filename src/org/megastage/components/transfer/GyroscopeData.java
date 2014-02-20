@@ -6,9 +6,7 @@ package org.megastage.components.transfer;
 
 import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
 import org.megastage.components.BaseComponent;
-import org.megastage.util.ID;
 import org.megastage.util.Mapper;
 
 public class GyroscopeData extends BaseComponent {

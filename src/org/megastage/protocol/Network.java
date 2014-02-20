@@ -43,6 +43,7 @@ import org.megastage.protocol.UserCommand.Teleport;
 import org.megastage.protocol.UserCommand.Unbuild;
 import org.megastage.protocol.UserCommand.Unpick;
 import org.megastage.util.Cube3dMap;
+import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.ID;
 import org.megastage.util.RAM;
 import org.megastage.util.Vector3d;
@@ -65,6 +66,7 @@ public class Network {
         kryo.register(Object[].class);
         kryo.register(BaseComponent.class);
         kryo.register(BindTo.class);
+        kryo.register(BlockChange.class);
         kryo.register(Build.class);
         kryo.register(CharacterGeometry.class);
         kryo.register(ComponentMessage.class);

@@ -16,6 +16,7 @@ import org.megastage.components.Explosion;
 public class ExplosionControl extends AbstractControl {
     private final ExplosionNode node;
     private final Explosion explosion;
+    private int state = -1;
 
     public ExplosionControl(Explosion explosion, ExplosionNode node) {
         this.explosion = explosion;
@@ -24,9 +25,8 @@ public class ExplosionControl extends AbstractControl {
     
     @Override
     protected void controlUpdate(float tpf) {
-        if(explosion.clientState != explosion.serverState) {
-            explosion.clientState = explosion.serverState;
-            switch(explosion.clientState) {
+        while(state < explosion.state) {
+            switch(state) {
                 case 0:
                     break;
                 case 1:
@@ -77,6 +77,7 @@ public class ExplosionControl extends AbstractControl {
                 case 7:
                     break;
             }
+            state++;
         }
     }
 

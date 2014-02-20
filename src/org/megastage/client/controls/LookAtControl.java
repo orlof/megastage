@@ -24,7 +24,7 @@ public class LookAtControl extends AbstractControl {
         }
         
         RadarTargetData rtd = Mapper.RADAR_TARGET_DATA.get(entity);
-        if(rtd == null) return;
+        if(rtd == null || rtd.target == 0) return;
 
         Node tn = ClientGlobals.spatialManager.getNode(rtd.target);
         

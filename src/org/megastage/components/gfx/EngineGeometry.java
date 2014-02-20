@@ -4,6 +4,7 @@ import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.BaseComponent;
+import org.megastage.protocol.Message;
     
 /**
  *
@@ -12,14 +13,11 @@ import org.megastage.components.BaseComponent;
 public class EngineGeometry extends BaseComponent {
     @Override
     public void receive(Connection pc, Entity entity) {
-//        if(entity != ClientGlobals.playerEntity) {
-//            ClientGlobals.spatialManager.setupEngine(entity, this);
-//        }
         ClientGlobals.spatialManager.setupEngine(entity, this);
     }
     
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
 }

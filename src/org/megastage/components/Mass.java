@@ -27,11 +27,6 @@ public class Mass extends BaseComponent {
         return null;
     }
 
-    @Override
-    public boolean replicate() {
-        return true;
-    }
-    
     public String toString() {
         return "Mass(" + mass + ")";
     }

@@ -49,7 +49,7 @@ Interrupt behavior:
             approximated from density and size readings. NOT ALWAYS ACCURATE!). 
             If both words 2 and 3 equal 0, then mass calculation cannot be 
             accurately ascertained. 
-        Words 4 and 5 = [FLOAT] distance in meters between ship and target.
+        Words 4 and 5 = [INT32] distance in meters between ship and target.
         Words 6 and 7 = the pitch and yaw angles between the direction of the
             target and the direction that the ship is pointing.
 
@@ -59,12 +59,14 @@ Interrupt behavior:
 
         Halts the DCPU-16 for 7 cycles.
 
-    3 - GET_VECTOR
+    3 - STORE_ORBITAL_STATE_VECTOR
         Sets a 12 word area of ram starting at B to [ORBITAL_STATE_VECTOR]
         of target in _ship's_ SOI.
 
-        Returns
-            C: 0xffff if data is available
-            C: 0x0000 if data is not available
+        Returns register C
+            0xffff Success
+            0x0000 Unknown error
+            0x0001 No target
+            0x0002 No SOI
 
         Halts the DCPU-16 for 12 cycles.

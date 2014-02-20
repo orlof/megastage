@@ -4,8 +4,14 @@
  */
 package org.megastage.util;
 
+import com.artemis.Entity;
+import com.badlogic.gdx.utils.Array;
 import com.cubes.Vector3Int;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.minlog.Log;
 import com.jme3.math.Vector3f;
+import org.megastage.components.BaseComponent;
+import org.megastage.protocol.Message;
 
 
 /**
@@ -20,6 +26,8 @@ public class Cube3dMap {
     public int xtotal, ytotal, ztotal;
     public int count;
     public int version = 0;
+    
+    public transient Array<BlockChange> pending = new Array<>(100);
     
     public char get(int x, int y, int z) {
         if(data == null || x < 0 || data.length <= x) {
@@ -86,6 +94,7 @@ public class Cube3dMap {
         }
 
         data[x][y][z] = value;
+        pending.add(new BlockChange(x, y, z, value));
         version++;
     }
 
@@ -155,4 +164,24 @@ public class Cube3dMap {
         
         return inertia;
     }
+    
+    public static class BlockChange extends BaseComponent {
+        public int x, y, z;
+        public char type;
+
+        public BlockChange() {}
+        
+        private BlockChange(int x, int y, int z, char value) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.type = value;
+        }
+
+        @Override
+        public void receive(Connection pc, Entity entity) {
+            Log.info("");
+        }
+    }
 }
+

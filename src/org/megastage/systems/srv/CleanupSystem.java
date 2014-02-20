@@ -31,6 +31,7 @@ public class CleanupSystem extends EntityProcessingSystem {
         BindTo bindTo = Mapper.BIND_TO.get(e);
         if(world.getEntity(bindTo.parent) == null) {
             e.addComponent(new DeleteFlag());
+            e.changedInWorld();
         }
     }
     

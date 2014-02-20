@@ -4,34 +4,26 @@ import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.client.ClientGlobals;
 import org.megastage.protocol.CharacterMode;
-import org.megastage.protocol.Network;
+import org.megastage.protocol.Message;
 
 public class Mode extends BaseComponent {
     public int value = CharacterMode.WALK; 
-    public transient boolean isDirty = true;
 
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
     
     @Override
-    public boolean synchronize() {
-        return isDirty;
+    public Message synchronize(Entity entity) {
+        return ifDirty(entity);
     }
 
     public void setMode(int mode) {
         this.value = mode;
-        isDirty = true;
+        dirty = true;
     }
 
-    @Override
-    public Network.ComponentMessage create(Entity entity) {
-        isDirty = false;
-        return new Network.ComponentMessage(entity, this);
-    }
-    
-    
     @Override
     public void receive(Connection pc, Entity entity) {
         if(ClientGlobals.playerEntity == entity) {

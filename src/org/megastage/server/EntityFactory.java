@@ -9,7 +9,7 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.srv.Identifier;
 import org.megastage.components.srv.InitializeFlag;
-import org.megastage.components.srv.UninitializedFlag;
+import org.megastage.components.srv.ReplicateFlag;
 
 
 /**
@@ -51,7 +51,7 @@ public class EntityFactory {
 
                 world.getManager(GroupManager.class).add(entity, groupName);
                 if(groupName.equals("replicate")) {
-                    entity.addComponent(new UninitializedFlag());
+                    entity.addComponent(new ReplicateFlag());
                 }
             }
 

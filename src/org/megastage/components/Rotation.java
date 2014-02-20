@@ -3,10 +3,9 @@ package org.megastage.components;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
-import org.megastage.protocol.Network;
+import org.megastage.protocol.Message;
 import org.megastage.util.Mapper;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
@@ -19,7 +18,6 @@ import org.megastage.util.Vector3d;
  */
 public class Rotation extends BaseComponent {
     public double x=0, y=0, z=0, w=1;
-    public transient boolean dirty = true;
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
@@ -36,14 +34,13 @@ public class Rotation extends BaseComponent {
     }
 
     @Override
-    public boolean synchronize() {
-        return dirty;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
-    
+
     @Override
-    public Network.ComponentMessage create(Entity entity) {
-        dirty = false;
-        return super.create(entity);
+    public Message synchronize(Entity entity) {
+        return ifDirty(entity);
     }
     
     @Override

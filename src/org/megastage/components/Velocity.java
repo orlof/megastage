@@ -5,7 +5,7 @@ import com.artemis.World;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.srv.Acceleration;
-import org.megastage.protocol.Network;
+import org.megastage.protocol.Message;
 import org.megastage.util.Vector3d;
 
 /**
@@ -29,8 +29,8 @@ public class Velocity extends BaseComponent {
     }
 
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
 
     public void add(Vector3d v) {

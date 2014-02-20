@@ -38,14 +38,12 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
         Orbit orbit = ORBIT.get(entity);
         
         Entity center = world.getEntity(orbit.center);
-        Mass centerMass = MASS.get(center);        
-        Vector3d localSum = orbit.getLocalCoordinates(time, centerMass.mass);
+        Vector3d localSum = orbit.getLocalCoordinates(time);
         
         while(!isInFixedPosition(center)) {
             orbit = ORBIT.get(center);
             center = world.getEntity(orbit.center);
-            centerMass = MASS.get(center);        
-            localSum = localSum.add(orbit.getLocalCoordinates(time, centerMass.mass));
+            localSum = localSum.add(orbit.getLocalCoordinates(time));
         }
 
         Position fixedStar = POSITION.get(center);

@@ -7,6 +7,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.transfer.EngineData;
+import org.megastage.protocol.Message;
 import org.megastage.protocol.Network;
 import org.megastage.util.Vector3d;
 
@@ -74,25 +75,18 @@ public class VirtualEngine extends DCPUHardware {
         return new Vector3d(x * mult, y * mult, z * mult);
     }
 
-    private boolean dirty = false;
-
     @Override
-    public Network.ComponentMessage create(Entity entity) {
+    public Message replicate(Entity entity) {
         dirty = false;
 
         EngineData data = new EngineData();
         data.power = power;
 
-        return data.create(entity);
-    }
-
-    @Override
-    public boolean replicate() {
-        return true;
+        return data.always(entity);
     }
     
     @Override
-    public boolean synchronize() {
-        return dirty;
+    public Message synchronize(Entity entity) {
+        return replicateIfDirty(entity);
     }
 }

@@ -2,6 +2,7 @@ package org.megastage.server;
 
 import com.artemis.Entity;
 import com.badlogic.gdx.utils.Array;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
@@ -24,9 +25,11 @@ public class RadarManager {
         
         Array<RadarSignal> signals = new Array<>(100);
         for(Entity target: targets) {
+            if(target == entity) continue;
+
             // System that stores targets checks for Position existence
             Vector3d tcoord = Mapper.POSITION.get(target).getVector3d();
-            
+
             double distanceSquared = coord.distanceSquared(tcoord);
             signals.add(new RadarSignal(target, distanceSquared));
         }

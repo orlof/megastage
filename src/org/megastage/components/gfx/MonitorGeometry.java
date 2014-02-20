@@ -11,6 +11,7 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.BaseComponent;
 import org.megastage.client.ClientGlobals;
+import org.megastage.protocol.Message;
 
 
     
@@ -30,8 +31,8 @@ public class MonitorGeometry extends BaseComponent {
     }
 
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
     
     @Override

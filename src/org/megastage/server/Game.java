@@ -6,7 +6,7 @@ import org.megastage.systems.srv.EngineAccelerationSystem;
 import org.megastage.systems.srv.GravityManagerSystem;
 import org.megastage.systems.srv.CleanupSystem;
 import org.megastage.systems.srv.NetworkSystem;
-import org.megastage.systems.srv.SynchronizeSystem;
+import org.megastage.systems.srv.EntitySynchronizeSystem;
 import com.artemis.World;
 import com.artemis.managers.GroupManager;
 import com.artemis.managers.TagManager;
@@ -16,9 +16,11 @@ import org.megastage.systems.*;
 
 import java.io.IOException;
 import org.megastage.systems.srv.CollisionSystem;
+import org.megastage.systems.srv.EntityDeleteSystem;
+import org.megastage.systems.srv.EntityReplicateSystem;
 import org.megastage.systems.srv.ExplosionSystem;
 import org.megastage.systems.srv.GravityAccelerationSystem;
-import org.megastage.systems.srv.InitializeSystem;
+import org.megastage.systems.srv.EntityInitializeSystem;
 import org.megastage.systems.srv.RadarManagerSystem;
 import org.megastage.systems.srv.ShipMovementSystem;
 import org.megastage.systems.srv.SphereOfInfluenceSystem;
@@ -42,22 +44,24 @@ public class Game {
         //world.setSystem(new ServerEngineTestSystem(5000));
         //world.setSystem(new ServerGyroTestSystem(5000));
         //world.setSystem(new ServerRadarTestSystem(5000));
-        world.setSystem(new InitializeSystem());
+        world.setSystem(new EntityInitializeSystem(500));
         world.setSystem(new CleanupSystem(500));
-        world.setSystem(new SynchronizeSystem(50));
+        world.setSystem(new EntityDeleteSystem(50));
+        world.setSystem(new EntityReplicateSystem(50));
+        world.setSystem(new EntitySynchronizeSystem(50));
         world.setSystem(new NetworkSystem());
 
         world.setSystem(new OrbitalMovementSystem());
 
         world.setSystem(new EngineAccelerationSystem());
         world.setSystem(new AttitudeControlSystem());
-        world.setSystem(new GravityManagerSystem());
         //world.setSystem(new GravityAccelerationSystem());
 
         world.setSystem(new ShipMovementSystem());
         world.setSystem(new CollisionSystem(200));
         world.setSystem(new ExplosionSystem(201));
         
+        world.setSystem(new GravityManagerSystem(5000));
         world.setSystem(new RadarManagerSystem(1000));
         world.setSystem(new SphereOfInfluenceSystem(10000));
 

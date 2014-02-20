@@ -3,22 +3,24 @@ package org.megastage.components.dcpu;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.badlogic.gdx.utils.Array;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.transfer.RadarTargetData;
+import org.megastage.protocol.Message;
 import org.megastage.protocol.Network;
 import org.megastage.server.GravityManager;
 import org.megastage.server.RadarManager;
 import org.megastage.server.RadarManager.RadarSignal;
 import org.megastage.server.SOIManager;
 import org.megastage.server.SOIManager.SOIData;
+import org.megastage.util.ID;
 import org.megastage.util.Mapper;
 import org.megastage.util.Vector3d;
 
 public class VirtualRadar extends DCPUHardware {
     public Entity target = null;
-    private boolean dirty = false;
 
     // COMPONENT
     
@@ -34,23 +36,18 @@ public class VirtualRadar extends DCPUHardware {
     }
 
     @Override
-    public boolean replicate() {
-        return target != null;
-    }
-    
-    @Override
-    public boolean synchronize() {
-        return dirty;
-    }
-
-    @Override
-    public Network.ComponentMessage create(Entity entity) {
+    public Message replicate(Entity entity) {
         dirty = false;
 
         RadarTargetData data = new RadarTargetData();
-        data.target = target.id;
+        data.target = target != null ? target.id: 0;
         
-        return data.create(entity);
+        return data.always(entity);
+    }
+    
+    @Override
+    public Message synchronize(Entity entity) {
+        return replicateIfDirty(entity);
     }
 
     // DCPU
@@ -80,11 +77,9 @@ public class VirtualRadar extends DCPUHardware {
                 }
                 break;
             case 3:
-                if(storeOrbitalStateVector()) {
-                    dcpu.registers[2] = 0xffff;
+                dcpu.registers[2] = storeOrbitalStateVector();
+                if(dcpu.registers[2] == 0xffff) {
                     dcpu.cycles += 12;
-                } else {
-                    dcpu.registers[2] = 0x0000;
                 }
                 break;
         }
@@ -98,6 +93,11 @@ public class VirtualRadar extends DCPUHardware {
     
     private boolean storeRadarSignatures() {
         Array<RadarSignal> signals = RadarManager.getRadarSignals(ship);
+
+        for(RadarSignal s: signals) {
+            Log.info(s.toString());
+        }
+        
         writeSignalsToMemory(dcpu.ram, dcpu.registers[1], signals);
         return true;
     }
@@ -119,12 +119,21 @@ public class VirtualRadar extends DCPUHardware {
         return true;
     }
      
-    private boolean storeOrbitalStateVector() {
+    private char storeOrbitalStateVector() {
+        if(target == null) {
+            return 0x0001;
+        }
+        
         Vector3d ownCoord = Mapper.POSITION.get(ship).getVector3d();
-        SOIData soiData = SOIManager.getSOI(ownCoord);
+        SOIData soi = SOIManager.getSOI(ownCoord);
+        
+        if(soi == null) {
+            return 0x0002;
+        }
 
-        GravityManager.writeOrbitalStateVectorToMemory(dcpu.ram, dcpu.registers[1], soiData.entity, target, false);
-        return true;
+        GravityManager.writeOrbitalStateVectorToMemory(dcpu.ram, dcpu.registers[1], soi.entity, target, false);
+
+        return 0xFFFF;
     }
 
     // UTILS
@@ -141,6 +150,8 @@ public class VirtualRadar extends DCPUHardware {
 
     public void setTrackingTarget(Entity entity) {
         if(target != entity) {
+            Log.info(ID.get(entity));
+
             target = entity;
             dirty = true;
         }
@@ -152,6 +163,8 @@ public class VirtualRadar extends DCPUHardware {
 
         // target mass
         int mass = (int) Mapper.MASS.get(target).mass;
+        Log.info("MASS: " + mass);
+
         mem[ptr++] = (char) ((mass >> 16) & 0xffff);
         mem[ptr++] = (char) (mass & 0xffff);
 
@@ -159,9 +172,14 @@ public class VirtualRadar extends DCPUHardware {
         Vector3d ownCoord = Mapper.POSITION.get(ship).getVector3d();
         Vector3d othCoord = Mapper.POSITION.get(target).getVector3d();
         
-        float distance = (float) ownCoord.distance(othCoord);
+        int distance = (int) Math.round(ownCoord.distance(othCoord));
+        Log.info("DISTANCE: " + distance);
         
-        ptr = writeFloatToMemory(mem, ptr, distance);
+        mem[ptr++] = (char) ((distance >> 16) & 0xffff);
+        mem[ptr++] = (char) (distance & 0xffff);
+
+        //ptr = writeFloatToMemory(mem, ptr, distance);
+
         ptr = writePitchAndYawToMemory(mem, ptr, ship, target);
     }
 }

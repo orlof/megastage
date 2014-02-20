@@ -6,14 +6,13 @@ import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.protocol.Network;
+import org.megastage.protocol.Message;
 import org.megastage.util.Globals;
 import org.megastage.util.Mapper;
 import org.megastage.util.Vector3d;
 
 public class Position extends BaseComponent {
     public long x, y, z;
-    public transient boolean dirty = true;
     
     public Position() {
         super();
@@ -35,19 +34,13 @@ public class Position extends BaseComponent {
     }
 
     @Override
-    public boolean synchronize() {
-        return dirty;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
 
     @Override
-    public Network.ComponentMessage create(Entity entity) {
-        dirty = false;
-        return super.create(entity);
-    }
-    
-    @Override
-    public boolean replicate() {
-        return true;
+    public Message synchronize(Entity entity) {
+        return ifDirty(entity);
     }
 
     @Override
@@ -96,4 +89,5 @@ public class Position extends BaseComponent {
     public String toString() {
         return "Position(" + x + ", " + y + ", " + z + ", " + dirty + ")";
     }
+
 }

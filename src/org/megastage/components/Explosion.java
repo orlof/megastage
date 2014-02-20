@@ -2,9 +2,9 @@ package org.megastage.components;
 
 import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
 import org.megastage.client.ClientGlobals;
-import org.megastage.protocol.Network;
+import org.megastage.protocol.Message;
+import org.megastage.protocol.Network.ComponentMessage;
 import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
@@ -15,38 +15,31 @@ import org.megastage.util.Time;
  * Time: 20:58
  */
 public class Explosion extends BaseComponent {
-    public long startTime = Time.value;
-    
-    public transient int clientState = -1;
-    public int serverState = 0;
+    public transient long startTime = Time.value;
+    public transient boolean dirty = true;
+
+    public int state = 0;
 
     @Override
     public void receive(Connection pc, Entity entity) {
-        if(serverState == 0) {
-            super.receive(pc, entity);
+        Explosion comp = Mapper.EXPLOSION.get(entity);
+        if(comp == null) {
+            entity.addComponent(this);
+            entity.changedInWorld();
 
             ClientGlobals.spatialManager.setupExplosion(entity, this);
-            
         } else {
-            Explosion expl = Mapper.EXPLOSION.get(entity);
-            expl.serverState = serverState;
+            comp.state = state;
         }
     }
 
     @Override
-    public boolean synchronize() {
-        return clientState != serverState;
-    }
+    public Message synchronize(Entity entity) {
+        if(dirty) {
+            dirty = false;
+            return new ComponentMessage(entity, this);
+        }
 
-    @Override
-    public Network.ComponentMessage create(Entity entity) {
-        clientState = serverState;
-        return new Network.ComponentMessage(entity, copy());
-    }
-    
-    public BaseComponent copy() {
-        Explosion expl = new Explosion();
-        expl.serverState = serverState;
-        return expl;
+        return null;
     }
 }

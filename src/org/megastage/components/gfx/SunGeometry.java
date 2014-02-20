@@ -10,7 +10,7 @@ import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.client.ClientGlobals;
-import org.megastage.util.Globals;
+import org.megastage.protocol.Message;
 
 
     
@@ -36,8 +36,8 @@ public class SunGeometry extends BaseComponent {
     }
 
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
     
     @Override

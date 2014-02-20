@@ -16,9 +16,35 @@ import java.util.Random;
 import org.megastage.util.Globals;
 
 public class Test extends SimpleApplication {
+    
+    static class A {
+        public static int q=1;
+        public int r() {
+            return r1();
+        }
+        
+        public int r1() {
+            return 1;
+        }
+        
+        public void f() {
+            System.out.println(getClass());
+        }
+    }
 
+    static class B extends A {
+        B() {
+            q=2;
+        }
+        public int r1() {
+            return 2;
+        }
+    }
+    
     public static void main(String[] args) {
-        System.out.println((int) (char) 65535 << 2);
+        A a = new B();
+        System.out.println(A.q);
+        System.out.println(B.q);
         
 //        calc(1,1,-1, "right up forward"); // ruf
 //        //calc(1,-1,-1, "right down forward"); // rdf

@@ -157,17 +157,17 @@ public class CommandHandler implements AnalogListener, ActionListener {
         inputManager.addMapping("WALK_LookUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
         inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
 
-        inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_UP));
-        inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_DOWN));
-        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_LEFT));
-        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_RIGHT));
+        inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_W));
+        inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
+        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_D));
 
-        inputManager.addMapping("SHIP_MoveForward", new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("SHIP_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("SHIP_MoveUp", new KeyTrigger(KeyInput.KEY_Q));
-        inputManager.addMapping("SHIP_MoveDown", new KeyTrigger(KeyInput.KEY_Z));
-        inputManager.addMapping("SHIP_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("SHIP_MoveRight", new KeyTrigger(KeyInput.KEY_D));
+        inputManager.addMapping("SHIP_MoveForward", new KeyTrigger(KeyInput.KEY_UP));
+        inputManager.addMapping("SHIP_MoveBackward", new KeyTrigger(KeyInput.KEY_DOWN));
+        inputManager.addMapping("SHIP_MoveUp", new KeyTrigger(KeyInput.KEY_PGUP));
+        inputManager.addMapping("SHIP_MoveDown", new KeyTrigger(KeyInput.KEY_PGDN));
+        inputManager.addMapping("SHIP_MoveLeft", new KeyTrigger(KeyInput.KEY_LEFT));
+        inputManager.addMapping("SHIP_MoveRight", new KeyTrigger(KeyInput.KEY_RIGHT));
 
         inputManager.addMapping("SHIP_PitchUp", new KeyTrigger(KeyInput.KEY_I));
         inputManager.addMapping("SHIP_PitchDown", new KeyTrigger(KeyInput.KEY_K));

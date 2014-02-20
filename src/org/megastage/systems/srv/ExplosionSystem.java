@@ -7,29 +7,16 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
+import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Orlof
- * Date: 8/19/13
- * Time: 12:09 PM
- * To change this template use File | Settings | File Templates.
- */
 public class ExplosionSystem extends EntityProcessingSystem {
     private long interval;
     private long acc;
 
-    ComponentMapper<Explosion> EXPLOSION;
-    
     public ExplosionSystem(long interval) {
         super(Aspect.getAspectForAll(Explosion.class));
         this.interval = interval;
-    }
-
-    @Override
-    public void initialize() {
-        EXPLOSION = world.getMapper(Explosion.class);
     }
 
     @Override
@@ -43,10 +30,10 @@ public class ExplosionSystem extends EntityProcessingSystem {
 
     @Override
     protected void process(Entity e) {
-        Explosion explosion = EXPLOSION.get(e);
+        Explosion explosion = Mapper.EXPLOSION.get(e);
 
-        if(isSynchronized(explosion) && stateExpired(explosion)) {
-            switch(explosion.serverState) {
+        if(!explosion.dirty && stateExpired(explosion)) {
+            switch(explosion.state) {
                 case 0: // create spatial
                 case 1: // particles
                 case 2: // particles, ligth
@@ -60,12 +47,9 @@ public class ExplosionSystem extends EntityProcessingSystem {
                     e.addComponent(new DeleteFlag());
                     break;
             }
-            explosion.serverState++;
+            explosion.dirty = true;
+            explosion.state++;
         }
-    }
-
-    public boolean isSynchronized(Explosion explosion) {
-        return explosion.clientState == explosion.serverState;
     }
 
     // create spatial
@@ -88,6 +72,6 @@ public class ExplosionSystem extends EntityProcessingSystem {
 
     public boolean stateExpired(Explosion explosion) {
         long time = Time.value - explosion.startTime;
-        return time > delay[explosion.serverState];
+        return time > delay[explosion.state];
     }
 }
