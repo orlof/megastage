@@ -1,0 +1,72 @@
+<Ender innovations>
+"It's alive! Dear lord almighty, it's alive!"
+
+DCPU-16 Hardware Info:
+    Name: 8k-UWTM
+    (8 kilobyte per second Universal Wireless Transceiver Modem)
+    Version: 87
+    ID: 0xddf14760
+    Manufacturer: 0xE142A1FA (Ender innovations)
+
+Description:
+    This device is a mixture of a standard FSK radio transmitter/receiver array 
+    and an internet modem patented by Ender Innovations.
+    
+    Each modem contains a unique 16-bit ip address in which to identify by, 
+    a 512 word max packet size, a maximum range of 10,000,000 meters, and a 256 
+    packet buffer.
+
+Interrupt behavior:
+
+A - Behavior
+
+0 - POLL_DEVICE Sets B and C to state and error codes, respectively.
+
+	Status codes:
+	0x0: stand-by
+	0x1: sending packet
+	0x2: clearing buffer
+	0x3: transceiver powered off
+	
+	Error codes:
+	0x0: nominal
+	0x1: packet target no longer in range
+	0x2: packet buffer overflow
+	0x3: transceiver powered off
+        0x4: received corrupted packet
+	0xF: hardware malfunction
+
+1 - SEND_PACKET 
+	Takes a packet from RAM starting at B with length C and sends it to 
+        the ip in X.
+
+2 - RECEIVE_PACKET 
+	Takes the next packet from the buffer and writes it to an area of RAM 
+        starting at B.
+	
+        Sets C to the size of the packet in words, and I to the origin ip of 
+        the packet.
+	
+        Halts the dcpu-16 for number of cycles equal to the length of the 
+        packet.
+
+3 - CLEAR_BUFFER
+	Clears the packet buffer of all stored packets. Modem waits till transmission operations are done and takes 64 milliseconds
+	to clear the buffer during which time incoming packets and interrupts are ignored. 
+	WARNING: This process deletes all packets!
+
+4 - SET_POWER Sets the transmission power to B KW with a maximum of 1000 KW, the range of the transmitter is proportional to the power.
+	The range of the transmitter is 10km per kilowatt. If B = 0 then the transmitter/receiver radio array will be turned off.
+	
+5 - SEARCH_IP 
+        Returns a list of all available ips within set range to RAM starting 
+        at B. 
+
+        If the number of ips exceeds 512, then only the 512 nearest will be 
+        stored.
+
+6 - SET_INTERRUPT 
+        Sets interrupts with message B, if B = 0 then interrupts are disabled. 
+
+        An interrupt fires every time an error generates, the status changes, 
+        or a packet is received into buffer.

@@ -28,7 +28,7 @@ public class ExplosionControl extends AbstractControl {
     protected void controlUpdate(float tpf) {
         while(state < explosion.state) {
             state++;
-            Log.info("explosion state: "+ state + "/" + explosion.state);
+            Log.info("Render explosion state: "+ state + "/" + explosion.state);
             switch(state) {
                 case 0:
                     break;
@@ -59,10 +59,10 @@ public class ExplosionControl extends AbstractControl {
                     List<Spatial> children = new ArrayList<>( shipNode.getChildren() );
                     for(Spatial s: children) {
                         if(s != spatial) {
-                            Log.info("remove: " + s.getName());
+                            Log.info("remove: " + s.getName() + " from " + shipNode.getName());
                             s.removeFromParent();
                         } else {
-                            Log.info("don't remove: " + s.getName());
+                            Log.info("don't remove: " + s.getName() + " from " + shipNode.getName());
                         }
                     }
                     break;
@@ -84,7 +84,6 @@ public class ExplosionControl extends AbstractControl {
                 case 7:
                     break;
             }
-            state++;
         }
     }
 

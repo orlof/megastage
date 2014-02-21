@@ -1,0 +1,50 @@
+
+<Ender Innovations>
+"It's alive! Dear lord almighty, it's alive!"
+
+    Name: EIVD16
+    (Ender Innovations Vector Display)
+    Version: 16
+    ID: 0x436d3335
+    Manufacturer: 0xE142A1FA (Ender innov.)
+
+About:
+	This is a take on the Mackapar Media's Suspended Particle Exciter Display by Ender Innovations.
+	Basically we took the idea of the SPED-3 and made our own vector display utilizing our 
+	superior technology and intelligence to grant this humble display the Awesomeness* only Ender
+	Innovations can bestow. This device reads a map of vectors from the ram in 2 words per vector
+	and with a maximum of 256 vectors (2048 words maximum) and displays the map at 1 vector per
+	millisecond (1000 vectors per second). This device also features a mappable 32 color palette 
+	for it's vectors with 4096 possible colors per palette slot.
+	Vector format:
+	word 1 = xxxxxxxxyyyyyyyy
+	word 2 = cccccXYZzzzzzzzz
+	x = X coordinate, y = Y coordinate, z = Z coordinate, XYZ = signs of the coordinates, c = color palette index
+	Palette format:
+        0x0RGB
+
+*Awesomeness patented by Ender Innovations.
+
+INTERRUPT BEHAVIOR:
+
+A - Behavior
+
+0 - POLL_DEVICE Sets B and C to the latest status and error codes
+
+	Status codes:
+	0 - stand-by
+	1 - active
+	
+	Error codes:
+	0 - nominal
+	1 - RAM exceeded
+	F - Equipment malfunction
+	
+1 - MAP_VECTORS Starts rendering a set of vectors from RAM starting at B with number of vectors in C.
+
+2 - MAP_PALETTE Memory maps the palette to RAM starting at B
+
+3 - DUMP_PALETTE Dumps the default palette to RAM starting at B, halts the dcpu-16 for 32 cycles
+
+4 - ROTATE_DISPLAY Takes a value from B in angular format and renders the display turned to that angle 
+	(Default angle is 0 and angle is purely degrees, minutes are ignored.)

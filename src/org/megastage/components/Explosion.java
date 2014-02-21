@@ -2,9 +2,11 @@ package org.megastage.components;
 
 import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.client.ClientGlobals;
 import org.megastage.protocol.Message;
 import org.megastage.protocol.Network.ComponentMessage;
+import org.megastage.util.ID;
 import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
@@ -21,6 +23,7 @@ public class Explosion extends BaseComponent {
 
     @Override
     public void receive(Connection pc, Entity entity) {
+        Log.info(ID.get(entity) + this.toString());
         Explosion comp = Mapper.EXPLOSION.get(entity);
         if(comp == null) {
             entity.addComponent(this);
@@ -42,5 +45,9 @@ public class Explosion extends BaseComponent {
             state = currentState;
             dirty = true;
         }
+    }
+    
+    public String toString() {
+        return "Explosion[state=" + state + "]";
     }
 }

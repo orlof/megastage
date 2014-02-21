@@ -67,7 +67,7 @@ public class ExplosionSystem extends EntityProcessingSystem {
     
     private static final long[] delay = new long[] {
 //        1500, 3500, 3700, 8000, 8000, 13000, 14000, 15000
-        0, 1500, 3500, 3700, 4000, 13000, 13000, 13000
+        0, 1500, 3500, 3700, 4000, 13000, 13000, 15000
     };
 
     public int currentState(Explosion exp) {
