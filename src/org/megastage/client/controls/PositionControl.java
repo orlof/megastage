@@ -60,6 +60,8 @@ public class PositionControl extends AbstractControl {
             long duration = 
                     (cpos.x == 0f && cpos.y == 0f && cpos.z == 0f) ? 
                     0: Time.value - lastUpdateTime; 
+            if(duration > 100) duration = 100;
+            
             lastUpdateTime = Time.value;
 
             interpolator.update(Time.value, Time.value + duration, cpos, tpos);

@@ -64,6 +64,7 @@ import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.PPSGeometry;
 import org.megastage.components.gfx.RadarGeometry;
 import org.megastage.util.Cube3dMap;
+import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
 
@@ -308,6 +309,21 @@ public class SpatialManager {
                     }
                 }
             }
+        }
+    }
+        
+    public void updateShipBlock(Entity entity, BlockChange data) {
+        Cube3dMap theMap = Mapper.SHIP_GEOMETRY.get(entity).map;
+        theMap.set(data.x, data.y, data.z, data.type);
+        
+        final Node node = getNode(entity);
+        BlockTerrainControl ctrl = offset(node).getControl(BlockTerrainControl.class);
+
+        if(data.type == 0) {
+            ctrl.removeBlock(data.x, data.y, data.z);
+        } else {
+            Class<? extends Block> block = CubesManager.getBlock(data.type);
+            ctrl.setBlock(data.x, data.y, data.z, block);
         }
     }
         

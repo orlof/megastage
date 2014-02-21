@@ -11,6 +11,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.Vector3f;
 import java.util.LinkedList;
+import org.megastage.client.ClientGlobals;
 import org.megastage.components.BaseComponent;
 import org.megastage.protocol.Message;
 
@@ -50,7 +51,6 @@ public class Cube3dMap {
     }
 
     public void set(int x, int y, int z, char value) {
-        Log.info("");
         char old = get(x, y, z);
         
         if(value == old) {
@@ -187,6 +187,7 @@ public class Cube3dMap {
         @Override
         public void receive(Connection pc, Entity entity) {
             Log.info(ID.get(entity) + toString());
+            ClientGlobals.spatialManager.updateShipBlock(entity, this);
         }
         
         public String toString() {

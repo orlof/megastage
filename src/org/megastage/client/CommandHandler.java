@@ -88,10 +88,10 @@ public class CommandHandler implements AnalogListener, ActionListener {
                         BlockTerrainControl ctrl = offset.getControl(BlockTerrainControl.class);
                         if(!right) {
                             ClientGlobals.userCommand.build(loc);
-                            ctrl.setBlock(loc, CubesManager.Combi.class);
+                            //ctrl.setBlock(loc, CubesManager.Combi.class);
                         } else {
                             ClientGlobals.userCommand.unbuild(loc);
-                            ctrl.removeBlock(loc);
+                            //ctrl.removeBlock(loc);
                         }
                     }
                 } else {
