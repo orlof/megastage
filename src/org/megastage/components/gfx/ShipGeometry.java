@@ -29,7 +29,7 @@ public class ShipGeometry extends BaseComponent {
         
         BaseComponent[] extraComponents = new BaseComponent[2];
         extraComponents[0] = new Mass(map.getMass());
-        extraComponents[1] = new CollisionType(CollisionType.SHIP, map.getBoundingSphere());
+        extraComponents[1] = new CollisionType(CollisionType.SHIP, map.getCollisionRadius());
         
         return extraComponents;
     }
@@ -94,7 +94,7 @@ public class ShipGeometry extends BaseComponent {
         
         System.out.println("Mass: " + map.getMass());
         System.out.println("Center of mass: " + map.getCenter());
-        System.out.println("Bounding sphere radius: " + map.getBoundingSphere());
+        System.out.println("Bounding sphere radius: " + map.getCollisionRadius());
         System.out.println("X-inertia: " + map.getInertia(new Vector3d(1, 0, 0)));
         System.out.println("Y-inertia: " + map.getInertia(new Vector3d(0, 1, 0)));
         System.out.println("Z-inertia: " + map.getInertia(new Vector3d(0, 0, 1)));

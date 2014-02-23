@@ -197,7 +197,7 @@ public class SpatialManager {
         return mat;
     }
     
-    private void attach(Node parent, Spatial child, boolean useOffset) {
+    public void attach(Node parent, Spatial child, boolean useOffset) {
         if(useOffset) {
             offset(parent).attachChild(child);
         } else {
@@ -684,13 +684,15 @@ public class SpatialManager {
 
     public void setupThermalLaser(Entity entity, ThermalLaserGeometry data) {
         final Node node = getNode(entity);
+
         final PositionControl positionControl = new  PositionControl(entity, false);
         final RotationControl rotationControl = new  RotationControl(entity);
+        final Cylinder cyl = new Cylinder(10, 10, 0.2f, 1e4f, true);
 
-        final Geometry beam = new Geometry("beam", new Cylinder(10, 10, 0.2f, 1e4f, true));
+        final Geometry beam = new Geometry("beam", cyl);
         beam.setLocalTranslation(0, 0, -1e4f/2f - 0.5f);
         beam.setMaterial(material(ColorRGBA.Yellow, true));
-        beam.addControl(new ThermalLaserControl(entity));
+        beam.addControl(new ThermalLaserControl(entity, cyl));
 
         final Geometry weapon = new Geometry("weapon", new Cylinder(16, 16, 0.5f, 0.3f, data.length, true, false));
         weapon.setLocalTranslation(0, 0, -data.length/2f + 0.5f);

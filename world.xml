@@ -106,9 +106,9 @@
         <component type="UsableFlag"/>
         <component type="gfx.ShipGeometry">
           <map y="0" x="012345678901234"/>
-            <map z="00">B    #####     </map>
-            <map z="01">B  #########   </map>
-            <map z="02">B############# </map>
+            <map z="00">B    #####    B</map>
+            <map z="01">B  #########  B</map>
+            <map z="02">B#############B</map>
             <map z="03">###############</map>
             <map z="04">#  #########  #</map>
             <map z="05">   #########   </map>

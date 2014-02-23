@@ -115,6 +115,17 @@ public class Cube3dMap {
         return total / count + 0.5f;
     }
 
+    public Vector3d getCenter3d() {
+        return new Vector3d(
+                getCenter3d(xtotal),
+                getCenter3d(ytotal),
+                getCenter3d(ztotal));
+    }
+    
+    private double getCenter3d(double total) {
+        return total / count + 0.5f;
+    }
+
     private int getNewCapacity(char[][][] arr, int index) {
         if(arr == null) return INITIAL_CAPACITY;
         return calcNewCapacity(arr.length, index);
@@ -138,7 +149,7 @@ public class Cube3dMap {
         return capacity;
     }
 
-    public double getBoundingSphere() {
+    public double getCollisionRadius() {
         return getCenter().length();
     }
 

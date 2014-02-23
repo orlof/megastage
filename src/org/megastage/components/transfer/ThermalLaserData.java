@@ -9,6 +9,7 @@ import org.megastage.util.ID;
 public class ThermalLaserData extends BaseComponent {
     public char status;
     public char wattage;
+    public float range;
 
     @Override
     public void receive(Connection pc, Entity entity) {
@@ -16,17 +17,16 @@ public class ThermalLaserData extends BaseComponent {
         super.receive(pc, entity); //To change body of generated methods, choose Tools | Templates.
     }
     
-    
-    
-    public static ThermalLaserData create(char status, char wattage) {
+    public static ThermalLaserData create(char status, char wattage, float range) {
         ThermalLaserData tld = new ThermalLaserData();
         tld.status = status;
         tld.wattage = wattage;
+        tld.range = range;
         return tld;
     }
     
     @Override
     public String toString() {
-        return "ThermalLaserData[status=" + (int) status +", wattage=" + (int) wattage + "]";
+        return "ThermalLaserData[status=" + (int) status +", wattage=" + (int) wattage + ", range="+ range + "]";
     }
 }

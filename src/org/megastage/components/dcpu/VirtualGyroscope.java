@@ -2,22 +2,19 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
-import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.Explosion;
-import org.megastage.components.transfer.EngineData;
 import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.protocol.Message;
-import org.megastage.protocol.Network;
 import org.megastage.util.Vector3d;
 
 public class VirtualGyroscope extends DCPUHardware {
-    public static final char STATUS_OFF = 0;
-    public static final char STATUS_ON = 1;
-    public static final char STATUS_NO_POWER = 2;
+    public static transient final char STATUS_OFF = 0;
+    public static transient final char STATUS_ON = 1;
+    public static transient final char STATUS_NO_POWER = 2;
 
     public Vector3d axis;
 

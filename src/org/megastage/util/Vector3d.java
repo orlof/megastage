@@ -140,8 +140,12 @@ public class Vector3d {
     }
     
     public static void main(String args[]) throws Exception {
-        Vector3d v = new Vector3d(10, 1, 0);
-        double d = v.distanceToPoint(new Vector3d(10,2,0));
-        System.out.println(d);
+        Vector3d line = new Vector3d(1, 0, 0);
+        long start = System.currentTimeMillis();
+        for(int i=0;i<1000000;i++)  
+            line.distanceToPoint(new Vector3d(10,2,0));
+        System.out.println(System.currentTimeMillis() - start);
     }
-}
+
+
+} 

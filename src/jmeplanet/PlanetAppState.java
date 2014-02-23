@@ -91,7 +91,7 @@ public class PlanetAppState extends AbstractAppState {
             farFilter.addFilter(farFog);
 
             farBloom=new BloomFilter();
-            farBloom.setDownSamplingFactor(2);
+            farBloom.setDownSamplingFactor(4);
             farBloom.setBlurScale(1.37f);
             farBloom.setExposurePower(3.30f);
             farBloom.setExposureCutOff(0.1f);
