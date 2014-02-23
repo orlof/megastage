@@ -49,6 +49,7 @@ import org.megastage.client.controls.LookAtControl;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RandomSpinnerControl;
 import org.megastage.client.controls.RotationControl;
+import org.megastage.client.controls.ThermalLaserControl;
 import org.megastage.components.client.ClientRaster;
 import org.megastage.components.gfx.MonitorGeometry;
 import org.megastage.components.gfx.PlanetGeometry;
@@ -63,6 +64,7 @@ import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.PPSGeometry;
 import org.megastage.components.gfx.RadarGeometry;
+import org.megastage.components.gfx.ThermalLaserGeometry;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.ID;
@@ -678,5 +680,29 @@ public class SpatialManager {
 
     private void setOffsetTranslation(Node node, Vector3f value) {
         offset(node).setLocalTranslation(value);
+    }
+
+    public void setupThermalLaser(Entity entity, ThermalLaserGeometry data) {
+        final Node node = getNode(entity);
+        final PositionControl positionControl = new  PositionControl(entity, false);
+        final RotationControl rotationControl = new  RotationControl(entity);
+
+        final Geometry beam = new Geometry("beam", new Cylinder(10, 10, 0.2f, 1e4f, true));
+        beam.setLocalTranslation(0, 0, -1e4f/2f - 0.5f);
+        beam.setMaterial(material(ColorRGBA.Yellow, true));
+        beam.addControl(new ThermalLaserControl(entity));
+
+        final Geometry weapon = new Geometry("weapon", new Cylinder(16, 16, 0.5f, 0.3f, data.length, true, false));
+        weapon.setLocalTranslation(0, 0, -data.length/2f + 0.5f);
+        weapon.setMaterial(material(ColorRGBA.Gray, true));
+        
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            node.addControl(rotationControl);
+
+            attach(node, beam, true);
+            attach(node, weapon, true);
+            return null;
+        }});
     }
 }

@@ -106,9 +106,9 @@
         <component type="UsableFlag"/>
         <component type="gfx.ShipGeometry">
           <map y="0" x="012345678901234"/>
-            <map z="00">     #####     </map>
-            <map z="01">   #########   </map>
-            <map z="02"> ############# </map>
+            <map z="00">B    #####     </map>
+            <map z="01">B  #########   </map>
+            <map z="02">B############# </map>
             <map z="03">###############</map>
             <map z="04">#  #########  #</map>
             <map z="05">   #########   </map>
@@ -272,6 +272,15 @@
                 <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_power="10e4"/>
                 <component type="Position" dx="7" dy="7" dz="6"/>
                 <component type="gfx.EngineGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="srv.SynchronizeFlag"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <group name="replicate"/>
+            </entity>
+            <entity name="ThermalLaser">
+                <component type="dcpu.VirtualThermalLaser" />
+                <component type="Position" dx="0" dy="0" dz="2"/>
+                <component type="gfx.ThermalLaserGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
@@ -517,6 +526,15 @@
                 <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_power="10e4"/>
                 <component type="Position" dx="7" dy="7" dz="6"/>
                 <component type="gfx.EngineGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="srv.SynchronizeFlag"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <group name="replicate"/>
+            </entity>
+            <entity name="ThermalLaser">
+                <component type="dcpu.VirtualThermalLaser" />
+                <component type="Position" dx="0" dy="0" dz="2"/>
+                <component type="gfx.ThermalLaserGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>

@@ -1,9 +1,7 @@
 package org.megastage.util;
 
-import com.artemis.Component;
 import com.artemis.ComponentMapper;
 import com.artemis.World;
-import org.megastage.components.BaseComponent;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
 import org.megastage.components.Mass;
@@ -13,7 +11,6 @@ import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.components.SpawnPoint;
 import org.megastage.components.UsableFlag;
-import org.megastage.components.client.ClientVideoMemory;
 import org.megastage.components.dcpu.DCPU;
 import org.megastage.components.dcpu.VirtualEngine;
 import org.megastage.components.dcpu.VirtualGyroscope;
@@ -25,16 +22,20 @@ import org.megastage.components.srv.Acceleration;
 import org.megastage.components.srv.Identifier;
 import org.megastage.components.srv.SphereOfInfluence;
 import org.megastage.components.Velocity;
+import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.components.transfer.RadarTargetData;
+import org.megastage.components.transfer.ThermalLaserData;
 
 public class Mapper {
+    public static ComponentMapper<VirtualThermalLaser> VIRTUAL_THERMAL_LASER;
     public static ComponentMapper<DeleteFlag> DELETE_FLAG;
     public static ComponentMapper<Acceleration> ACCELERATION;
     public static ComponentMapper<Position> POSITION;
     public static ComponentMapper<Rotation> ROTATION;
     public static ComponentMapper<UsableFlag> USABLE_FLAG;
+    public static ComponentMapper<ThermalLaserData> THERMAL_LASER_DATA;
     public static ComponentMapper<EngineData> ENGINE_DATA;
     public static ComponentMapper<GyroscopeData> GYROSCOPE_DATA;
     public static ComponentMapper<RadarTargetData> RADAR_TARGET_DATA;
@@ -55,6 +56,7 @@ public class Mapper {
     public static ComponentMapper<SphereOfInfluence> SPHERE_OF_INFLUENCE;
 
     public static void init(World world) {
+        VIRTUAL_THERMAL_LASER = world.getMapper(VirtualThermalLaser.class);
         DELETE_FLAG = world.getMapper(DeleteFlag.class);
         ACCELERATION = world.getMapper(Acceleration.class);
         POSITION = world.getMapper(Position.class);
@@ -64,6 +66,7 @@ public class Mapper {
         ENGINE_DATA = world.getMapper(EngineData.class);
         GYROSCOPE_DATA = world.getMapper(GyroscopeData.class);
         RADAR_TARGET_DATA = world.getMapper(RadarTargetData.class);
+        THERMAL_LASER_DATA = world.getMapper(ThermalLaserData.class);
         EXPLOSION = world.getMapper(Explosion.class);
         MASS = world.getMapper(Mass.class);
         DCPU = world.getMapper(DCPU.class);

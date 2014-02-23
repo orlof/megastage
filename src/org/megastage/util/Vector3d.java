@@ -138,4 +138,10 @@ public class Vector3d {
     public Vector3f getVector3f() {
         return new Vector3f((float) x, (float) y, (float) z);
     }
+    
+    public static void main(String args[]) throws Exception {
+        Vector3d v = new Vector3d(10, 1, 0);
+        double d = v.distanceToPoint(new Vector3d(10,2,0));
+        System.out.println(d);
+    }
 }

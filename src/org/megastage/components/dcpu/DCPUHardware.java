@@ -21,6 +21,8 @@ public abstract class DCPUHardware extends BaseComponent {
 //    public static final int TYPE_PPS = 0x0cb7cb4c;
     public static final int TYPE_GYRO = 0xeec6c4de;
     public static final int TYPE_GRAVITATION_SENSOR = 0x3846bc64;
+    public static final int TYPE_THERMAL_LASER = 0xEEFA0000;
+    
     public static final int MANUFACTORER_NYA_ELEKTRISKA = 0x1C6C8B36;
     public static final int MANUFACTORER_MOJANG = 0x4AB55488;
     public static final int MANUFACTORER_MACKAPAR = 0x1EB37E91;

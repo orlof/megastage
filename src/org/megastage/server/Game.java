@@ -24,6 +24,7 @@ import org.megastage.systems.srv.EntityInitializeSystem;
 import org.megastage.systems.srv.RadarManagerSystem;
 import org.megastage.systems.srv.ShipMovementSystem;
 import org.megastage.systems.srv.SphereOfInfluenceSystem;
+import org.megastage.systems.srv.ThermalLaserSystem;
 import org.megastage.util.Mapper;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Time;
@@ -44,6 +45,7 @@ public class Game {
         //world.setSystem(new ServerEngineTestSystem(5000));
         //world.setSystem(new ServerGyroTestSystem(5000));
         //world.setSystem(new ServerRadarTestSystem(5000));
+        //world.setSystem(new ThermalLaserTestSystem(2000));
         world.setSystem(new EntityInitializeSystem(500));
         world.setSystem(new CleanupSystem(500));
         world.setSystem(new EntityDeleteSystem(50));
@@ -64,6 +66,8 @@ public class Game {
         world.setSystem(new GravityManagerSystem(5000));
         world.setSystem(new RadarManagerSystem(1000));
         world.setSystem(new SphereOfInfluenceSystem(10000));
+        
+        world.setSystem(new ThermalLaserSystem());
 
         world.setSystem(new DCPUSystem());
 
