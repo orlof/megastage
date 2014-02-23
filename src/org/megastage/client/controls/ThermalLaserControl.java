@@ -21,7 +21,7 @@ import org.megastage.util.Mapper;
 public class ThermalLaserControl extends AbstractControl {
     private final Entity entity;
     private final AudioNode an;
-    private char status;
+    private char status = 0xffff;
 
     public ThermalLaserControl(Entity entity) {
         this.entity = entity;
@@ -32,16 +32,23 @@ public class ThermalLaserControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         ThermalLaserData data = Mapper.THERMAL_LASER_DATA.get(entity);
-        if(data != null && status != data.status) {
-            switch(data.status) {
-                case VirtualThermalLaser.STATUS_FIRING:
-                    an.play();
-                    spatial.setCullHint(Spatial.CullHint.Inherit);
-                    break;
-                case VirtualThermalLaser.STATUS_COOLDOWN:
-                    an.pause();
-                    spatial.setCullHint(Spatial.CullHint.Always);
-                    break;
+        if(data == null) {
+            spatial.setCullHint(Spatial.CullHint.Always);
+        } else {
+            if(status != data.status) {
+                switch(data.status) {
+                    case VirtualThermalLaser.STATUS_FIRING:
+                        an.play();
+                        spatial.setCullHint(Spatial.CullHint.Inherit);
+                        break;
+                    case VirtualThermalLaser.STATUS_COOLDOWN:
+                        an.pause();
+                        spatial.setCullHint(Spatial.CullHint.Always);
+                        break;
+                    case VirtualThermalLaser.STATUS_DORMANT:
+                        spatial.setCullHint(Spatial.CullHint.Always);
+                        break;
+                }
             }
         }
     }
