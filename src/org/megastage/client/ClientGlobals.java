@@ -1,7 +1,6 @@
 package org.megastage.client;
 
 import com.artemis.Entity;
-import com.cubes.CubesSettings;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import org.megastage.protocol.UserCommand;
