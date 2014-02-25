@@ -12,6 +12,7 @@ public class SoundManager {
     public static final int FANFARE = 4;
     public static final int EXPLOSION = 5;
     public static final int LASER_BEAM = 6;
+    public static final int FORCE_FIELD = 7;
     
     private static AudioData[] audioData;
     

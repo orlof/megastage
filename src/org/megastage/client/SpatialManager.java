@@ -10,9 +10,11 @@ import com.jme3.asset.AssetManager;
 import com.jme3.effect.ParticleEmitter;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.LightNode;
@@ -33,6 +35,7 @@ import com.jme3.texture.Texture2D;
 import com.jme3.texture.image.ImageRaster;
 import com.jme3.texture.plugins.AWTLoader;
 import com.jme3.util.BufferUtils;
+import com.shaderblow.forceshield.ForceShieldControl;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +63,7 @@ import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.gfx.VoidGeometry;
 import org.megastage.components.Explosion;
+import org.megastage.components.gfx.ForceFieldGeometry;
 import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.PPSGeometry;
@@ -704,6 +708,46 @@ public class SpatialManager {
 
             attach(node, beam, true);
             attach(node, weapon, true);
+            return null;
+        }});
+    }
+
+    public void setupForceField(Entity entity, ForceFieldGeometry aThis) {
+        final Node node = getNode(entity);
+
+        final PositionControl positionControl = new  PositionControl(entity, false);
+        //final RotationControl rotationControl = new  RotationControl(entity);
+        final Geometry dome = new Geometry("dome", new Dome(Vector3f.ZERO, 12, 12, 0.4f, false));
+
+        dome.setLocalTranslation(0, -0.5f, 0);
+        dome.setMaterial(material(ColorRGBA.Blue, true));
+        //dome.addControl(new ForceFieldControl(entity, cyl));
+
+        // Create spatial to be the shield
+        final Sphere sphere = new Sphere(30, 30, 15);
+        final Geometry shield = new Geometry("forceshield", sphere);
+        shield.setQueueBucket(Bucket.Transparent); // Remenber to set the queue bucket to transparent for the spatial
+ 
+        // Create ForceShieldControl
+        Material material = new Material(assetManager, "ShaderBlow/MatDefs/ForceShield/ForceShield.j3md");
+        material.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        material.setFloat("MaxDistance", 1);
+        ForceShieldControl forceShieldControl = new ForceShieldControl(material);
+        shield.addControl(forceShieldControl); // Add the control to the spatial
+        forceShieldControl.setEffectSize(2f); // Set the effect size
+        forceShieldControl.setColor(new ColorRGBA(1, 0, 0, 3)); // Set effect color
+        forceShieldControl.setVisibility(0.1f); // Set shield visibility.
+ 
+        // Set a texture to the shield
+        forceShieldControl.setTexture(this.assetManager.loadTexture("Textures/fs_texture.png"));
+ 
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            //node.addControl(rotationControl);
+
+            attach(node, dome, true);
+            attach(node, shield, true);
+            //attach(node, weapon, true);
             return null;
         }});
     }

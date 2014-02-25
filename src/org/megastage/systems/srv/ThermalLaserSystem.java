@@ -4,9 +4,11 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.minlog.Log;
+import org.megastage.components.Position;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.server.ShipManager;
-import org.megastage.server.ShipManager.Ship;
+import org.megastage.server.ShipManager.Target;
+import org.megastage.util.ID;
 import org.megastage.util.Mapper;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Time;
@@ -26,11 +28,11 @@ public class ThermalLaserSystem extends SystemTemplate {
             case VirtualThermalLaser.STATUS_FIRING:
                 if(Time.value < vtl.startTime + vtl.duration) {
                     // firing
-                    Array<Ship> collisions = findCollisions(e, vtl);
+                    Array<Target> collisions = findCollisions(e, vtl);
                     if(collisions.size > 0) {
-                        Ship target = collisions.get(0);
-                        double range = Math.sqrt(target.distanceSquared) - target.collisionRadius;
-                        vtl.setRange((float) range);
+                        Target target = collisions.get(0);
+                        VirtualForceField forceField = Mapper.VIRTUAL_FORCE_FIELD.get(e);
+                        vtl.setRange((float) target.distance);
                     } else {
                         vtl.setRange(vtl.maxRange);
                     }
@@ -51,29 +53,30 @@ public class ThermalLaserSystem extends SystemTemplate {
         }
     }
 
-    Array<Ship> findCollisions(Entity e, VirtualThermalLaser vtl) {
-        try {
-            Vector3d wCoord = Mapper.POSITION.get(e).getVector3d();
-            Vector3d cCoord = Mapper.SHIP_GEOMETRY.get(vtl.ship).map.getCenter3d();
-            Vector3d sCoord = Mapper.POSITION.get(vtl.ship).getVector3d();
-        
-            Vector3d coord = wCoord.sub(cCoord).add(sCoord);
+    public static final Array<Target> EMPTY_SHIP_ARRAY = new Array<>(0);
+    public static final Vector3d FORWARD_VECTOR = new Vector3d(0,0,-1);
+    
+    Array<Target> findCollisions(Entity e, VirtualThermalLaser vtl) {
+        Position myPos = Mapper.POSITION.get(e);
+        if(myPos == null) return EMPTY_SHIP_ARRAY;
 
-            Array<Ship> ships = ShipManager.getShipsInRange(vtl.ship, coord, 100);
-            if(ships.size == 0) {
-                return ships;
-            }
+        Vector3d coord = myPos.getLocalVector3d(e);
+        if(coord == null) return EMPTY_SHIP_ARRAY;
+        // Log.info(ID.get(e) + coord.toString());
 
-            Quaternion shipAngle = Mapper.ROTATION.get(vtl.ship).getQuaternion4d();
-            Vector3d attackVector = new Vector3d(0,0,-1).multiply(shipAngle);
-            //Vector3d attackVector = shipVector.multiply(weaponAngle);
-
-            ships = ShipManager.findCollision(ships, attackVector);
-
-            return ships;
-        } catch(NullPointerException ex) {
-            ex.printStackTrace();
+        Array<Target> targets = ShipManager.getTargetsInRange(vtl.ship, coord, 100);
+        if(targets.size == 0) {
+            return targets;
         }
-        return new Array<>(0);
+
+        // Log.info(ID.get(e) + ships.toString());
+
+        Quaternion shipAngle = Mapper.ROTATION.get(vtl.ship).getQuaternion4d();
+        Vector3d attackVector = FORWARD_VECTOR.multiply(shipAngle);
+        //Vector3d attackVector = shipVector.multiply(weaponAngle);
+
+        targets = ShipManager.findCollision(targets, attackVector);
+
+        return targets;
     }
 }

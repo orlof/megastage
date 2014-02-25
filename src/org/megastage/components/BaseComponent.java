@@ -64,6 +64,10 @@ public abstract class BaseComponent implements Component {
         return new Network.ComponentMessage(entity, this);
     }
 
+    public final Message never(Entity entity) {
+        return null;
+    }
+
     public void receive(Connection pc, Entity entity) {
         this.dirty = true;
 

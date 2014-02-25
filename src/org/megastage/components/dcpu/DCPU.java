@@ -68,7 +68,7 @@ public class DCPU extends BaseComponent {
         }
 
         startupTime = Time.value + 2500;
-        nextHardwareTick = Time.value + HARDWARE_TICK_INTERVAL;
+        nextHardwareTick = HARDWARE_TICK_INTERVAL;
         
         return null;
     }

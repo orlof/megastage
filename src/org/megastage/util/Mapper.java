@@ -2,6 +2,7 @@ package org.megastage.util;
 
 import com.artemis.ComponentMapper;
 import com.artemis.World;
+import org.megastage.components.CollisionSphere;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
 import org.megastage.components.Mass;
@@ -22,13 +23,18 @@ import org.megastage.components.srv.Acceleration;
 import org.megastage.components.srv.Identifier;
 import org.megastage.components.srv.SphereOfInfluence;
 import org.megastage.components.Velocity;
+import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.components.transfer.EngineData;
+import org.megastage.components.transfer.ForceFieldData;
 import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.components.transfer.RadarTargetData;
 import org.megastage.components.transfer.ThermalLaserData;
 
 public class Mapper {
+    public static ComponentMapper<VirtualForceField> VIRTUAL_FORCE_FIELD;
+    public static ComponentMapper<ForceFieldData> FORCE_FIELD_DATA;
+    public static ComponentMapper<CollisionSphere> COLLISION_SPHERE;
     public static ComponentMapper<VirtualThermalLaser> VIRTUAL_THERMAL_LASER;
     public static ComponentMapper<DeleteFlag> DELETE_FLAG;
     public static ComponentMapper<Acceleration> ACCELERATION;
@@ -56,6 +62,9 @@ public class Mapper {
     public static ComponentMapper<SphereOfInfluence> SPHERE_OF_INFLUENCE;
 
     public static void init(World world) {
+        VIRTUAL_FORCE_FIELD = world.getMapper(VirtualForceField.class);
+        FORCE_FIELD_DATA = world.getMapper(ForceFieldData.class);
+        COLLISION_SPHERE = world.getMapper(CollisionSphere.class);
         VIRTUAL_THERMAL_LASER = world.getMapper(VirtualThermalLaser.class);
         DELETE_FLAG = world.getMapper(DeleteFlag.class);
         ACCELERATION = world.getMapper(Acceleration.class);

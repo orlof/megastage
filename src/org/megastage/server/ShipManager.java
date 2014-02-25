@@ -16,67 +16,71 @@ public class ShipManager {
         ShipManager.entities = entities;
     }
 
-    public static Array<Ship> findCollision(Array<Ship> candidates, Vector3d ray) {
-        Array<Ship> collisions = new Array<>(candidates.size);
+    public static Array<Target> findCollision(Array<Target> candidates, Vector3d ray) {
+        Array<Target> collisions = new Array<>(candidates.size);
 
-        for(Ship ship: candidates) {
-            if(ray.x * ship.coord.x <= 0 && ray.y * ship.coord.y <= 0 && ray.z * ship.coord.z <= 0) {
+        for(Target target: candidates) {
+            if(ray.x * target.coord.x <= 0 && ray.y * target.coord.y <= 0 && ray.z * target.coord.z <= 0) {
                 //behind the weapon
                 continue;
             }
             
-            ship.collisionRadius = Mapper.SHIP_GEOMETRY.get(ship.entity).map.getCollisionRadius();
+            final double distanceToPoint = ray.distanceToPoint(target.coord);
             
-            final double distanceToPoint = ray.distanceToPoint(ship.coord);
-            
-            if(distanceToPoint < ship.collisionRadius) {
-                collisions.add(ship);
+            if(distanceToPoint < target.collisionRadius) {
+                collisions.add(target);
             }
         }
         
         return collisions;
     }
-    
-    public static Array<Ship> getShipsInRange(Entity me, Vector3d origo, double range) {
-        double rangeSquared = range * range;
-        
-        Array<Ship> ships = new Array<>(entities.size);
-        for(Entity e: entities) {
-            if(me == e) continue;
 
-            Vector3d coord = Mapper.POSITION.get(e).getVector3d().sub(origo);
+//    static int count = 0;
+    
+    public static Array<Target> getTargetsInRange(Entity attShip, Vector3d wpnCoord, double wpnRange) {
+        Array<Target> targets = new Array<>(entities.size);
+        for(Entity target: entities) {
+            if(attShip == target) continue;
+
+            //Log.info(ID.get(e) + Mapper.POSITION.get(e).getGlobalVector3d(e));
+            Vector3d coord = Mapper.POSITION.get(target).getLocalVector3d(target).sub(wpnCoord);
+            // Log.info(ID.get(attShip) + ID.get(target) + wpnCoord.toString() + " to " + coord.toString());
+            double colrad = Mapper.COLLISION_SPHERE.get(target).radius;
+            double distance = coord.length() - colrad;
+
+            // Log.info(distance + " +" + colrad);
             
-            double distanceSquared = coord.lengthSquared();
-            
-            if(distanceSquared < rangeSquared) {
-                ships.add(new Ship(e, coord, distanceSquared));
+            if(distance < wpnRange) {
+                targets.add(new Target(target, coord, distance, colrad));
             }
         }
+//        count++;
         
-        ships.sort(new Comparator<Ship>() {
+        targets.sort(new Comparator<Target>() {
             // distance
             @Override
-            public int compare(Ship o1, Ship o2) {
-                return Double.compare(o1.distanceSquared, o2.distanceSquared);
+            public int compare(Target o1, Target o2) {
+                return Double.compare(o1.distance, o2.distance);
             }
         });
         
-        return ships;
+        return targets;
     }
 
-    public static class Ship {
+    public static class Target {
         public Entity entity;
         public Vector3d coord;
-        public double distanceSquared;
+        public double distance;
         public double collisionRadius;
 
-        public Ship() {
+        public Target() {
         }
 
-        private Ship(Entity entity, Vector3d coord, double distanceSquared) {
+        public Target(Entity entity, Vector3d coord, double distance, double colrad) {
             this.entity = entity;
             this.coord = coord;
-            this.distanceSquared = distanceSquared;
+            this.distance = distance;
+            this.collisionRadius = colrad;
         }
 
     }

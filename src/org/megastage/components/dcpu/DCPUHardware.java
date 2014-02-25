@@ -22,6 +22,7 @@ public abstract class DCPUHardware extends BaseComponent {
     public static final int TYPE_GYRO = 0xeec6c4de;
     public static final int TYPE_GRAVITATION_SENSOR = 0x3846bc64;
     public static final int TYPE_THERMAL_LASER = 0xEEFA0000;
+    public static final int TYPE_FORCE_FIELD = 0xF1E7D666;
     
     public static final int MANUFACTORER_NYA_ELEKTRISKA = 0x1C6C8B36;
     public static final int MANUFACTORER_MOJANG = 0x4AB55488;
@@ -32,6 +33,7 @@ public abstract class DCPUHardware extends BaseComponent {
     public static final int MANUFACTORER_SEIKORION = 0xcf115b97;
     public static final int MANUFACTORER_OTEC = 0xb8badde8;
     public static final int MANUFACTORER_ENDER_INNOVATIONS = 0xE142A1FA;
+    public static final int MANUFACTORER_CRADLE_TECH = 0xa3783fc8;
 
     public int type;
     public int revision;

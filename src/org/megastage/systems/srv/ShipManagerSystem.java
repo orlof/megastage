@@ -4,8 +4,8 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.systems.EntitySystem;
 import com.badlogic.gdx.utils.Array;
+import org.megastage.components.CollisionSphere;
 import org.megastage.components.Position;
-import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.server.ShipManager;
 
 /**
@@ -15,7 +15,7 @@ import org.megastage.server.ShipManager;
  */
 public class ShipManagerSystem extends EntitySystem {
     public ShipManagerSystem() {
-        super(Aspect.getAspectForAll(Position.class, ShipGeometry.class));
+        super(Aspect.getAspectForAll(Position.class, CollisionSphere.class));
     }
 
     @Override
