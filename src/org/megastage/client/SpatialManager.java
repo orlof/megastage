@@ -46,6 +46,7 @@ import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.AxisRotationControl;
 import org.megastage.client.controls.EngineControl;
+import org.megastage.client.controls.ForceFieldControl;
 import org.megastage.client.controls.GyroscopeControl;
 import org.megastage.client.controls.ImposterPositionControl;
 import org.megastage.client.controls.LookAtControl;
@@ -691,7 +692,7 @@ public class SpatialManager {
 
         final PositionControl positionControl = new  PositionControl(entity, false);
         final RotationControl rotationControl = new  RotationControl(entity);
-        final Cylinder cyl = new Cylinder(10, 10, 0.2f, 1e4f, true);
+        final Cylinder cyl = new Cylinder(10, 10, 0.2f, 100, false);
 
         final Geometry beam = new Geometry("beam", cyl);
         beam.setLocalTranslation(0, 0, -1e4f/2f - 0.5f);
@@ -721,7 +722,6 @@ public class SpatialManager {
 
         dome.setLocalTranslation(0, -0.5f, 0);
         dome.setMaterial(material(ColorRGBA.Blue, true));
-        //dome.addControl(new ForceFieldControl(entity, cyl));
 
         // Create spatial to be the shield
         final Sphere sphere = new Sphere(30, 30, 15);
@@ -732,14 +732,14 @@ public class SpatialManager {
         Material material = new Material(assetManager, "ShaderBlow/MatDefs/ForceShield/ForceShield.j3md");
         material.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         material.setFloat("MaxDistance", 1);
-        ForceShieldControl forceShieldControl = new ForceShieldControl(material);
-        shield.addControl(forceShieldControl); // Add the control to the spatial
-        forceShieldControl.setEffectSize(2f); // Set the effect size
-        forceShieldControl.setColor(new ColorRGBA(1, 0, 0, 3)); // Set effect color
-        forceShieldControl.setVisibility(0.1f); // Set shield visibility.
+        ForceFieldControl forceFieldControl = new ForceFieldControl(material);
+        shield.addControl(forceFieldControl); // Add the control to the spatial
+        forceFieldControl.setEffectSize(2f); // Set the effect size
+        forceFieldControl.setColor(new ColorRGBA(0, 0, 1, 3)); // Set effect color
+        forceFieldControl.setVisibility(0.05f); // Set shield visibility.
  
         // Set a texture to the shield
-        forceShieldControl.setTexture(this.assetManager.loadTexture("Textures/fs_texture.png"));
+        forceFieldControl.setTexture(this.assetManager.loadTexture("Textures/fs_texture.png"));
  
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
             node.addControl(positionControl);

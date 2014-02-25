@@ -5,6 +5,7 @@ import com.artemis.Entity;
 import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
+import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.server.ShipManager;
 import org.megastage.server.ShipManager.Target;
@@ -31,10 +32,11 @@ public class ThermalLaserSystem extends SystemTemplate {
                     Array<Target> collisions = findCollisions(e, vtl);
                     if(collisions.size > 0) {
                         Target target = collisions.get(0);
-                        VirtualForceField forceField = Mapper.VIRTUAL_FORCE_FIELD.get(e);
-                        vtl.setRange((float) target.distance);
+                        VirtualForceField forceField = Mapper.VIRTUAL_FORCE_FIELD.get(target.entity);
+                        forceField.damage(world.getDelta() * vtl.wattage);
+                        //vtl.setRange((float) target.distance);
                     } else {
-                        vtl.setRange(vtl.maxRange);
+                        //vtl.setRange(vtl.maxRange);
                     }
                 } else {
                     // turn off

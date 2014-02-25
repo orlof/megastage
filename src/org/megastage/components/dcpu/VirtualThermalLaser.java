@@ -19,7 +19,6 @@ public class VirtualThermalLaser extends DCPUHardware {
     public static transient final char ERROR_OVERHEATED = 2;
     public static transient final char ERROR_SERIOUSLY_BROKEN = 3;
 
-    public transient float maxRange;
     public transient long startTime;
     public transient long duration;
 
@@ -35,7 +34,7 @@ public class VirtualThermalLaser extends DCPUHardware {
 
         super.init(world, parent, element);
         
-        range = maxRange = getFloatValue(element, "max_range", 100);
+        range = getFloatValue(element, "max_range", 100);
 
         return null;
     }
@@ -86,10 +85,4 @@ public class VirtualThermalLaser extends DCPUHardware {
         return replicateIfDirty(entity);
     }
 
-    public void setRange(float range) {
-        if(this.range != range) {
-            this.range = range;
-            this.dirty = true;
-        }
-    }
 }

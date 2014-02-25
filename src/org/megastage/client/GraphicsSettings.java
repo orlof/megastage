@@ -3,6 +3,7 @@ package org.megastage.client;
 public enum GraphicsSettings {
 
     HIGH(800, 600, true, true, 32, 32, 32, true, true),
+    NO_PLANETS(640, 400, false, true, 32, 32, 32, true, true),
     MEDIUM(640, 400, true, false, 16, 16, 16, false, true),
     LOW(800, 600, false, true, 16, 16, 16, false, false),
     JOKE(320, 200, false, false, 12, 12, 12, false, false);

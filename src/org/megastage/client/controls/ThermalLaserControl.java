@@ -3,15 +3,22 @@ package org.megastage.client.controls;
 import com.artemis.Entity;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.audio.AudioNode;
+import com.jme3.collision.CollisionResult;
+import com.jme3.collision.CollisionResults;
+import com.jme3.math.Ray;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.shape.Cylinder;
+import com.shaderblow.forceshield.ForceShieldControl;
 import org.megastage.client.ClientGlobals;
 import org.megastage.client.SoundManager;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.components.transfer.ThermalLaserData;
+import org.megastage.util.ID;
 import org.megastage.util.Mapper;
 
 /**
@@ -32,6 +39,8 @@ public class ThermalLaserControl extends AbstractControl {
         an.setLooping(true);
      }
 
+    private static final Vector3f FORWARD = new Vector3f(0,0,-1);
+    
     @Override
     protected void controlUpdate(float tpf) {
         ThermalLaserData data = Mapper.THERMAL_LASER_DATA.get(entity);
@@ -44,11 +53,7 @@ public class ThermalLaserControl extends AbstractControl {
                     case VirtualThermalLaser.STATUS_FIRING:
                         an.play();
                         spatial.setCullHint(Spatial.CullHint.Inherit);
-                        if(data.range != cylinder.getHeight()) {
-                            cylinder.updateGeometry(16, 16, 0.2f, 0.2f, data.range, true, false);
-                            spatial.setLocalTranslation(0, 0, -data.range/2f - 0.5f);
 
-                        }
                         break;
                     case VirtualThermalLaser.STATUS_COOLDOWN:
                         an.pause();
@@ -59,6 +64,34 @@ public class ThermalLaserControl extends AbstractControl {
                         break;
                 }
             }
+
+            if(status == VirtualThermalLaser.STATUS_FIRING) {
+                Vector3f worldTranslation = spatial.getParent().getWorldTranslation();
+                Vector3f worldDirection = spatial.getParent().getWorldRotation().mult(FORWARD);
+                worldTranslation = worldTranslation.add(worldDirection.mult(2.6f));
+
+                final CollisionResults crs = new CollisionResults();
+                ClientGlobals.rootNode.collideWith(new Ray(worldTranslation, worldDirection), crs);
+
+                for(CollisionResult cr: crs) {
+                    //Log.info(ID.get(entity) + cr.getGeometry().toString() + " " + cr.getDistance());
+                    float distance = Math.min(cr.getDistance(), (float) data.range);
+
+                    if(distance != cylinder.getHeight()) {
+                        cylinder.updateGeometry(16, 16, 0.2f, 0.2f, distance, true, false);
+                        spatial.setLocalTranslation(0, 0, -distance/2f-2.5f);
+                    }
+                    
+                    ForceShieldControl control = cr.getGeometry().getControl(ForceShieldControl.class);
+                    
+                    if(control != null) {
+                        control.registerHit(cr.getContactPoint());
+                    }
+                    
+                    break;
+                }
+
+            }                        
         }
     }
 

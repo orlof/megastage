@@ -10,6 +10,7 @@ import org.megastage.protocol.Message;
 
 public class VirtualForceField extends DCPUHardware {
     public transient float radius;
+    public transient float damage;
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
@@ -35,11 +36,16 @@ public class VirtualForceField extends DCPUHardware {
     @Override
     public Message replicate(Entity entity) {
         dirty = false;
-        return ForceFieldData.create(radius).always(entity);
+        return ForceFieldData.create(radius, damage).always(entity);
     }
     
     @Override
     public Message synchronize(Entity entity) {
-        return never(entity);
+        return replicateIfDirty(entity);
+    }
+
+    public void damage(float f) {
+        this.damage += f;
+        this.dirty = true;
     }
 }

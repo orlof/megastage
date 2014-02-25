@@ -4,6 +4,7 @@ import com.artemis.Entity;
 import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.minlog.Log;
 import java.util.Comparator;
+import org.megastage.components.Position;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
@@ -41,9 +42,14 @@ public class ShipManager {
         Array<Target> targets = new Array<>(entities.size);
         for(Entity target: entities) {
             if(attShip == target) continue;
+            
+            Position targetPos = Mapper.POSITION.get(target);
+            if(targetPos == null) continue;
+            final Vector3d localVector3d = targetPos.getLocalVector3d(target);
+            if(localVector3d == null) continue;
 
             //Log.info(ID.get(e) + Mapper.POSITION.get(e).getGlobalVector3d(e));
-            Vector3d coord = Mapper.POSITION.get(target).getLocalVector3d(target).sub(wpnCoord);
+            Vector3d coord = localVector3d.sub(wpnCoord);
             // Log.info(ID.get(attShip) + ID.get(target) + wpnCoord.toString() + " to " + coord.toString());
             double colrad = Mapper.COLLISION_SPHERE.get(target).radius;
             double distance = coord.length() - colrad;
