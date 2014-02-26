@@ -34,7 +34,7 @@ public class VirtualThermalLaser extends DCPUHardware {
 
         super.init(world, parent, element);
         
-        range = getFloatValue(element, "max_range", 100);
+        range = getFloatValue(element, "range", 100);
 
         return null;
     }

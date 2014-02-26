@@ -49,11 +49,11 @@ public class ThermalLaserControl extends AbstractControl {
         } else {
             if(status != data.status) {
                 status = data.status;
+                Log.info(ID.get(entity) + "status=" + (int) status);
                 switch(data.status) {
                     case VirtualThermalLaser.STATUS_FIRING:
                         an.play();
                         spatial.setCullHint(Spatial.CullHint.Inherit);
-
                         break;
                     case VirtualThermalLaser.STATUS_COOLDOWN:
                         an.pause();
@@ -65,6 +65,8 @@ public class ThermalLaserControl extends AbstractControl {
                 }
             }
 
+            float distance = data.range;
+            
             if(status == VirtualThermalLaser.STATUS_FIRING) {
                 Vector3f worldTranslation = spatial.getParent().getWorldTranslation();
                 Vector3f worldDirection = spatial.getParent().getWorldRotation().mult(FORWARD);
@@ -75,23 +77,25 @@ public class ThermalLaserControl extends AbstractControl {
 
                 for(CollisionResult cr: crs) {
                     //Log.info(ID.get(entity) + cr.getGeometry().toString() + " " + cr.getDistance());
-                    float distance = Math.min(cr.getDistance(), (float) data.range);
-
-                    if(distance != cylinder.getHeight()) {
-                        cylinder.updateGeometry(16, 16, 0.2f, 0.2f, distance, true, false);
-                        spatial.setLocalTranslation(0, 0, -distance/2f-2.5f);
+                    if(cr.getDistance() < distance) {
+                        distance = cr.getDistance();
                     }
-                    
-                    ForceShieldControl control = cr.getGeometry().getControl(ForceShieldControl.class);
+
+                    ForceFieldControl control = cr.getGeometry().getControl(ForceFieldControl.class);
                     
                     if(control != null) {
-                        control.registerHit(cr.getContactPoint());
+                        control.registerHit(cr.getContactPoint(), entity.id);
                     }
                     
                     break;
                 }
-
             }                        
+
+            if(distance != cylinder.getHeight()) {
+                cylinder.updateGeometry(8, 8, 0.2f, 0.2f, distance, true, false);
+                spatial.setLocalTranslation(0, 0, -distance/2f-2.5f);
+            }
+                    
         }
     }
 

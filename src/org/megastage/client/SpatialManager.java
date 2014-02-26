@@ -692,10 +692,10 @@ public class SpatialManager {
 
         final PositionControl positionControl = new  PositionControl(entity, false);
         final RotationControl rotationControl = new  RotationControl(entity);
-        final Cylinder cyl = new Cylinder(10, 10, 0.2f, 100, false);
+        final Cylinder cyl = new Cylinder(6, 6, 0.2f, 0.2f, 100, true, false);
 
         final Geometry beam = new Geometry("beam", cyl);
-        beam.setLocalTranslation(0, 0, -1e4f/2f - 0.5f);
+        beam.setLocalTranslation(0, 0, -100/2f-2.5f);
         beam.setMaterial(material(ColorRGBA.Yellow, true));
         beam.addControl(new ThermalLaserControl(entity, cyl));
 
@@ -734,9 +734,9 @@ public class SpatialManager {
         material.setFloat("MaxDistance", 1);
         ForceFieldControl forceFieldControl = new ForceFieldControl(material);
         shield.addControl(forceFieldControl); // Add the control to the spatial
-        forceFieldControl.setEffectSize(2f); // Set the effect size
-        forceFieldControl.setColor(new ColorRGBA(0, 0, 1, 3)); // Set effect color
-        forceFieldControl.setVisibility(0.05f); // Set shield visibility.
+        forceFieldControl.setEffectSize(10f); // Set the effect size
+        forceFieldControl.setColor(new ColorRGBA(0, 0, 1, 1)); // Set effect color
+        forceFieldControl.setVisibility(0.1f); // Set shield visibility.
  
         // Set a texture to the shield
         forceFieldControl.setTexture(this.assetManager.loadTexture("Textures/fs_texture.png"));

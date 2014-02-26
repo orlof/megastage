@@ -13,7 +13,7 @@ public class ThermalLaserData extends BaseComponent {
 
     @Override
     public void receive(Connection pc, Entity entity) {
-        //Log.info(ID.get(entity) + toString());
+        Log.info(ID.get(entity) + toString());
         super.receive(pc, entity); //To change body of generated methods, choose Tools | Templates.
     }
     
