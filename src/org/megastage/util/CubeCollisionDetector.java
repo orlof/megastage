@@ -19,9 +19,9 @@ public class CubeCollisionDetector {
         Array<Block> candidates = new Array<>(1);
         candidates.add(new Block(shipLocalPos, new Vector3Int(0, 0, 0)));
         
-        process(map, candidates, 8, getCoordOffsets(8, shipRot));
-        
-        return null;
+        candidates=process(map, candidates, 8, getCoordOffsets(8, shipRot));
+        candidates.sort();
+        return candidates;
     }
     
     
@@ -80,7 +80,7 @@ public class CubeCollisionDetector {
 
     private Vector3d[] divBy2Local(Vector3d[] vecs) {
         for(int i=0; i < vecs.length; i++) {
-            vecs[i] = vecs[0].divide(2.0);
+            vecs[i] = vecs[i].divide(2.0);
         }
         return vecs;
     }
