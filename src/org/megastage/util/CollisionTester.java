@@ -76,20 +76,18 @@ public class CollisionTester extends SimpleApplication{
     }
 
     Node ship;
-    float t,tt;
+    float tt;
     
     private void createCrosshair() {
         Picture pic = new Picture("HUD Picture");
         pic.setImage(assetManager, "Textures/red_crosshair.png", true);
-        //pic.setWidth(settings.getWidth()/4);
-        //pic.setHeight(settings.getHeight()/4);
         pic.setWidth(100);
         pic.setHeight(100);
         pic.setPosition(settings.getWidth()/2-50, settings.getHeight()/2-50);
         guiNode.attachChild(pic);
     }
 
-    Vector3Int col;
+    Vector3Int prevCollision;
         
     @Override
     public void simpleUpdate(float tpf) {
@@ -98,16 +96,20 @@ public class CollisionTester extends SimpleApplication{
         com.jme3.math.Quaternion q = new com.jme3.math.Quaternion().fromAngles(tt/20, tt/15, 0);
         ship.setLocalRotation(q);
 
-        CubeCollisionDetector ccd = new CubeCollisionDetector(new Vector3d(cam.getLocation()), new Vector3d(cam.getDirection()));
-        Vector3Int col2 = ccd.collision(new Vector3d(0,0,0), new Quaternion(q), map);
-        if(col2 != col) {
-            if(col != null) {
-                blockTerrain.setBlock(col, Block_Wood.class);
+        Vector3Int collision = CubeCollisionDetector.getCollision(
+                new Vector3d(0,0,0), new Quaternion(q), map, 
+                new Vector3d(cam.getLocation()), 
+                new Vector3d(cam.getDirection()));
+
+        if(collision != prevCollision) {
+            if(prevCollision != null) {
+                blockTerrain.setBlock(prevCollision, Block_Wood.class);
             }
-            col = col2;
-            if(col != null) {
-                blockTerrain.setBlock(col, Block_Water.class);
-                System.out.println(col);
+
+            prevCollision = collision;
+            
+            if(prevCollision != null) {
+                blockTerrain.setBlock(prevCollision, Block_Water.class);
             }
         }
     }

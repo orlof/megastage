@@ -5,15 +5,8 @@ import com.cubes.Vector3Int;
 import com.esotericsoftware.minlog.Log;
 
 public class CubeCollisionDetector {
-    private final Vector3d rayPos;
-    private final Vector3d rayDir;
 
-    public CubeCollisionDetector(Vector3d rayPos, Vector3d rayDir) {
-        this.rayPos = rayPos;
-        this.rayDir = rayDir;
-    }
-
-    public Vector3Int collision(Vector3d shipCenter, Quaternion shipRot, Cube3dMap map) {
+    public static Vector3Int getCollision(Vector3d shipCenter, Quaternion shipRot, Cube3dMap map, Vector3d rayPos, Vector3d rayDir) {
         long startTime = System.currentTimeMillis();
         // calculate ship position relative to laser
         Vector3d shipLocalPos = shipCenter.sub(rayPos);
@@ -21,7 +14,7 @@ public class CubeCollisionDetector {
         Array<Block> candidates = new Array<>(1);
         candidates.add(new Block(shipLocalPos, new Vector3Int(0, 0, 0)));
         
-        candidates=process(map, candidates, 32, getCoordOffsets(32, shipRot));
+        candidates = iteration(rayDir, map, candidates, 32, getCoordOffsets(32, shipRot));
 
         if(candidates.size == 0) {
             return null;
@@ -34,11 +27,13 @@ public class CubeCollisionDetector {
         return candidates.first().base;
     }
     
-    
-    public Array<Block> process(Cube3dMap map, Array<Block> candidates, int chunkSize, Vector3d[] coordOffset) {
+    private static Array<Block> iteration(Vector3d rayDir, Cube3dMap map, Array<Block> candidates, int chunkSize, Vector3d[] coordOffset) {
         Log.info("Chunk size: " + chunkSize + ", block count: " + candidates.size);
         // (d/2)^2 + (d/2)^2 + (d/2)^2 = 3(d/2)^2 = 3(d*d/4)
-        double radiusSquared = 3.0 * chunkSize * chunkSize / 4.0;
+        // Following line contains the correct value
+        //double radiusSquared = 3.0 * chunkSize * chunkSize / 4.0;
+        // Following line contains the speed optimized value
+        double radiusSquared = 2.0 * chunkSize * chunkSize / 4.0;
 
         chunkSize /= 2;
         
@@ -56,7 +51,7 @@ public class CubeCollisionDetector {
         
         if(chunkSize == 0 || next.size == 0) return next;
         
-        return process(map, next, chunkSize, divBy2Local(coordOffset));
+        return iteration(rayDir, map, next, chunkSize, divBy2Local(coordOffset));
     }
 
     private static final Vector3Int[] BLOCK_OFFSET = new Vector3Int[] {
@@ -70,7 +65,7 @@ public class CubeCollisionDetector {
         new Vector3Int(0,0,0),
     };
     
-    private Vector3d[] getCoordOffsets(int chunkSize, Quaternion shipRot) {
+    private static Vector3d[] getCoordOffsets(int chunkSize, Quaternion shipRot) {
         double step = chunkSize / 4.0;
 
         Vector3d xstep = new Vector3d(step, 0, 0).multiply(shipRot);
@@ -89,7 +84,7 @@ public class CubeCollisionDetector {
         };
     }
 
-    private Vector3d[] divBy2Local(Vector3d[] vecs) {
+    private static Vector3d[] divBy2Local(Vector3d[] vecs) {
         for(int i=0; i < vecs.length; i++) {
             vecs[i] = vecs[i].divide(2.0);
         }
