@@ -115,6 +115,11 @@ public class Vector3d {
         return numerator.length() / length();
     }
 
+    public double distanceToPointSquared(Vector3d point) {
+        Vector3d numerator = cross(point.negate());
+        return numerator.lengthSquared()/ lengthSquared();
+    }
+
     public double length() {
         return Math.sqrt(lengthSquared());
     }
@@ -146,6 +151,7 @@ public class Vector3d {
             line.distanceToPoint(new Vector3d(10,2,0));
         System.out.println(System.currentTimeMillis() - start);
     }
+
 
 
 } 

@@ -34,7 +34,7 @@ public class Cube3dMap {
     public void trackChanges() {
         pending = new LinkedList<>();
     }
-    
+
     public char get(int x, int y, int z) {
         if(data == null || x < 0 || data.length <= x) {
             return 0;
