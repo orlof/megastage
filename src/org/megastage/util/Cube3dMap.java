@@ -127,17 +127,17 @@ public class Cube3dMap {
     }
 
     private int getNewCapacity(char[][][] arr, int index) {
-        if(arr == null) return INITIAL_CAPACITY;
+        if(arr == null) return calcNewCapacity(INITIAL_CAPACITY, index);
         return calcNewCapacity(arr.length, index);
     }
 
     private int getNewCapacity(char[][] arr, int index) {
-        if(arr == null) return INITIAL_CAPACITY;
+        if(arr == null) return calcNewCapacity(INITIAL_CAPACITY, index);
         return calcNewCapacity(arr.length, index);
     }
 
     private int getNewCapacity(char[] arr, int index) {
-        if(arr == null) return INITIAL_CAPACITY;
+        if(arr == null) return calcNewCapacity(INITIAL_CAPACITY, index);
         return calcNewCapacity(arr.length, index);
     }
 

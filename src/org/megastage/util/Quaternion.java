@@ -41,6 +41,13 @@ public class Quaternion {
         this.z = v.z;
     }
 
+    public Quaternion(com.jme3.math.Quaternion q) {
+        this.w = q.getW();
+        this.x = q.getX();
+        this.y = q.getY();
+        this.z = q.getZ();
+    }
+
     public Quaternion(Vector3d axis, double angle) {
         Vector3d v = axis.normalize();
         if (axis.x == 0 && axis.y == 0 && axis.z == 0) {

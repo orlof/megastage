@@ -2,6 +2,7 @@ package org.megastage.util;
 
 import com.badlogic.gdx.utils.Array;
 import com.cubes.Vector3Int;
+import com.esotericsoftware.minlog.Log;
 
 public class CubeCollisionDetector {
     private final Vector3d rayPos;
@@ -13,19 +14,29 @@ public class CubeCollisionDetector {
     }
 
     public Vector3Int collision(Vector3d shipCenter, Quaternion shipRot, Cube3dMap map) {
+        long startTime = System.currentTimeMillis();
         // calculate ship position relative to laser
         Vector3d shipLocalPos = shipCenter.sub(rayPos);
 
         Array<Block> candidates = new Array<>(1);
         candidates.add(new Block(shipLocalPos, new Vector3Int(0, 0, 0)));
         
-        candidates=process(map, candidates, 8, getCoordOffsets(8, shipRot));
+        candidates=process(map, candidates, 32, getCoordOffsets(32, shipRot));
+
+        if(candidates.size == 0) {
+            return null;
+        }
+
         candidates.sort();
-        return candidates;
+        
+        long endTime = System.currentTimeMillis();
+        Log.info("Collisions: " + candidates.size + ", delay: " + (endTime - startTime));
+        return candidates.first().base;
     }
     
     
     public Array<Block> process(Cube3dMap map, Array<Block> candidates, int chunkSize, Vector3d[] coordOffset) {
+        Log.info("Chunk size: " + chunkSize + ", block count: " + candidates.size);
         // (d/2)^2 + (d/2)^2 + (d/2)^2 = 3(d/2)^2 = 3(d*d/4)
         double radiusSquared = 3.0 * chunkSize * chunkSize / 4.0;
 
@@ -85,13 +96,15 @@ public class CubeCollisionDetector {
         return vecs;
     }
 
-    public static class Block {
+    public static class Block implements Comparable<Block> {
         Vector3d center;
         Vector3Int base;
+        double distance;
         
         public Block(Vector3d center, Vector3Int base) {
             this.center = center;
             this.base = base;
+            this.distance = center.lengthSquared();
         }
         
         public Block createChild(Vector3d coordOffset, Vector3Int blockOffset) {
@@ -103,6 +116,11 @@ public class CubeCollisionDetector {
         public boolean check(Vector3d ray, double collisionRadiusSquared) {
             return ray.distanceToPointSquared(center) < collisionRadiusSquared;
             
+        }
+
+        @Override
+        public int compareTo(Block o) {
+            return Double.compare(distance, o.distance);
         }
     }
 }
