@@ -123,7 +123,7 @@ public class Vector3d {
 
     public double distanceToPointSquared(Vector3d point) {
         Vector3d numerator = cross(point.negate());
-        return numerator.lengthSquared()/ lengthSquared();
+        return numerator.lengthSquared() / lengthSquared();
     }
 
     public double length() {

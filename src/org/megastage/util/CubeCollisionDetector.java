@@ -1,10 +1,44 @@
 package org.megastage.util;
 
+import com.artemis.Entity;
 import com.badlogic.gdx.utils.Array;
 import com.cubes.Vector3Int;
 import com.esotericsoftware.minlog.Log;
+import org.megastage.components.Rotation;
+import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.server.TargetManager;
+import org.megastage.server.TargetManager.Hit;
+import org.megastage.server.TargetManager.ShipStructureHit;
+import org.megastage.server.TargetManager.Target;
 
 public class CubeCollisionDetector {
+
+    public static TargetManager.Hit hit(Target target, Vector3d attackVector, float attackRange) {
+        long startTime = System.currentTimeMillis();
+
+        ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(target.entity);
+        Rotation rot = Mapper.ROTATION.get(target.entity);
+        
+        Array<Block> candidates = new Array<>(1);
+        candidates.add(new Block(target.coord, new Vector3Int(0, 0, 0)));
+        
+        candidates = iteration(attackVector, geom.map, candidates, 16, getCoordOffsets(16, rot.getQuaternion4d()));
+
+        if(candidates.size == 0) {
+            return TargetManager.NO_HIT;
+        }
+
+        candidates.sort();
+
+        Hit hit = new ShipStructureHit(
+                candidates.first().base,
+                candidates.first().center,
+                Math.sqrt(candidates.first().distance));
+        
+        long endTime = System.currentTimeMillis();
+        Log.info("Collisions: " + candidates.size + ", delay: " + (endTime - startTime));
+        return hit;
+    }
 
     public static Vector3Int getCollision(Vector3d shipCenter, Quaternion shipRot, Cube3dMap map, Vector3d rayPos, Vector3d rayDir) {
         long startTime = System.currentTimeMillis();
@@ -40,6 +74,11 @@ public class CubeCollisionDetector {
         Array<Block> next = new Array<>(8 * candidates.size);
         
         for(Block block: candidates) {
+            // TODO replace chunksize with double type chunksize 0 -> 0.5
+            //            if(Math.sqrt(block.distance) - chunkSize > range) {
+            //                continue;
+            //            }
+            
             if(block.check(rayDir, radiusSquared)) {
                 for(int i=0; i < BLOCK_OFFSET.length; i++) {
                     if(chunkSize > 0 || map.get(block.base.getX(), block.base.getY(), block.base.getZ()) > 0) {

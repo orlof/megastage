@@ -68,7 +68,7 @@ public class Position extends BaseComponent {
         add(velocity.getPositionChange(time));
     }
     
-    public Vector3d getLocalVector3d(Entity entity) {
+    public Vector3d getGlobalCoordinates(Entity entity) {
         Vector3d coord = getVector3d();
         
         BindTo bindTo = Mapper.BIND_TO.get(entity);

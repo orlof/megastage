@@ -91,8 +91,8 @@ public class CollisionTester extends SimpleApplication{
         
     @Override
     public void simpleUpdate(float tpf) {
-        tt+=tpf;
-        //tt=0;
+        //tt+=tpf;
+        tt=0;
         com.jme3.math.Quaternion q = new com.jme3.math.Quaternion().fromAngles(tt/20, tt/15, 0);
         ship.setLocalRotation(q);
 

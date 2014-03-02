@@ -104,6 +104,7 @@
         <component type="SpawnPoint"  dx="7" dy="1" dz="6"/>
         <component type="RadarEcho" echo="0"/>
         <component type="UsableFlag"/>
+        <component type="CollisionSphere" radius="18"/>
         <component type="gfx.ShipGeometry">
           <map y="0" x="012345678901234"/>
             <map z="00">B    #####    B</map>

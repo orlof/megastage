@@ -6,15 +6,15 @@ import com.artemis.systems.EntitySystem;
 import com.badlogic.gdx.utils.Array;
 import org.megastage.components.CollisionSphere;
 import org.megastage.components.Position;
-import org.megastage.server.ShipManager;
+import org.megastage.server.TargetManager;
 
 /**
  * User: Orlof
  * Date: 8/19/13
  * Time: 12:09 PM
  */
-public class ShipManagerSystem extends EntitySystem {
-    public ShipManagerSystem() {
+public class TargetManagerSystem extends EntitySystem {
+    public TargetManagerSystem() {
         super(Aspect.getAspectForAll(Position.class, CollisionSphere.class));
     }
 
@@ -25,7 +25,7 @@ public class ShipManagerSystem extends EntitySystem {
 
     @Override
     protected void processEntities(Array<Entity> entities) {
-        ShipManager.update(entities);
+        TargetManager.update(entities);
     }
 
 }

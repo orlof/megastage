@@ -21,7 +21,7 @@ import org.megastage.systems.srv.EntityReplicateSystem;
 import org.megastage.systems.srv.ExplosionSystem;
 import org.megastage.systems.srv.EntityInitializeSystem;
 import org.megastage.systems.srv.RadarManagerSystem;
-import org.megastage.systems.srv.ShipManagerSystem;
+import org.megastage.systems.srv.TargetManagerSystem;
 import org.megastage.systems.srv.ShipMovementSystem;
 import org.megastage.systems.srv.SphereOfInfluenceSystem;
 import org.megastage.systems.srv.ThermalLaserSystem;
@@ -66,7 +66,7 @@ public class Game {
         world.setSystem(new GravityManagerSystem(5000));
         world.setSystem(new RadarManagerSystem(1000));
         world.setSystem(new SphereOfInfluenceSystem(10000));
-        world.setSystem(new ShipManagerSystem());
+        world.setSystem(new TargetManagerSystem());
         
         world.setSystem(new ThermalLaserSystem());
 
