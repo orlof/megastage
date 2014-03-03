@@ -31,13 +31,14 @@ public class TargetManager {
 
         Quaternion shipAngle = Mapper.ROTATION.get(vtlComponent.ship).getQuaternion4d();
         Vector3d attackVector = FORWARD_VECTOR.multiply(shipAngle);
+        //Log.info(attackVector.toString());
         //Vector3d attackVector = shipVector.multiply(weaponAngle);
 
         Array<Target> collisions = new Array<>(targets.size);
 
         Hit bestHit = NO_HIT;
         for(Target target: targets) {
-            Log.info(target.toString());
+            //Log.info(target.toString());
             if(target.closestDistance > bestHit.distance) {
                 return bestHit;
             }
@@ -58,6 +59,7 @@ public class TargetManager {
             Hit hit = Hit.create(target, attackVector, vtlComponent.range);
 
             if(hit.distance < bestHit.distance) {
+                Log.info("new hit selected: " + bestHit.toString() + " becomes " + hit.toString());
                 bestHit = hit;
             }
         }
@@ -105,6 +107,8 @@ public class TargetManager {
             double distanceSquared = targetCoord.lengthSquared();
             double closestDistance = Math.sqrt(distanceSquared) - colrad;
 
+            //Log.info("XXXXXXXXXXXXXXXXXXXXXXX" + vtlCoord.toString() + " " + targetCoord.toString());
+            
             if(closestDistance < vtlComponent.range) {
                 targets.add(new Target(target, targetCoord, distanceSquared, closestDistance, colrad));
             }
@@ -214,11 +218,13 @@ public class TargetManager {
         }
     }
     public static class ShipStructureHit extends Hit {
+        public Entity entity;
         public final Vector3Int block;
         public final Vector3d coord;
 
-        public ShipStructureHit(Vector3Int block, Vector3d coord, double distance) {
+        public ShipStructureHit(Target target, Vector3Int block, Vector3d coord, double distance) {
             super(distance);
+            this.entity = target.entity;
             this.block = block;
             this.coord = coord;
         }

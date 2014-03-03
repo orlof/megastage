@@ -46,7 +46,7 @@ public class ShipGeometry extends BaseComponent {
     @Override
     public Message synchronize(Entity entity) {
         if(map.pending != null && map.pending.size() > 0) {
-            Log.info(""+map.pending.toString());
+            //Log.info(""+map.pending.toString());
             BlockChange change = map.pending.remove();
             return change.always(entity);
         }

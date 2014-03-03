@@ -7,7 +7,7 @@ import org.megastage.components.BaseComponent;
 import org.megastage.util.ID;
 
 public class ForceFieldData extends BaseComponent {
-    public float damage;
+    public float energy;
     public float radius;
 
     @Override
@@ -21,12 +21,12 @@ public class ForceFieldData extends BaseComponent {
     public static ForceFieldData create(float radius, float damage) {
         ForceFieldData data = new ForceFieldData();
         data.radius = radius;
-        data.damage = damage;
+        data.energy = damage;
         return data;
     }
     
     @Override
     public String toString() {
-        return "ForceFieldData[radius=" + radius + ", damage="+damage+"]";
+        return "ForceFieldData[radius=" + radius + ", damage="+energy+"]";
     }
 }

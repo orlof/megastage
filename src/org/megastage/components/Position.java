@@ -2,6 +2,7 @@ package org.megastage.components;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.cubes.Vector3Int;
 import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
@@ -101,30 +102,26 @@ public class Position extends BaseComponent {
         return coord;
     }
     
-    public Vector3d getGlobalVector3dxxx(Entity entity) {
-        long x = this.x, y=this.y, z=this.z;
+    public Vector3d getBlockCoordinates(Entity entity, Vector3Int block, boolean center) {
+        double offset = center ? 0.5: 0.0;
         
-        BindTo bindTo = Mapper.BIND_TO.get(entity);
-        while(bindTo != null) {
-            entity = ServerGlobals.world.getEntity(bindTo.parent);
-            if(entity == null) return null;
-            
-            Position pos = Mapper.POSITION.get(entity);
-            if(pos != null) {
-                x+=pos.x; y+=pos.y; z+=pos.z;
-            }
-            bindTo = Mapper.BIND_TO.get(entity);
-        }
-        
+        Vector3d coord = new Vector3d(block.getX() + offset, block.getY() + offset, block.getZ() + offset);
         ShipGeometry sg = Mapper.SHIP_GEOMETRY.get(entity);
-        if(sg != null) {
-            Vector3d center = sg.map.getCenter3d();
-            return new Vector3d(x / Globals.UNIT_D - center.x, y / Globals.UNIT_D - center.y, z / Globals.UNIT_D - center.z);
-        }
-        
-        return new Vector3d(x / Globals.UNIT_D, y / Globals.UNIT_D, z / Globals.UNIT_D);
+        coord = coord.sub(sg.map.getCenter3d());
+
+        Quaternion shipRot = Mapper.ROTATION.get(entity).getQuaternion4d();
+        coord = coord.multiply(shipRot);
+
+        Vector3d shipPos = Mapper.POSITION.get(entity).getVector3d();
+        coord = coord.add(shipPos);
+
+        return coord;
     }
-    
+            
+    public Vector3d getBaseCoordinates(Entity entity) {
+        return getBlockCoordinates(entity, new Vector3Int(0,0,0), false);
+    }
+            
     public Vector3f getVector3f() {
         return new Vector3f(x / Globals.UNIT_F, y / Globals.UNIT_F, z / Globals.UNIT_F);
     }

@@ -732,7 +732,7 @@ public class SpatialManager {
         Material material = new Material(assetManager, "ShaderBlow/MatDefs/ForceShield/ForceShield.j3md");
         material.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         material.setFloat("MaxDistance", 1);
-        ForceFieldControl forceFieldControl = new ForceFieldControl(material);
+        ForceFieldControl forceFieldControl = new ForceFieldControl(entity, shield, material);
         shield.addControl(forceFieldControl); // Add the control to the spatial
         forceFieldControl.setEffectSize(10f); // Set the effect size
         forceFieldControl.setColor(new ColorRGBA(0, 0, 1, 1)); // Set effect color

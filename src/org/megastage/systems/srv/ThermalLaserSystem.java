@@ -7,6 +7,7 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
 import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.dcpu.VirtualThermalLaser;
+import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.server.TargetManager;
 import org.megastage.server.TargetManager.ForceFieldHit;
 import org.megastage.server.TargetManager.Hit;
@@ -33,18 +34,20 @@ public class ThermalLaserSystem extends SystemTemplate {
                 if(Time.value < vtlComponent.startTime + vtlComponent.duration) {
                     // firing
                     Hit hit = fireWeapon(vtlEntity, vtlComponent);
-                    Log.info(hit.toString());
                     
                     if(hit == TargetManager.NO_HIT) {
                         break;
                     } else if(hit instanceof ForceFieldHit) {
+                        Log.info(hit.toString());
                         ForceFieldHit ffhit = (ForceFieldHit) hit;
                         
                         VirtualForceField forceField = Mapper.VIRTUAL_FORCE_FIELD.get(ffhit.entity);
-                        forceField.damage(world.getDelta() * vtlComponent.wattage);
+                        forceField.damage(ffhit.entity, world.getDelta() * vtlComponent.wattage);
 
                     } else if(hit instanceof ShipStructureHit) {
                         ShipStructureHit shit = (ShipStructureHit) hit;
+                        ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(shit.entity);
+                        geom.map.set(shit.block.getX(), shit.block.getY(), shit.block.getZ(), (char) 0);
                         
                     } else {
                         Log.error("Unknown hit target: " + hit.toString());
