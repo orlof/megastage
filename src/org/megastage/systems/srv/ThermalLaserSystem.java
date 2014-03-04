@@ -33,7 +33,7 @@ public class ThermalLaserSystem extends SystemTemplate {
             case VirtualThermalLaser.STATUS_FIRING:
                 if(Time.value < vtlComponent.startTime + vtlComponent.duration) {
                     // firing
-                    Hit hit = fireWeapon(vtlEntity, vtlComponent);
+                    Hit hit = TargetManager.findHit(vtlEntity, vtlComponent);
                     
                     if(hit == TargetManager.NO_HIT) {
                         break;
@@ -71,8 +71,4 @@ public class ThermalLaserSystem extends SystemTemplate {
     }
 
     public static final Vector3d FORWARD_VECTOR = new Vector3d(0,0,-1);
-    
-    public Hit fireWeapon(Entity vtlEntity, VirtualThermalLaser vtlComponent) {
-        return TargetManager.findHit(vtlEntity, vtlComponent);
-    }
 }

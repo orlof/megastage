@@ -76,7 +76,10 @@ public class ThermalLaserControl extends AbstractControl {
                 ClientGlobals.rootNode.collideWith(new Ray(worldTranslation, worldDirection), crs);
 
                 for(CollisionResult cr: crs) {
-                    //Log.info(ID.get(entity) + cr.getGeometry().toString() + " " + cr.getDistance());
+                    if(cr.getGeometry().getCullHint() == Spatial.CullHint.Always) {
+                        continue;
+                    }
+                    
                     if(cr.getDistance() < distance) {
                         distance = cr.getDistance();
                     }
