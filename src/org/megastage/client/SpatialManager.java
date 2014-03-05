@@ -328,18 +328,23 @@ public class SpatialManager {
         if(data.type == 0) {
             ctrl.removeBlock(data.x, data.y, data.z);
             if(data.event == BlockChange.BREAK) {
-                // TODO play audio
-                    //==========================================================
-                    app.enqueue(new Callable() {@Override public Object call() throws Exception {
-                    //==========================================================
-                    ParticleEmitter pe = ExplosionNode.sparks(assetManager);
-                    pe.setLocalTranslation(data.x, data.y, data.z);
-                    attach(node, pe, true);
-                    pe.emitAllParticles();
-                    pe.addControl(new DeleteControl(1000));
-                    //==========================================================
-                    return null;}});
-                    //==========================================================
+                
+                final ParticleEmitter pe = (ParticleEmitter) node.getChild("BlockSparks");
+                
+                //==========================================================
+                app.enqueue(new Callable() {@Override public Object call() throws Exception {
+                //==========================================================
+                SoundManager.get(SoundManager.EXPLOSION_3).playInstance();
+
+                pe.killAllParticles();
+                //pe.removeControl(DeleteControl.class);
+                pe.setLocalTranslation(data.x, data.y, data.z);
+
+                pe.emitAllParticles();
+                //pe.addControl(new DeleteControl(3000));
+                //==========================================================
+                return null;}});
+                //==========================================================
             }
         } else {
             Class<? extends Block> block = CubesManager.getBlock(data.type);
@@ -373,7 +378,10 @@ public class SpatialManager {
         //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 
         setOffsetTranslation(node, data.map.getCenter().negateLocal());
-        
+
+        ParticleEmitter pe = ExplosionNode.blockSparks(assetManager);
+        attach(node, pe, true);
+
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
             if(node.getParent() == null) {
                 ClientGlobals.sysMovNode.attachChild(node);

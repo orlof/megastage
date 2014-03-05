@@ -36,7 +36,6 @@ public class ThermalLaserSystem extends SystemTemplate {
                     if(hit == TargetManager.NO_HIT) {
                         break;
                     } else if(hit instanceof ForceFieldHit) {
-                        Log.info(hit.toString());
                         ForceFieldHit ffhit = (ForceFieldHit) hit;
                         
                         VirtualForceField forceField = Mapper.VIRTUAL_FORCE_FIELD.get(ffhit.entity);
@@ -58,7 +57,7 @@ public class ThermalLaserSystem extends SystemTemplate {
                 } else {
                     // turn off
                     vtlComponent.startTime = Time.value;
-                    vtlComponent.duration = vtlComponent.duration * vtlComponent.wattage / 20;
+                    vtlComponent.duration = vtlComponent.duration * vtlComponent.wattage / 200;
                     vtlComponent.status = VirtualThermalLaser.STATUS_COOLDOWN;
                     vtlComponent.dirty = true;
                 }
