@@ -63,44 +63,48 @@ public class CommandHandler implements AnalogListener, ActionListener {
         CollisionResults results = new CollisionResults();
         Ray ray = new Ray(ClientGlobals.cam.getLocation(), ClientGlobals.cam.getDirection());
         ClientGlobals.rootNode.collideWith(ray, results);
-        if(results.size() > 0) {
-            CollisionResult closest = results.getClosestCollision();
-            Node target = closest.getGeometry().getParent();
-            
-            Entity entity = null;
-            while(true) {
-                if(target == ClientGlobals.rootNode) {
-                    return;
+        for(int i=0; i < results.size(); i++) {
+            CollisionResult closest = results.getCollision(i);
+            if(!closest.getGeometry().getName().equals("forceshield")) {
+                Node target = closest.getGeometry().getParent();
+
+                Entity entity = null;
+                while(true) {
+                    if(target == ClientGlobals.rootNode) {
+                        return;
+                    }
+
+                    entity = ClientGlobals.spatialManager.getUsableEntity(target, true);
+                    Log.info("Pick entity: " + ID.get(entity));
+                    if(entity != null) break;
+                    target = target.getParent();
                 }
 
-                entity = ClientGlobals.spatialManager.getUsableEntity(target, true);
-                Log.info("Pick entity: " + ID.get(entity));
-                if(entity != null) break;
-                target = target.getParent();
-            }
-
-            ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(entity);
-            if(geom != null) {
-                if(entity == ClientGlobals.shipEntity) {
-                    Node offset = (Node) target.getChild("offset");
-                    Vector3Int loc = CubesManager.getCurrentPointedBlockLocation(offset, !right);
-                    if(loc != null) {
-                        BlockTerrainControl ctrl = offset.getControl(BlockTerrainControl.class);
-                        if(!right) {
-                            ClientGlobals.userCommand.build(loc);
-                            //ctrl.setBlock(loc, CubesManager.Combi.class);
-                        } else {
-                            ClientGlobals.userCommand.unbuild(loc);
-                            //ctrl.removeBlock(loc);
+                ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(entity);
+                if(geom != null) {
+                    if(entity == ClientGlobals.shipEntity) {
+                        Node offset = (Node) target.getChild("offset");
+                        Vector3Int loc = CubesManager.getCurrentPointedBlockLocation(offset, !right);
+                        if(loc != null) {
+                            BlockTerrainControl ctrl = offset.getControl(BlockTerrainControl.class);
+                            if(!right) {
+                                ClientGlobals.userCommand.build(loc);
+                                //ctrl.setBlock(loc, CubesManager.Combi.class);
+                            } else {
+                                ClientGlobals.userCommand.unbuild(loc);
+                                //ctrl.removeBlock(loc);
+                            }
                         }
+                    } else {
+                        // TELEPORT
+                        ClientGlobals.userCommand.teleport(entity);
+                        Log.info("TELEPORT");
                     }
                 } else {
-                    // TELEPORT
-                    ClientGlobals.userCommand.teleport(entity);
-                    Log.info("TELEPORT");
+                    ClientGlobals.userCommand.pickItem(entity);
                 }
-            } else                 
-                ClientGlobals.userCommand.pickItem(entity);
+                return;
+            }
         }
     }
     
