@@ -3,6 +3,7 @@ package org.megastage.components.dcpu;
 import org.megastage.components.transfer.ThermalLaserData;
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
@@ -23,7 +24,7 @@ public class VirtualThermalLaser extends DCPUHardware {
     public transient long duration;
 
     public char status = STATUS_DORMANT;
-    public char wattage = 1;
+    public char wattage = 0;
     public float range;
     
     @Override
@@ -67,6 +68,7 @@ public class VirtualThermalLaser extends DCPUHardware {
 
     public void fireWeapon(char duration) {
         if(status == STATUS_DORMANT && wattage > 0 && dcpu.registers[1] <= 300) {
+            Log.info("!!!");
             dirty = true;
             status = STATUS_FIRING;
             startTime = Time.value;

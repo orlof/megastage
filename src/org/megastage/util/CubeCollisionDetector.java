@@ -81,7 +81,7 @@ public class CubeCollisionDetector {
         // Following line contains the correct value
         //double radiusSquared = 3.0 * chunkSize * chunkSize / 4.0;
         // Following line contains the speed optimized value
-        double radius = Math.sqrt(2.0 * chunkSize * chunkSize / 4.0);
+        double radius = Math.sqrt(chunkSize * chunkSize / 2.0);
         
         chunkSize /= 2;
         
@@ -97,7 +97,7 @@ public class CubeCollisionDetector {
                 for(int i=0; i < BLOCK_OFFSET.length; i++) {
                     Block ublock = block.createChild(coordOffset[i], BLOCK_OFFSET[i].mult(chunkSize)); 
 
-                    if(chunkSize > 1 || (map.get(ublock.base.getX(), ublock.base.getY(), ublock.base.getZ()) > 0 && ublock.check(rayDir, radius/2))) {
+                    if(chunkSize > 1 || (map.get(ublock.base) > 0 && ublock.check(rayDir, radius/2))) {
                         next.add(ublock);
                     }
                 }

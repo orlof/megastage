@@ -22,10 +22,10 @@ import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer;
+import com.jme3.scene.control.Control;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
 import com.jme3.scene.shape.Dome;
-import com.jme3.scene.shape.PQTorus;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.scene.shape.Torus;
@@ -35,9 +35,7 @@ import com.jme3.texture.Texture2D;
 import com.jme3.texture.image.ImageRaster;
 import com.jme3.texture.plugins.AWTLoader;
 import com.jme3.util.BufferUtils;
-import com.shaderblow.forceshield.ForceShieldControl;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import jmeplanet.FractalDataSource;
@@ -45,6 +43,7 @@ import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.AxisRotationControl;
+import org.megastage.client.controls.DeleteControl;
 import org.megastage.client.controls.EngineControl;
 import org.megastage.client.controls.ForceFieldControl;
 import org.megastage.client.controls.GyroscopeControl;
@@ -319,7 +318,7 @@ public class SpatialManager {
         }
     }
         
-    public void updateShipBlock(Entity entity, BlockChange data) {
+    public void updateShipBlock(Entity entity, final BlockChange data) {
         Cube3dMap theMap = Mapper.SHIP_GEOMETRY.get(entity).map;
         theMap.set(data.x, data.y, data.z, data.type, data.event);
         
@@ -328,6 +327,20 @@ public class SpatialManager {
 
         if(data.type == 0) {
             ctrl.removeBlock(data.x, data.y, data.z);
+            if(data.event == BlockChange.BREAK) {
+                // TODO play audio
+                    //==========================================================
+                    app.enqueue(new Callable() {@Override public Object call() throws Exception {
+                    //==========================================================
+                    ParticleEmitter pe = ExplosionNode.sparks(assetManager);
+                    pe.setLocalTranslation(data.x, data.y, data.z);
+                    attach(node, pe, true);
+                    pe.emitAllParticles();
+                    pe.addControl(new DeleteControl(1000));
+                    //==========================================================
+                    return null;}});
+                    //==========================================================
+            }
         } else {
             Class<? extends Block> block = CubesManager.getBlock(data.type);
             ctrl.setBlock(data.x, data.y, data.z, block);
@@ -526,7 +539,7 @@ public class SpatialManager {
         final Node node = getNode(entity);
         final ExplosionNode explosionNode = new ExplosionNode("ExplosionFX");
 
-        explosionNode.addControl(new ExplosionControl(explosion, explosionNode));
+        explosionNode.addControl((Control) new ExplosionControl(explosion, explosionNode));
 
         app.enqueue(new Callable() { @Override public Object call() throws Exception {
             attach(node, explosionNode, false);

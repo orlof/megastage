@@ -81,25 +81,6 @@ public class ShipGeometry extends BaseComponent {
         return "ShipGeometry()";
     }
 
-    public static void main(String[] args) throws Exception {
-        Cube3dMap map = new Cube3dMap();
-        map.set(1,0,0,'#', 0);
-        map.set(1,1,0,'#', 0);
-        map.set(1,2,0,'#', 0);
-        map.set(1,3,0,'#', 0);
-        map.set(1,4,0,'#', 0);
-
-        map.set(0,2,0,'#', 0);
-        map.set(2,2,0,'#', 0);
-        
-        System.out.println("Mass: " + map.getMass());
-        System.out.println("Center of mass: " + map.getCenter());
-        System.out.println("Bounding sphere radius: " + map.getCollisionRadius());
-        System.out.println("X-inertia: " + map.getInertia(new Vector3d(1, 0, 0)));
-        System.out.println("Y-inertia: " + map.getInertia(new Vector3d(0, 1, 0)));
-        System.out.println("Z-inertia: " + map.getInertia(new Vector3d(0, 0, 1)));
-    }
-
     public void createMapFromXML(Element element) throws DataConversionException {
         int y = 0, z = 0;
         
@@ -119,7 +100,7 @@ public class ShipGeometry extends BaseComponent {
             for(int x=0; x < blocks.length(); x++) {
                 char c = blocks.charAt(x);
                 if(c != ' ') {
-                    map.set(x, y, z, c, 0);
+                    map.set(x, y, z, c, BlockChange.BUILD);
                 }
             }
         }

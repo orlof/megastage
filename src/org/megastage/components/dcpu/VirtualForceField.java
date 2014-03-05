@@ -53,7 +53,7 @@ public class VirtualForceField extends DCPUHardware {
         this.energy -= damage;
         this.dirty = true;
 
-        Log.info("energy left: " + energy);
+        Log.info("Energy : " + energy);
         
         if(energy <= 0) {
             Mapper.COLLISION_SPHERE.get(entity).radius = 0;

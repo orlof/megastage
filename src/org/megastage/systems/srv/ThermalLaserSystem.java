@@ -2,10 +2,8 @@ package org.megastage.systems.srv;
 
 import com.artemis.Aspect;
 import com.artemis.Entity;
-import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.minlog.Log;
 import java.util.Random;
-import org.megastage.components.Position;
 import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.components.gfx.ShipGeometry;
@@ -13,12 +11,8 @@ import org.megastage.server.TargetManager;
 import org.megastage.server.TargetManager.ForceFieldHit;
 import org.megastage.server.TargetManager.Hit;
 import org.megastage.server.TargetManager.ShipStructureHit;
-import org.megastage.server.TargetManager.Target;
-import org.megastage.util.Cube3dMap;
 import org.megastage.util.Cube3dMap.BlockChange;
-import org.megastage.util.ID;
 import org.megastage.util.Mapper;
-import org.megastage.util.Quaternion;
 import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 

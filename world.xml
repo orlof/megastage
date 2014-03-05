@@ -263,7 +263,7 @@
                 <component type="Position" dx="6" dy="1" dz="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="CollisionSphere" radius="15"/>
-                <component type="dcpu.VirtualForceField" energy="5" max_energy="100"/>
+                <component type="dcpu.VirtualForceField" energy="5000" max_energy="10000"/>
                 <component type="gfx.ForceFieldGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>

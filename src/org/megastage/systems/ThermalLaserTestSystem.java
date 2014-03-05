@@ -33,7 +33,10 @@ public class ThermalLaserTestSystem extends EntitySystem {
     protected void processEntities(Array<Entity> entities) {
         for(Entity entity: entities) {
             VirtualThermalLaser vtl = Mapper.VIRTUAL_THERMAL_LASER.get(entity);
-            vtl.fireWeapon((char) 10);
+            if(vtl.status == VirtualThermalLaser.STATUS_DORMANT) {
+                vtl.wattage = 1000;
+                vtl.fireWeapon((char) 10);
+            }
         }
     }	
 }

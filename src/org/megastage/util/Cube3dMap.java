@@ -35,6 +35,10 @@ public class Cube3dMap {
         pending = new LinkedList<>();
     }
 
+    public char get(Vector3Int block) {
+        return get(block.getX(), block.getY(), block.getZ());
+    }
+    
     public char get(int x, int y, int z) {
         if(data == null || x < 0 || data.length <= x) {
             return 0;
