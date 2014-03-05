@@ -83,14 +83,14 @@ public class ShipGeometry extends BaseComponent {
 
     public static void main(String[] args) throws Exception {
         Cube3dMap map = new Cube3dMap();
-        map.set(1,0,0,'#');
-        map.set(1,1,0,'#');
-        map.set(1,2,0,'#');
-        map.set(1,3,0,'#');
-        map.set(1,4,0,'#');
+        map.set(1,0,0,'#', 0);
+        map.set(1,1,0,'#', 0);
+        map.set(1,2,0,'#', 0);
+        map.set(1,3,0,'#', 0);
+        map.set(1,4,0,'#', 0);
 
-        map.set(0,2,0,'#');
-        map.set(2,2,0,'#');
+        map.set(0,2,0,'#', 0);
+        map.set(2,2,0,'#', 0);
         
         System.out.println("Mass: " + map.getMass());
         System.out.println("Center of mass: " + map.getCenter());
@@ -119,7 +119,7 @@ public class ShipGeometry extends BaseComponent {
             for(int x=0; x < blocks.length(); x++) {
                 char c = blocks.charAt(x);
                 if(c != ' ') {
-                    map.set(x, y, z, c);
+                    map.set(x, y, z, c, 0);
                 }
             }
         }

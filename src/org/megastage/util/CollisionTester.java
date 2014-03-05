@@ -10,6 +10,7 @@ import com.esotericsoftware.minlog.Log;
 import com.jme3.scene.Node;
 import com.jme3.ui.Picture;
 import java.util.Random;
+import org.megastage.util.Cube3dMap.BlockChange;
  
 public class CollisionTester extends SimpleApplication{
  
@@ -48,7 +49,7 @@ public class CollisionTester extends SimpleApplication{
             for(int y=0; y < BIG; y++) {
                 for(int z=0; z < BIG; z++) {
                     if(rnd.nextInt(10) == 0) {
-                        map.set(x, y, z, '#');
+                        map.set(x, y, z, '#', BlockChange.BUILD);
                         blockTerrain.setBlock(new Vector3Int(x, y, z), Block_Wood.class); 
                         c++;
                     }

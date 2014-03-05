@@ -22,6 +22,7 @@ public class CubeCollisionDetector {
         Rotation rot = Mapper.ROTATION.get(target.entity);
 
         // calculate coordinates for center of block
+        // center of mass is not equal to center of block!
         Vector3d coord = new Vector3d(8,8,8).sub(geom.map.getCenter3d());
         coord = coord.multiply(rot.getQuaternion4d());
         coord = coord.add(target.coord);
@@ -47,7 +48,9 @@ public class CubeCollisionDetector {
                 Math.sqrt(candidates.first().distance));
         
         long endTime = System.currentTimeMillis();
-        Log.info("Collisions: " + candidates.size + ", delay: " + (endTime - startTime));
+        //Log.info("Collisions: " + candidates.size + ", delay: " + (endTime - startTime));
+        Log.info(hit.toString());
+        
         return hit;
     }
 
@@ -78,8 +81,8 @@ public class CubeCollisionDetector {
         // Following line contains the correct value
         //double radiusSquared = 3.0 * chunkSize * chunkSize / 4.0;
         // Following line contains the speed optimized value
-        double radiusSquared = 2.0 * chunkSize * chunkSize / 4.0;
-
+        double radius = Math.sqrt(2.0 * chunkSize * chunkSize / 4.0);
+        
         chunkSize /= 2;
         
         Array<Block> next = new Array<>(8 * candidates.size);
@@ -90,15 +93,11 @@ public class CubeCollisionDetector {
             //                continue;
             //            }
             
-            if(block.check(rayDir, radiusSquared)) {
+            if(block.check(rayDir, radius)) {
                 for(int i=0; i < BLOCK_OFFSET.length; i++) {
                     Block ublock = block.createChild(coordOffset[i], BLOCK_OFFSET[i].mult(chunkSize)); 
 
-                    if(chunkSize == 1) {
-//                        Log.info(ublock.base.toString() + " " + ublock.center.toString() + " " + ublock.distance);
-//                        Log.info("" + (int) map.get(ublock.base.getX(), ublock.base.getY(), ublock.base.getZ()));
-                    }
-                    if(chunkSize > 1 || map.get(ublock.base.getX(), ublock.base.getY(), ublock.base.getZ()) > 0) {
+                    if(chunkSize > 1 || (map.get(ublock.base.getX(), ublock.base.getY(), ublock.base.getZ()) > 0 && ublock.check(rayDir, radius/2))) {
                         next.add(ublock);
                     }
                 }
@@ -124,19 +123,21 @@ public class CubeCollisionDetector {
     private static Vector3d[] getCoordOffsets(int chunkSize, Quaternion shipRot) {
         double step = chunkSize / 4.0;
 
+        // calculate unit vectors for target ship
         Vector3d xstep = new Vector3d(step, 0, 0).multiply(shipRot);
         Vector3d ystep = new Vector3d(0, step, 0).multiply(shipRot);
         Vector3d zstep = new Vector3d(0, 0, step).multiply(shipRot);
 
+        // use unit vectors to calculate 8 sub block vectors
         return new Vector3d[] {
             xstep.add(ystep).add(zstep),
             xstep.add(ystep).sub(zstep),
             xstep.sub(ystep).add(zstep),
             xstep.sub(ystep).sub(zstep),
-            xstep.negate().add(ystep).add(zstep),
-            xstep.negate().add(ystep).sub(zstep),
-            xstep.negate().sub(ystep).add(zstep),
-            xstep.negate().sub(ystep).sub(zstep),
+            Vector3d.ZERO.sub(xstep).add(ystep).add(zstep),
+            Vector3d.ZERO.sub(xstep).add(ystep).sub(zstep),
+            Vector3d.ZERO.sub(xstep).sub(ystep).add(zstep),
+            Vector3d.ZERO.sub(xstep).sub(ystep).sub(zstep),
         };
     }
 
@@ -164,8 +165,8 @@ public class CubeCollisionDetector {
                     base.add(blockOffset));            
         }
 
-        public boolean check(Vector3d ray, double collisionRadiusSquared) {
-            return ray.distanceToPointSquared(center) < collisionRadiusSquared;
+        public boolean check(Vector3d ray, double collisionRadius) {
+            return ray.distanceToPoint(center) < collisionRadius;
             
         }
 

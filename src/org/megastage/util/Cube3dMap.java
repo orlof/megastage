@@ -50,7 +50,7 @@ public class Cube3dMap {
         return ydata[z];
     }
 
-    public void set(int x, int y, int z, char value) {
+    public void set(int x, int y, int z, char value, char event) {
         char old = get(x, y, z);
         
         if(value == old) {
@@ -100,7 +100,7 @@ public class Cube3dMap {
         }
 
         data[x][y][z] = value;
-        if(pending != null) pending.add(new BlockChange(x, y, z, value));
+        if(pending != null) pending.add(new BlockChange(x, y, z, value, event));
         version++;
     }
 
@@ -183,16 +183,22 @@ public class Cube3dMap {
     }
     
     public static class BlockChange extends BaseComponent {
+        public static final transient char UNBUILD = 0;
+        public static final transient char BREAK = 1;
+        public static final transient char BUILD = 2;
+        
         public int x, y, z;
         public char type;
+        public char event;
 
         public BlockChange() {}
         
-        private BlockChange(int x, int y, int z, char value) {
+        private BlockChange(int x, int y, int z, char value, char event) {
             this.x = x;
             this.y = y;
             this.z = z;
             this.type = value;
+            this.event = event;
         }
 
         @Override
@@ -200,10 +206,13 @@ public class Cube3dMap {
             Log.info(ID.get(entity) + toString());
             ClientGlobals.spatialManager.updateShipBlock(entity, this);
         }
-        
+
+        @Override
         public String toString() {
-            return "BlockChange[" + x + ", " + y + ", " + z + "] = " + (int) type;
+            return "BlockChange{" + "x=" + x + ", y=" + y + ", z=" + z + ", type=" + (int) type + ", event=" + (int) event + '}';
         }
+
+        
     }
 }
 

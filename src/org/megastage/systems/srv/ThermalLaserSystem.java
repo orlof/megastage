@@ -4,6 +4,7 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.minlog.Log;
+import java.util.Random;
 import org.megastage.components.Position;
 import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.dcpu.VirtualThermalLaser;
@@ -13,6 +14,8 @@ import org.megastage.server.TargetManager.ForceFieldHit;
 import org.megastage.server.TargetManager.Hit;
 import org.megastage.server.TargetManager.ShipStructureHit;
 import org.megastage.server.TargetManager.Target;
+import org.megastage.util.Cube3dMap;
+import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
 import org.megastage.util.Quaternion;
@@ -20,6 +23,7 @@ import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
 public class ThermalLaserSystem extends SystemTemplate {
+    Random random = new Random();
     public ThermalLaserSystem() {
         super(Aspect.getAspectForAll(VirtualThermalLaser.class));
     }
@@ -47,7 +51,11 @@ public class ThermalLaserSystem extends SystemTemplate {
                     } else if(hit instanceof ShipStructureHit) {
                         ShipStructureHit shit = (ShipStructureHit) hit;
                         ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(shit.entity);
-                        geom.map.set(shit.block.getX(), shit.block.getY(), shit.block.getZ(), (char) 0);
+                        
+                        double shotPower = world.getDelta() * vtlComponent.wattage;
+                        if(shotPower > 500.0 * random.nextDouble()) {
+                            geom.map.set(shit.block.getX(), shit.block.getY(), shit.block.getZ(), (char) 0, BlockChange.BREAK);
+                        }
                         
                     } else {
                         Log.error("Unknown hit target: " + hit.toString());

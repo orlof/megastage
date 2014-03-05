@@ -306,7 +306,7 @@ public class SpatialManager {
                 for(int z = 0; z <= zsize; z++) {
                     char c = data.map.get(x, y, z);
                     if(c != theMap.get(x, y, z)) {
-                        theMap.set(x, y, z, c);
+                        theMap.set(x, y, z, c, BlockChange.BUILD);
                         if(c == 0) {
                             ctrl.removeBlock(x, y, z);
                         } else {
@@ -321,7 +321,7 @@ public class SpatialManager {
         
     public void updateShipBlock(Entity entity, BlockChange data) {
         Cube3dMap theMap = Mapper.SHIP_GEOMETRY.get(entity).map;
-        theMap.set(data.x, data.y, data.z, data.type);
+        theMap.set(data.x, data.y, data.z, data.type, data.event);
         
         final Node node = getNode(entity);
         BlockTerrainControl ctrl = offset(node).getControl(BlockTerrainControl.class);

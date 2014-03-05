@@ -32,6 +32,7 @@ import org.megastage.protocol.UserCommand.Keyboard;
 import org.megastage.protocol.UserCommand.Unbuild;
 import org.megastage.server.TemplateManager;
 import org.megastage.util.Cube3dMap;
+import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.Mapper;
 import org.megastage.util.Quaternion;
 import org.megastage.util.ServerGlobals;
@@ -347,7 +348,7 @@ public class NetworkSystem extends VoidEntitySystem {
             return;
         }
 
-        map.set(build.x, build.y, build.z, '#');
+        map.set(build.x, build.y, build.z, '#', BlockChange.BUILD);
     }
 
     private void unbuild(PlayerConnection connection, Unbuild unbuild, Cube3dMap map) {
@@ -359,7 +360,7 @@ public class NetworkSystem extends VoidEntitySystem {
             return;
         }
 
-        map.set(unbuild.x, unbuild.y, unbuild.z, (char) 0);
+        map.set(unbuild.x, unbuild.y, unbuild.z, (char) 0, BlockChange.UNBUILD);
     }
 
     private void teleport(PlayerConnection connection, UserCommand.Teleport teleport) {
