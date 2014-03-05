@@ -10,7 +10,7 @@
         <component type="srv.CollisionType" radius="50000" item="CELESTIAL"/>
         <group name="replicate"/>
         <entity name="Earth">
-            <component type="Mass" kg="5.972e15"/>
+            <component type="Mass" kg="5.972e17"/>
             <component type="srv.GravityFieldFlag"/>
             <component type="Orbit" orbital_distance="200000"/>
             <component type="Position" x="0" y="0" z="0"/>
@@ -552,7 +552,7 @@
                 <group name="replicate"/>
             </entity>
             <entity name="ThermalLaser">
-                <component type="dcpu.VirtualThermalLaser" />
+                <component type="dcpu.VirtualThermalLaser" range="100" cooldown_speed="20"/>
                 <component type="Position" dx="0" dy="0" dz="2"/>
                 <component type="gfx.ThermalLaserGeometry"/>
                 <component type="gfx.BindTo"/>
@@ -561,7 +561,7 @@
                 <group name="replicate"/>
             </entity>
             <entity name="ThermalLaser">
-                <component type="dcpu.VirtualThermalLaser" />
+                <component type="dcpu.VirtualThermalLaser" range="100" cooldown_speed="20"/>
                 <component type="Position" dx="14" dy="0" dz="2"/>
                 <component type="gfx.ThermalLaserGeometry"/>
                 <component type="gfx.BindTo"/>

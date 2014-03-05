@@ -57,7 +57,7 @@ public class ThermalLaserSystem extends SystemTemplate {
                 } else {
                     // turn off
                     vtlComponent.startTime = Time.value;
-                    vtlComponent.duration = vtlComponent.duration * vtlComponent.wattage / 200;
+                    vtlComponent.duration = vtlComponent.duration * vtlComponent.wattage / vtlComponent.cooldownSpeed;
                     vtlComponent.status = VirtualThermalLaser.STATUS_COOLDOWN;
                     vtlComponent.dirty = true;
                 }

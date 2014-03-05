@@ -26,6 +26,7 @@ public class VirtualThermalLaser extends DCPUHardware {
     public char status = STATUS_DORMANT;
     public char wattage = 0;
     public float range;
+    public int cooldownSpeed;
     
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
@@ -36,6 +37,7 @@ public class VirtualThermalLaser extends DCPUHardware {
         super.init(world, parent, element);
         
         range = getFloatValue(element, "range", 100);
+        cooldownSpeed = getIntegerValue(element, "cooldown_speed", 20);
 
         return null;
     }
