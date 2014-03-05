@@ -4,6 +4,7 @@ import com.artemis.Entity;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.components.Mass;
 import org.megastage.components.transfer.MonitorData;
@@ -28,22 +29,29 @@ import org.megastage.components.DeleteFlag;
 import org.megastage.components.Mode;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.Explosion;
+import org.megastage.components.Velocity;
+import org.megastage.components.gfx.ForceFieldGeometry;
 import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.RadarGeometry;
+import org.megastage.components.gfx.ThermalLaserGeometry;
 import org.megastage.components.srv.Identifier;
+import org.megastage.components.transfer.ForceFieldData;
 import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.components.transfer.RadarTargetData;
+import org.megastage.components.transfer.ThermalLaserData;
+import org.megastage.protocol.UserCommand.Build;
+import org.megastage.protocol.UserCommand.Keyboard;
+import org.megastage.protocol.UserCommand.MoveShip;
+import org.megastage.protocol.UserCommand.Pick;
+import org.megastage.protocol.UserCommand.Teleport;
+import org.megastage.protocol.UserCommand.Unbuild;
+import org.megastage.protocol.UserCommand.Unpick;
 import org.megastage.util.Cube3dMap;
+import org.megastage.util.Cube3dMap.BlockChange;
+import org.megastage.util.ID;
 import org.megastage.util.RAM;
 import org.megastage.util.Vector3d;
 
-/**
- * Created with IntelliJ IDEA.
- * User: contko3
- * Date: 10/2/13
- * Time: 7:50 AM
- * To change this template use File | Settings | File Templates.
- */
 public class Network {
     public static String networkInterface = "localhost";
 
@@ -62,6 +70,8 @@ public class Network {
         kryo.register(Object[].class);
         kryo.register(BaseComponent.class);
         kryo.register(BindTo.class);
+        kryo.register(BlockChange.class);
+        kryo.register(Build.class);
         kryo.register(CharacterGeometry.class);
         kryo.register(ComponentMessage.class);
         kryo.register(Cube3dMap.class);
@@ -70,15 +80,20 @@ public class Network {
         kryo.register(EngineGeometry.class);
         kryo.register(Explosion.class);
         kryo.register(FixedRotation.class);
+        kryo.register(ForceFieldData.class);
+        kryo.register(ForceFieldGeometry.class);
         kryo.register(GyroscopeData.class);
         kryo.register(GyroscopeGeometry.class);
         kryo.register(Identifier.class);
         kryo.register(ImposterGeometry.class);
+        kryo.register(Keyboard.class);
         kryo.register(Mass.class);
         kryo.register(Mode.class);
         kryo.register(MonitorData.class);
         kryo.register(MonitorGeometry.class);
+        kryo.register(MoveShip.class);
         kryo.register(Orbit.class);
+        kryo.register(Pick.class);
         kryo.register(PlanetGeometry.class);
         kryo.register(PlayerIDMessage.class);
         kryo.register(Position.class);
@@ -90,9 +105,15 @@ public class Network {
         kryo.register(ShipGeometry.class);
         kryo.register(SpawnPoint.class);
         kryo.register(SunGeometry.class);
+        kryo.register(Teleport.class);
+        kryo.register(ThermalLaserData.class);
+        kryo.register(ThermalLaserGeometry.class);
+        kryo.register(Unbuild.class);
+        kryo.register(Unpick.class);
         kryo.register(UsableFlag.class);
         kryo.register(UserCommand.class);
         kryo.register(Vector3d.class);
+        kryo.register(Velocity.class);
         kryo.register(VoidGeometry.class);
     }
 
@@ -118,6 +139,7 @@ public class Network {
             component.receive(pc, entity);
         }
         
+        @Override
         public String toString() {
             return "ComponentMessage(" + owner + ", " + component.toString() + ")";
         }

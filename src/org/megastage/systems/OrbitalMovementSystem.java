@@ -8,12 +8,14 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
+import org.megastage.components.Velocity;
 import org.megastage.util.ID;
 import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
 public class OrbitalMovementSystem extends EntityProcessingSystem {
     ComponentMapper<Position> POSITION;
+    ComponentMapper<Velocity> VELOCITY;
     ComponentMapper<Orbit> ORBIT;
     ComponentMapper<Mass> MASS;
 
@@ -23,9 +25,9 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
 
     @Override
     public void initialize() {
-        
         ORBIT = world.getMapper(Orbit.class);
         POSITION = world.getMapper(Position.class);
+        VELOCITY = world.getMapper(Velocity.class);
         MASS = world.getMapper(Mass.class);
     }
 
@@ -36,23 +38,25 @@ public class OrbitalMovementSystem extends EntityProcessingSystem {
         Orbit orbit = ORBIT.get(entity);
         
         Entity center = world.getEntity(orbit.center);
-        Mass centerMass = MASS.get(center);        
-        Vector3d localSum = orbit.getLocalCoordinates(time, centerMass.mass);
+        Vector3d localSum = orbit.getLocalCoordinates(time);
         
         while(!isInFixedPosition(center)) {
             orbit = ORBIT.get(center);
             center = world.getEntity(orbit.center);
-            centerMass = MASS.get(center);        
-            localSum = localSum.add(orbit.getLocalCoordinates(time, centerMass.mass));
+            localSum = localSum.add(orbit.getLocalCoordinates(time));
         }
 
         Position fixedStar = POSITION.get(center);
+        long x = Math.round(1000 * localSum.x) + fixedStar.x;
+        long y = fixedStar.y;
+        long z = Math.round(1000* localSum.z) + fixedStar.z;
 
         Position position = POSITION.get(entity);
-        position.x = Math.round(1000 * localSum.x) + fixedStar.x;
-        position.y = fixedStar.y;
-        position.z = Math.round(1000* localSum.z) + fixedStar.z;
-        position.dirty = true;
+        Velocity velocity = VELOCITY.get(entity);
+        velocity.vector = new Vector3d(x - position.x, y - position.y, z - position.z);
+        
+        position.set(x, y, z);
+        //position.dirty = true;
     }
 
     private boolean isInFixedPosition(Entity center) {

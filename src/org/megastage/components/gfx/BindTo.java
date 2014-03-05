@@ -10,9 +10,10 @@ import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.client.ClientGlobals;
+import org.megastage.protocol.Message;
 
 /**
- * This entity's position and rotation are relative to parent
+ * This entity's position and rotation become relative to parent
  * @author Orlof
  */
 public class BindTo extends BaseComponent {
@@ -26,8 +27,18 @@ public class BindTo extends BaseComponent {
     }
 
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        return always(entity);
+    }
+    
+    @Override
+    public Message synchronize(Entity entity) {
+        return ifDirty(entity);
+    }
+
+    public void setParent(int eid) {
+        this.dirty = true;
+        this.parent = eid;
     }
     
     @Override

@@ -2,30 +2,27 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.minlog.Log;
-import java.util.Arrays;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.components.Position;
-import org.megastage.components.PrevPosition;
-import org.megastage.components.Rotation;
-import org.megastage.components.srv.Velocity;
 import org.megastage.components.transfer.RadarTargetData;
+import org.megastage.protocol.Message;
 import org.megastage.protocol.Network;
-import org.megastage.systems.srv.RadarEchoSystem.RadarData;
-import org.megastage.systems.srv.SphereOfInfluenceSystem.SOIData;
+import org.megastage.server.GravityManager;
+import org.megastage.server.RadarManager;
+import org.megastage.server.RadarManager.RadarSignal;
+import org.megastage.server.SOIManager;
+import org.megastage.server.SOIManager.SOIData;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
-import org.megastage.util.Quaternion;
-import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector3d;
 
 public class VirtualRadar extends DCPUHardware {
-    private static final double RANGE = 10e8;
-    private static final double RANGE_SQUARED = RANGE * RANGE;
-    
-    public int target = 0;
+    public Entity target = null;
+
+    // COMPONENT
     
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
@@ -39,282 +36,150 @@ public class VirtualRadar extends DCPUHardware {
     }
 
     @Override
-    public void interrupt() {
-        char a = dcpu.registers[0];
-        char b = dcpu.registers[1];
-
-        if (a == 0) {
-            // GET LIST OF SIGNATURES
-            LocalRadarEcho[] echoes = getSignatures();
-            storeSignatures(echoes);
-            dcpu.cycles += 16;
-
-        } else if(a == 1) {
-            // SET_TRACKING_TARGET
-            RadarData echo = findRadarEcho(b);
-            if(setTrackingTarget(echo)) {
-                dcpu.registers[2] = (char) 0xffff;
-            } else {
-                dcpu.registers[2] = (char) 0x0000;
-            }
-
-        } else if(a == 2) {
-            // STORE_TARGET_DATA
-            RadarData echo = getRadarData(target);
-            if(echo != null && storeTargetDataToArray(echo, dcpu.ram, b)) {
-                dcpu.cycles += 7;
-                dcpu.registers[2] = (char) 0xffff;
-            } else {
-                dcpu.registers[2] = (char) 0x0000;
-            }
-        } else if(a == 3) {
-            // GET_ORBITAL_STATE_VECTOR
-            RadarData echo = getRadarData(target);
-            if(echo != null) {
-                Vector3d ownCoord = Mapper.POSITION.get(ship).getVector3d();
-
-                SOIData soi = getSOI(ownCoord);
-                storeOrbitalStateVectorToArray(soi, target, dcpu.ram, b);
-                dcpu.cycles += 12;
-            }
-        }
-    }
-
-    private SOIData getSOI(Vector3d coord) {
-        for(SOIData soi: ServerGlobals.soi) {
-            if(soi.contains(coord)) {
-                return soi;
-            }
-        }
-        return null;
-    }
-
-    public LocalRadarEcho[] getSignatures() {
-        Position pos = Mapper.POSITION.get(ship);
-        if(pos == null) {
-            return new LocalRadarEcho[0];
-        }
-        
-        Vector3d coord = pos.getVector3d();
-    
-        int num = ServerGlobals.radarEchoes.size;
-        
-        LocalRadarEcho[] echoes = new LocalRadarEcho[num];
-        for(int i = 0; i < num; i++) {
-            RadarData echo = ServerGlobals.radarEchoes.get(i);
-            echoes[i] = new LocalRadarEcho(echo, coord);
-        }
-        
-        Arrays.sort(echoes);
-        return echoes;
-    }
-
-    public void storeSignatures(LocalRadarEcho[] echoes) {
-        int mem = dcpu.registers[1];
-        for(int i = 0; i < 16; i++) {
-            if(i >= echoes.length || echoes[i].distanceSquared > RANGE_SQUARED) {
-                dcpu.ram[mem++ & 0xffff] = 0;
-            } else {
-                dcpu.ram[mem++ & 0xffff] = (char) (echoes[i].echo.id & 0xffff);
-            }
-        }
-    }
-
-    private RadarData findRadarEcho(char b) {
-        for(RadarData echo: ServerGlobals.radarEchoes) {
-            if(echo.match(b)) {
-                return echo;
-            }
-        }
-        return null;
-    }
-
-    public boolean setTrackingTarget(RadarData echo) {
-        int id = echo == null ? 0: echo.id;
-        if(target != id) {
-            target = id;
-            dirty = true;
-        }
-
-        return id != 0;
-    }
-
-    private RadarData getRadarData(int id) {
-        for(RadarData echo: ServerGlobals.radarEchoes) {
-            if(echo.id == id) {
-                return echo;
-            }
-        }
-        return null;
-    }
-
-    public boolean storeTargetDataToArray(RadarData echo, char[] mem, char ptr) {
-        Vector3d myCoord = Mapper.POSITION.get(ship).getVector3d();
-        float dist = (float) echo.coord.distance(myCoord);
-
-        if(dist < RANGE) {
-            Entity targetEntity = ServerGlobals.world.getEntity(target);
-            if(targetEntity == null) return false;
-            
-            // target type
-            mem[ptr++ & 0xffff] = 0x0002;
-
-            // target mass
-            int mass = (int) echo.mass;
-            mem[ptr++ & 0xffff] = (char) ((mass >> 16) & 0xffff);
-            mem[ptr++ & 0xffff] = (char) (mass & 0xffff);
-
-            // distance (float)
-            ptr = writeFloatToArray(dist, mem, ptr);
-
-            // direction
-            Quaternion myRot = Mapper.ROTATION.get(ship).getQuaternion4d();
-
-            // vector from me to target in global coordinate system
-            Vector3d d = echo.coord.sub(myCoord);
-
-            d = d.multiply(myRot);
-
-            double pitch = Math.atan2(d.y, Math.sqrt(d.x*d.x + d.z*d.z));
-            double yaw = Math.atan2(d.x, -d.z);
-
-            mem[ptr++ & 0xffff] = convertToDegMin(pitch);
-            mem[ptr++ & 0xffff] = convertToDegMin(yaw);
-
-            return true;
-        }
-        return false;
-    }
-
-    public boolean storeOrbitalStateVectorToArray(SOIData soi, int target, char[] mem, char ptr) {
-        Entity targetEntity = ServerGlobals.world.getEntity(target);
-        if(targetEntity == null) return false;
-        
-        Vector3d targetCoord = Mapper.POSITION.get(targetEntity).getVector3d();
-        Vector3d targetVeloc = Mapper.VELOCITY.get(targetEntity).vector;
-
-        Vector3d soiCoord = soi.coord;
-        Vector3d soiVeloc = Mapper.PREV_POSITION.get(soi.entity).getVelocity(soiCoord);
-        
-        Vector3d coord = targetCoord.sub(soiCoord);
-        Vector3d veloc = targetVeloc.sub(soiVeloc);
-
-        int x = (int) (coord.x / 100.0);
-        mem[ptr++ & 0xffff] = (char) ((x >> 16) & 0xffff);
-        mem[ptr++ & 0xffff] = (char) (x & 0xffff);
-
-        int y = (int) (coord.y / 100.0);
-        mem[ptr++ & 0xffff] = (char) ((y >> 16) & 0xffff);
-        mem[ptr++ & 0xffff] = (char) (y & 0xffff);
-
-        int z = (int) (coord.z / 100.0);
-        mem[ptr++ & 0xffff] = (char) ((z >> 16) & 0xffff);
-        mem[ptr++ & 0xffff] = (char) (z & 0xffff);
-
-        int dx = (int) veloc.x;
-        mem[ptr++ & 0xffff] = (char) ((dx >> 16) & 0xffff);
-        mem[ptr++ & 0xffff] = (char) (dx & 0xffff);
-
-        int dy = (int) veloc.y;
-        mem[ptr++ & 0xffff] = (char) ((dy >> 16) & 0xffff);
-        mem[ptr++ & 0xffff] = (char) (dy & 0xffff);
-
-        int dz = (int) veloc.z;
-        mem[ptr++ & 0xffff] = (char) ((dz >> 16) & 0xffff);
-        mem[ptr++ & 0xffff] = (char) (dz & 0xffff);
-        
-        return true;
-    }
-
-    public boolean storeOrbitalStateVectorToArray2(SOIData soi, int target, char[] mem, char ptr) {
-        Entity targetEntity = ServerGlobals.world.getEntity(target);
-        if(targetEntity == null) return false;
-        
-        Vector3d targetCoord = Mapper.POSITION.get(targetEntity).getVector3d();
-        Vector3d targetVeloc = Mapper.VELOCITY.get(targetEntity).vector;
-
-        Vector3d soiCoord = soi.coord;
-        Vector3d soiVeloc = Mapper.PREV_POSITION.get(soi.entity).getVelocity(soiCoord);
-        
-        Vector3d coord = targetCoord.sub(soiCoord);
-        Vector3d veloc = targetVeloc.sub(soiVeloc);
-
-        ptr = writeFloatToArray((float) coord.x, mem, ptr);
-        ptr = writeFloatToArray((float) coord.y, mem, ptr);
-        ptr = writeFloatToArray((float) coord.z, mem, ptr);
-
-        ptr = writeFloatToArray((float) veloc.x, mem, ptr);
-        ptr = writeFloatToArray((float) veloc.y, mem, ptr);
-        ptr = writeFloatToArray((float) veloc.z, mem, ptr);
-
-        return true;
-    }
-
-    private char writeFloatToArray(float src, char[] dst, char ptr) {
-        int bits = Float.floatToIntBits(src);
-
-        dst[ptr++ & 0xffff] = (char) ((bits >> 16) & 0xffff);
-        dst[ptr++ & 0xffff] = (char) (bits & 0xffff);
-        
-        return ptr;
-    }
-
-    public static class LocalRadarEcho implements Comparable {
-        public final RadarData echo;
-        public final double distanceSquared;
-
-        public LocalRadarEcho(RadarData echo, Vector3d coord) {
-            this.echo = echo;
-            this.distanceSquared = echo.coord.distanceSquared(coord);
-        }
-
-        @Override
-        public int compareTo(Object o) {
-            LocalRadarEcho other = (LocalRadarEcho) o;
-
-            if(distanceSquared < other.distanceSquared) return -1;
-            else if(distanceSquared > other.distanceSquared) return 1;
-            return 0;
-        }
-        
-        public String toString() {
-            return echo.toString() + " " + distanceSquared;
-        }
-    }
-    
-    public static char convertToDegMin(double rad) {
-        double deg = Math.toDegrees(rad);
-        int negative = 0;
-        if(deg < 0) {
-            negative = 1;
-            deg = -deg;
-        }
-
-        int d = ((int) deg) % 360;
-        int m = ((int) (60.0 * deg)) % 60;
-        return (char) ((negative << 15) | (d << 6) | m);
-    }
-
-
-    private boolean dirty = false;
-
-    @Override
-    public Network.ComponentMessage create(Entity entity) {
+    public Message replicate(Entity entity) {
         dirty = false;
 
         RadarTargetData data = new RadarTargetData();
-        data.target = target;
+        data.target = target != null ? target.id: 0;
         
-        return data.create(entity);
-    }
-
-    @Override
-    public boolean replicate() {
-        return true;
+        return data.always(entity);
     }
     
     @Override
-    public boolean synchronize() {
-        return dirty;
+    public Message synchronize(Entity entity) {
+        return replicateIfDirty(entity);
+    }
+
+    // DCPU
+    
+    @Override
+    public void interrupt() {
+        switch(dcpu.registers[0]) {
+            case 0:
+                if(storeRadarSignatures()) {
+                    dcpu.cycles += 16;
+                } else {
+                }
+                break;
+            case 1:
+                if(setTrackingTarget()) {
+                    dcpu.registers[2] = 0xffff;
+                } else {
+                    dcpu.registers[2] = 0x0000;
+                }
+                break;
+            case 2:
+                if(storeTargetData()) {
+                    dcpu.registers[2] = 0xffff;
+                    dcpu.cycles += 7;
+                } else {
+                    dcpu.registers[2] = 0x0000;
+                }
+                break;
+            case 3:
+                dcpu.registers[2] = storeOrbitalStateVector();
+                if(dcpu.registers[2] == 0xffff) {
+                    dcpu.cycles += 12;
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void tick60hz() {
+    }
+
+    // INTERRUPT ROUTINES
+    
+    private boolean storeRadarSignatures() {
+        Array<RadarSignal> signals = RadarManager.getRadarSignals(ship);
+
+        for(RadarSignal s: signals) {
+            Log.info(s.toString());
+        }
+        
+        writeSignalsToMemory(dcpu.ram, dcpu.registers[1], signals);
+        return true;
+    }
+
+    private boolean setTrackingTarget() {
+        Entity entity = RadarManager.findBySignature(dcpu.registers[1]);
+        
+        setTrackingTarget(entity);
+
+        return entity != null;
+    }
+
+    private boolean storeTargetData() {
+        if(target == null) {
+            return false;
+        }
+
+        writeTargetDataToMemory(dcpu.ram, dcpu.registers[1], target);
+        return true;
+    }
+     
+    private char storeOrbitalStateVector() {
+        if(target == null) {
+            return 0x0001;
+        }
+        
+        Vector3d ownCoord = Mapper.POSITION.get(ship).getVector3d();
+        SOIData soi = SOIManager.getSOI(ownCoord);
+        
+        if(soi == null) {
+            return 0x0002;
+        }
+
+        GravityManager.writeOrbitalStateVectorToMemory(dcpu.ram, dcpu.registers[1], soi.entity, target, false);
+
+        return 0xFFFF;
+    }
+
+    // UTILS
+    
+    public void writeSignalsToMemory(char[] mem, char ptr, Array<RadarSignal> signals) {
+        for(int i = 0; i < 16; i++) {
+            if(i >= signals.size) {
+                dcpu.ram[ptr++] = 0;
+            } else {
+                dcpu.ram[ptr++] = (char) signals.get(i).entity.id;
+            }
+        }
+    }
+
+    public void setTrackingTarget(Entity entity) {
+        if(target != entity) {
+            Log.info(ID.get(entity));
+
+            target = entity;
+            dirty = true;
+        }
+    }
+
+    private void writeTargetDataToMemory(char[] mem, char ptr, Entity target) {
+        // target type
+        mem[ptr++] = 0x0002;
+
+        // target mass
+        int mass = (int) Mapper.MASS.get(target).mass;
+        Log.info("MASS: " + mass);
+
+        mem[ptr++] = (char) ((mass >> 16) & 0xffff);
+        mem[ptr++] = (char) (mass & 0xffff);
+
+        // distance (float)
+        Vector3d ownCoord = Mapper.POSITION.get(ship).getVector3d();
+        Vector3d othCoord = Mapper.POSITION.get(target).getVector3d();
+        
+        int distance = (int) Math.round(ownCoord.distance(othCoord));
+        Log.info("DISTANCE: " + distance);
+        
+        mem[ptr++] = (char) ((distance >> 16) & 0xffff);
+        mem[ptr++] = (char) (distance & 0xffff);
+
+        //ptr = writeFloatToMemory(mem, ptr, distance);
+
+        ptr = writePitchAndYawToMemory(mem, ptr, ship, target);
     }
 }

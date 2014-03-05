@@ -24,11 +24,6 @@ public class SpawnPoint extends BaseComponent {
         return null;
     }
 
-    @Override
-    public boolean replicate() {
-        return true;
-    }
-    
     public Vector3f getAsVector() {
         return new Vector3f(x, y, z);
     }

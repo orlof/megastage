@@ -7,7 +7,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.*;
 import org.megastage.components.srv.Acceleration;
-import org.megastage.components.srv.Velocity;
+import org.megastage.components.Velocity;
 import org.megastage.util.Vector3d;
 
 public class ShipMovementSystem extends EntityProcessingSystem {

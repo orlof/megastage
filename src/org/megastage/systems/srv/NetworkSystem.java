@@ -12,7 +12,6 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.components.dcpu.VirtualKeyboard;
 import org.megastage.protocol.Network;
 import org.megastage.protocol.PlayerConnection;
-
 import java.io.IOException;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.DeleteFlag;
@@ -22,15 +21,18 @@ import org.megastage.components.SpawnPoint;
 import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.Mode;
-import org.megastage.components.dcpu.VirtualRadar;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.protocol.Action;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.Message;
 import org.megastage.protocol.PlayerIDMessage;
 import org.megastage.protocol.UserCommand;
+import org.megastage.protocol.UserCommand.Build;
+import org.megastage.protocol.UserCommand.Keyboard;
+import org.megastage.protocol.UserCommand.Unbuild;
 import org.megastage.server.TemplateManager;
 import org.megastage.util.Cube3dMap;
+import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.Mapper;
 import org.megastage.util.Quaternion;
 import org.megastage.util.ServerGlobals;
@@ -69,8 +71,10 @@ public class NetworkSystem extends VoidEntitySystem {
     @Override
     protected void processSystem() {
         Array<Message> batch = ServerGlobals.getUpdates();
-        // batch.addAll(ServerGlobals.getComponentEvents());
-        server.sendToAllUDP(batch.toArray());
+        if(batch != null) {
+            // batch.addAll(ServerGlobals.getComponentEvents());
+            server.sendToAllUDP(batch.toArray());
+        }
     }
 
     @Override
@@ -82,7 +86,7 @@ public class NetworkSystem extends VoidEntitySystem {
         BindTo bindTo = Mapper.BIND_TO.get(connection.player);
         if(bindTo != null) {
             Entity e = world.getEntity(bindTo.parent);
-            e.addComponent(new DeleteFlag());
+            if(e != null) e.addComponent(new DeleteFlag());
         }
         
         connection.player.addComponent(new DeleteFlag());
@@ -108,9 +112,10 @@ public class NetworkSystem extends VoidEntitySystem {
         SpawnPoint sp = Mapper.SPAWN_POINT.get(ship);
         
         Position pos = Mapper.POSITION.get(connection.player);
-        pos.x = 1000 * sp.x + 500;
-        pos.y = 1000 * sp.y + 500;
-        pos.z = 1000 * sp.z + 500;
+        pos.set(
+                1000 * sp.x + 500,
+                1000 * sp.y + 500,
+                1000 * sp.z + 500);
         
         connection.sendTCP(new PlayerIDMessage(connection.player.id));
     }
@@ -129,11 +134,10 @@ public class NetworkSystem extends VoidEntitySystem {
         
         Array<Message> list = new Array<>(20);
 
-        for(Component c: all) {
-            BaseComponent bc = (BaseComponent) c;
-            if(bc.replicate()) {
-                Message trans = bc.create(entity);                
-                list.add(trans);
+        for(Component comp: all) {
+            Message msg = ((BaseComponent) comp).replicate(entity);
+            if(msg != null) {
+                list.add(msg);
             }
         }
 
@@ -189,88 +193,58 @@ public class NetworkSystem extends VoidEntitySystem {
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
         if(connection.player == null) return;
         
+        if(cmd.build != null || cmd.unbuild != null) Log.info(cmd.toString());
+        
         BindTo bindTo = Mapper.BIND_TO.get(connection.player);
         Entity ship = world.getEntity(bindTo.parent);
+        if(ship == null) return;
 
         ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(ship);
-        
-        Position pos = Mapper.POSITION.get(connection.player);
-        int cx = block(pos.x);
-        int cy = block(pos.y);
-        int cz = block(pos.z);
-        
-        int xprobe = probe(pos.x, (long) (1000.0 * cmd.xMove));
-        int yprobe = probe(pos.y, (long) (1000.0 * cmd.yMove));
-        int zprobe = probe(pos.z, (long) (1000.0 * cmd.zMove));
-        
-        int collision = collisionXZ(geom.map, cx, cy, cz, xprobe, yprobe, zprobe);
-        if(collision == 0) {
-            pos.x += 1000 * cmd.xMove;
-            pos.z += 1000 * cmd.zMove;
-        } else if((collision & 1) == 0) {
-            pos.x += 1000 * cmd.xMove;
-        } else if((collision & 2) == 0) {
-            pos.z += 1000 * cmd.zMove;
+
+        updatePlayerPosition(geom.map, connection.player, cmd);
+        updatePlayerRotation(connection.player, cmd);
+
+        if(cmd.ship != null) {
+            updateShip(ship, cmd);
         }
 
-        Rotation rot = Mapper.ROTATION.get(connection.player);
-        rot.x = cmd.qx;
-        rot.y = cmd.qy;
-        rot.z = cmd.qz;
-        rot.w = cmd.qw;
+        if(cmd.pick != null) {
+            pickItem(connection, cmd);
+        }
         
-        Rotation shipRotation = Mapper.ROTATION.get(ship);
-        Quaternion shipRotationQuaternion = shipRotation.getQuaternion4d();
-        
-        Vector3d vel = new Vector3d(cmd.shipLeft, cmd.shipUp, cmd.shipForward).multiply(shipRotationQuaternion);
-        
-        vel = vel.multiply(10e6);
-        
-        Position shipPos = Mapper.POSITION.get(ship);
-        shipPos.x += vel.x;
-        shipPos.y += vel.y;
-        shipPos.z += vel.z;
-
-        // rotate rotation axis by fixedEntity rotation
-        Vector3d yAxis = new Vector3d(0, 1, 0).multiply(shipRotationQuaternion);
-        Quaternion yRotation = new Quaternion(yAxis, cmd.shipYaw);
-        
-        Vector3d zAxis = new Vector3d(0, 0, 1).multiply(shipRotationQuaternion);
-        Quaternion zRotation = new Quaternion(zAxis, cmd.shipRoll);
-
-        Vector3d xAxis = new Vector3d(1, 0, 0).multiply(shipRotationQuaternion);
-        Quaternion xRotation = new Quaternion(xAxis, cmd.shipPitch);
-
-        shipRotationQuaternion = yRotation.multiply(shipRotationQuaternion).normalize();
-        shipRotationQuaternion = zRotation.multiply(shipRotationQuaternion).normalize();
-        shipRotationQuaternion = xRotation.multiply(shipRotationQuaternion).normalize();
-
-        shipRotation.set(shipRotationQuaternion);
-
-        switch(cmd.action) {
-            case Action.PICK_ITEM:
-                pickItem(connection, cmd);
-                break;
-            case Action.UNPICK_ITEM:
-                unpickItem(connection, cmd);
-                break;
+        if(cmd.unpick != null) {
+            unpickItem(connection, cmd);
         }
 
-        if(cmd.keyEventPtr > 0 && connection.item != null) {
+        if(cmd.build != null) {
+            build(connection, cmd.build, geom.map);
+        }
+        
+        if(cmd.unbuild != null) {
+            unbuild(connection, cmd.unbuild, geom.map);
+        }
+        
+        if(cmd.teleport != null) {
+            teleport(connection, cmd.teleport);
+        }
+        
+        Keyboard keys = cmd.keyboard;
+        
+        if(keys.keyEventPtr > 0 && connection.item != null) {
             VirtualKeyboard kbd = (VirtualKeyboard) connection.item;
             if(!kbd.dcpu.ship.isActive()) {
                 unpickItem(connection, cmd);
             } else {
-                for(int i=0; i < cmd.keyEventPtr; /*NOP*/ ) {
-                    switch(cmd.keyEvents[i++]) {
+                for(int i=0; i < keys.keyEventPtr; /*NOP*/ ) {
+                    switch(keys.keyEvents[i++]) {
                         case 'T':
-                            kbd.keyTyped(cmd.keyEvents[i++]);
+                            kbd.keyTyped(keys.keyEvents[i++]);
                             break;
                         case 'P':
-                            kbd.keyPressed(cmd.keyEvents[i++]);
+                            kbd.keyPressed(keys.keyEvents[i++]);
                             break;
                         case 'R':
-                            kbd.keyReleased(cmd.keyEvents[i++]);
+                            kbd.keyReleased(keys.keyEvents[i++]);
                             break;
                     }
                 }
@@ -285,7 +259,7 @@ public class NetworkSystem extends VoidEntitySystem {
     }
     
     private void pickItem(PlayerConnection connection, UserCommand cmd) {
-        Entity target = world.getEntity(cmd.pick);
+        Entity target = world.getEntity(cmd.pick.eid);
         if(target == null) {
             return;
         }
@@ -302,15 +276,107 @@ public class NetworkSystem extends VoidEntitySystem {
             return;
         }
 
-        VirtualRadar virtualRadar = Mapper.VIRTUAL_RADAR.get(target);
-        if(virtualRadar != null) {
-            
-            
-            connection.item = virtualMonitor.getHardware(VirtualKeyboard.class);
-            Mode mode = Mapper.MODE.get(connection.player);
-            mode.setMode(CharacterMode.DCPU);
+        SpawnPoint spawnPoint = Mapper.SPAWN_POINT.get(target);
+        if(spawnPoint != null) {
+            //TODO
             return;
         }
+    }
+
+    private void updatePlayerPosition(Cube3dMap map, Entity player, UserCommand cmd) {
+        Position pos = Mapper.POSITION.get(player);
+        int cx = block(pos.x);
+        int cy = block(pos.y);
+        int cz = block(pos.z);
+        
+        int xprobe = probe(pos.x, (long) (1000.0 * cmd.dx));
+        int yprobe = probe(pos.y, (long) (1000.0 * cmd.dy));
+        int zprobe = probe(pos.z, (long) (1000.0 * cmd.dz));
+        
+        int collision = collisionXZ(map, cx, cy, cz, xprobe, yprobe, zprobe);
+        if(collision == 0) {
+            pos.set(pos.x + (long) (1000 * cmd.dx + 0.5), pos.y, pos.z + (long) (1000 * cmd.dz + 0.5));
+        } else if((collision & 1) == 0) {
+            pos.set(pos.x + (long) (1000 * cmd.dx + 0.5), pos.y, pos.z);
+        } else if((collision & 2) == 0) {
+            pos.set(pos.x, pos.y, pos.z + (long) (1000 * cmd.dz + 0.5));
+        }
+    }
+
+    private void updatePlayerRotation(Entity player, UserCommand cmd) {
+        Rotation rot = Mapper.ROTATION.get(player);
+        rot.set(cmd.qx, cmd.qy, cmd.qz, cmd.qw);
+    }
+
+    private void updateShip(Entity ship, UserCommand cmd) {
+        Rotation shipRotation = Mapper.ROTATION.get(ship);
+        Quaternion shipRotationQuaternion = shipRotation.getQuaternion4d();
+
+        Vector3d vel = new Vector3d(cmd.ship.left, cmd.ship.up, cmd.ship.forward).multiply(shipRotationQuaternion);
+
+        vel = vel.multiply(10e3);
+
+        Position shipPos = Mapper.POSITION.get(ship);
+        shipPos.set(
+                shipPos.x + (long) (vel.x + 0.5),
+                shipPos.y + (long) (vel.y + 0.5),
+                shipPos.z + (long) (vel.z + 0.5));
+
+        // rotate rotation axis by fixedEntity rotation
+        Vector3d yAxis = new Vector3d(0, 1, 0).multiply(shipRotationQuaternion);
+        Quaternion yRotation = new Quaternion(yAxis, cmd.ship.yaw);
+
+        Vector3d zAxis = new Vector3d(0, 0, 1).multiply(shipRotationQuaternion);
+        Quaternion zRotation = new Quaternion(zAxis, cmd.ship.roll);
+
+        Vector3d xAxis = new Vector3d(1, 0, 0).multiply(shipRotationQuaternion);
+        Quaternion xRotation = new Quaternion(xAxis, cmd.ship.pitch);
+
+        shipRotationQuaternion = yRotation.multiply(shipRotationQuaternion).normalize();
+        shipRotationQuaternion = zRotation.multiply(shipRotationQuaternion).normalize();
+        shipRotationQuaternion = xRotation.multiply(shipRotationQuaternion).normalize();
+
+        shipRotation.set(shipRotationQuaternion);
+    }
+
+    private void build(PlayerConnection connection, Build build, Cube3dMap map) {
+        if(build.x < 0 || build.y < 0 || build.z < 0) {
+            return;
+        }
+
+        if(map.get(build.x, build.y, build.z) != 0) {
+            return;
+        }
+
+        map.set(build.x, build.y, build.z, '#', BlockChange.BUILD);
+    }
+
+    private void unbuild(PlayerConnection connection, Unbuild unbuild, Cube3dMap map) {
+        if(unbuild.x < 0 || unbuild.y < 0 || unbuild.z < 0) {
+            return;
+        }
+
+        if(map.get(unbuild.x, unbuild.y, unbuild.z) != '#') {
+            return;
+        }
+
+        map.set(unbuild.x, unbuild.y, unbuild.z, (char) 0, BlockChange.UNBUILD);
+    }
+
+    private void teleport(PlayerConnection connection, UserCommand.Teleport teleport) {
+        // bind player to ship
+        Log.info("");
+        BindTo bind = Mapper.BIND_TO.get(connection.player);
+        bind.setParent(teleport.eid);
+
+        Entity ship = world.getEntity(teleport.eid);
+        SpawnPoint sp = Mapper.SPAWN_POINT.get(ship);
+        
+        Position pos = Mapper.POSITION.get(connection.player);
+        pos.set(
+                1000 * sp.x + 500,
+                1000 * sp.y + 500,
+                1000 * sp.z + 500);
     }
 
     private class ServerNetworkListener extends Listener {

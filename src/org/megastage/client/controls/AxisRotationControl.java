@@ -10,6 +10,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Rotation;
+import org.megastage.util.ID;
 import org.megastage.util.Mapper;
 
 public class AxisRotationControl extends AbstractControl {
@@ -53,9 +54,9 @@ public class AxisRotationControl extends AbstractControl {
 
             if(Log.TRACE) {
                 float[] eulerAngles = spatial.getLocalRotation().toAngles(null);
-                Log.info("Local(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
+                Log.info(ID.get(entity) + "Local(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
                 spatial.getWorldRotation().toAngles(eulerAngles);
-                Log.info("World(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
+                Log.info(ID.get(entity) + "World(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
             }
         }
     }

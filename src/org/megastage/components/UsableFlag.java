@@ -4,13 +4,16 @@
  */
 package org.megastage.components;
 
+import com.artemis.Entity;
+import org.megastage.protocol.Message;
+
 /**
  *
  * @author Orlof
  */
 public class UsableFlag extends BaseComponent {
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
 }

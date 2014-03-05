@@ -123,8 +123,8 @@ public class ExplosionNode extends Node {
 
     }
 
-    private static void createSparks(AssetManager assetManager) {
-        _sparks = new ParticleEmitter("SparksEmitter", Type.Triangle, 40);
+    public static ParticleEmitter sparks(AssetManager assetManager) {
+        ParticleEmitter _sparks = new ParticleEmitter("SparksEmitter", Type.Triangle, 40);
         Material spark_mat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
         spark_mat.setTexture("Texture", assetManager.loadTexture("Effects/spark.png"));
         _sparks.setInWorldSpace(false);
@@ -144,6 +144,35 @@ public class ExplosionNode extends Node {
         _sparks.setHighLife(5f);
         _sparks.setParticlesPerSec(0);
 
+        return _sparks;
+    }
+
+    public static ParticleEmitter blockSparks(AssetManager assetManager) {
+        ParticleEmitter _sparks = new ParticleEmitter("BlockSparks", Type.Triangle, 20);
+        Material spark_mat = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
+        spark_mat.setTexture("Texture", assetManager.loadTexture("Effects/spark.png"));
+        _sparks.setInWorldSpace(false);
+        _sparks.setMaterial(spark_mat);
+        _sparks.setImagesX(1);
+        _sparks.setImagesY(1);
+
+        _sparks.setStartColor(new ColorRGBA(1f, 0.8f, 0.36f, 1.0f)); // orange
+        _sparks.setEndColor(new ColorRGBA(1f, 0.8f, 0.36f, 0f));
+        _sparks.getParticleInfluencer().setInitialVelocity(new Vector3f(5, 5, 5));
+        _sparks.getParticleInfluencer().setVelocityVariation(2);
+        _sparks.setFacingVelocity(true);
+        // sparks.setGravity(0, 10, 0);
+        _sparks.setStartSize(3f);
+        _sparks.setEndSize(3f);
+        _sparks.setLowLife(1f);
+        _sparks.setHighLife(2f);
+        _sparks.setParticlesPerSec(0);
+
+        return _sparks;
+    }
+
+    private static void createSparks(AssetManager assetManager) {
+        _sparks = sparks(assetManager);
     }
 
     private static void createSmoke(AssetManager assetManager) {

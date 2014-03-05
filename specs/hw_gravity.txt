@@ -16,8 +16,7 @@ DCPU-16 Hardware Info:
 Description:
     The gravity sensor is used to detect and resolve local gravity fields.
     Otec's Far Field Acceleresolutor 6673 can analyse up to 16 strongest
-    gravity sources with maximum detection range of 214.748.364 to 
-    303.700.048 km. 
+    gravity sources.
 
 Interrupt behavior:
 
@@ -38,16 +37,27 @@ Interrupt behavior:
         Halts DCPU for 16 cycles.
 
     1: STORE_ORBITAL_STATE_VECTOR
-        Stores Orbital State Vector to 12 word area of ram starting at C. 
+        Store ship's Orbital State Vector to 12 word area of ram starting at C. 
         Reference frame's field signature is given in B.
+
+        Returns
+            C: 0xffff Success
+            C: 0x0000 Failure
 
         Halts DCPU for 12 cycles.
 
     2: STORE_FIELD_DATA
-        Stores Gravity Field Data to 4 word area of ram starting at C. 
-        Reference frame's field signature is given in B.
+        Store GRAVITY_FIELD_DATA to 4 word area of ram starting at C. 
+        Gravity field's signature is given in B.
+
+        Returns
+            C: 0xffff Success
+            C: 0x0000 Failure
 
         Halts DCPU for 4 cycles.
+
+    3: GET_SOI_FIELD_SIGNATURE
+        Return current SOI's field signature in B. 
 
 
 Orbital State Vector:
@@ -60,7 +70,7 @@ Orbital State Vector:
         word 10 -11: INT32 ship's z velocity in reference frame (unit m/s)
 
 
-Gravity Field Data:
+GRAVITY_FIELD_DATA:
     The binary format for defining a Gravity Field Data is: 
         word 0-1: FLOAT standard gravitational parameter μ of SOI (unit kg)
         word 2-3: ANGLE The pitch and yaw angles between the SOI and the 

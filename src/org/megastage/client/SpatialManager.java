@@ -2,27 +2,30 @@ package org.megastage.client;
 
 import org.megastage.client.controls.ExplosionControl;
 import com.artemis.Entity;
+import com.cubes.Block;
 import com.cubes.BlockTerrainControl;
-import com.cubes.test.blocks.Block_Wood;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
 import com.jme3.effect.ParticleEmitter;
 import com.jme3.light.PointLight;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.LightNode;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer;
+import com.jme3.scene.control.Control;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
 import com.jme3.scene.shape.Dome;
-import com.jme3.scene.shape.PQTorus;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.scene.shape.Torus;
@@ -33,7 +36,6 @@ import com.jme3.texture.image.ImageRaster;
 import com.jme3.texture.plugins.AWTLoader;
 import com.jme3.util.BufferUtils;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import jmeplanet.FractalDataSource;
@@ -41,13 +43,16 @@ import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.AxisRotationControl;
+import org.megastage.client.controls.DeleteControl;
 import org.megastage.client.controls.EngineControl;
+import org.megastage.client.controls.ForceFieldControl;
 import org.megastage.client.controls.GyroscopeControl;
 import org.megastage.client.controls.ImposterPositionControl;
 import org.megastage.client.controls.LookAtControl;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RandomSpinnerControl;
 import org.megastage.client.controls.RotationControl;
+import org.megastage.client.controls.ThermalLaserControl;
 import org.megastage.components.client.ClientRaster;
 import org.megastage.components.gfx.MonitorGeometry;
 import org.megastage.components.gfx.PlanetGeometry;
@@ -58,10 +63,14 @@ import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.gfx.VoidGeometry;
 import org.megastage.components.Explosion;
+import org.megastage.components.gfx.ForceFieldGeometry;
 import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.PPSGeometry;
 import org.megastage.components.gfx.RadarGeometry;
+import org.megastage.components.gfx.ThermalLaserGeometry;
+import org.megastage.util.Cube3dMap;
+import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
 
@@ -85,8 +94,7 @@ public class SpatialManager {
     }
 
     public void deleteEntity(Entity entity) {
-        int id = entity.id;
-        final Node node = nodes.get(id);
+        final Node node = nodes.get(entity.id);
 
         if(node != null) {
             app.enqueue(new Callable() {
@@ -100,18 +108,18 @@ public class SpatialManager {
         }
     }
     
-    public Entity getEntity(Node node) {
+    public Entity getUsableEntity(Node node, boolean onlyUsable) {
         Entity entity = entities.get(node);
         if(entity == null) {
             return null;
         }
 
-        UsableFlag use = Mapper.USABLE_FLAG.get(entity);
-        if(use != null) {
-            return entity;
+        if(onlyUsable) {
+            UsableFlag usable = Mapper.USABLE_FLAG.get(entity);
+            return usable == null ? null: entity;
         }
         
-        return null;
+        return entity;
     }
     
     public Node getNode(int id) {
@@ -119,24 +127,27 @@ public class SpatialManager {
  
         if(node == null) {
             Entity entity = ClientGlobals.artemis.world.getEntity(id);
-            node = new Node(ID.get(entity));
-            nodes.put(id, node);
-            entities.put(node, entity);
+            node = createNode(entity);
         }
         
         return node;
     }
     
     public Node getNode(Entity entity) {
-        int id = entity.id;
-        Node node = nodes.get(id);
+        Node node = nodes.get(entity.id);
  
         if(node == null) {
-            node = new Node(ID.get(entity));
-            nodes.put(id, node);
-            entities.put(node, entity);
+            node = createNode(entity);
         }
         
+        return node;
+    }
+
+    private Node createNode(Entity entity) {
+        Node node = new Node(ID.get(entity));
+        node.attachChild(new Node("offset"));
+        nodes.put(entity.id, node);
+        entities.put(node, entity);
         return node;
     }
     
@@ -152,15 +163,13 @@ public class SpatialManager {
     }
     
     public void bindTo(final Entity parentEntity, final Entity childEntity) {
-        Node tmp = getNode(parentEntity);
-        Node main = (Node) tmp.getChild("offset");
-        final Node parentNode = main == null ? tmp: main; 
-        
-        final Node childNode = getNode(childEntity);
+        final Node parent = getNode(parentEntity);
+        final Node child = getNode(childEntity);
+
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
-                parentNode.attachChild(childNode);
+                attach(parent, child, true);
                 return null;
             }
         });
@@ -192,21 +201,33 @@ public class SpatialManager {
         return mat;
     }
     
+    public void attach(Node parent, Spatial child, boolean useOffset) {
+        if(useOffset) {
+            offset(parent).attachChild(child);
+        } else {
+            parent.attachChild(child);
+        }
+    }
+    
+    private Node offset(Node node) {
+        return (Node) node.getChild(0);
+    }
+    
     public void setupSunLikeBody(final Entity entity, final SunGeometry data) {
         ColorRGBA colorRGBA = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
 
         final Node node = getNode(entity);
-        node.addControl(new PositionControl(entity, true));
+        node.addControl(new PositionControl(entity, false));
         node.addControl(new RotationControl(entity));
         
-        node.attachChild(createSphere(data.radius, colorRGBA, false));
+        attach(node, createSphere(data.radius, colorRGBA, false), true);
 
         final PointLight light = new PointLight();
         light.setColor(colorRGBA);
         light.setRadius(data.lightRadius);
 
         LightNode lightNode = new LightNode(entity.toString() + " LightNode", light);
-        node.attachChild(lightNode);
+        attach(node, lightNode, true);
 
         app.enqueue(new Callable() {
             @Override
@@ -229,7 +250,7 @@ public class SpatialManager {
             final Planet planet = createPlanet(data);
 
             app.enqueue(new Callable() { @Override public Object call() throws Exception {
-                node.attachChild(planet);
+                attach(node, planet, true);
 
                 PlanetAppState appState = app.getStateManager().getState(PlanetAppState.class);
                 if(appState != null) appState.addPlanet(planet);
@@ -252,7 +273,7 @@ public class SpatialManager {
             
             final Geometry geom = createSphere(data.radius, color, true);
             app.enqueue(new Callable() { @Override public Object call() throws Exception {
-                node.attachChild(geom);
+                attach(node, geom, true);
 
                 node.addControl(positionControl);
                 node.addControl(rotationControl);
@@ -269,69 +290,132 @@ public class SpatialManager {
         getNode(entity);
     }
     
+    public void updateShip(Entity entity, ShipGeometry data) {
+        Cube3dMap theMap = Mapper.SHIP_GEOMETRY.get(entity).map;
+        
+        final Node node = getNode(entity);
+        BlockTerrainControl ctrl = offset(node).getControl(BlockTerrainControl.class);
+
+        int xsize = Math.max(data.map.xsize, theMap.xsize);
+        int ysize = Math.max(data.map.ysize, theMap.ysize);
+        int zsize = Math.max(data.map.zsize, theMap.zsize);
+        
+        for(int x = 0; x <= xsize; x++) {
+            for(int y = 0; y <= ysize; y++) {
+                for(int z = 0; z <= zsize; z++) {
+                    char c = data.map.get(x, y, z);
+                    if(c != theMap.get(x, y, z)) {
+                        theMap.set(x, y, z, c, BlockChange.BUILD);
+                        if(c == 0) {
+                            ctrl.removeBlock(x, y, z);
+                        } else {
+                            Class<? extends Block> block = CubesManager.getBlock(c);
+                            ctrl.setBlock(x, y, z, block);
+                        }
+                    }
+                }
+            }
+        }
+    }
+        
+    public void updateShipBlock(Entity entity, final BlockChange data) {
+        Cube3dMap theMap = Mapper.SHIP_GEOMETRY.get(entity).map;
+        theMap.set(data.x, data.y, data.z, data.type, data.event);
+        
+        final Node node = getNode(entity);
+        BlockTerrainControl ctrl = offset(node).getControl(BlockTerrainControl.class);
+
+        if(data.type == 0) {
+            ctrl.removeBlock(data.x, data.y, data.z);
+            if(data.event == BlockChange.BREAK) {
+                
+                final ParticleEmitter pe = (ParticleEmitter) node.getChild("BlockSparks");
+                
+                //==========================================================
+                app.enqueue(new Callable() {@Override public Object call() throws Exception {
+                //==========================================================
+                SoundManager.get(SoundManager.EXPLOSION_3).playInstance();
+
+                pe.killAllParticles();
+                //pe.removeControl(DeleteControl.class);
+                pe.setLocalTranslation(data.x, data.y, data.z);
+
+                pe.emitAllParticles();
+                //pe.addControl(new DeleteControl(3000));
+                //==========================================================
+                return null;}});
+                //==========================================================
+            }
+        } else {
+            Class<? extends Block> block = CubesManager.getBlock(data.type);
+            ctrl.setBlock(data.x, data.y, data.z, block);
+        }
+    }
+        
     public void setupShip(Entity entity, ShipGeometry data) {
-        BlockTerrainControl blockControl = new BlockTerrainControl(ClientGlobals.cubesSettings, data.map.getChunkSizes());
+        BlockTerrainControl blockControl = CubesManager.getControl(data.map);
         for(int x = 0; x <= data.map.xsize; x++) {
             for(int y = 0; y <= data.map.ysize; y++) {
                 for(int z = 0; z <= data.map.zsize; z++) {
-                    if(data.map.get(x, y, z) == '#') {
-                        blockControl.setBlock(x, y, z, Block_Wood.class);
+                    char c = data.map.get(x, y, z);
+                    Class<? extends Block> block = CubesManager.getBlock(c);
+                    if(block != null) {
+                        blockControl.setBlock(x, y, z, block);
                     }
                 }
             }
         }
         
-        final Node offset = new Node("offset");
-        offset.addControl(blockControl);
-        //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
-
         final Node node = getNode(entity);
         node.addControl(new PositionControl(entity, true));
         node.addControl(new RotationControl(entity));
 
-        node.attachChild(offset);
-        offset.setLocalTranslation(data.map.getCenter().negateLocal());
+        if(ClientGlobals.gfxSettings.ENABLE_SHIP_SHADOWS) {
+            node.setShadowMode(ShadowMode.CastAndReceive);
+        }
 
-        app.enqueue(new Callable() {
-            @Override
-            public Object call() throws Exception {
-                // it is possible that lem and other equipment is already BindTo ship
-                // they have been bound to wrong node -> move to offset node
-                // TODO always create main node AND offset node
-                for(Spatial s: new ArrayList<>(node.getChildren())) {
-                    if(!s.getName().equals("imposter") && !s.getName().equals("offset")) {
-                        offset.attachChild(s);
-                    }
-                }
+        offset(node).addControl(blockControl);
+        //shipNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
 
-                if(node.getParent() == null) {
-                    ClientGlobals.sysMovNode.attachChild(node);
-                }
-                return null;
+        setOffsetTranslation(node, data.map.getCenter().negateLocal());
+
+        ParticleEmitter pe = ExplosionNode.blockSparks(assetManager);
+        attach(node, pe, true);
+
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            if(node.getParent() == null) {
+                ClientGlobals.sysMovNode.attachChild(node);
             }
-        });
+            return null;
+        }});
     }
 
     public void setupEngine(Entity entity, EngineGeometry data) {
         final Node node = getNode(entity);
-        node.addControl(new PositionControl(entity, true));
-        node.addControl(new RotationControl(entity));
+        final PositionControl positionControl = new  PositionControl(entity, false);
+        final RotationControl rotationControl = new  RotationControl(entity);
 
-        Node burn = (Node) assetManager.loadModel("Scenes/testScene.j3o"); 
+        final Node burn = (Node) assetManager.loadModel("Scenes/testScene.j3o"); 
         ParticleEmitter emitter = (ParticleEmitter) burn.getChild("Emitter");
         emitter.addControl(new EngineControl(entity));
         emitter.setEnabled(true);
-        node.attachChild(burn);
 
-        Geometry geom = new Geometry("", new Cylinder(16, 16, 0.5f, 1, true));
+        final Geometry geom = new Geometry("", new Cylinder(16, 16, 0.5f, 1, true));
         geom.setMaterial(material(ColorRGBA.Gray, true));
         
-        node.attachChild(geom);
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            node.addControl(rotationControl);
+
+            attach(node, burn, true);
+            attach(node, geom, true);
+            return null;
+        }});
     }
     
     public void setupMonitor(Entity entity, MonitorGeometry data) {
         final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, true);
+        final PositionControl positionControl = new PositionControl(entity, false);
         final RotationControl rotationControl = new RotationControl(entity);
 
         BufferedImage img = new BufferedImage(128, 96, BufferedImage.TYPE_INT_ARGB);
@@ -360,8 +444,8 @@ public class SpatialManager {
             node.addControl(positionControl);
             node.addControl(rotationControl);
 
-            node.attachChild(panel);
-            node.attachChild(box);
+            attach(node, panel, true);
+            attach(node, box, true);
             return null;
         }});
     }
@@ -382,8 +466,8 @@ public class SpatialManager {
         head.setLocalTranslation(0, 1.0f, 0);
         
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
-            node.attachChild(body);
-            node.attachChild(head);
+            attach(node, body, true);
+            attach(node, head, true);
 
             node.addControl(positionControl);
             node.addControl(bodyRotationControl);
@@ -425,23 +509,26 @@ public class SpatialManager {
     }
 
     private void leaveShip() {
-        Entity shipEntity = ClientGlobals.shipEntity;
-        
-        if(shipEntity != null) {
-            ClientGlobals.shipEntity = null;
+        if(ClientGlobals.shipEntity != null) {
+            Log.info(ID.get(ClientGlobals.shipEntity));
 
-            Node shipNode = getNode(shipEntity);
+            Node shipNode = getNode(ClientGlobals.shipEntity);
             ClientGlobals.sysMovNode.attachChild(shipNode);
+
+            ClientGlobals.shipEntity = null;
             ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
         }
     }
 
     private void enterShip(Entity shipEntity) {
+        Log.info(ID.get(shipEntity));
+
         ClientGlobals.shipEntity = shipEntity;
 
         Node shipNode = getNode(shipEntity);
         ClientGlobals.fixedNode.attachChild(shipNode);
-        ((Node) shipNode.getChild("offset")).attachChild(ClientGlobals.playerNode);
+        attach(shipNode, ClientGlobals.playerNode, true);
+        ClientGlobals.playerNode.setLocalTranslation(0, 0, 0);
     }
 
     public void setupPlayer(final Entity entity) {
@@ -449,7 +536,6 @@ public class SpatialManager {
         final AxisRotationControl headRotationControl = new AxisRotationControl(entity, true, false, false);
 
         app.enqueue(new Callable() { @Override public Object call() throws Exception {
-
             ClientGlobals.playerNode.addControl(new PositionControl(entity, true));
             ClientGlobals.playerNode.addControl(bodyRotationControl);
             ClientGlobals.playerNode.getChild(0).addControl(headRotationControl);
@@ -461,20 +547,18 @@ public class SpatialManager {
         final Node node = getNode(entity);
         final ExplosionNode explosionNode = new ExplosionNode("ExplosionFX");
 
-        explosionNode.addControl(new ExplosionControl(explosion, explosionNode));
+        explosionNode.addControl((Control) new ExplosionControl(explosion, explosionNode));
 
         app.enqueue(new Callable() { @Override public Object call() throws Exception {
-            node.attachChild(explosionNode);
+            attach(node, explosionNode, false);
             return null;
         }});
     }
 
     
     public void imposter(Entity entity, boolean gfxVisible) {
-        Node node = nodes.get(entity.id);
+        Node node = getNode(entity);
 
-        if(node == null) return;
-        
         for(Spatial s: node.getChildren()) {
             if(s.getName().equals("imposter")) {
                 boolean imposterVisible = !gfxVisible;
@@ -538,7 +622,7 @@ public class SpatialManager {
 
     public void setupPPS(Entity entity, PPSGeometry aThis) {
         final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, true);
+        final PositionControl positionControl = new PositionControl(entity, false);
         final RotationControl rotationControl = new RotationControl(entity);
 
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
@@ -554,15 +638,15 @@ public class SpatialManager {
             node.addControl(positionControl);
             node.addControl(rotationControl);
 
-            node.attachChild(base);
-            node.attachChild(spinner);
+            attach(node, base, true);
+            attach(node, spinner, true);
             return null;
         }});
     }
 
     public void setupRadar(Entity entity, RadarGeometry aThis) {
         final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, true);
+        final PositionControl positionControl = new PositionControl(entity, false);
         final RotationControl rotationControl = new RotationControl(entity);
 
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
@@ -590,15 +674,15 @@ public class SpatialManager {
             node.addControl(positionControl);
             node.addControl(rotationControl);
 
-            node.attachChild(base);
-            node.attachChild(spinnerRotator);
+            attach(node, base, true);
+            attach(node, spinnerRotator, true);
             return null;
         }});
     }
 
     public void setupGyroscope(Entity entity, GyroscopeGeometry aThis) {
         final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, true);
+        final PositionControl positionControl = new PositionControl(entity, false);
 
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         //base.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
@@ -614,8 +698,81 @@ public class SpatialManager {
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
             node.addControl(positionControl);
 
-            node.attachChild(base);
-            node.attachChild(wheel);
+            attach(node, base, true);
+            attach(node, wheel, true);
+            return null;
+        }});
+    }
+
+    private void setOffsetTranslation(Node node, Vector3f value) {
+        offset(node).setLocalTranslation(value);
+    }
+
+    public void setupThermalLaser(Entity entity, ThermalLaserGeometry data) {
+        final Node node = getNode(entity);
+
+        final PositionControl positionControl = new  PositionControl(entity, false);
+        final RotationControl rotationControl = new  RotationControl(entity);
+        final Cylinder cyl = new Cylinder(6, 6, 0.2f, 0.2f, 100, true, false);
+
+        final Geometry beam = new Geometry("beam", cyl);
+        beam.setLocalTranslation(0, 0, -100/2f-2.5f);
+        beam.setMaterial(material(ColorRGBA.Yellow, true));
+        beam.addControl(new ThermalLaserControl(entity, cyl));
+
+        final Geometry weapon = new Geometry("weapon", new Cylinder(16, 16, 0.5f, 0.3f, data.length, true, false));
+        weapon.setLocalTranslation(0, 0, -data.length/2f + 0.5f);
+        weapon.setMaterial(material(ColorRGBA.Gray, true));
+        
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            node.addControl(rotationControl);
+
+            attach(node, beam, true);
+            attach(node, weapon, true);
+            return null;
+        }});
+    }
+
+    public void setupForceField(Entity entity, ForceFieldGeometry aThis) {
+        final Node node = getNode(entity);
+        final PositionControl positionControl = new  PositionControl(entity, false);
+        //final RotationControl rotationControl = new  RotationControl(entity);
+
+        final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
+        base.setMaterial(getMaterial("rock09.jpg"));
+        base.setLocalTranslation(0, -0.45f, 0);
+
+        final Geometry dome = new Geometry("dome", new Dome(Vector3f.ZERO, 12, 12, 0.4f, false));
+
+        dome.setLocalTranslation(0, -0.5f, 0);
+        dome.setMaterial(material(ColorRGBA.Blue, true));
+
+        // Create spatial to be the shield
+        final Sphere sphere = new Sphere(30, 30, 15);
+        final Geometry shield = new Geometry("forceshield", sphere);
+        shield.setQueueBucket(Bucket.Transparent); // Remenber to set the queue bucket to transparent for the spatial
+ 
+        // Create ForceShieldControl
+        Material material = new Material(assetManager, "ShaderBlow/MatDefs/ForceShield/ForceShield.j3md");
+        material.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        material.setFloat("MaxDistance", 1);
+
+        ForceFieldControl forceFieldControl = new ForceFieldControl(entity, shield, material);
+        shield.addControl(forceFieldControl); // Add the control to the spatial
+        forceFieldControl.setEffectSize(10f); // Set the effect size
+        forceFieldControl.setColor(new ColorRGBA(0, 0, 1, 1)); // Set effect color
+        forceFieldControl.setVisibility(0.1f); // Set shield visibility.
+ 
+        // Set a texture to the shield
+        forceFieldControl.setTexture(this.assetManager.loadTexture("Textures/fs_texture.png"));
+
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+
+            attach(node, base, true);
+            attach(node, dome, true);
+            attach(node, shield, true);
             return null;
         }});
     }

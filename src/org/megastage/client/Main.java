@@ -6,9 +6,13 @@ import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
 import com.jme3.audio.AudioNode;
+import com.jme3.collision.CollisionResults;
 import com.jme3.light.AmbientLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
+import com.jme3.math.Ray;
+import com.jme3.math.Vector2f;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
@@ -37,7 +41,7 @@ public class Main extends SimpleApplication {
         Main app = new Main();
 
         ClientGlobals.app = app;
-        
+
         app.setSettings(settings);
         app.showSettings = false;
         app.start();
@@ -94,9 +98,7 @@ public class Main extends SimpleApplication {
         ClientGlobals.artemis = new ArtemisState();
         stateManager.attach(ClientGlobals.artemis);
         
-        ClientGlobals.cubesSettings = new CubesSettings(this);
-        ClientGlobals.cubesSettings.setBlockMaterial(CubesTestAssets.getSettings(this).getBlockMaterial());
-        ClientGlobals.cubesSettings.setBlockSize(1);
+        CubesManager.init(this);
         CubesTestAssets.registerBlocks();
 
         createCrosshair();
@@ -126,5 +128,16 @@ public class Main extends SimpleApplication {
         pic.setPosition(settings.getWidth()/2-50, settings.getHeight()/2-50);
         guiNode.attachChild(pic);
     }
+
+    public CollisionResults getRayCastingResults(Node node) {
+        Vector3f origin = cam.getWorldCoordinates(new Vector2f((settings.getWidth() / 2), (settings.getHeight() / 2)), 0.0f);
+        Vector3f direction = cam.getWorldCoordinates(new Vector2f((settings.getWidth() / 2), (settings.getHeight() / 2)), 0.3f);
+        direction.subtractLocal(origin).normalizeLocal();
+        Ray ray = new Ray(origin, direction);
+        CollisionResults results = new CollisionResults();
+        node.collideWith(ray, results);
+        return results;
+    }
     
+
 }

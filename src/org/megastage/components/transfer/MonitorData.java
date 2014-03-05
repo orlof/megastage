@@ -20,6 +20,10 @@ public class MonitorData extends BaseComponent {
 
     @Override
     public void receive(Connection pc, Entity entity) {
+//        Log.info(ID.get(entity));
+//        Log.info("video   [" + ((int) videoAddr) + "] " + video.toString());
+//        Log.info("font    [" + ((int) fontAddr) + "] " + font.toString());
+//        Log.info("palette [" + ((int) paletteAddr) + "] " + palette.toString());
         ClientVideoMemory videoMemory = ClientGlobals.artemis.getComponent(entity, ClientVideoMemory.class);
         videoMemory.update(this);
     }

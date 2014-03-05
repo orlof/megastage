@@ -7,7 +7,9 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.transfer.MonitorData;
+import org.megastage.protocol.Message;
 import org.megastage.protocol.Network;
+import org.megastage.util.ID;
 
 public class VirtualMonitor extends DCPUHardware {
     public MonitorData data = new MonitorData();
@@ -24,12 +26,15 @@ public class VirtualMonitor extends DCPUHardware {
     }
     
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        //Log.info("video   [" + ((int) data.videoAddr) + "] " + data.video.toString());
+        //Log.info("font    [" + ((int) data.fontAddr) + "] " + data.font.toString());
+        //Log.info("palette [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
+        return data.always(entity);
     }
     
     @Override
-    public boolean synchronize() {
+    public Message synchronize(Entity entity) {
         boolean videoChanged = data.videoAddr == 0 ?
                 data.video.update(LEMUtil.defaultVideo):
                 data.video.update(dcpu.ram, data.videoAddr, 384);
@@ -42,16 +47,7 @@ public class VirtualMonitor extends DCPUHardware {
                 data.palette.update(LEMUtil.defaultPalette):
                 data.palette.update(dcpu.ram, data.paletteAddr, 16);
         
-        return videoChanged || fontChanged || paletteChanged;
-    }
-
-    @Override
-    public Network.ComponentMessage create(Entity entity) {
-        Log.trace("video   [" + ((int) data.videoAddr) + "] " + data.video.toString());
-        Log.trace("font    [" + ((int) data.fontAddr) + "] " + data.font.toString());
-        Log.trace("palette [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
-
-        return data.create(entity);
+        return replicateIfTrue(entity, videoChanged || fontChanged || paletteChanged);
     }
 
     @Override

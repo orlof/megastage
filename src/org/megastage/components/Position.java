@@ -1,19 +1,23 @@
 package org.megastage.components;
 
-import org.megastage.components.srv.Velocity;
 import com.artemis.Entity;
 import com.artemis.World;
+import com.cubes.Vector3Int;
 import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.components.gfx.BindTo;
+import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.protocol.Message;
 import org.megastage.util.Globals;
 import org.megastage.util.Mapper;
+import org.megastage.util.Quaternion;
+import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector3d;
 
 public class Position extends BaseComponent {
     public long x, y, z;
-    public boolean dirty;
     
     public Position() {
         super();
@@ -35,13 +39,13 @@ public class Position extends BaseComponent {
     }
 
     @Override
-    public boolean synchronize() {
-        return true;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
-    
+
     @Override
-    public boolean replicate() {
-        return true;
+    public Message synchronize(Entity entity) {
+        return ifDirty(entity);
     }
 
     @Override
@@ -56,15 +60,68 @@ public class Position extends BaseComponent {
     }
     
     public void add(Vector3d vector) {
-        x += Math.round(vector.x);
-        y += Math.round(vector.y);
-        z += Math.round(vector.z);
+        set(x + Math.round(vector.x), 
+                y + Math.round(vector.y),
+                z + Math.round(vector.z));
     }
 
     public void move(Velocity velocity, float time) {
         add(velocity.getPositionChange(time));
     }
     
+    public Vector3d getGlobalCoordinates(Entity entity) {
+        Vector3d coord = getVector3d();
+        
+        BindTo bindTo = Mapper.BIND_TO.get(entity);
+        while(bindTo != null) {
+            entity = ServerGlobals.world.getEntity(bindTo.parent);
+            if(entity == null) return null;
+
+            ShipGeometry sg = Mapper.SHIP_GEOMETRY.get(entity);
+            if(sg != null) {
+                coord = coord.sub(sg.map.getCenter3d());
+                
+                Quaternion shipRot = Mapper.ROTATION.get(entity).getQuaternion4d();
+                coord = coord.multiply(shipRot);
+                
+                Vector3d shipPos = Mapper.POSITION.get(entity).getVector3d();
+                coord = coord.add(shipPos);
+                
+                return coord;
+            }
+            
+// not needed as midle components currently have no position
+//            Position pos = Mapper.POSITION.get(entity);
+//            if(pos != null) {
+//                coord.add(pos.getVector3d());
+//            }
+            bindTo = Mapper.BIND_TO.get(entity);
+        }
+        
+        
+        return coord;
+    }
+    
+    public Vector3d getBlockCoordinates(Entity entity, Vector3Int block, boolean center) {
+        double offset = center ? 0.5: 0.0;
+        
+        Vector3d coord = new Vector3d(block.getX() + offset, block.getY() + offset, block.getZ() + offset);
+        ShipGeometry sg = Mapper.SHIP_GEOMETRY.get(entity);
+        coord = coord.sub(sg.map.getCenter3d());
+
+        Quaternion shipRot = Mapper.ROTATION.get(entity).getQuaternion4d();
+        coord = coord.multiply(shipRot);
+
+        Vector3d shipPos = Mapper.POSITION.get(entity).getVector3d();
+        coord = coord.add(shipPos);
+
+        return coord;
+    }
+            
+    public Vector3d getBaseCoordinates(Entity entity) {
+        return getBlockCoordinates(entity, new Vector3Int(0,0,0), false);
+    }
+            
     public Vector3f getVector3f() {
         return new Vector3f(x / Globals.UNIT_F, y / Globals.UNIT_F, z / Globals.UNIT_F);
     }
@@ -74,13 +131,21 @@ public class Position extends BaseComponent {
     }
     
     public void set(Position pos) {
-        x = pos.x;
-        y = pos.y;
-        z = pos.z;
+        set(pos.x, pos.y, pos.z);
+    }
+
+    public void set(long x, long y, long z) {
+        if(this.x != x || this.y != y || this.z != z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.dirty = true;
+        }
     }
 
     @Override
     public String toString() {
         return "Position(" + x + ", " + y + ", " + z + ", " + dirty + ")";
     }
+
 }

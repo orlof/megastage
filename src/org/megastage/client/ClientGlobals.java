@@ -1,7 +1,6 @@
 package org.megastage.client;
 
 import com.artemis.Entity;
-import com.cubes.CubesSettings;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import org.megastage.protocol.UserCommand;
@@ -30,7 +29,6 @@ public class ClientGlobals {
 
     public static GraphicsSettings gfxSettings = GraphicsSettings.HIGH;
     public static double scale = 1000.0;
-    public static CubesSettings cubesSettings;
     public static final UserCommand userCommand = new UserCommand();
     public static Main app;
     public static CommandHandler cmdHandler;

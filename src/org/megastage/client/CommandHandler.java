@@ -1,6 +1,8 @@
 package org.megastage.client;
 
 import com.artemis.Entity;
+import com.cubes.BlockTerrainControl;
+import com.cubes.Vector3Int;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -14,6 +16,7 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import org.megastage.components.Rotation;
+import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
@@ -51,31 +54,57 @@ public class CommandHandler implements AnalogListener, ActionListener {
         "SHIP_YawLeft",
         "SHIP_YawRight",
         "WALK_InvertY",
-        "ITEM_Use",
+        "ITEM_Pick",
+        "ITEM_RightPick",
         "GAME_Exit",
     };
 
-    private void pickItem() {
+    private void pickItem(boolean right) {
         CollisionResults results = new CollisionResults();
         Ray ray = new Ray(ClientGlobals.cam.getLocation(), ClientGlobals.cam.getDirection());
         ClientGlobals.rootNode.collideWith(ray, results);
-        if(results.size() > 0) {
-            CollisionResult closest = results.getClosestCollision();
-            Node target = closest.getGeometry().getParent();
-            
-            Entity entity = null;
-            while(true) {
-                if(target == ClientGlobals.rootNode) {
-                    return;
+        for(int i=0; i < results.size(); i++) {
+            CollisionResult closest = results.getCollision(i);
+            if(!closest.getGeometry().getName().equals("forceshield")) {
+                Node target = closest.getGeometry().getParent();
+
+                Entity entity = null;
+                while(true) {
+                    if(target == ClientGlobals.rootNode) {
+                        return;
+                    }
+
+                    entity = ClientGlobals.spatialManager.getUsableEntity(target, true);
+                    Log.info("Pick entity: " + ID.get(entity));
+                    if(entity != null) break;
+                    target = target.getParent();
                 }
 
-                entity = ClientGlobals.spatialManager.getEntity(target);
-                Log.info("Pick entity: " + ID.get(entity));
-                if(entity != null) break;
-                target = target.getParent();
+                ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(entity);
+                if(geom != null) {
+                    if(entity == ClientGlobals.shipEntity) {
+                        Node offset = (Node) target.getChild("offset");
+                        Vector3Int loc = CubesManager.getCurrentPointedBlockLocation(offset, !right);
+                        if(loc != null) {
+                            BlockTerrainControl ctrl = offset.getControl(BlockTerrainControl.class);
+                            if(!right) {
+                                ClientGlobals.userCommand.build(loc);
+                                //ctrl.setBlock(loc, CubesManager.Combi.class);
+                            } else {
+                                ClientGlobals.userCommand.unbuild(loc);
+                                //ctrl.removeBlock(loc);
+                            }
+                        }
+                    } else {
+                        // TELEPORT
+                        ClientGlobals.userCommand.teleport(entity);
+                        Log.info("TELEPORT");
+                    }
+                } else {
+                    ClientGlobals.userCommand.pickItem(entity);
+                }
+                return;
             }
-
-            ClientGlobals.userCommand.pickItem(entity);
         }
     }
     
@@ -132,17 +161,17 @@ public class CommandHandler implements AnalogListener, ActionListener {
         inputManager.addMapping("WALK_LookUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
         inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
 
-        inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_UP));
-        inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_DOWN));
-        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_LEFT));
-        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_RIGHT));
+        inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_W));
+        inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
+        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_D));
 
-        inputManager.addMapping("SHIP_MoveForward", new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("SHIP_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("SHIP_MoveUp", new KeyTrigger(KeyInput.KEY_Q));
-        inputManager.addMapping("SHIP_MoveDown", new KeyTrigger(KeyInput.KEY_Z));
-        inputManager.addMapping("SHIP_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("SHIP_MoveRight", new KeyTrigger(KeyInput.KEY_D));
+        inputManager.addMapping("SHIP_MoveForward", new KeyTrigger(KeyInput.KEY_UP));
+        inputManager.addMapping("SHIP_MoveBackward", new KeyTrigger(KeyInput.KEY_DOWN));
+        inputManager.addMapping("SHIP_MoveUp", new KeyTrigger(KeyInput.KEY_PGUP));
+        inputManager.addMapping("SHIP_MoveDown", new KeyTrigger(KeyInput.KEY_PGDN));
+        inputManager.addMapping("SHIP_MoveLeft", new KeyTrigger(KeyInput.KEY_LEFT));
+        inputManager.addMapping("SHIP_MoveRight", new KeyTrigger(KeyInput.KEY_RIGHT));
 
         inputManager.addMapping("SHIP_PitchUp", new KeyTrigger(KeyInput.KEY_I));
         inputManager.addMapping("SHIP_PitchDown", new KeyTrigger(KeyInput.KEY_K));
@@ -151,7 +180,8 @@ public class CommandHandler implements AnalogListener, ActionListener {
         inputManager.addMapping("SHIP_YawLeft", new KeyTrigger(KeyInput.KEY_U));
         inputManager.addMapping("SHIP_YawRight", new KeyTrigger(KeyInput.KEY_O));
 
-        inputManager.addMapping("ITEM_Use", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping("ITEM_Pick", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping("ITEM_RightPick", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
 
         inputManager.addListener(this, walkMappings);
@@ -253,11 +283,18 @@ public class CommandHandler implements AnalogListener, ActionListener {
                     invertY = !invertY;
                 }
                 break;
-            case "ITEM_Use":
+            case "ITEM_Pick":
                 // Toggle on the up.
                 if (!value) {
                     //initDCPUMode();
-                    pickItem();
+                    pickItem(false);
+                }
+                break;
+            case "ITEM_RightPick":
+                // Toggle on the up.
+                if (!value) {
+                    //initDCPUMode();
+                    pickItem(true);
                 }
                 break;
             case "DCPU_Exit":

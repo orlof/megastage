@@ -2,20 +2,19 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
-import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.Explosion;
 import org.megastage.components.transfer.GyroscopeData;
-import org.megastage.protocol.Network;
+import org.megastage.protocol.Message;
 import org.megastage.util.Vector3d;
 
 public class VirtualGyroscope extends DCPUHardware {
-    public static final char STATUS_OFF = 0;
-    public static final char STATUS_ON = 1;
-    public static final char STATUS_NO_POWER = 2;
+    public static transient final char STATUS_OFF = 0;
+    public static transient final char STATUS_ON = 1;
+    public static transient final char STATUS_NO_POWER = 2;
 
     public Vector3d axis;
 
@@ -24,7 +23,7 @@ public class VirtualGyroscope extends DCPUHardware {
 
     public char   power = 0;
 
-    public long   inertiaTime;
+    public int    mapVersion;
     public double inertia;
 
     @Override
@@ -85,52 +84,28 @@ public class VirtualGyroscope extends DCPUHardware {
     }
     
     public double getRotation(ShipGeometry geom) {
-        if(inertiaTime < geom.updateTime) {
+        if(mapVersion < geom.map.version) {
             //TODO this is huge perf problem, inertia change should be 
             //     calculated only for changed block
-            inertiaTime = geom.updateTime;
+            mapVersion = geom.map.version;
             inertia = geom.getInertia(axis);
         }
         
         return curTorque / inertia;
     }
     
-    public static void main(String[] args) throws Exception {
-        VirtualGyroscope gyro = new VirtualGyroscope();
-        gyro.maxTorque = 100;
-        
-        gyro.setTorque((char) 0x0000);
-        System.out.println((int) gyro.power);
-        System.out.println(gyro.curTorque);
-    
-        gyro.setTorque((char) 0x7fff);
-        System.out.println((int) gyro.power);
-        System.out.println(gyro.curTorque);
-        
-        gyro.setTorque((char) 0x8000);
-        System.out.println((int) gyro.power);
-        System.out.println(gyro.curTorque);
-    }
-
-    private boolean dirty = false;
-
     @Override
-    public Network.ComponentMessage create(Entity entity) {
+    public Message replicate(Entity entity) {
         dirty = false;
 
         GyroscopeData data = new GyroscopeData();
         data.power = power;
 
-        return data.create(entity);
-    }
-
-    @Override
-    public boolean replicate() {
-        return true;
+        return data.always(entity);
     }
     
     @Override
-    public boolean synchronize() {
-        return dirty;
+    public Message synchronize(Entity entity) {
+        return replicateIfDirty(entity);
     }
 }

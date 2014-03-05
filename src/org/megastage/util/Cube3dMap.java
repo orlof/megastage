@@ -4,8 +4,16 @@
  */
 package org.megastage.util;
 
+import com.artemis.Entity;
+import com.badlogic.gdx.utils.Array;
 import com.cubes.Vector3Int;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.minlog.Log;
 import com.jme3.math.Vector3f;
+import java.util.LinkedList;
+import org.megastage.client.ClientGlobals;
+import org.megastage.components.BaseComponent;
+import org.megastage.protocol.Message;
 
 
 /**
@@ -13,12 +21,23 @@ import com.jme3.math.Vector3f;
  * @author Orlof
  */
 public class Cube3dMap {
-    private final static int INITIAL_CAPACITY = 16;
+    private final static transient int INITIAL_CAPACITY = 16;
 
     public char[][][] data;
     public int xsize, ysize, zsize;
     public int xtotal, ytotal, ztotal;
     public int count;
+    public int version = 0;
+    
+    public transient LinkedList<BlockChange> pending;
+    
+    public void trackChanges() {
+        pending = new LinkedList<>();
+    }
+
+    public char get(Vector3Int block) {
+        return get(block.getX(), block.getY(), block.getZ());
+    }
     
     public char get(int x, int y, int z) {
         if(data == null || x < 0 || data.length <= x) {
@@ -35,8 +54,14 @@ public class Cube3dMap {
         return ydata[z];
     }
 
-    public void set(int x, int y, int z, char value) {
-        if(value == '#') {
+    public void set(int x, int y, int z, char value, char event) {
+        char old = get(x, y, z);
+        
+        if(value == old) {
+            return;
+        }
+        
+        if(value != 0) {
             if(x > xsize) xsize = x;
             if(y > ysize) ysize = y;
             if(z > zsize) zsize = z;
@@ -46,6 +71,12 @@ public class Cube3dMap {
             ztotal += z;
 
             count++;
+        } else {
+            xtotal -= x;
+            ytotal -= y;
+            ztotal -= z;
+            
+            count--;
         }
         
         if(data == null || data.length <= x) {
@@ -73,12 +104,10 @@ public class Cube3dMap {
         }
 
         data[x][y][z] = value;
+        if(pending != null) pending.add(new BlockChange(x, y, z, value, event));
+        version++;
     }
 
-    public Vector3Int getChunkSizes() {
-        return new Vector3Int(xsize / 16 + 1, ysize / 256 + 1, zsize / 16 + 1);
-    }
-    
     public Vector3f getCenter() {
         return new Vector3f(
                 getCenter(xtotal),
@@ -90,18 +119,29 @@ public class Cube3dMap {
         return total / count + 0.5f;
     }
 
+    public Vector3d getCenter3d() {
+        return new Vector3d(
+                getCenter3d(xtotal),
+                getCenter3d(ytotal),
+                getCenter3d(ztotal));
+    }
+    
+    private double getCenter3d(double total) {
+        return total / count + 0.5f;
+    }
+
     private int getNewCapacity(char[][][] arr, int index) {
-        if(arr == null) return INITIAL_CAPACITY;
+        if(arr == null) return calcNewCapacity(INITIAL_CAPACITY, index);
         return calcNewCapacity(arr.length, index);
     }
 
     private int getNewCapacity(char[][] arr, int index) {
-        if(arr == null) return INITIAL_CAPACITY;
+        if(arr == null) return calcNewCapacity(INITIAL_CAPACITY, index);
         return calcNewCapacity(arr.length, index);
     }
 
     private int getNewCapacity(char[] arr, int index) {
-        if(arr == null) return INITIAL_CAPACITY;
+        if(arr == null) return calcNewCapacity(INITIAL_CAPACITY, index);
         return calcNewCapacity(arr.length, index);
     }
 
@@ -113,7 +153,7 @@ public class Cube3dMap {
         return capacity;
     }
 
-    public double getBoundingSphere() {
+    public double getCollisionRadius() {
         return getCenter().length();
     }
 
@@ -145,4 +185,38 @@ public class Cube3dMap {
         
         return inertia;
     }
+    
+    public static class BlockChange extends BaseComponent {
+        public static final transient char UNBUILD = 0;
+        public static final transient char BREAK = 1;
+        public static final transient char BUILD = 2;
+        
+        public int x, y, z;
+        public char type;
+        public char event;
+
+        public BlockChange() {}
+        
+        private BlockChange(int x, int y, int z, char value, char event) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.type = value;
+            this.event = event;
+        }
+
+        @Override
+        public void receive(Connection pc, Entity entity) {
+            Log.info(ID.get(entity) + toString());
+            ClientGlobals.spatialManager.updateShipBlock(entity, this);
+        }
+
+        @Override
+        public String toString() {
+            return "BlockChange{" + "x=" + x + ", y=" + y + ", z=" + z + ", type=" + (int) type + ", event=" + (int) event + '}';
+        }
+
+        
+    }
 }
+

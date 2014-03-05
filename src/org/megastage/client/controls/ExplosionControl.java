@@ -5,6 +5,7 @@ import com.jme3.audio.AudioNode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import org.megastage.components.Explosion;
 public class ExplosionControl extends AbstractControl {
     private final ExplosionNode node;
     private final Explosion explosion;
+    private int state = -1;
 
     public ExplosionControl(Explosion explosion, ExplosionNode node) {
         this.explosion = explosion;
@@ -24,9 +26,10 @@ public class ExplosionControl extends AbstractControl {
     
     @Override
     protected void controlUpdate(float tpf) {
-        if(explosion.clientState != explosion.serverState) {
-            explosion.clientState = explosion.serverState;
-            switch(explosion.clientState) {
+        while(state < explosion.state) {
+            state++;
+            Log.info("Render explosion state: "+ state + "/" + explosion.state);
+            switch(state) {
                 case 0:
                     break;
                 case 1:
@@ -52,10 +55,14 @@ public class ExplosionControl extends AbstractControl {
                     node.light.setRadius(10000);
                     break;
                 case 4:
-                    List<Spatial> children = new ArrayList<>( node.getParent().getChildren() );
+                    Node shipNode = node.getParent();
+                    List<Spatial> children = new ArrayList<>( shipNode.getChildren() );
                     for(Spatial s: children) {
                         if(s != spatial) {
+                            Log.info("remove: " + s.getName() + " from " + shipNode.getName());
                             s.removeFromParent();
+                        } else {
+                            Log.info("don't remove: " + s.getName() + " from " + shipNode.getName());
                         }
                     }
                     break;

@@ -3,9 +3,9 @@ package org.megastage.components;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
+import org.megastage.protocol.Message;
 import org.megastage.util.Mapper;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
@@ -18,7 +18,6 @@ import org.megastage.util.Vector3d;
  */
 public class Rotation extends BaseComponent {
     public double x=0, y=0, z=0, w=1;
-    public boolean dirty = true;
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
@@ -34,8 +33,14 @@ public class Rotation extends BaseComponent {
         return null;
     }
 
-    public boolean synchronize() {
-        return true;
+    @Override
+    public Message replicate(Entity entity) {
+        return always(entity);
+    }
+
+    @Override
+    public Message synchronize(Entity entity) {
+        return ifDirty(entity);
     }
     
     @Override
@@ -73,28 +78,23 @@ public class Rotation extends BaseComponent {
     }
     
     public void set(Quaternion q) {
-        x = q.x;
-        y = q.y;
-        z = q.z;
-        w = q.w;
+        set(q.x, q.y, q.z, q.w);
     }
     
     public void set(com.jme3.math.Quaternion q) {
-        x = q.getX();
-        y = q.getY();
-        z = q.getZ();
-        w = q.getW();
-
-        dirty = true;
+        set(q.getX(), q.getY(), q.getZ(), q.getW());
     }
     
     public void set(Rotation rot) {
-        if(x != rot.x || y != rot.y || z != rot.z || w != rot.w) {
-            x = rot.x;
-            y = rot.y;
-            z = rot.z;
-            w = rot.w;
-
+        set(rot.x, rot.y, rot.z, rot.w);
+    }
+    
+    public void set(double x, double y, double z, double w) {
+        if(this.x != x || this.y != y || this.z != z || this.w != w) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
             dirty = true;
         }
     }

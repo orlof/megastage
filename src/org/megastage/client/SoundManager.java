@@ -11,6 +11,9 @@ public class SoundManager {
     public static final int SPACE_ENGINE = 3;
     public static final int FANFARE = 4;
     public static final int EXPLOSION = 5;
+    public static final int LASER_BEAM = 6;
+    public static final int FORCE_FIELD = 7;
+    public static final int EXPLOSION_3 = 8;
     
     private static AudioData[] audioData;
     
@@ -23,7 +26,10 @@ public class SoundManager {
             new AudioData("retro-computer.ogg", false),
             new AudioData("space-engine.ogg", false),
             new AudioData("fanfare.ogg", true),
-            new AudioData("explosion.ogg", false)
+            new AudioData("explosion.ogg", false),
+            new AudioData("syncopated-laser.wav", false),
+            null,
+            new AudioData("explosion3.wav", false)
         };
     }
     

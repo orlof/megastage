@@ -5,6 +5,7 @@ import com.artemis.World;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
+import org.megastage.protocol.Message;
 
 /**
  * MegaStage
@@ -13,6 +14,8 @@ import org.megastage.components.BaseComponent;
  * Time: 20:58
  */
 public class Identifier extends BaseComponent {
+    public String name;
+
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         name = element.getAttributeValue("name");
@@ -21,11 +24,9 @@ public class Identifier extends BaseComponent {
     }
 
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        return always(entity);
     }
-
-    public String name;
 
     public String toString() {
         return "Identifier(" + name + ")";

@@ -7,6 +7,8 @@ import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
+import org.megastage.protocol.Message;
+import org.megastage.protocol.Network.ComponentMessage;
 import org.megastage.util.Globals;
 import org.megastage.util.Mapper;
 import org.megastage.util.Vector3d;
@@ -28,7 +30,7 @@ public class Orbit extends BaseComponent {
         center = parent.id;
         distance = getDoubleValue(element, "orbital_distance", 0.0);
 
-        return new BaseComponent[] { new PrevPosition() };
+        return null;
     }
 
     @Override
@@ -37,11 +39,12 @@ public class Orbit extends BaseComponent {
         angularSpeed = getAngularSpeed(mass);        
     }
     
-    @Override
-    public boolean replicate() {
-        return true;
-    }
     
+    @Override
+    public Message replicate(Entity entity) {
+        return new ComponentMessage(entity, this);
+    }
+
     @Override
     public void receive(Connection pc, Entity entity) {
         center = ClientGlobals.artemis.toClientEntity(center).id;
@@ -64,7 +67,7 @@ public class Orbit extends BaseComponent {
         return Math.sqrt(centerMass * Globals.G / distance);
     }
     
-    public Vector3d getLocalCoordinates(double time, double centerMass) {
+    public Vector3d getLocalCoordinates(double time) {
         double angle = angularSpeed * time;
         return new Vector3d(
                 distance * Math.sin(angle),
@@ -82,6 +85,7 @@ public class Orbit extends BaseComponent {
         );
     }
 
+    @Override
     public String toString() {
         return "Orbit(" + center + ", " + distance + ", " + (2*Math.PI) / angularSpeed + ")";
     }

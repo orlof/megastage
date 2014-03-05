@@ -1,0 +1,52 @@
+<Ender innovations>
+"It's alive! Dear lord almighty, it's alive!"
+
+Name: TLW-16
+(Thermal Laser Weapon)
+Version: 16
+ID: 0xEEFA0000
+Manufacturer: 0xE142A1FA (Ender innov.)
+
+About: This device is the most basic, accurate, and least powerful of the 
+current conventional space weaponry market.
+
+It's damage is directly proportional to the power input and it's damage 
+decreases linearly over very large distances. 
+
+It has no penetration or electromagnetic damage, it is pure heat damage. 
+
+Luckily it can make up for it's lack of penetration by the fact that one can 
+input a LOT of energy to boost the damage through the roof.
+
+Turret mount not included.
+
+A - behavior
+
+0 GET_STATUS 
+
+Sets B to the status code and C to the latest error since last check.
+
+1 SET_WATTAGE 
+
+Sets the amount of power being allocated to the laser to B kilowatts, 
+the maximum wattage is 5000 kilowatts and any values over that will be ignored 
+by the hardware.
+
+2 FIRE_WEAPON 
+
+Fires the weapon for B/10 seconds during which time it will draw out it's set 
+wattage from the ship, 
+
+After that it will cool down for [wattage * seconds / 100] seconds. 
+DO NOT FIRE FOR MORE THAN 30 SECONDS. You have been warned.
+
+Status codes:
+0x0: dormant
+0x1: firing
+0x2: cooldown
+
+Error codes:
+0x0: nominal
+0x1: not enough energy
+0x2: overheated
+0xF: maybe possibly seriously broken.

@@ -32,7 +32,11 @@ public class ImposterPositionControl extends AbstractControl {
         Position position = Mapper.POSITION.get(entity);
         if(position != null) {
             Vector3d coord = position.getVector3d();
-            Vector3d origo = Mapper.POSITION.get(ClientGlobals.shipEntity).getVector3d();
+            
+            Position origoPos = Mapper.POSITION.get(ClientGlobals.shipEntity);
+            if(origoPos == null) return;
+            
+            Vector3d origo = origoPos.getVector3d();
             
             Vector3d line = coord.sub(origo);
 

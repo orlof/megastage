@@ -45,22 +45,26 @@ public class PositionControl extends AbstractControl {
             return;
         }
 
+        if(interpolator == null) {
+            spatial.setLocalTranslation(pos.getVector3f());
+            return;
+        }
+
         if(pos.dirty) {
             // position updated
             pos.dirty = false;
 
-            if(interpolator == null) {
-                spatial.setLocalTranslation(pos.getVector3f());
-                return;
-            }
+            Vector3f cpos = spatial.getLocalTranslation();
+            Vector3f tpos = pos.getVector3f();
             
-            long duration = Time.value - lastUpdateTime; 
+            long duration = 
+                    (cpos.x == 0f && cpos.y == 0f && cpos.z == 0f) ? 
+                    0: Time.value - lastUpdateTime; 
+            if(duration > 100) duration = 100;
+            
             lastUpdateTime = Time.value;
 
-            Vector3f curpos = spatial.getLocalTranslation();
-            Vector3f tgtpos = pos.getVector3f();
-            
-            interpolator.update(Time.value, Time.value + duration, curpos, tgtpos);
+            interpolator.update(Time.value, Time.value + duration, cpos, tpos);
         }
         
         interpolator.apply();
@@ -90,13 +94,13 @@ public class PositionControl extends AbstractControl {
         }
 
         public final void apply() {
-            if( Time.value <= startTime) {
-                spatial.setLocalTranslation((float) sx, (float) sy, (float) sz);
+            if( Time.value >= endTime) {
+                spatial.setLocalTranslation((float) ex, (float) ey, (float) ez);
                 return;
             } 
             
-            if( Time.value >= endTime) {
-                spatial.setLocalTranslation((float) ex, (float) ey, (float) ez);
+            if( Time.value <= startTime) {
+                spatial.setLocalTranslation((float) sx, (float) sy, (float) sz);
                 return;
             } 
             
@@ -108,6 +112,7 @@ public class PositionControl extends AbstractControl {
             double z = sz + dz * part;
 
             spatial.setLocalTranslation((float) x, (float) y, (float) z);
+            Log.trace(x + ", " + y + ", " + z);
         }
     }
     

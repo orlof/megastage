@@ -43,6 +43,12 @@ public class Vector3d {
         this.z = vec.z;
     }
 
+    public Vector3d(Vector3f vec) {
+        this.x = vec.x;
+        this.y = vec.y;
+        this.z = vec.z;
+    }
+
     // return a string representation of the invoking object
     public String toString() {
         return "[" + x + ", " + y + ", " + z + "]";
@@ -115,6 +121,11 @@ public class Vector3d {
         return numerator.length() / length();
     }
 
+    public double distanceToPointSquared(Vector3d point) {
+        Vector3d numerator = cross(point.negate());
+        return numerator.lengthSquared() / lengthSquared();
+    }
+
     public double length() {
         return Math.sqrt(lengthSquared());
     }
@@ -138,4 +149,15 @@ public class Vector3d {
     public Vector3f getVector3f() {
         return new Vector3f((float) x, (float) y, (float) z);
     }
-}
+    
+    public static void main(String args[]) throws Exception {
+        Vector3d line = new Vector3d(1, 0, 0);
+        long start = System.currentTimeMillis();
+        for(int i=0;i<1000000;i++)  
+            line.distanceToPoint(new Vector3d(10,2,0));
+        System.out.println(System.currentTimeMillis() - start);
+    }
+
+
+
+} 

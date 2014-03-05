@@ -20,14 +20,13 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
 
     @Override
     public void initialize() {
-        
         videoMemoryMapper = world.getMapper(ClientVideoMemory.class);
         rasterComponentMapper = world.getMapper(ClientRaster.class);
     }
 
     protected void process(Entity entity) {
         ClientVideoMemory videoMemory = videoMemoryMapper.get(entity);
-
+        
         boolean blink = true;
         
         if(ClientGlobals.gfxSettings.ENABLE_LEM_BLINKING) {

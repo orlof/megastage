@@ -1,7 +1,6 @@
-Megastage v0.2
-==============
-<i>Random ECS experiments inspired by DCPU</i>
-
+Megastage
+=========
+<i>We only stare at the stars while we should walk among them</i>
 
 BACKGROUND
 

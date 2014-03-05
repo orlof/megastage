@@ -16,16 +16,44 @@ import java.util.Random;
 import org.megastage.util.Globals;
 
 public class Test extends SimpleApplication {
+    
+    static class A {
+        public static int q=1;
+        public int r() {
+            return r1();
+        }
+        
+        public int r1() {
+            return 1;
+        }
+        
+        public void f() {
+            System.out.println(getClass());
+        }
+    }
 
+    static class B extends A {
+        B() {
+            q=2;
+        }
+        public int r1() {
+            return 2;
+        }
+    }
+    
     public static void main(String[] args) {
-        calc(1,1,-1, "right up forward"); // ruf
-        //calc(1,-1,-1, "right down forward"); // rdf
-        calc(1,1,1, "right up back"); // rub
-        //calc(1,-1,1, "right down back"); // rdb
-        calc(-1,1,-1, "left up forward"); // ruf
-        //calc(-1,-1,-1, "left down forward"); // rdf
-        calc(-1,1,1, "left up back"); // rub
-        //calc(-1,-1,1, "left down back"); // rdb
+        A a = new B();
+        System.out.println(A.q);
+        System.out.println(B.q);
+        
+//        calc(1,1,-1, "right up forward"); // ruf
+//        //calc(1,-1,-1, "right down forward"); // rdf
+//        calc(1,1,1, "right up back"); // rub
+//        //calc(1,-1,1, "right down back"); // rdb
+//        calc(-1,1,-1, "left up forward"); // ruf
+//        //calc(-1,-1,-1, "left down forward"); // rdf
+//        calc(-1,1,1, "left up back"); // rub
+//        //calc(-1,-1,1, "left down back"); // rdb
     }
 
     public static void calc(double x, double y, double z, String name) {

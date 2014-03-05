@@ -2,16 +2,16 @@ package org.megastage.util;
 
 import com.artemis.ComponentMapper;
 import com.artemis.World;
+import org.megastage.components.CollisionSphere;
+import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
 import org.megastage.components.Mass;
 import org.megastage.components.Mode;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
-import org.megastage.components.PrevPosition;
 import org.megastage.components.Rotation;
 import org.megastage.components.SpawnPoint;
 import org.megastage.components.UsableFlag;
-import org.megastage.components.client.ClientVideoMemory;
 import org.megastage.components.dcpu.DCPU;
 import org.megastage.components.dcpu.VirtualEngine;
 import org.megastage.components.dcpu.VirtualGyroscope;
@@ -21,17 +21,27 @@ import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.srv.Acceleration;
 import org.megastage.components.srv.Identifier;
-import org.megastage.components.srv.Velocity;
+import org.megastage.components.srv.SphereOfInfluence;
+import org.megastage.components.Velocity;
+import org.megastage.components.dcpu.VirtualForceField;
+import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.components.transfer.EngineData;
+import org.megastage.components.transfer.ForceFieldData;
 import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.components.transfer.RadarTargetData;
+import org.megastage.components.transfer.ThermalLaserData;
 
 public class Mapper {
+    public static ComponentMapper<VirtualForceField> VIRTUAL_FORCE_FIELD;
+    public static ComponentMapper<ForceFieldData> FORCE_FIELD_DATA;
+    public static ComponentMapper<CollisionSphere> COLLISION_SPHERE;
+    public static ComponentMapper<VirtualThermalLaser> VIRTUAL_THERMAL_LASER;
+    public static ComponentMapper<DeleteFlag> DELETE_FLAG;
     public static ComponentMapper<Acceleration> ACCELERATION;
     public static ComponentMapper<Position> POSITION;
-    public static ComponentMapper<PrevPosition> PREV_POSITION;
     public static ComponentMapper<Rotation> ROTATION;
     public static ComponentMapper<UsableFlag> USABLE_FLAG;
+    public static ComponentMapper<ThermalLaserData> THERMAL_LASER_DATA;
     public static ComponentMapper<EngineData> ENGINE_DATA;
     public static ComponentMapper<GyroscopeData> GYROSCOPE_DATA;
     public static ComponentMapper<RadarTargetData> RADAR_TARGET_DATA;
@@ -49,17 +59,23 @@ public class Mapper {
     public static ComponentMapper<SpawnPoint> SPAWN_POINT;
     public static ComponentMapper<ShipGeometry> SHIP_GEOMETRY;
     public static ComponentMapper<Mode> MODE;
+    public static ComponentMapper<SphereOfInfluence> SPHERE_OF_INFLUENCE;
 
     public static void init(World world) {
+        VIRTUAL_FORCE_FIELD = world.getMapper(VirtualForceField.class);
+        FORCE_FIELD_DATA = world.getMapper(ForceFieldData.class);
+        COLLISION_SPHERE = world.getMapper(CollisionSphere.class);
+        VIRTUAL_THERMAL_LASER = world.getMapper(VirtualThermalLaser.class);
+        DELETE_FLAG = world.getMapper(DeleteFlag.class);
         ACCELERATION = world.getMapper(Acceleration.class);
         POSITION = world.getMapper(Position.class);
-        PREV_POSITION = world.getMapper(PrevPosition.class);
         ROTATION = world.getMapper(Rotation.class);
         VELOCITY = world.getMapper(Velocity.class);
         USABLE_FLAG = world.getMapper(UsableFlag.class);
         ENGINE_DATA = world.getMapper(EngineData.class);
         GYROSCOPE_DATA = world.getMapper(GyroscopeData.class);
         RADAR_TARGET_DATA = world.getMapper(RadarTargetData.class);
+        THERMAL_LASER_DATA = world.getMapper(ThermalLaserData.class);
         EXPLOSION = world.getMapper(Explosion.class);
         MASS = world.getMapper(Mass.class);
         DCPU = world.getMapper(DCPU.class);
@@ -73,5 +89,6 @@ public class Mapper {
         SPAWN_POINT = world.getMapper(SpawnPoint.class);
         SHIP_GEOMETRY = world.getMapper(ShipGeometry.class);
         MODE = world.getMapper(Mode.class);
+        SPHERE_OF_INFLUENCE = world.getMapper(SphereOfInfluence.class);
     }
 }

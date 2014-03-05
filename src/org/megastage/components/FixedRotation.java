@@ -5,6 +5,8 @@ import com.artemis.World;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import static org.megastage.components.BaseComponent.getDoubleValue;
+import org.megastage.protocol.Message;
+import org.megastage.protocol.Network.ComponentMessage;
 
 /**
  * MegaStage
@@ -29,8 +31,8 @@ public class FixedRotation extends BaseComponent {
     }
 
     @Override
-    public boolean replicate() {
-        return true;
+    public Message replicate(Entity entity) {
+        return new ComponentMessage(entity, this);
     }
     
     public double getX(long time) {
