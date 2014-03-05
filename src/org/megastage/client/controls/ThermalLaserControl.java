@@ -9,10 +9,12 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.shape.Cylinder;
+import com.jme3.scene.shape.Sphere;
 import com.shaderblow.forceshield.ForceShieldControl;
 import org.megastage.client.ClientGlobals;
 import org.megastage.client.SoundManager;
@@ -78,6 +80,18 @@ public class ThermalLaserControl extends AbstractControl {
                 for(CollisionResult cr: crs) {
                     if(cr.getGeometry().getCullHint() == Spatial.CullHint.Always) {
                         continue;
+                    }
+                    
+                    Geometry geom = cr.getGeometry();
+                    if(geom.getName().equals("forceshield")) {
+                        float dist = spatial.getParent().getWorldTranslation().distance(geom.getWorldTranslation());
+                        Log.info(spatial.getParent().getWorldTranslation().toString());
+                        Log.info(geom.getWorldTranslation().toString());
+                        float rad = ((Sphere) geom.getMesh()).getRadius();
+                        Log.info(ID.get(entity) + dist + " < " + rad);
+                        if(dist < rad) {
+                            continue;
+                        }
                     }
                     
                     if(cr.getDistance() < distance) {

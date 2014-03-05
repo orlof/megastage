@@ -45,7 +45,7 @@ public class Game {
         //world.setSystem(new ServerEngineTestSystem(5000));
         //world.setSystem(new ServerGyroTestSystem(5000));
         //world.setSystem(new ServerRadarTestSystem(5000));
-        //world.setSystem(new ThermalLaserTestSystem(100));
+        world.setSystem(new ThermalLaserTestSystem(100));
         world.setSystem(new EntityInitializeSystem(500));
         world.setSystem(new CleanupSystem(500));
         world.setSystem(new EntityDeleteSystem(50));

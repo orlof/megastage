@@ -736,9 +736,13 @@ public class SpatialManager {
 
     public void setupForceField(Entity entity, ForceFieldGeometry aThis) {
         final Node node = getNode(entity);
-
         final PositionControl positionControl = new  PositionControl(entity, false);
         //final RotationControl rotationControl = new  RotationControl(entity);
+
+        final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
+        base.setMaterial(getMaterial("rock09.jpg"));
+        base.setLocalTranslation(0, -0.45f, 0);
+
         final Geometry dome = new Geometry("dome", new Dome(Vector3f.ZERO, 12, 12, 0.4f, false));
 
         dome.setLocalTranslation(0, -0.5f, 0);
@@ -753,6 +757,7 @@ public class SpatialManager {
         Material material = new Material(assetManager, "ShaderBlow/MatDefs/ForceShield/ForceShield.j3md");
         material.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         material.setFloat("MaxDistance", 1);
+
         ForceFieldControl forceFieldControl = new ForceFieldControl(entity, shield, material);
         shield.addControl(forceFieldControl); // Add the control to the spatial
         forceFieldControl.setEffectSize(10f); // Set the effect size
@@ -761,14 +766,13 @@ public class SpatialManager {
  
         // Set a texture to the shield
         forceFieldControl.setTexture(this.assetManager.loadTexture("Textures/fs_texture.png"));
- 
+
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
             node.addControl(positionControl);
-            //node.addControl(rotationControl);
 
+            attach(node, base, true);
             attach(node, dome, true);
             attach(node, shield, true);
-            //attach(node, weapon, true);
             return null;
         }});
     }

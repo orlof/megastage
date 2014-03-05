@@ -126,7 +126,7 @@
           <map y="1" x="012345678901234"/>
             <map z="00">               </map>
             <map z="01">               </map>
-            <map z="02">               </map>
+            <map z="02">       F       </map>
             <map z="03">      LLL      </map>
             <map z="04">P             R</map>
             <map z="05">               </map>
@@ -260,7 +260,7 @@
                 <group name="replicate"/>
             </entity>
             <entity name="ForceField">
-                <component type="Position" dx="6" dy="1" dz="2"/>
+                <component type="Position" dx="7" dy="1" dz="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="CollisionSphere" radius="15"/>
                 <component type="dcpu.VirtualForceField" energy="5000" max_energy="10000"/>
@@ -399,7 +399,7 @@
           <map y="1" x="012345678901234"/>
             <map z="00">               </map>
             <map z="01">               </map>
-            <map z="02">               </map>
+            <map z="02">       F       </map>
             <map z="03">      LLL      </map>
             <map z="04">P             R</map>
             <map z="05">               </map>
@@ -560,7 +560,7 @@
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <group name="replicate"/>
             </entity>
-            <!--entity name="ThermalLaser">
+            <entity name="ThermalLaser">
                 <component type="dcpu.VirtualThermalLaser" />
                 <component type="Position" dx="14" dy="0" dz="2"/>
                 <component type="gfx.ThermalLaserGeometry"/>
@@ -568,7 +568,17 @@
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <group name="replicate"/>
-            </entity-->
+            </entity>
+            <entity name="ForceField">
+                <component type="Position" dx="7" dy="1" dz="2"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="CollisionSphere" radius="15"/>
+                <component type="dcpu.VirtualForceField" energy="5000" max_energy="10000"/>
+                <component type="gfx.ForceFieldGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="srv.SynchronizeFlag"/>
+                <group name="replicate"/>
+            </entity>
             <entity name="Gyroscope x">
                 <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" torque="600000"/>
                 <component type="gfx.GyroscopeGeometry"/>

@@ -59,7 +59,7 @@ public class TargetManager {
             Hit hit = Hit.create(target, attackVector, vtlComponent.range);
 
             if(hit.distance < bestHit.distance) {
-                Log.info("new hit selected: " + bestHit.toString() + " becomes " + hit.toString());
+                //Log.info("new hit selected: " + bestHit.toString() + " becomes " + hit.toString());
                 bestHit = hit;
             }
         }

@@ -81,11 +81,14 @@
     <include name="server.bat"/>
     <include name="client.bat"/>
     <include name="full.bat"/>
+  </fileset>
+  <fileset dir="">
     <include name="world.xml"/>
     <include name="bootrom.bin"/>
     <include name="font.png"/>
     <include name="boot.png"/>
   </fileset>
-</copy></target>
+</copy>
+</target>
 
 </project>
