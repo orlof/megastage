@@ -94,10 +94,6 @@ public class VirtualRadar extends DCPUHardware {
     private boolean storeRadarSignatures() {
         Array<RadarSignal> signals = RadarManager.getRadarSignals(ship);
 
-        for(RadarSignal s: signals) {
-            Log.info(s.toString());
-        }
-        
         writeSignalsToMemory(dcpu.ram, dcpu.registers[1], signals);
         return true;
     }
@@ -150,7 +146,7 @@ public class VirtualRadar extends DCPUHardware {
 
     public void setTrackingTarget(Entity entity) {
         if(target != entity) {
-            Log.info(ID.get(entity));
+            //Log.info(ID.get(entity));
 
             target = entity;
             dirty = true;
@@ -163,7 +159,7 @@ public class VirtualRadar extends DCPUHardware {
 
         // target mass
         int mass = (int) Mapper.MASS.get(target).mass;
-        Log.info("MASS: " + mass);
+        //Log.info("MASS: " + mass);
 
         mem[ptr++] = (char) ((mass >> 16) & 0xffff);
         mem[ptr++] = (char) (mass & 0xffff);
@@ -173,7 +169,7 @@ public class VirtualRadar extends DCPUHardware {
         Vector3d othCoord = Mapper.POSITION.get(target).getVector3d();
         
         int distance = (int) Math.round(ownCoord.distance(othCoord));
-        Log.info("DISTANCE: " + distance);
+        //Log.info("DISTANCE: " + distance);
         
         mem[ptr++] = (char) ((distance >> 16) & 0xffff);
         mem[ptr++] = (char) (distance & 0xffff);

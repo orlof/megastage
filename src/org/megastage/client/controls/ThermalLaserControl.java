@@ -51,7 +51,7 @@ public class ThermalLaserControl extends AbstractControl {
         } else {
             if(status != data.status) {
                 status = data.status;
-                Log.info(ID.get(entity) + "status=" + (int) status);
+                //Log.info(ID.get(entity) + "status=" + (int) status);
                 switch(data.status) {
                     case VirtualThermalLaser.STATUS_FIRING:
                         an.play();
@@ -85,10 +85,10 @@ public class ThermalLaserControl extends AbstractControl {
                     Geometry geom = cr.getGeometry();
                     if(geom.getName().equals("forceshield")) {
                         float dist = spatial.getParent().getWorldTranslation().distance(geom.getWorldTranslation());
-                        Log.info(spatial.getParent().getWorldTranslation().toString());
-                        Log.info(geom.getWorldTranslation().toString());
+                        //Log.info(spatial.getParent().getWorldTranslation().toString());
+                        //Log.info(geom.getWorldTranslation().toString());
                         float rad = ((Sphere) geom.getMesh()).getRadius();
-                        Log.info(ID.get(entity) + dist + " < " + rad);
+                        //Log.info(ID.get(entity) + dist + " < " + rad);
                         if(dist < rad) {
                             continue;
                         }

@@ -97,7 +97,9 @@ public class PlanetAppState extends AbstractAppState {
             farBloom.setExposureCutOff(0.1f);
             farBloom.setBloomIntensity(1.45f);
             farFilter.addFilter(farBloom);
-        }
+
+            BloomFilter bloom= new BloomFilter(BloomFilter.GlowMode.Objects);        
+            farFilter.addFilter(bloom);        }
     }
 
     @Override

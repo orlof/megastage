@@ -111,8 +111,8 @@ public abstract class DCPUHardware extends BaseComponent {
         double pitch = Math.atan2(delta.y, Math.sqrt(delta.x*delta.x + delta.z*delta.z));
         double yaw = Math.atan2(delta.x, -delta.z);
 
-        Log.info(""+Math.toDegrees(pitch));
-        Log.info(""+Math.toDegrees(yaw));
+        //Log.info(""+Math.toDegrees(pitch));
+        //Log.info(""+Math.toDegrees(yaw));
         
         ptr = writeRadiansToMemory(mem, ptr, pitch);
         ptr = writeRadiansToMemory(mem, ptr, yaw);

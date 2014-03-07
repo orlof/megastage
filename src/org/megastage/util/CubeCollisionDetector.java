@@ -49,7 +49,7 @@ public class CubeCollisionDetector {
         
         long endTime = System.currentTimeMillis();
         //Log.info("Collisions: " + candidates.size + ", delay: " + (endTime - startTime));
-        Log.info(hit.toString());
+        //Log.info(hit.toString());
         
         return hit;
     }
@@ -71,7 +71,7 @@ public class CubeCollisionDetector {
         candidates.sort();
         
         long endTime = System.currentTimeMillis();
-        Log.info("Collisions: " + candidates.size + ", delay: " + (endTime - startTime));
+        //Log.info("Collisions: " + candidates.size + ", delay: " + (endTime - startTime));
         return candidates.first().base;
     }
     

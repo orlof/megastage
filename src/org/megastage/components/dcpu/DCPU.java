@@ -217,7 +217,7 @@ public class DCPU extends BaseComponent {
                                 //Log.info("HWQ " + ((int) a) + " " + hardware.get(a).toString());
                                 hardware.get(a).query();
                             } else {
-                                Log.info("HWQ " + (int) a);
+                                //Log.info("HWQ " + (int) a);
                             }
                         }
                         break;
@@ -228,7 +228,7 @@ public class DCPU extends BaseComponent {
                                 //if(a!=1)Log.info("HWI " + ((int) a) + " " + hardware.get(a).toString());
                                 hardware.get(a).interrupt();
                             } else {
-                                Log.info("HWI " + (int) a);
+                                //Log.info("HWI " + (int) a);
                             }
                         }
                         break;

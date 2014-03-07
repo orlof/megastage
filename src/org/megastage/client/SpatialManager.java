@@ -717,7 +717,10 @@ public class SpatialManager {
 
         final Geometry beam = new Geometry("beam", cyl);
         beam.setLocalTranslation(0, 0, -100/2f-2.5f);
-        beam.setMaterial(material(ColorRGBA.Yellow, true));
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Yellow);
+        mat.setColor("GlowColor", ColorRGBA.Yellow);
+        beam.setMaterial(mat);
         beam.addControl(new ThermalLaserControl(entity, cyl));
 
         final Geometry weapon = new Geometry("weapon", new Cylinder(16, 16, 0.5f, 0.3f, data.length, true, false));

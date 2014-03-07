@@ -3,6 +3,7 @@ package org.megastage.client;
 import com.artemis.Entity;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import com.jme3.ui.Picture;
 import org.megastage.protocol.UserCommand;
 import org.megastage.systems.client.ClientNetworkSystem;
 
@@ -27,7 +28,7 @@ public class ClientGlobals {
     public static final Node fixedNode = new Node("fixed_node");
     public static final Node playerNode = new Node("player");
 
-    public static GraphicsSettings gfxSettings = GraphicsSettings.HIGH;
+    public static GraphicsSettings gfxSettings = GraphicsSettings.NO_PLANETS;
     public static double scale = 1000.0;
     public static final UserCommand userCommand = new UserCommand();
     public static Main app;
@@ -36,6 +37,7 @@ public class ClientGlobals {
     public static ArtemisState artemis;
     public static String serverHost = "localhost";
     public static Camera cam;
+    public static Picture crosshair;
     
 }
 

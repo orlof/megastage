@@ -1,24 +1,22 @@
 package org.megastage.client;
 
-import com.cubes.CubesSettings;
 import com.cubes.test.CubesTestAssets;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
-import com.jme3.audio.AudioNode;
 import com.jme3.collision.CollisionResults;
-import com.jme3.light.AmbientLight;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.system.AppSettings;
 import com.jme3.ui.Picture;
+import com.simsilica.lemur.GuiGlobals;
+import com.simsilica.lemur.style.Styles;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.SystemPositionControl;
@@ -43,7 +41,7 @@ public class Main extends SimpleApplication {
         ClientGlobals.app = app;
 
         app.setSettings(settings);
-        app.showSettings = false;
+        app.showSettings = true;
         app.start();
     }
 
@@ -91,21 +89,26 @@ public class Main extends SimpleApplication {
 
         // Add planet app state
         planetAppState = new PlanetAppState(null);
-        //planetAppState.setShadowsEnabled(ClientGlobals.gfxSettings.PLANET_SHADOWS_ENABLED);
+        ////planetAppState.setShadowsEnabled(ClientGlobals.gfxSettings.PLANET_SHADOWS_ENABLED);
         stateManager.attach(planetAppState);
 
         // Add ECS app state
         ClientGlobals.artemis = new ArtemisState();
-        stateManager.attach(ClientGlobals.artemis);
+
+        GuiGlobals.initialize(this);
+        Styles styles = GuiGlobals.getInstance().getStyles();
+        
+        LemurStyles.initializeStyles(styles);
+        stateManager.attach(new MainMenuState());
         
         CubesManager.init(this);
         CubesTestAssets.registerBlocks();
 
-        createCrosshair();
+        ClientGlobals.crosshair = createCrosshair();
         
-        AmbientLight ambient = new AmbientLight();
-        ambient.setColor(ColorRGBA.DarkGray);
-        rootNode.addLight(ambient);
+//        AmbientLight ambient = new AmbientLight();
+//        ambient.setColor(ColorRGBA.DarkGray);
+//        rootNode.addLight(ambient);
 }
 
     @Override
@@ -118,15 +121,17 @@ public class Main extends SimpleApplication {
         //TODO: add render code
     }
     
-    private void createCrosshair() {
-        Picture pic = new Picture("HUD Picture");
-        pic.setImage(assetManager, "Textures/red_crosshair.png", true);
+    private Picture createCrosshair() {
+        Picture crosshair = new Picture("HUD Picture");
+        crosshair.setImage(assetManager, "Textures/crosshairs.png", true);
         //pic.setWidth(settings.getWidth()/4);
         //pic.setHeight(settings.getHeight()/4);
-        pic.setWidth(100);
-        pic.setHeight(100);
-        pic.setPosition(settings.getWidth()/2-50, settings.getHeight()/2-50);
-        guiNode.attachChild(pic);
+        crosshair.setWidth(100);
+        crosshair.setHeight(100);
+        crosshair.setPosition(settings.getWidth()/2-50, settings.getHeight()/2-50);
+        crosshair.setCullHint(Spatial.CullHint.Always);
+        guiNode.attachChild(crosshair);
+        return crosshair;
     }
 
     public CollisionResults getRayCastingResults(Node node) {

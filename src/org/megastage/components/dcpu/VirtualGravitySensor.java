@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Array;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
+import org.megastage.components.Position;
 import org.megastage.server.GravityManager;
 import org.megastage.server.GravityManager.GravityField;
 import org.megastage.server.SOIManager;
@@ -98,7 +99,13 @@ public class VirtualGravitySensor extends DCPUHardware {
     }
 
     private boolean getSOISignature() {
-        Vector3d ownCoord = Mapper.POSITION.get(ship).getVector3d();
+        Position pos = Mapper.POSITION.get(ship);
+        if(pos == null) {
+            dcpu.registers[1] = 0;            
+            return false;
+        }
+        
+        Vector3d ownCoord = pos.getVector3d();
         SOIData soi = SOIManager.getSOI(ownCoord);
         if(soi != null) {
             dcpu.registers[1] = (char) (soi.entity.id & 0xffff);
