@@ -28,7 +28,7 @@ public class ClientGlobals {
     public static final Node fixedNode = new Node("fixed_node");
     public static final Node playerNode = new Node("player");
 
-    public static GraphicsSettings gfxSettings = GraphicsSettings.NO_PLANETS;
+    public static GraphicsSettings gfxSettings = GraphicsSettings.HIGH;
     public static double scale = 1000.0;
     public static final UserCommand userCommand = new UserCommand();
     public static Main app;
