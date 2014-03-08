@@ -38,6 +38,7 @@ public class ClientGlobals {
     public static String serverHost = "localhost";
     public static Camera cam;
     public static Picture crosshair;
+    public static String player;
     
 }
 
