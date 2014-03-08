@@ -91,6 +91,11 @@ public class NetworkSystem extends VoidEntitySystem {
         
         connection.player.addComponent(new DeleteFlag());
         connection.close();
+        
+        if(server.getConnections().length == 0) {
+            server.stop();
+            System.exit(0);
+        }
     }
 
     private void handleLoginMessage(PlayerConnection connection, Network.Login packet) {

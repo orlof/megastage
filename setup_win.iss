@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Megastage"
-#define MyAppVersion "0.49"
+#define MyAppVersion "0.5"
 #define MyAppPublisher "Orlof"
 #define MyAppURL "http://github.com/orlof"
 #define MyAppExeName "full.bat"

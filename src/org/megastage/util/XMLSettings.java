@@ -92,9 +92,10 @@ public class XMLSettings {
         return stringVal;
     }
 
-    public void set(String path, String value) {
+    public String set(String path, String value) {
         Element elem = getElement(path);
         elem.setText(value);
+        return value;
     }
 
     

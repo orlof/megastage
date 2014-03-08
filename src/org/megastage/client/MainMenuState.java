@@ -159,8 +159,8 @@ public class MainMenuState extends BaseAppState {
     }
     
     private void storeOptions() {
-        settings.set("player", userField.getText());
-        settings.set("server", hostField.getText());
+        ClientGlobals.player = settings.set("player", userField.getText());
+        ClientGlobals.serverHost = settings.set("server", hostField.getText());
         settings.save();
     }
     

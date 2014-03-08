@@ -35,6 +35,9 @@ public class Main extends SimpleApplication {
         Log.set(Log.LEVEL_INFO);
 
         AppSettings settings = new AppSettings(true);
+        settings.setSettingsDialogImage("org/megastage/flash.jpg");
+        settings.setTitle("Megastage");
+        settings.setFullscreen(true);
         settings.setResolution(ClientGlobals.gfxSettings.SCREEN_WIDTH, ClientGlobals.gfxSettings.SCREEN_HEIGHT);
         Main app = new Main();
 

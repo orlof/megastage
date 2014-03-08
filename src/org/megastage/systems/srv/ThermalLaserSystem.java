@@ -46,7 +46,7 @@ public class ThermalLaserSystem extends SystemTemplate {
                         ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(shit.entity);
                         
                         double shotPower = world.getDelta() * vtlComponent.wattage;
-                        if(shotPower > 500.0 * random.nextDouble()) {
+                        if(shotPower > 50.0 * random.nextDouble()) {
                             geom.map.set(shit.block.getX(), shit.block.getY(), shit.block.getZ(), (char) 0, BlockChange.BREAK);
                         }
                         

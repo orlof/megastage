@@ -13,7 +13,7 @@ and open the template in the editor.
   <chdir>.</chdir>
   <customProcName>true</customProcName>
   <singleInstance>
-    <mutexName>org.megastage.server.Main</mutexName>
+    <mutexName>org.megastage.client.Main</mutexName>
     <windowTitle>Megastage</windowTitle>
   </singleInstance> 
   <jre>
