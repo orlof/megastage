@@ -34,6 +34,7 @@ public class ThermalLaserSystem extends SystemTemplate {
                     Hit hit = TargetManager.findHit(vtlEntity, vtlComponent);
                     
                     if(hit == TargetManager.NO_HIT) {
+                        vtlComponent.setHit(0f);
                         break;
                     } else if(hit instanceof ForceFieldHit) {
                         ForceFieldHit ffhit = (ForceFieldHit) hit;
@@ -41,10 +42,13 @@ public class ThermalLaserSystem extends SystemTemplate {
                         VirtualForceField forceField = Mapper.VIRTUAL_FORCE_FIELD.get(ffhit.entity);
                         forceField.damage(ffhit.entity, world.getDelta() * vtlComponent.wattage);
 
+                        vtlComponent.setHit((float) hit.distance);
                     } else if(hit instanceof ShipStructureHit) {
                         ShipStructureHit shit = (ShipStructureHit) hit;
                         ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(shit.entity);
                         
+                        vtlComponent.setHit((float) hit.distance);
+
                         double shotPower = world.getDelta() * vtlComponent.wattage;
                         if(shotPower > 50.0 * random.nextDouble()) {
                             geom.map.set(shit.block.getX(), shit.block.getY(), shit.block.getZ(), (char) 0, BlockChange.BREAK);

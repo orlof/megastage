@@ -566,7 +566,7 @@
                 <component type="gfx.ThermalLaserGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
-                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="Rotation" x="0" y="-90" z="0"/>
                 <group name="replicate"/>
             </entity>
             <entity name="ForceField">

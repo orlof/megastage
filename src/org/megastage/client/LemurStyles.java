@@ -1,9 +1,11 @@
 package org.megastage.client;
 
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.simsilica.lemur.Button;
 import com.simsilica.lemur.HAlignment;
 import com.simsilica.lemur.Insets3f;
+import com.simsilica.lemur.TextField;
 import com.simsilica.lemur.component.TbtQuadBackgroundComponent;
 import com.simsilica.lemur.style.Attributes;
 import com.simsilica.lemur.style.Styles;
@@ -52,5 +54,25 @@ public class LemurStyles {
         button.set("insets", new Insets3f(1, 5, 10, 5));
         button.set("textHAlignment", HAlignment.Center);
         button.set("fontSize", 32f);
+
+        Attributes subpanel = styles.getSelector(SUBMENU_ID, "retro");
+        subpanel.set("insets", new Insets3f(1, 5, 10, 5));
+        //subpanel.set("insets", new Insets3f(1, 135, 10, 35)); 
+        subpanel.set("background", border.clone());
+        
+        Attributes editLabel = styles.getSelector(EDIT_LABEL_ID, "retro");
+        editLabel.set("fontSize", 24f);
+        editLabel.set("insets", new Insets3f(5, 5, 5, 5)); 
+        editLabel.set("textHAlignment", HAlignment.Right);
+        //editLabel.set("color", new ColorRGBA(0, 0, 0.2f, 1)); 
+        editLabel.set("color", ColorRGBA.White); 
+        editLabel.set("shadowOffset", new Vector3f(1, -1, 0.1f)); 
+        //editLabel.set("shadowColor", new ColorRGBA(0.8f, 0.9f, 0.9f, 1));
+        editLabel.set("shadowColor", ColorRGBA.Black);  
+     
+        Attributes editField = styles.getSelector(TextField.ELEMENT_ID, "retro");
+        editField.set("fontSize", 24f);
+        editField.set("background", border.clone());     
+    
     }
 }    

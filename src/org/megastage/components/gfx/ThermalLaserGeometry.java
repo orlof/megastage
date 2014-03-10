@@ -7,6 +7,7 @@ import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.BaseComponent;
 import org.megastage.protocol.Message;
+import org.megastage.util.Vector3d;
     
 /**
  *
@@ -14,11 +15,12 @@ import org.megastage.protocol.Message;
  */
 public class ThermalLaserGeometry extends BaseComponent {
     public float length;
+    public Vector3d attackVector;
     
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
         length = getFloatValue(element, "length", 3.0f);
-        
+        attackVector = getVector3d(element, "attack_vector", new Vector3d(0,0,-1));
         return null;
     }
 
@@ -31,4 +33,5 @@ public class ThermalLaserGeometry extends BaseComponent {
     public Message replicate(Entity entity) {
         return always(entity);
     }
+
 }

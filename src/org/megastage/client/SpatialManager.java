@@ -509,13 +509,18 @@ public class SpatialManager {
     }
 
     private void leaveShip() {
-        if(ClientGlobals.shipEntity != null) {
-            Log.info(ID.get(ClientGlobals.shipEntity));
+        Entity ship = ClientGlobals.shipEntity;
+        
+        if(ship != null) {
+            Log.info(ID.get(ship));
 
-            Node shipNode = getNode(ClientGlobals.shipEntity);
+            Node shipNode = getNode(ship);
             ClientGlobals.sysMovNode.attachChild(shipNode);
 
             ClientGlobals.shipEntity = null;
+            Mapper.ROTATION.get(ship).dirty = true;
+            Mapper.POSITION.get(ship).dirty = true;
+            
             ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
         }
     }
@@ -716,11 +721,16 @@ public class SpatialManager {
         final Cylinder cyl = new Cylinder(6, 6, 0.2f, 0.2f, 100, true, false);
 
         final Geometry beam = new Geometry("beam", cyl);
-        beam.setLocalTranslation(0, 0, -100/2f-2.5f);
+        beam.setQueueBucket(Bucket.Transparent); // Remenber to set the queue bucket to transparent for the spatial
+        beam.setLocalTranslation(0, 0, -100/2f);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Yellow);
+        ColorRGBA yellow = new ColorRGBA(1f, 1f, 0f, 0.8f);
+        mat.setColor("Color", yellow);
         mat.setColor("GlowColor", ColorRGBA.Yellow);
         beam.setMaterial(mat);
+        // TRANSPARENT?
+        mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        // ---
         beam.addControl(new ThermalLaserControl(entity, cyl));
 
         final Geometry weapon = new Geometry("weapon", new Cylinder(16, 16, 0.5f, 0.3f, data.length, true, false));

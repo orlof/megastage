@@ -15,6 +15,7 @@ import org.megastage.server.TargetManager.Target;
 public class CubeCollisionDetector {
 
     public static TargetManager.Hit hit(Target target, Vector3d attackVector, float attackRange) {
+        //Log.info("ATTACK " + target.toString() + " " + attackVector.toString() + " " + attackRange);
         long startTime = System.currentTimeMillis();
 
         Position pos = Mapper.POSITION.get(target.entity);
@@ -78,12 +79,9 @@ public class CubeCollisionDetector {
     private static Array<Block> iteration(Vector3d rayDir, Cube3dMap map, Array<Block> candidates, int chunkSize, Vector3d[] coordOffset) {
         //Log.info("Chunk size: " + chunkSize + ", block count: " + candidates.size);
         // (d/2)^2 + (d/2)^2 + (d/2)^2 = 3(d/2)^2 = 3(d*d/4)
-        // Following line contains the correct value
-        //double radiusSquared = 3.0 * chunkSize * chunkSize / 4.0;
-        // Following line contains the speed optimized value
-        double radius = Math.sqrt(chunkSize * chunkSize / 2.0);
-        
         chunkSize /= 2;
+
+        double radius = Math.sqrt(3 * chunkSize * chunkSize);
         
         Array<Block> next = new Array<>(8 * candidates.size);
         

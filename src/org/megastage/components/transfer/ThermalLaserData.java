@@ -7,6 +7,7 @@ import org.megastage.components.BaseComponent;
 import org.megastage.util.ID;
 
 public class ThermalLaserData extends BaseComponent {
+    // TODO this should contain status, w, Hit, range
     public char status;
     public char wattage;
     public float range;

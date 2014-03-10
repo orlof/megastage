@@ -5,10 +5,11 @@ import org.megastage.components.Position;
 
 public class Vector3d {
 
-    public static final Vector3d ZERO = new Vector3d();
-    public static Vector3d UNIT_X = new Vector3d(1.0d, 0.0d, 0.0d);
-    public static Vector3d UNIT_Y = new Vector3d(0.0d, 1.0d, 0.0d);
-    public static Vector3d UNIT_Z = new Vector3d(0.0d, 0.0d, 1.0d);
+    public static transient final Vector3d ZERO = new Vector3d();
+    public static transient Vector3d UNIT_X = new Vector3d(1.0d, 0.0d, 0.0d);
+    public static transient Vector3d UNIT_Y = new Vector3d(0.0d, 1.0d, 0.0d);
+    public static transient Vector3d UNIT_Z = new Vector3d(0.0d, 0.0d, 1.0d);
+    public static transient Vector3d FORWARD = new Vector3d(0.0d, 0.0d, -1.0d);
     public final double x, y, z;
 
     public Vector3d() {

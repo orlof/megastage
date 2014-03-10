@@ -62,6 +62,7 @@ public class ThermalLaserControl extends AbstractControl {
                         spatial.setCullHint(Spatial.CullHint.Always);
                         break;
                     case VirtualThermalLaser.STATUS_DORMANT:
+                        an.pause();
                         spatial.setCullHint(Spatial.CullHint.Always);
                         break;
                 }
@@ -72,17 +73,22 @@ public class ThermalLaserControl extends AbstractControl {
             if(status == VirtualThermalLaser.STATUS_FIRING) {
                 Vector3f worldTranslation = spatial.getParent().getWorldTranslation();
                 Vector3f worldDirection = spatial.getParent().getWorldRotation().mult(FORWARD);
-                worldTranslation = worldTranslation.add(worldDirection.mult(2.6f));
+                //Vector3f contactPoint = worldTranslation.add(worldDirection.mult(data.range));
+                //worldTranslation = worldTranslation.add(worldDirection.mult(2.6f));
 
                 final CollisionResults crs = new CollisionResults();
                 ClientGlobals.rootNode.collideWith(new Ray(worldTranslation, worldDirection), crs);
 
                 for(CollisionResult cr: crs) {
-                    if(cr.getGeometry().getCullHint() == Spatial.CullHint.Always) {
+                    Geometry geom = cr.getGeometry();
+                    if(geom.getCullHint() == Spatial.CullHint.Always) {
                         continue;
                     }
                     
-                    Geometry geom = cr.getGeometry();
+                    if(geom.hasAncestor(spatial.getParent())) {
+                        continue;
+                    }
+                    
                     if(geom.getName().equals("forceshield")) {
                         float dist = spatial.getParent().getWorldTranslation().distance(geom.getWorldTranslation());
                         //Log.info(spatial.getParent().getWorldTranslation().toString());
@@ -95,7 +101,7 @@ public class ThermalLaserControl extends AbstractControl {
                     }
                     
                     if(cr.getDistance() < distance) {
-                        distance = cr.getDistance();
+                        //distance = cr.getDistance();
                     }
 
                     ForceFieldControl control = cr.getGeometry().getControl(ForceFieldControl.class);
@@ -110,7 +116,7 @@ public class ThermalLaserControl extends AbstractControl {
 
             if(distance != cylinder.getHeight()) {
                 cylinder.updateGeometry(8, 8, 0.2f, 0.2f, distance, true, false);
-                spatial.setLocalTranslation(0, 0, -distance/2f-2.5f);
+                spatial.setLocalTranslation(0, 0, -distance/2f);
             }
                     
         }

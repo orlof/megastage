@@ -7,8 +7,6 @@ import com.esotericsoftware.minlog.Log;
 import java.util.Comparator;
 import org.megastage.components.Position;
 import org.megastage.components.dcpu.VirtualThermalLaser;
-import org.megastage.components.gfx.ShipGeometry;
-import static org.megastage.systems.srv.ThermalLaserSystem.FORWARD_VECTOR;
 import org.megastage.util.CubeCollisionDetector;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
@@ -30,7 +28,9 @@ public class TargetManager {
         }
 
         Quaternion shipAngle = Mapper.ROTATION.get(vtlComponent.ship).getQuaternion4d();
-        Vector3d attackVector = FORWARD_VECTOR.multiply(shipAngle);
+        Quaternion weaponAngle = Mapper.ROTATION.get(vtlEntity).getQuaternion4d();
+        Vector3d attackVector = Vector3d.FORWARD.multiply(weaponAngle).multiply(shipAngle);
+        
         //Log.info(attackVector.toString());
         //Vector3d attackVector = shipVector.multiply(weaponAngle);
 
@@ -38,28 +38,33 @@ public class TargetManager {
 
         Hit bestHit = NO_HIT;
         for(Target target: targets) {
-            //Log.info(target.toString());
+            //Log.info("processing: " + target.toString());
             if(target.closestDistance > bestHit.distance) {
+                //Log.info("no more closer targets " + target.toString());
                 return bestHit;
             }
 
             if(target.vtlIsInCollisionSphere()) {
                 // TODO special case
+                //Log.info("inside collision sphere " + target.toString());
                 continue;
             } else if(target.isBehind(attackVector)) {
+                //Log.info("target behind " + target.toString());
                 continue;
             }
             
             target.setDistanceFromLOF(attackVector);
             
             if(!target.isInLOF()) {
+                //Log.info("not in line of fire " + target.toString());
                 continue;
             }
 
             Hit hit = Hit.create(target, attackVector, vtlComponent.range);
+            //Log.info(hit.toString());
 
             if(hit.distance < bestHit.distance) {
-                //Log.info("new hit selected: " + bestHit.toString() + " becomes " + hit.toString());
+                //Log.info("new hit selected: " + bestHit.toString() + " becomes " + hit.toString() + " to " + target.toString());
                 bestHit = hit;
             }
         }
@@ -181,7 +186,7 @@ public class TargetManager {
 
         @Override
         public String toString() {
-            return "Target{" + "entity=" + entity + ", coord=" + coord + ", closestDistance=" + closestDistance + ", collisionRadius=" + collisionRadius + ", distanceFromLOF=" + distanceFromLOF + ", distanceSquared=" + distanceSquared + '}';
+            return "Target{" + "entity=" + ID.get(entity) + ", coord=" + coord + ", closestDistance=" + closestDistance + ", collisionRadius=" + collisionRadius + ", distanceFromLOF=" + distanceFromLOF + ", distanceSquared=" + distanceSquared + '}';
         }
         
         

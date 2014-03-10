@@ -9,6 +9,7 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.protocol.Message;
 import org.megastage.util.Time;
+import org.megastage.util.Vector3d;
 
 public class VirtualThermalLaser extends DCPUHardware {
     public static transient final char STATUS_DORMANT = 0;
@@ -27,6 +28,7 @@ public class VirtualThermalLaser extends DCPUHardware {
     public char wattage = 0;
     public float range;
     public int cooldownSpeed;
+    private float distance;
     
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
@@ -69,8 +71,7 @@ public class VirtualThermalLaser extends DCPUHardware {
     }
 
     public void fireWeapon(char duration) {
-        if(status == STATUS_DORMANT && wattage > 0 && dcpu.registers[1] <= 300) {
-            Log.info("!!!");
+        if(status == STATUS_DORMANT && wattage > 0 && duration <= 300) {
             dirty = true;
             status = STATUS_FIRING;
             startTime = Time.value;
@@ -81,12 +82,23 @@ public class VirtualThermalLaser extends DCPUHardware {
     @Override
     public Message replicate(Entity entity) {
         dirty = false;
-        return ThermalLaserData.create(status, wattage, range).always(entity);
+        return ThermalLaserData.create(status, wattage, distance).always(entity);
     }
     
     @Override
     public Message synchronize(Entity entity) {
         return replicateIfDirty(entity);
+    }
+
+    public void setHit(float distance) {
+        if(distance == 0f) {
+            distance = range;
+        }
+        
+        if(this.distance != distance) {
+            this.distance = distance;
+            this.dirty = true;
+        }
     }
 
 }
