@@ -2,16 +2,16 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.PriorityQueue;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
+import org.megastage.systems.srv.PowerControllerSystem;
 
 public class VirtualPowerController extends DCPUHardware {
-    
-    public int production;
-    public int capacity;
-    public double flux;
-    
+
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_POWER_CONTROLLER;
@@ -49,11 +49,17 @@ public class VirtualPowerController extends DCPUHardware {
     }
 
     private void setPriority(char b, char c) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (b < dcpu.hardware.size()) {
+            DCPUHardware hw = dcpu.hardware.get(b);
+            hw.priority = c;
+        }
     }
 
     private void getPriority(char b) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (b < dcpu.hardware.size()) {
+            DCPUHardware hw = dcpu.hardware.get(b);
+            dcpu.registers[1] = hw.priority;
+        }
     }
 
 }

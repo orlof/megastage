@@ -43,6 +43,7 @@ public abstract class DCPUHardware extends BaseComponent {
     public int manufactorer;
     public DCPU dcpu;
     public Entity ship;
+    public char priority = 0x8000;
 
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         dcpu = Mapper.DCPU.get(parent);

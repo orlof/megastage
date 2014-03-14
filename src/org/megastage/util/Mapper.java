@@ -4,6 +4,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.World;
 import org.megastage.components.CollisionSphere;
 import org.megastage.components.DeleteFlag;
+import org.megastage.components.Energy;
 import org.megastage.components.Explosion;
 import org.megastage.components.Mass;
 import org.megastage.components.Mode;
@@ -24,6 +25,7 @@ import org.megastage.components.srv.Identifier;
 import org.megastage.components.srv.SphereOfInfluence;
 import org.megastage.components.Velocity;
 import org.megastage.components.dcpu.VirtualForceField;
+import org.megastage.components.dcpu.VirtualPowerController;
 import org.megastage.components.dcpu.VirtualPowerPlant;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.components.transfer.EngineData;
@@ -33,6 +35,8 @@ import org.megastage.components.transfer.RadarTargetData;
 import org.megastage.components.transfer.ThermalLaserData;
 
 public class Mapper {
+    public static ComponentMapper<Energy> ENERGY;
+    public static ComponentMapper<VirtualPowerController> VIRTUAL_POWER_CONTROLLER;
     public static ComponentMapper<VirtualPowerPlant> VIRTUAL_POWER_PLANT;
     public static ComponentMapper<VirtualForceField> VIRTUAL_FORCE_FIELD;
     public static ComponentMapper<ForceFieldData> FORCE_FIELD_DATA;
@@ -64,6 +68,8 @@ public class Mapper {
     public static ComponentMapper<SphereOfInfluence> SPHERE_OF_INFLUENCE;
 
     public static void init(World world) {
+        ENERGY = world.getMapper(Energy.class);
+        VIRTUAL_POWER_CONTROLLER = world.getMapper(VirtualPowerController.class);
         VIRTUAL_POWER_PLANT = world.getMapper(VirtualPowerPlant.class);
         VIRTUAL_FORCE_FIELD = world.getMapper(VirtualForceField.class);
         FORCE_FIELD_DATA = world.getMapper(ForceFieldData.class);

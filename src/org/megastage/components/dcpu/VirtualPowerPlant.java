@@ -6,12 +6,12 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 
-public class VirtualPowerPlant extends DCPUHardware {
+public class VirtualPowerPlant extends DCPUHardware implements PowerSupply {
     
+    // MW
     public int production;
     public int capacity;
-    public double flux;
-    
+
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         type = TYPE_POWER_PLANT;
@@ -25,6 +25,7 @@ public class VirtualPowerPlant extends DCPUHardware {
         return null;
     }
 
+    @Override
     public void interrupt() {
         switch(dcpu.registers[0]) {
             case 0:
@@ -49,8 +50,9 @@ public class VirtualPowerPlant extends DCPUHardware {
         return true;
     }
 
-    public void resetFlux(float delta) {
-        flux = delta * production;
+    @Override
+    public double generatePower(long delta) {
+        return (delta / 1000.0) * production;
     }
     
 }
