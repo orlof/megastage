@@ -8,8 +8,8 @@ Fusion Power Plant
 DCPU-16 Hardware Info:
 
     Name: Power Plant
-    ID: 0x3A57E911, version: 0x0911
-    Manufacturer: 0xa3783fc8 (Cradle Tech)
+    ID: 0x1574886a, version: 0x0911
+    Manufacturer: 0x80a9ddea (Soratom)
 
 
 
@@ -25,56 +25,8 @@ Interrupt behavior:
 
     1: SET_PRODUCTION
 
+    b <- MWs
+
     2: GET_TEMPERATURE
 
 
-NOTE: possible tinkering variables (mean):
-minimum field size (5m)
-energy / m2 (50kWs)
-energy conversion rate (1.0) 
-cleanup period (30s)
-evaporation rate (0.5% / s)
-laser absorbtion rate (1.0)
-plasma absorbtion rate (1.0)
-
-
-
-
-    Sets the B register to the estimated radius of the Enter name here, in centimetres minus 400. If the device is off or an error has triggered, 
-it will be set to 0 and C will be set to one of these error codes:
-0x0000 No errors - the device was shut down or never started
-0x0001 Not enough energy - there isn't enough energy connected
-0x0002 Forcefield destroyed - The forcefield was damaged. When a forcefield
- is destroyed, the energy it would usually need for 150 ticks at the last radius to
-boot it up is required.
-0xFFFF Unknown error - Explosions are funny.
-
-
-    1: SET_RADIUS
-       Reads the B register and sets the Forcefield-Radius to that. If the current
-energy supply is too low, it will consume the energy but not make a
-forcefield.
-Setting B to 0 will shut the device down.
-
-
-    2: GET_ENERGY_CONSUMPTION
-       Reads the B register, and puts a 64-bit number starting at the RAM
-at address B in kW. This is the estimated energy consumtion calculated by the
-formula sqrt(((1.7r)^2*pi+r^(12/5))/k)^3, while r is the actual radius/1cm.
-k is Enter energy constant here (I don't know how hard it will be to produce
-energy). Halts the DCPU for 8 cycles. The formula is an estimation, the
-device' actual energy consumption might differ by hundreds of kW.
-
-
-    3: GET_RADIUS
-       Gets the estimated radius that can be done with the current energy
-consumption. This is estimated by reverting the formula above (calling
-a math genius to calculate it xD). This isn't exact and can differ by a few metres
-to the actual consumption.
-
-
-    4: SET_ENERGY_CONSUMPTION
-    Reads the 64-bit unsigned Integer starting at memory address B. By
-default (or if the integer is 0), the Enter name here consumes all the energy
-It can get, if there is more energy than needed the energy is simply wasted.
-If this is set to anything except 0, it will only use this amount of energy.

@@ -16,9 +16,9 @@ DCPU-16 Hardware Info:
 
 Description:
     Minimum size for field is r=5m
-    Field must contain 50 kWs / m2 of surface area
-    Field has particle cleanup period after field collapse 30s
-    0.5%/s of contained energy is evaporated
+    Field must contain 50 MWs / m2 of surface area
+    After field collapse 30s particle cleanup period is required before restart.
+    Shield evaporates energy at the rate of 0.5 % / s.
     
 Interrupt behavior:
     When a HWI is received by the Enter name here, it reads the A register and
@@ -34,7 +34,16 @@ Interrupt behavior:
 
     1: GET_FIELD_RADIUS
 
-    2: SET_ENERGY_INTAKE
+    Sets the B register to force field radius (m)
+
+    2: GET_FIELD_ENERGY
+
+    Sets the registers B:C to energy stored in field (MWs)
+
+    3: SET_ENERGY_INTAKE
+
+    Sets the power intake to B (MW)
+
 
 
 NOTE: possible tinkering variables (mean):

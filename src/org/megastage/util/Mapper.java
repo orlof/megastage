@@ -24,6 +24,7 @@ import org.megastage.components.srv.Identifier;
 import org.megastage.components.srv.SphereOfInfluence;
 import org.megastage.components.Velocity;
 import org.megastage.components.dcpu.VirtualForceField;
+import org.megastage.components.dcpu.VirtualPowerPlant;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.components.transfer.ForceFieldData;
@@ -32,6 +33,7 @@ import org.megastage.components.transfer.RadarTargetData;
 import org.megastage.components.transfer.ThermalLaserData;
 
 public class Mapper {
+    public static ComponentMapper<VirtualPowerPlant> VIRTUAL_POWER_PLANT;
     public static ComponentMapper<VirtualForceField> VIRTUAL_FORCE_FIELD;
     public static ComponentMapper<ForceFieldData> FORCE_FIELD_DATA;
     public static ComponentMapper<CollisionSphere> COLLISION_SPHERE;
@@ -62,6 +64,7 @@ public class Mapper {
     public static ComponentMapper<SphereOfInfluence> SPHERE_OF_INFLUENCE;
 
     public static void init(World world) {
+        VIRTUAL_POWER_PLANT = world.getMapper(VirtualPowerPlant.class);
         VIRTUAL_FORCE_FIELD = world.getMapper(VirtualForceField.class);
         FORCE_FIELD_DATA = world.getMapper(ForceFieldData.class);
         COLLISION_SPHERE = world.getMapper(CollisionSphere.class);

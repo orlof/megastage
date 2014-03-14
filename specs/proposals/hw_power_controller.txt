@@ -37,8 +37,8 @@ A - Behavior
     Sets X, Y registers to information about power flux as defined 
     below:
 	
-    X: Total power production rate (Kilowatts)
-    Y; Total power consumption rate (Kilowatts)
+    X: Total power production rate (Megawatts)
+    Y; Total power consumption rate (Megawatts)
 
 2 - SET_PRIORITY 
     
