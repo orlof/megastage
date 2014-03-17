@@ -17,7 +17,7 @@ public class PowerControllerSystem extends EntitySystem {
     private long interval;
 
     private long wakeup;
-    private long delta;
+    private double delta;
 
     public PowerControllerSystem() {
         super(Aspect.getAspectForAll(VirtualPowerController.class));
@@ -31,8 +31,8 @@ public class PowerControllerSystem extends EntitySystem {
     @Override
     protected boolean checkProcessing() {
         if(Time.value >= wakeup) {
-            delta = Time.value + interval - wakeup;
-            wakeup += delta;
+            delta = (Time.value + interval - wakeup) / 1000.0;
+            wakeup = Time.value + interval;
             return true;
         }
         return false;
@@ -51,8 +51,8 @@ public class PowerControllerSystem extends EntitySystem {
         Arrays.sort(hw, new Comparator<DCPUHardware>() {
             @Override
             public int compare(DCPUHardware o1, DCPUHardware o2) {
-                if(o1.priority > o2.priority) return -1;
-                if(o1.priority < o2.priority) return 1;
+                if(o1.priority < o2.priority) return -1;
+                if(o1.priority > o2.priority) return 1;
                 return 0;
             }
         });
@@ -60,7 +60,8 @@ public class PowerControllerSystem extends EntitySystem {
         double energy = 0;
         for(DCPUHardware comp: hw) {
             if(comp instanceof PowerSupply) {
-                energy += ((PowerSupply) comp).generatePower(delta);
+                PowerSupply supply = (PowerSupply) comp;
+                energy += supply.generatePower(delta);
             } 
         }
         
@@ -68,7 +69,7 @@ public class PowerControllerSystem extends EntitySystem {
             if(comp instanceof PowerConsumer) {
                 PowerConsumer consumer = (PowerConsumer) comp;
                 
-                double load = consumer.consumption();
+                double load = consumer.consumePower(delta);
                 if(load > energy) {
                     consumer.shortage();
                 } else {
@@ -76,5 +77,6 @@ public class PowerControllerSystem extends EntitySystem {
                 }
             } 
         }
+        
     }
 }

@@ -11,7 +11,7 @@ import org.megastage.protocol.Message;
 import org.megastage.util.Time;
 import org.megastage.util.Vector3d;
 
-public class VirtualThermalLaser extends DCPUHardware {
+public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     public static transient final char STATUS_DORMANT = 0;
     public static transient final char STATUS_FIRING = 1;
     public static transient final char STATUS_COOLDOWN = 2;
@@ -69,6 +69,13 @@ public class VirtualThermalLaser extends DCPUHardware {
             this.wattage = wattage;
         }
     }
+    
+    public void setStatusCooldown() {
+        startTime = Time.value;
+        duration = duration * wattage / cooldownSpeed;
+        status = VirtualThermalLaser.STATUS_COOLDOWN;
+        dirty = true;
+    }
 
     public void fireWeapon(char duration) {
         if(status == STATUS_DORMANT && wattage > 0 && duration <= 300) {
@@ -101,4 +108,15 @@ public class VirtualThermalLaser extends DCPUHardware {
         }
     }
 
+    @Override
+    public double consumePower(double delta) {
+        return status == STATUS_FIRING ? delta * wattage: 0.0;
+    }
+
+    @Override
+    public void shortage() {
+        if(status == STATUS_FIRING) {
+            setStatusCooldown();
+        }
+    }
 }

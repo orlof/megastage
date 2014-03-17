@@ -771,7 +771,7 @@ public class SpatialManager {
         material.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         material.setFloat("MaxDistance", 1);
 
-        ForceFieldControl forceFieldControl = new ForceFieldControl(entity, shield, material);
+        ForceFieldControl forceFieldControl = new ForceFieldControl(entity, shield, material, sphere);
         shield.addControl(forceFieldControl); // Add the control to the spatial
         forceFieldControl.setEffectSize(10f); // Set the effect size
         forceFieldControl.setColor(new ColorRGBA(0, 0, 1, 1)); // Set effect color

@@ -58,7 +58,7 @@ public class VirtualPowerController extends DCPUHardware {
     private void getPriority(char b) {
         if (b < dcpu.hardware.size()) {
             DCPUHardware hw = dcpu.hardware.get(b);
-            dcpu.registers[1] = hw.priority;
+            dcpu.registers[1] = (char) (hw.priority & 0xffff);
         }
     }
 

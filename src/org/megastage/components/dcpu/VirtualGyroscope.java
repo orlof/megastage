@@ -11,7 +11,7 @@ import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.protocol.Message;
 import org.megastage.util.Vector3d;
 
-public class VirtualGyroscope extends DCPUHardware {
+public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     public static transient final char STATUS_OFF = 0;
     public static transient final char STATUS_ON = 1;
     public static transient final char STATUS_NO_POWER = 2;
@@ -107,5 +107,15 @@ public class VirtualGyroscope extends DCPUHardware {
     @Override
     public Message synchronize(Entity entity) {
         return replicateIfDirty(entity);
+    }
+
+    @Override
+    public double consumePower(double delta) {
+        return delta * power;
+    }
+
+    @Override
+    public void shortage() {
+        setTorque((char) 0);
     }
 }

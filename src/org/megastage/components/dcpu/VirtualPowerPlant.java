@@ -6,7 +6,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 
-public class VirtualPowerPlant extends DCPUHardware implements PowerSupply {
+public class VirtualPowerPlant extends DCPUHardware implements PowerSupply, PowerConsumer {
     
     // MW
     public int production;
@@ -51,8 +51,18 @@ public class VirtualPowerPlant extends DCPUHardware implements PowerSupply {
     }
 
     @Override
-    public double generatePower(long delta) {
-        return (delta / 1000.0) * production;
+    public double generatePower(double delta) {
+        return delta * production;
+    }
+
+    @Override
+    public double consumePower(double delta) {
+        return delta * (production / 10.0);
+    }
+
+    @Override
+    public void shortage() {
+        setProduction(0);
     }
     
 }
