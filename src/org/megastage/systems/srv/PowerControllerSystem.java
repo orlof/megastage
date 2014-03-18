@@ -57,26 +57,29 @@ public class PowerControllerSystem extends EntitySystem {
             }
         });
         
-        double energy = 0;
+        ctrl.supply = 0.0;
         for(DCPUHardware comp: hw) {
             if(comp instanceof PowerSupply) {
                 PowerSupply supply = (PowerSupply) comp;
-                energy += supply.generatePower(delta);
+                ctrl.supply += supply.generatePower(delta);
             } 
         }
         
+        double powerLeft = ctrl.supply;
+        
+        ctrl.load = 0.0;
         for(DCPUHardware comp: hw) {
             if(comp instanceof PowerConsumer) {
                 PowerConsumer consumer = (PowerConsumer) comp;
                 
                 double load = consumer.consumePower(delta);
-                if(load > energy) {
+                ctrl.load += load;
+                if(load > powerLeft) {
                     consumer.shortage();
                 } else {
-                    energy -= load;
+                    powerLeft -= load;
                 }
             } 
         }
-        
     }
 }

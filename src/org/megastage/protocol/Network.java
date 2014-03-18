@@ -32,6 +32,7 @@ import org.megastage.components.Explosion;
 import org.megastage.components.Velocity;
 import org.megastage.components.gfx.ForceFieldGeometry;
 import org.megastage.components.gfx.GyroscopeGeometry;
+import org.megastage.components.gfx.PowerPlantGeometry;
 import org.megastage.components.gfx.RadarGeometry;
 import org.megastage.components.gfx.ThermalLaserGeometry;
 import org.megastage.components.srv.Identifier;
@@ -97,6 +98,7 @@ public class Network {
         kryo.register(PlanetGeometry.class);
         kryo.register(PlayerIDMessage.class);
         kryo.register(Position.class);
+        kryo.register(PowerPlantGeometry.class);
         kryo.register(PPSGeometry.class);
         kryo.register(RadarGeometry.class);
         kryo.register(RadarTargetData.class);

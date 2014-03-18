@@ -2,15 +2,13 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.PriorityQueue;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.systems.srv.PowerControllerSystem;
 
 public class VirtualPowerController extends DCPUHardware {
+    public transient double supply;
+    public transient double load;
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
@@ -41,11 +39,19 @@ public class VirtualPowerController extends DCPUHardware {
     }
 
     private void pollDevice() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        dcpu.registers[1] = (char) (supply > 0.0 ? 1: 0);
+        if(supply > load) {
+            dcpu.registers[2] = 0x2;
+        } else if(supply < load) {
+            dcpu.registers[2] = 0x1;
+        } else {
+            dcpu.registers[2] = 0x0;
+        }
     }
 
     private void getPowerFlux() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        dcpu.registers[1] = (char) (((int) (supply + 0.5)) & 0xffff);
+        dcpu.registers[2] = (char) (((int) (load + 0.5)) & 0xffff);
     }
 
     private void setPriority(char b, char c) {

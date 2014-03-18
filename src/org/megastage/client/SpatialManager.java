@@ -67,6 +67,7 @@ import org.megastage.components.gfx.ForceFieldGeometry;
 import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.PPSGeometry;
+import org.megastage.components.gfx.PowerPlantGeometry;
 import org.megastage.components.gfx.RadarGeometry;
 import org.megastage.components.gfx.ThermalLaserGeometry;
 import org.megastage.util.Cube3dMap;
@@ -789,4 +790,42 @@ public class SpatialManager {
             return null;
         }});
     }
+
+    public void setupPowerPlant(Entity entity, PowerPlantGeometry aThis) {
+        final Node node = getNode(entity);
+        final PositionControl positionControl = new  PositionControl(entity, false);
+        final RotationControl rotationControl = new  RotationControl(entity);
+
+        final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
+        base.setMaterial(getMaterial("rock09.jpg"));
+        //base.setLocalTranslation(0, -0.45f, 0);
+        base.setLocalTranslation(0, 0.5f, 0);
+
+        final Geometry cylinder = electrify("Reactor core", new Cylinder(16, 16, 0.45f, 0.9f, true));
+
+        cylinder.setLocalRotation(new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0));
+        cylinder.setLocalTranslation(0, -0.45f, 0);
+        cylinder.setMaterial(material(ColorRGBA.Orange, true));
+
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            node.addControl(rotationControl);
+
+            attach(node, base, true);
+            attach(node, cylinder, true);
+            return null;
+        }});
+    }
+    
+    Geometry electrify(String name, Mesh mesh) {
+        Material mat = new Material(assetManager, "ShaderBlow/MatDefs/Electricity/Electricity4.j3md");
+
+        Geometry electricity = new Geometry("electrified_" + name);
+        electricity.setQueueBucket(Bucket.Transparent);
+        electricity.setMesh(mesh);
+        electricity.setMaterial(mat);
+        //((Node)man).attachChild(electricity);
+        
+        return electricity;
+    }            
 }

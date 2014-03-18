@@ -9,11 +9,18 @@ ID: 0xaff14367
 Manufacturer: 0xE142A1FA (Ender Innovations)
 
 Description:
-	This is a central control unit that manages and watches the powerflow throughout the ship.
-	This system features a power priority system in which latter hardware devices get power
-	only after the preceeding devices get fully powered. If a device is set to the priority
-	level of another then that device and all others afet move back in priority (higher number).
-	The priority list starts at 0 (highest priority) and ends at 65535 (lowest priority).
+	This is a central control unit that manages and watches the powerflow 
+        throughout the ship. This system features a power priority system in 
+        which latter hardware devices get power only after the preceeding 
+        devices get fully powered. Devices in same priority level get power
+        in unspecified order
+
+	The priority list starts at 0 (highest priority) and ends at 65535 
+        (lowest priority).
+
+        WARNING: UCPU must be installed in ship power grid core and UCPU's
+        generator control interface does not support multiple UCPUs in the
+        same power grid. Results for plugging two controllers are not defined.
 
 Interrupt behavior:
 
@@ -34,11 +41,11 @@ A - Behavior
 
 1 - GET_POWER_FLUX 
 
-    Sets X, Y registers to information about power flux as defined 
+    Sets B, C registers to information about power flux as defined 
     below:
 	
-    X: Total power production rate (Megawatts)
-    Y; Total power consumption rate (Megawatts)
+    B: Total power production rate (Megawatts)
+    C; Total power consumption rate (Megawatts)
 
 2 - SET_PRIORITY 
     
