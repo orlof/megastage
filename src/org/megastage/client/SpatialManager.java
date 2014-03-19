@@ -799,33 +799,46 @@ public class SpatialManager {
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         base.setMaterial(getMaterial("rock09.jpg"));
         //base.setLocalTranslation(0, -0.45f, 0);
-        base.setLocalTranslation(0, 0.5f, 0);
+        base.setLocalTranslation(0, -0.45f, 0);
 
-        final Geometry cylinder = electrify("Reactor core", new Cylinder(16, 16, 0.45f, 0.9f, true));
+        final Node chamber = new Node("chamber");
+        //chamber.setLocalRotation(new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0));
+        //chamber.setLocalTranslation(0, 0.5f, 0);
+        chamber.setLocalTranslation(0, -0.4f, 0);
+        
+        //Geometry cylinder = new Geometry("Reactor core", new Cylinder(16, 16, 0.45f, 0.9f, true));
+        Spatial cylinder = assetManager.loadModel("Models/jme_lightblow.mesh.xml");
 
-        cylinder.setLocalRotation(new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0));
-        cylinder.setLocalTranslation(0, -0.45f, 0);
-        cylinder.setMaterial(material(ColorRGBA.Orange, true));
+        //cylinder.setMaterial(material(ColorRGBA.Orange, true));
+        cylinder.setMaterial(new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md")); 
+
+        chamber.attachChild(cylinder);
+        
+        electrify(cylinder);
 
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
             node.addControl(positionControl);
             node.addControl(rotationControl);
 
             attach(node, base, true);
-            attach(node, cylinder, true);
+            attach(node, chamber, true);
             return null;
         }});
     }
     
-    Geometry electrify(String name, Mesh mesh) {
-        Material mat = new Material(assetManager, "ShaderBlow/MatDefs/Electricity/Electricity4.j3md");
+    void electrify(Spatial man) {
+        //Spatial man = assetManager.loadModel("ShaderBlow/Models/LightBlow/jme_lightblow.mesh.xml");
+        Material mat = new Material(assetManager, "ShaderBlow/MatDefs/Electricity/Electricity3.j3md");
+       
+        for (Spatial child : ((Node)man).getChildren()){
+            if (child instanceof Geometry){
+                Geometry electricity = new Geometry("electrified_" + child.getName());
+                electricity.setQueueBucket(Bucket.Transparent);
+                electricity.setMesh(((Geometry)child).getMesh());
+                electricity.setMaterial(mat);
+                ((Node)man).attachChild(electricity);
+            }
+        }
+    }
 
-        Geometry electricity = new Geometry("electrified_" + name);
-        electricity.setQueueBucket(Bucket.Transparent);
-        electricity.setMesh(mesh);
-        electricity.setMaterial(mat);
-        //((Node)man).attachChild(electricity);
-        
-        return electricity;
-    }            
 }
