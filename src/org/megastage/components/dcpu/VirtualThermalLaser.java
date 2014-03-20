@@ -66,6 +66,7 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     
     public void setWattage(char wattage) {
         if(status != STATUS_FIRING && wattage <= 5000 && this.wattage != wattage) {
+            Log.info("" + (int) wattage);
             this.wattage = wattage;
         }
     }
@@ -109,14 +110,15 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public double consumePower(double delta) {
-        return status == STATUS_FIRING ? delta * wattage: 0.0;
+    public double consume(double available, double delta) {
+        double intake = status == STATUS_FIRING ? delta * wattage: 0.0;
+        if(intake > available) {
+            setStatusCooldown();
+            intake = 0;
+        }
+
+        Log.info("" + intake);
+        return intake;
     }
 
-    @Override
-    public void shortage() {
-        if(status == STATUS_FIRING) {
-            setStatusCooldown();
-        }
-    }
 }

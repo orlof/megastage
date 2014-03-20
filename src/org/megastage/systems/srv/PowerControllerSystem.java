@@ -4,6 +4,7 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.systems.EntitySystem;
 import com.badlogic.gdx.utils.Array;
+import com.esotericsoftware.minlog.Log;
 import java.util.Arrays;
 import java.util.Comparator;
 import org.megastage.components.dcpu.DCPUHardware;
@@ -65,20 +66,22 @@ public class PowerControllerSystem extends EntitySystem {
             } 
         }
         
+        Log.info("Supply: " + ctrl.supply);
         double powerLeft = ctrl.supply;
         
         ctrl.load = 0.0;
         for(DCPUHardware comp: hw) {
             if(comp instanceof PowerConsumer) {
                 PowerConsumer consumer = (PowerConsumer) comp;
+
+                double consumption = consumer.consume(powerLeft, delta);
                 
-                double load = consumer.consumePower(delta);
-                ctrl.load += load;
-                if(load > powerLeft) {
-                    consumer.shortage();
-                } else {
-                    powerLeft -= load;
+                if(consumption > 0) {
+                    Log.info(comp.getClass().getSimpleName() + " " + consumption);
                 }
+                
+                ctrl.load += consumption;
+                powerLeft -= consumption;
             } 
         }
     }

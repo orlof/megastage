@@ -30,15 +30,15 @@ public class Electricity extends SimpleApplication {
     @Override
     public void simpleInitApp() {
 
-        electrify("Materials/electricity1.j3m", 0);
-        electrify("Materials/electricity1_2.j3m", 2f);
-        electrify("Materials/electricity2.j3m", 4);
-        electrify("Materials/electricity2_2.j3m", 6);
-        electrify("Materials/electricity3_line1.j3m", 8);
-        electrify("Materials/electricity3_line2.j3m", 10);
-        electrify("Materials/electricity3_line3.j3m", 12);
-        electrify("Materials/electricity4.j3m", 14);
-        electrify("Materials/electricity5_2.j3m", 16);
+        electrify("Materials/Electricity/electricity1.j3m", 0);
+        electrify("Materials/Electricity/electricity1_2.j3m", 2f);
+        electrify("Materials/Electricity/electricity2.j3m", 4);
+        electrify("Materials/Electricity/electricity2_2.j3m", 6);
+        electrify("Materials/Electricity/electricity3_line1.j3m", 8);
+        electrify("Materials/Electricity/electricity3_line2.j3m", 10);
+        electrify("Materials/Electricity/electricity3_line3.j3m", 12);
+        electrify("Materials/Electricity/electricity4.j3m", 14);
+        electrify("Materials/Electricity/electricity5_2.j3m", 16);
         
         DirectionalLight light = new DirectionalLight();
         light.setColor(new ColorRGBA(0.6f,0.6f,0.6f,0.6f));

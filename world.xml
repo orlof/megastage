@@ -259,7 +259,7 @@
                 <component type="srv.SynchronizeFlag"/>
                 <group name="replicate"/>
             </entity>
-            <entity name="PowerPlant">
+            <!--entity name="PowerPlant">
                 <component type="Position" dx="4" dy="1" dz="13"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="dcpu.VirtualPowerPlant"/>
@@ -274,7 +274,7 @@
                 <component type="gfx.PowerPlantGeometry"/>
                 <component type="gfx.BindTo"/>
                 <group name="replicate"/>
-            </entity>
+            </entity-->
             <entity name="ForceField">
                 <component type="Position" dx="7" dy="1" dz="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
@@ -285,10 +285,10 @@
                 <component type="srv.SynchronizeFlag"/>
                 <group name="replicate"/>
             </entity>
-            <entity name="Power Controller">
+            <!--entity name="Power Controller">
                 <component type="dcpu.VirtualPowerController"/>
                 <component type="gfx.BindTo"/>
-            </entity>
+            </entity-->
             <entity name="Generic Keyboard">
                 <component type="dcpu.VirtualKeyboard"/>
                 <component type="gfx.BindTo"/>
@@ -300,7 +300,7 @@
             <entity name="Engine">
                 <!-- engine vector specifies the direction of ship acceleration.
                      relative to ship's starting orientation (heading +z) -->
-                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_power="10e4"/>
+                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_power="10000"/>
                 <component type="Position" dx="7" dy="7" dz="6"/>
                 <component type="gfx.EngineGeometry"/>
                 <component type="gfx.BindTo"/>
@@ -430,7 +430,7 @@
             <map z="10">   ###   ###   </map>
             <map z="11">   #       #   </map>
             <map z="12">   #       #   </map>
-            <map z="13">   #* GGG *#   </map>
+            <map z="13">   #* GGG  #   </map>
             <map z="14">   #########   </map>
             <map z="15">               </map>
           <map y="2" x="012345678901234"/>
@@ -447,7 +447,7 @@
             <map z="10">   ###   ###   </map>
             <map z="11">   #       #   </map>
             <map z="12">   #       #   </map>
-            <map z="13">   #       #   </map>
+            <map z="13">   #*      #   </map>
             <map z="14">   #########   </map>
             <map z="15">       E       </map>
           <map y="3" x="012345678901234"/>
@@ -559,15 +559,15 @@
             <entity name="PowerPlant">
                 <component type="Position" dx="4" dy="1" dz="13"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <component type="dcpu.VirtualPowerPlant"/>
+                <component type="dcpu.VirtualPowerPlant" capacity="5000"/>
                 <component type="gfx.PowerPlantGeometry"/>
                 <component type="gfx.BindTo"/>
                 <group name="replicate"/>
             </entity>
             <entity name="PowerPlant">
-                <component type="Position" dx="10" dy="1" dz="13"/>
+                <component type="Position" dx="4" dy="2" dz="13"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <component type="dcpu.VirtualPowerPlant"/>
+                <component type="dcpu.VirtualPowerPlant" capacity="5000"/>
                 <component type="gfx.PowerPlantGeometry"/>
                 <component type="gfx.BindTo"/>
                 <group name="replicate"/>

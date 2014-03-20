@@ -2,6 +2,7 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
@@ -20,7 +21,8 @@ public class VirtualPowerPlant extends DCPUHardware implements PowerSupply, Powe
 
         super.init(world, parent, element);
         
-        capacity = getIntegerValue(element, "capacity", 10000);
+        capacity = getIntegerValue(element, "capacity", 5000);
+        production = capacity;
 
         return null;
     }
@@ -56,13 +58,15 @@ public class VirtualPowerPlant extends DCPUHardware implements PowerSupply, Powe
     }
 
     @Override
-    public double consumePower(double delta) {
-        return delta * (production / 10.0);
+    public double consume(double available, double delta) {
+        double intake = delta * (production / 10.0);
+        if(intake > available) {
+            setProduction(0);
+            intake = 0;
+        }
+
+        Log.info("" + intake);
+        return intake;
     }
 
-    @Override
-    public void shortage() {
-        setProduction(0);
-    }
-    
 }

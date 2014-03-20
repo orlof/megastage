@@ -802,19 +802,19 @@ public class SpatialManager {
         base.setLocalTranslation(0, -0.45f, 0);
 
         final Node chamber = new Node("chamber");
-        //chamber.setLocalRotation(new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0));
-        //chamber.setLocalTranslation(0, 0.5f, 0);
-        chamber.setLocalTranslation(0, -0.4f, 0);
-        
-        //Geometry cylinder = new Geometry("Reactor core", new Cylinder(16, 16, 0.45f, 0.9f, true));
-        Spatial cylinder = assetManager.loadModel("Models/jme_lightblow.mesh.xml");
 
-        //cylinder.setMaterial(material(ColorRGBA.Orange, true));
-        cylinder.setMaterial(new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md")); 
-
+        Geometry cylinder = new Geometry("Reactor core", new Cylinder(16, 16, 0.45f, 0.9f, true));
         chamber.attachChild(cylinder);
+        chamber.setLocalRotation(new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0));
+        //chamber.setLocalTranslation(0, 0.5f, 0);
+        //chamber.setLocalTranslation(0, -0.4f, 0);
+        chamber.setMaterial(material(ColorRGBA.White, true));
         
-        electrify(cylinder);
+        //Spatial cylinder = assetManager.loadModel("Models/jme_lightblow.mesh.xml");
+
+        //cylinder.setMaterial(new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md")); 
+
+        electrify(chamber);
 
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
             node.addControl(positionControl);
@@ -826,10 +826,9 @@ public class SpatialManager {
         }});
     }
     
-    void electrify(Spatial man) {
-        //Spatial man = assetManager.loadModel("ShaderBlow/Models/LightBlow/jme_lightblow.mesh.xml");
-        Material mat = new Material(assetManager, "ShaderBlow/MatDefs/Electricity/Electricity3.j3md");
-       
+    void electrify(Node man) {
+        Material mat = assetManager.loadMaterial("Materials/Electricity/electricity1_2.j3m");
+        
         for (Spatial child : ((Node)man).getChildren()){
             if (child instanceof Geometry){
                 Geometry electricity = new Geometry("electrified_" + child.getName());
@@ -840,5 +839,4 @@ public class SpatialManager {
             }
         }
     }
-
 }

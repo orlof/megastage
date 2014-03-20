@@ -2,6 +2,7 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
@@ -110,12 +111,14 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public double consumePower(double delta) {
-        return delta * power;
-    }
+    public double consume(double available, double delta) {
+        double intake = delta * power;
+        if(intake > available) {
+            setTorque((char) 0);
+            intake = 0;
+        }
 
-    @Override
-    public void shortage() {
-        setTorque((char) 0);
+        Log.info("" + intake);
+        return intake;
     }
 }

@@ -30,7 +30,8 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
         
         //radius = getFloatValue(element, "radius", 20);
         //maxEnergy = getFloatValue(element, "max_energy", 40000);
-        energy = getFloatValue(element, "energy", 0);
+        energy = getDoubleValue(element, "energy", 0);
+        power = getDoubleValue(element, "power", 1000);
          
         return null;
     }
@@ -64,47 +65,30 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
         return replicateIfDirty(entity);
     }
 
-    public void setEnergy(Entity entity, double energy) {
-        if(energy < 0.0) energy = 0.0;
-
-        if(this.energy == energy) return;
-        
-        this.energy = energy;
-        this.dirty = true;
-
-        double r = getRadius();
-        if(r != radius) {
-            this.radius = r;
-            Mapper.COLLISION_SPHERE.get(entity).radius = r;
- 
-            if(radius == 0.0) {
-                status = STATUS_POWER_OFF;
-            } else if(radius < 5.0) {
-                status = STATUS_FIELD_FORMING;
-            } else {
-                status = STATUS_FIELD_ACTIVE;
-            }
-        }
-    }
-    
     public double getRadius() {
         double r = Math.sqrt((energy / 50.0) / (4 * Math.PI));
         return r < 5.0 ? 0.0: r;
     }
 
     public void damage(Entity entity, float damage) {
-        setEnergy(entity, energy - damage);
-        Log.info("Energy : " + energy);
+        energy -= damage;
+        if(energy < 0) {
+            energy = 0;
+        }
+        Log.info("Damage: " + damage + "/" + energy);
     }
 
     @Override
-    public double consumePower(double delta) {
-        return power * delta;
-    }
+    public double consume(double available, double delta) {
+        double consumption = power * delta;
+        if(consumption > available) {
+            consumption = power = 0.0;
+        }
 
-    @Override
-    public void shortage() {
-        power = 0.0;
+        energy *= (0.995 * delta);
+        energy += consumption;
+        
+        return consumption;
     }
 
     private void getStatus() {
