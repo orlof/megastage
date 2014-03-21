@@ -84,6 +84,10 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
         }
     }
     
+    public double getPowerLevel() {
+        return Math.abs(curTorque / 200.0);
+    }
+    
     public double getRotation(ShipGeometry geom) {
         if(mapVersion < geom.map.version) {
             //TODO this is huge perf problem, inertia change should be 
@@ -112,13 +116,13 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
 
     @Override
     public double consume(double available, double delta) {
-        double intake = delta * power;
+        double intake = delta * getPowerLevel();
         if(intake > available) {
+            Log.info("Not enough power: " + intake + "/" + available);
             setTorque((char) 0);
             intake = 0;
         }
 
-        Log.info("" + intake);
         return intake;
     }
 }

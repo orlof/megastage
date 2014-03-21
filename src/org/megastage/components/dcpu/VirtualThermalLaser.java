@@ -117,7 +117,6 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
             intake = 0;
         }
 
-        Log.info("" + intake);
         return intake;
     }
 

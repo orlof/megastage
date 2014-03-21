@@ -92,13 +92,13 @@ public class VirtualEngine extends DCPUHardware implements PowerConsumer {
 
     @Override
     public double consume(double available, double delta) {
-        double intake = delta * power;
+        double intake = delta * getPowerLevel();
         if(intake > available) {
+            Log.info("Not enough power: " + intake + "/" + available);
             setPower((char) 0);
             intake = 0;
         }
 
-        Log.info("" + intake);
         return intake;
     }
 }

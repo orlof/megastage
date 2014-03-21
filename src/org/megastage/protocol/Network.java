@@ -30,6 +30,7 @@ import org.megastage.components.Mode;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.Explosion;
 import org.megastage.components.Velocity;
+import org.megastage.components.gfx.BatteryGeometry;
 import org.megastage.components.gfx.ForceFieldGeometry;
 import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.PowerPlantGeometry;
@@ -70,6 +71,7 @@ public class Network {
         kryo.register(char[][][].class);
         kryo.register(Object[].class);
         kryo.register(BaseComponent.class);
+        kryo.register(BatteryGeometry.class);
         kryo.register(BindTo.class);
         kryo.register(BlockChange.class);
         kryo.register(Build.class);

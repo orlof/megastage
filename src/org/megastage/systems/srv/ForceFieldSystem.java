@@ -5,6 +5,7 @@ import com.artemis.Entity;
 import com.artemis.systems.EntitySystem;
 import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.minlog.Log;
+import org.megastage.components.CollisionSphere;
 import org.megastage.components.dcpu.VirtualForceField;
 import static org.megastage.components.dcpu.VirtualForceField.STATUS_FIELD_ACTIVE;
 import static org.megastage.components.dcpu.VirtualForceField.STATUS_FIELD_FORMING;
@@ -45,21 +46,6 @@ public class ForceFieldSystem extends EntitySystem {
 
     protected void process(Entity e) {
         VirtualForceField vff = Mapper.VIRTUAL_FORCE_FIELD.get(e);
-
-        double r = vff.getRadius();
-        if(r != vff.radius) {
-            vff.dirty = true;
-            vff.radius = r;
-            
-            Mapper.COLLISION_SPHERE.get(e).radius = r;
- 
-            if(r == 0.0) {
-                vff.status = STATUS_POWER_OFF;
-            } else if(r < 5.0) {
-                vff.status = STATUS_FIELD_FORMING;
-            } else {
-                vff.status = STATUS_FIELD_ACTIVE;
-            }
-        }
+        Mapper.COLLISION_SPHERE.get(e).radius = vff.radius;
     }
 }

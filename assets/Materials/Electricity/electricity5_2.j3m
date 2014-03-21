@@ -2,7 +2,7 @@ Material My Material : ShaderBlow/MatDefs/Electricity/Electricity5_2.j3md {
      MaterialParameters {
         width : 0.02
         speed : -0.01
-        noise : Repeat ShaderBlow/Textures/Electricity/noise.png
+        noise : Repeat Textures/Electricity/noise.png
         noiseAmount : 0.14
         color : 0.2 0.4 0.8 1.0
         thickness : 0.01

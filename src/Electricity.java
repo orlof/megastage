@@ -14,6 +14,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
+import com.jme3.scene.shape.Dome;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.texture.Texture;
 
@@ -54,8 +55,9 @@ public class Electricity extends SimpleApplication {
 
     void electrify(String materialName, float x) {
         Node man = new Node(materialName);
-        //man.attachChild(new Geometry(materialName, new Sphere(16, 16, 0.5f)));
-        man.attachChild(new Geometry(materialName, new Cylinder(16, 16, 0.45f, 0.9f, true)));
+        man.attachChild(new Geometry(materialName, new Sphere(16, 16, 0.5f)));
+        //man.attachChild(new Geometry(materialName, new Cylinder(16, 16, 0.45f, 0.9f, true)));
+        //man.attachChild(new Geometry(materialName, new Dome(Vector3f.ZERO, 16, 16, 0.5f, false)));
 
         Material matMan = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         man.setMaterial(matMan);
@@ -73,7 +75,7 @@ public class Electricity extends SimpleApplication {
         }
 
         man.move(x, 0, 0);
-        man.setLocalRotation(new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0));
+        //man.setLocalRotation(new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0));
         rootNode.attachChild(man);
     }
     

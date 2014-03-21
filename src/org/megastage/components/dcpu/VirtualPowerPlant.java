@@ -65,7 +65,6 @@ public class VirtualPowerPlant extends DCPUHardware implements PowerSupply, Powe
             intake = 0;
         }
 
-        Log.info("" + intake);
         return intake;
     }
 

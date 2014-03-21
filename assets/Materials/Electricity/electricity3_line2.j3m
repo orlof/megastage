@@ -1,7 +1,7 @@
 Material My Material : ShaderBlow/MatDefs/Electricity/Electricity3.j3md {
      MaterialParameters {
         width : 0.009999998
-        noise : Repeat ShaderBlow/Textures/Electricity/Unbenannt.png
+        noise : Repeat Textures/Electricity/Unbenannt.png
         fallOff : 0.6
         speed : -0.1
         noiseAmount : 1.4200001

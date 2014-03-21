@@ -11,6 +11,7 @@ import org.megastage.components.dcpu.DCPUHardware;
 import org.megastage.components.dcpu.PowerConsumer;
 import org.megastage.components.dcpu.PowerSupply;
 import org.megastage.components.dcpu.VirtualPowerController;
+import org.megastage.util.ID;
 import org.megastage.util.Mapper;
 import org.megastage.util.Time;
 
@@ -66,7 +67,7 @@ public class PowerControllerSystem extends EntitySystem {
             } 
         }
         
-        Log.info("Supply: " + ctrl.supply);
+        Log.info(ID.get(entity) + "total supply: " + ctrl.supply);
         double powerLeft = ctrl.supply;
         
         ctrl.load = 0.0;
@@ -77,7 +78,7 @@ public class PowerControllerSystem extends EntitySystem {
                 double consumption = consumer.consume(powerLeft, delta);
                 
                 if(consumption > 0) {
-                    Log.info(comp.getClass().getSimpleName() + " " + consumption);
+                    //Log.info(comp.getClass().getSimpleName() + " " + consumption);
                 }
                 
                 ctrl.load += consumption;

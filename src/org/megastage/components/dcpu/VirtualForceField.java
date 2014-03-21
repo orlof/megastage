@@ -15,6 +15,11 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
     public static transient final char STATUS_FIELD_FORMING = 1;
     public static transient final char STATUS_FIELD_ACTIVE = 2;
     
+    public transient double minEnergy;
+    public transient double maxEnergy;
+    public transient double energyDensity;
+    public transient double energyEvaporation;
+
     public transient double energy;
     public transient double power;
     public transient double radius;
@@ -28,8 +33,15 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
 
         super.init(world, parent, element);
         
-        //radius = getFloatValue(element, "radius", 20);
-        //maxEnergy = getFloatValue(element, "max_energy", 40000);
+        energyEvaporation = getDoubleValue(element, "energy_evaporation", 0.005);
+        energyDensity = getDoubleValue(element, "energy_density", 50);
+        
+        double minRadius = getDoubleValue(element, "min_radius", 5);
+        minEnergy = 4 * Math.PI * minRadius * minRadius * energyDensity;
+        
+        double maxRadius = getDoubleValue(element, "max_radius", 50);
+        maxEnergy = 4 * Math.PI * maxRadius * maxRadius * energyDensity;
+
         energy = getDoubleValue(element, "energy", 0);
         power = getDoubleValue(element, "power", 1000);
          
@@ -65,30 +77,46 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
         return replicateIfDirty(entity);
     }
 
-    public double getRadius() {
-        double r = Math.sqrt((energy / 50.0) / (4 * Math.PI));
-        return r < 5.0 ? 0.0: r;
-    }
+    public void setEnergy(double energy) {
+        if(energy < 0 ) energy = 0;
+        if(energy > maxEnergy) energy = maxEnergy;
 
-    public void damage(Entity entity, float damage) {
-        energy -= damage;
-        if(energy < 0) {
-            energy = 0;
+        this.energy = energy;
+        
+        double calculatedRadius = Math.sqrt((energy / energyDensity) / (4.0 * Math.PI));
+
+        if(energy == 0.0) {
+                status = STATUS_POWER_OFF;
+        } else if(energy < minEnergy) {
+                status = STATUS_FIELD_FORMING;
+                calculatedRadius = 0.0;
+        } else {
+                status = STATUS_FIELD_ACTIVE;
         }
+        
+        if(calculatedRadius != radius) {
+            radius = calculatedRadius;
+            dirty = true;
+        }
+    }
+    
+    public void damage(Entity entity, float damage) {
+        setEnergy(energy - damage);
         Log.info("Damage: " + damage + "/" + energy);
     }
 
     @Override
     public double consume(double available, double delta) {
-        double consumption = power * delta;
-        if(consumption > available) {
-            consumption = power = 0.0;
+        double intake = power * delta;
+        if(intake > available) {
+            intake = power = 0.0;
         }
 
-        energy *= (0.995 * delta);
-        energy += consumption;
+        double evaporation = energy * energyEvaporation * delta;
         
-        return consumption;
+        setEnergy(energy + intake - evaporation);
+        
+        return intake;
     }
 
     private void getStatus() {
@@ -96,11 +124,7 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
     }
 
     private void getFieldRadius() {
-        if(radius < 5.0) {
-            dcpu.registers[1] = 0;
-        } else {
-            dcpu.registers[1] = (char) Math.round(radius);
-        }
+        dcpu.registers[1] = (char) Math.round(radius);
     }
 
     private void getFieldEnergy() {
