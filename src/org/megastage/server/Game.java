@@ -10,6 +10,7 @@ import org.megastage.systems.srv.EntitySynchronizeSystem;
 import com.artemis.World;
 import com.artemis.managers.GroupManager;
 import com.artemis.managers.TagManager;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.systems.*;
@@ -90,6 +91,7 @@ public class Game {
     }
 
     public void loopForever() throws InterruptedException {
+        Time.value = System.currentTimeMillis() - 20;
         while (true) {
             long ctime = System.currentTimeMillis();
             world.setDelta((ctime - Time.value) / 1000.0f);

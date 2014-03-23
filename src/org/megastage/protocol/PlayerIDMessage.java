@@ -11,6 +11,7 @@ import org.megastage.client.ClientGlobals;
 
 public class PlayerIDMessage extends EventMessage {
     private int id = 0;
+    private long ctime = System.currentTimeMillis();
 
     public PlayerIDMessage() {}
     public PlayerIDMessage(int id) {
@@ -20,6 +21,9 @@ public class PlayerIDMessage extends EventMessage {
 
     @Override
     public void receive(Connection pc) {
+        long time = System.currentTimeMillis();
+        ClientGlobals.timeDiff = ctime - time;
+        
         Entity entity = ClientGlobals.artemis.toClientEntity(id);
         ClientGlobals.playerEntity = entity;
         ClientGlobals.spatialManager.setupPlayer(entity);

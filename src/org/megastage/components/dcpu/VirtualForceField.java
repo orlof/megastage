@@ -111,7 +111,7 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
         if(intake > available) {
             intake = power = 0.0;
         }
-
+        
         double evaporation = energy * energyEvaporation * delta;
         
         setEnergy(energy + intake - evaporation);

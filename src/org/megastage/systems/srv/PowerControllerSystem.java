@@ -33,7 +33,11 @@ public class PowerControllerSystem extends EntitySystem {
     @Override
     protected boolean checkProcessing() {
         if(Time.value >= wakeup) {
-            delta = (Time.value + interval - wakeup) / 1000.0;
+            if(wakeup == 0) {
+                delta = 0;
+            } else {
+                delta = (Time.value + interval - wakeup) / 1000.0;
+            }
             wakeup = Time.value + interval;
             return true;
         }

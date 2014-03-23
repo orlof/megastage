@@ -299,7 +299,7 @@
                 <component type="Position" dx="7" dy="1" dz="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="CollisionSphere" radius="0"/>
-                <component type="dcpu.VirtualForceField" min_radius="5" max_radius="50" energy_density="50" energy_evaporation="0.005" energy="0" power="1000"/>
+                <component type="dcpu.VirtualForceField" min_radius="5" max_radius="30" energy_density="50" energy_evaporation="0.005" energy="0" power="1000"/>
                 <component type="gfx.ForceFieldGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
@@ -645,7 +645,7 @@
                 <component type="Position" dx="7" dy="1" dz="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="CollisionSphere" radius="0"/>
-                <component type="dcpu.VirtualForceField" min_radius="5" max_radius="50" energy_density="50" energy_evaporation="0.005" energy="0" power="1000"/>
+                <component type="dcpu.VirtualForceField" min_radius="5" max_radius="30" energy_density="50" energy_evaporation="0.005" energy="0" power="1000"/>
                 <component type="gfx.ForceFieldGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>

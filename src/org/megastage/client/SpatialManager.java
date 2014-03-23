@@ -89,6 +89,7 @@ public class SpatialManager {
     private HashMap<Node, Entity> entities = new HashMap<>();
     
     public SpatialManager(SimpleApplication app) {
+        super();
         this.app = app;
         assetManager = app.getAssetManager();
         
