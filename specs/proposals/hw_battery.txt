@@ -1,0 +1,34 @@
+Battery    
+
+
+
+
+
+DCPU-16 Hardware Info:
+
+    Name: Battery
+    ID: 0x83fc39b2, version: 0xac1d
+    Manufacturer: 0x3867ab5f (URI Oasis)
+
+
+
+
+Description:
+
+
+    
+Interrupt behavior:
+    When a HWI is received by the Battery, it reads the A register and
+    does one of the following actions:
+    
+    0: GET_ENERGY
+
+    b <- current stored energy
+
+    1: SET_INPUT
+
+    b -> MW recharge rate
+
+    2: SET_OUTPUT
+
+    b -> MW dischange rate

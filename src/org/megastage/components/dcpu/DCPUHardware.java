@@ -23,6 +23,9 @@ public abstract class DCPUHardware extends BaseComponent {
     public static final int TYPE_GRAVITATION_SENSOR = 0x3846bc64;
     public static final int TYPE_THERMAL_LASER = 0xEEFA0000;
     public static final int TYPE_FORCE_FIELD = 0xF1E7D666;
+    public static final int TYPE_POWER_PLANT = 0x1574886a;
+    public static final int TYPE_POWER_CONTROLLER = 0xaff14367;
+    public static final int TYPE_BATTERY = 0x83fc39b2;
     
     public static final int MANUFACTORER_NYA_ELEKTRISKA = 0x1C6C8B36;
     public static final int MANUFACTORER_MOJANG = 0x4AB55488;
@@ -34,12 +37,15 @@ public abstract class DCPUHardware extends BaseComponent {
     public static final int MANUFACTORER_OTEC = 0xb8badde8;
     public static final int MANUFACTORER_ENDER_INNOVATIONS = 0xE142A1FA;
     public static final int MANUFACTORER_CRADLE_TECH = 0xa3783fc8;
+    public static final int MANUFACTORER_SORATOM = 0x80a9ddea;
+    public static final int MANUFACTORER_URI_OASIS = 0x3867ab5f;
 
     public int type;
     public int revision;
     public int manufactorer;
     public DCPU dcpu;
     public Entity ship;
+    public char priority = 0;
 
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
         dcpu = Mapper.DCPU.get(parent);

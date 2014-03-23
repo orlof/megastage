@@ -1,0 +1,59 @@
+Enter name here
+    
+
+
+
+
+
+DCPU-16 Hardware Info:
+
+    Name: Force Field
+    ID: 0xF1E7D666, version: 0x0911
+    Manufacturer: 0xa3783fc8 (Cradle Tech)
+
+
+
+
+Description:
+    Minimum size for field is r=5m
+    Field must contain 50 MWs / m2 of surface area
+    After field collapse 30s particle cleanup period is required before restart.
+    Shield evaporates energy at the rate of 0.5 % / s.
+    
+Interrupt behavior:
+    When a HWI is received by the Enter name here, it reads the A register and
+    does one of the following actions:
+    
+    0: GET_STATUS
+
+    Sets the B register to force shield status
+
+    0x0000 Device was shut down or never started
+    0x0001 Field formation in progress
+    0x0002 Field active
+
+    1: GET_FIELD_RADIUS
+
+    Sets the B register to force field radius (m)
+
+    2: GET_FIELD_ENERGY
+
+    Sets the registers B:C to energy stored in field (MWs)
+
+    3: SET_ENERGY_INTAKE
+
+    Sets the power intake to B (MW)
+
+
+
+NOTE: possible tinkering variables (mean):
+minimum field size (5m)
+energy / m2 (50kWs)
+energy conversion rate (1.0) 
+cleanup period (30s)
+evaporation rate (0.5% / s)
+laser absorbtion rate (1.0)
+plasma absorbtion rate (1.0)
+
+
+

@@ -1,0 +1,20 @@
+Material My Material : ShaderBlow/MatDefs/Electricity/Electricity2.j3md {
+     MaterialParameters {
+        width : 0.02
+        speed : -0.01
+        fallOff : 2.154086
+        noise : Repeat Textures/Electricity/Unbenannt.png
+        lines : 0.514
+        noiseAmount : 0.14
+        color : 0.1 0.8 1.0 0.5
+        Fog : 10.0
+     }
+    AdditionalRenderState {
+      Blend Alpha
+      ColorWrite On
+      DepthTest On
+      FaceCull Off
+      Wireframe Off
+      DepthWrite Off
+    }
+}

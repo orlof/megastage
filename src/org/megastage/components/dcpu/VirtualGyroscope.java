@@ -2,6 +2,7 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
@@ -11,7 +12,7 @@ import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.protocol.Message;
 import org.megastage.util.Vector3d;
 
-public class VirtualGyroscope extends DCPUHardware {
+public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     public static transient final char STATUS_OFF = 0;
     public static transient final char STATUS_ON = 1;
     public static transient final char STATUS_NO_POWER = 2;
@@ -83,6 +84,10 @@ public class VirtualGyroscope extends DCPUHardware {
         }
     }
     
+    public double getPowerLevel() {
+        return Math.abs(curTorque / 200.0);
+    }
+    
     public double getRotation(ShipGeometry geom) {
         if(mapVersion < geom.map.version) {
             //TODO this is huge perf problem, inertia change should be 
@@ -107,5 +112,17 @@ public class VirtualGyroscope extends DCPUHardware {
     @Override
     public Message synchronize(Entity entity) {
         return replicateIfDirty(entity);
+    }
+
+    @Override
+    public double consume(double available, double delta) {
+        double intake = delta * getPowerLevel();
+        if(intake > available) {
+            Log.info("Not enough power: " + intake + "/" + available);
+            setTorque((char) 0);
+            intake = 0;
+        }
+
+        return intake;
     }
 }

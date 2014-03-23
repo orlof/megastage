@@ -9,6 +9,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.protocol.Message;
 import org.megastage.protocol.Network;
+import org.megastage.util.Vector3d;
 
 /**
  * MegaStage
@@ -167,6 +168,23 @@ public abstract class BaseComponent implements Component {
         return defaultValue;
     }
 
+    protected static Vector3d getVector3d(Element config, String attrName, Vector3d defaultValue) {
+        Attribute attr = config.getAttribute(attrName);
+
+        if(attr != null) {
+            String val = attr.getValue();
+            String[] vec = val.split(",");
+            
+            return new Vector3d(
+                    Double.parseDouble(vec[0]), 
+                    Double.parseDouble(vec[1]), 
+                    Double.parseDouble(vec[2]));
+        }
+
+        return defaultValue;
+    }
+    
+    
     @Override
     public String toString() {
         return getClass().getSimpleName();

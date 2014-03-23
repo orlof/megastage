@@ -8,8 +8,10 @@ import org.megastage.util.Time;
 
 public class SystemTemplate extends EntitySystem {
     private long interval;
-    private long acc;
+    private long wakeup;
     
+    private double delta;
+
     public SystemTemplate(Aspect aspect) {
         super(aspect);
     }
@@ -21,9 +23,10 @@ public class SystemTemplate extends EntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
-                return true;
+        if(Time.value >= wakeup) {
+            delta = (Time.value + interval - wakeup) / 1000.0;
+            wakeup = Time.value + interval;
+            return true;
         }
         return false;
     }

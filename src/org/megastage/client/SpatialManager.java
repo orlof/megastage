@@ -63,10 +63,12 @@ import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.gfx.VoidGeometry;
 import org.megastage.components.Explosion;
+import org.megastage.components.gfx.BatteryGeometry;
 import org.megastage.components.gfx.ForceFieldGeometry;
 import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.components.gfx.PPSGeometry;
+import org.megastage.components.gfx.PowerPlantGeometry;
 import org.megastage.components.gfx.RadarGeometry;
 import org.megastage.components.gfx.ThermalLaserGeometry;
 import org.megastage.util.Cube3dMap;
@@ -87,6 +89,7 @@ public class SpatialManager {
     private HashMap<Node, Entity> entities = new HashMap<>();
     
     public SpatialManager(SimpleApplication app) {
+        super();
         this.app = app;
         assetManager = app.getAssetManager();
         
@@ -509,13 +512,18 @@ public class SpatialManager {
     }
 
     private void leaveShip() {
-        if(ClientGlobals.shipEntity != null) {
-            Log.info(ID.get(ClientGlobals.shipEntity));
+        Entity ship = ClientGlobals.shipEntity;
+        
+        if(ship != null) {
+            Log.info(ID.get(ship));
 
-            Node shipNode = getNode(ClientGlobals.shipEntity);
+            Node shipNode = getNode(ship);
             ClientGlobals.sysMovNode.attachChild(shipNode);
 
             ClientGlobals.shipEntity = null;
+            Mapper.ROTATION.get(ship).dirty = true;
+            Mapper.POSITION.get(ship).dirty = true;
+            
             ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
         }
     }
@@ -716,11 +724,16 @@ public class SpatialManager {
         final Cylinder cyl = new Cylinder(6, 6, 0.2f, 0.2f, 100, true, false);
 
         final Geometry beam = new Geometry("beam", cyl);
-        beam.setLocalTranslation(0, 0, -100/2f-2.5f);
+        beam.setQueueBucket(Bucket.Transparent); // Remenber to set the queue bucket to transparent for the spatial
+        beam.setLocalTranslation(0, 0, -100/2f);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Yellow);
+        ColorRGBA yellow = new ColorRGBA(1f, 1f, 0f, 0.8f);
+        mat.setColor("Color", yellow);
         mat.setColor("GlowColor", ColorRGBA.Yellow);
         beam.setMaterial(mat);
+        // TRANSPARENT?
+        mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        // ---
         beam.addControl(new ThermalLaserControl(entity, cyl));
 
         final Geometry weapon = new Geometry("weapon", new Cylinder(16, 16, 0.5f, 0.3f, data.length, true, false));
@@ -746,10 +759,25 @@ public class SpatialManager {
         base.setMaterial(getMaterial("rock09.jpg"));
         base.setLocalTranslation(0, -0.45f, 0);
 
-        final Geometry dome = new Geometry("dome", new Dome(Vector3f.ZERO, 12, 12, 0.4f, false));
+//        final Geometry dome = new Geometry("dome", new Sphere(12, 12, 0.45f));
+//
+//        dome.setLocalTranslation(0, 0.05f, 0);
+//        dome.setMaterial(material(ColorRGBA.Blue, true));
+//
+        final Node dome = new Node("chamber");
 
-        dome.setLocalTranslation(0, -0.5f, 0);
-        dome.setMaterial(material(ColorRGBA.Blue, true));
+        Geometry cylinder = new Geometry("item", new Sphere(12, 12, 0.45f));
+        dome.attachChild(cylinder);
+        dome.setLocalTranslation(0, 0.05f, 0);
+        //dome.setLocalRotation(new Quaternion().fromAngles((float) (Math.PI / 2.0), 0, 0));
+        //chamber.setLocalTranslation(0, -0.4f, 0);
+        dome.setMaterial(material(ColorRGBA.Black, true));
+        
+        //Spatial cylinder = assetManager.loadModel("Models/jme_lightblow.mesh.xml");
+
+        //cylinder.setMaterial(new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md")); 
+
+        electrify(dome, "Materials/Electricity/electricity3_line2.j3m");
 
         // Create spatial to be the shield
         final Sphere sphere = new Sphere(30, 30, 15);
@@ -761,7 +789,7 @@ public class SpatialManager {
         material.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         material.setFloat("MaxDistance", 1);
 
-        ForceFieldControl forceFieldControl = new ForceFieldControl(entity, shield, material);
+        ForceFieldControl forceFieldControl = new ForceFieldControl(entity, shield, material, sphere);
         shield.addControl(forceFieldControl); // Add the control to the spatial
         forceFieldControl.setEffectSize(10f); // Set the effect size
         forceFieldControl.setColor(new ColorRGBA(0, 0, 1, 1)); // Set effect color
@@ -779,4 +807,89 @@ public class SpatialManager {
             return null;
         }});
     }
+
+    public void setupPowerPlant(Entity entity, PowerPlantGeometry aThis) {
+        final Node node = getNode(entity);
+        final PositionControl positionControl = new  PositionControl(entity, false);
+        final RotationControl rotationControl = new  RotationControl(entity);
+
+        final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
+        base.setMaterial(getMaterial("rock09.jpg"));
+        //base.setLocalTranslation(0, -0.45f, 0);
+        base.setLocalTranslation(0, -0.45f, 0);
+
+        final Node chamber = new Node("chamber");
+
+        Geometry cylinder = new Geometry("Reactor core", new Cylinder(16, 16, 0.45f, 0.9f, true));
+        chamber.attachChild(cylinder);
+        chamber.setLocalTranslation(0, 0.1f, 0);
+        chamber.setLocalRotation(new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0));
+        //chamber.setLocalTranslation(0, -0.4f, 0);
+        chamber.setMaterial(material(ColorRGBA.White, true));
+        
+        //Spatial cylinder = assetManager.loadModel("Models/jme_lightblow.mesh.xml");
+
+        //cylinder.setMaterial(new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md")); 
+
+        electrify(chamber, "Materials/Electricity/electricity1_2.j3m");
+
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            node.addControl(rotationControl);
+
+            attach(node, base, true);
+            attach(node, chamber, true);
+            return null;
+        }});
+    }
+    
+    void electrify(Node man, String material) {
+        Material mat = assetManager.loadMaterial(material);
+        
+        for (Spatial child : ((Node)man).getChildren()){
+            if (child instanceof Geometry){
+                Geometry electricity = new Geometry("electrified_" + child.getName());
+                electricity.setQueueBucket(Bucket.Transparent);
+                electricity.setMesh(((Geometry)child).getMesh());
+                electricity.setMaterial(mat);
+                ((Node)man).attachChild(electricity);
+            }
+        }
+    }
+
+    public void setupBattery(Entity entity, BatteryGeometry aThis) {
+        final Node node = getNode(entity);
+        final PositionControl positionControl = new  PositionControl(entity, false);
+        final RotationControl rotationControl = new  RotationControl(entity);
+
+        final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
+        base.setMaterial(getMaterial("rock09.jpg"));
+        //base.setLocalTranslation(0, -0.45f, 0);
+        base.setLocalTranslation(0, -0.45f, 0);
+
+        final Node chamber = new Node("chamber");
+
+        Geometry cylinder = new Geometry("Battery core", new Cylinder(6, 6, 0.45f, 0.9f, true));
+        chamber.attachChild(cylinder);
+        chamber.setLocalTranslation(0, 0.1f, 0);
+        chamber.setLocalRotation(new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0));
+        //chamber.setLocalTranslation(0, -0.4f, 0);
+        chamber.setMaterial(material(ColorRGBA.Yellow, true));
+        
+        //Spatial cylinder = assetManager.loadModel("Models/jme_lightblow.mesh.xml");
+
+        //cylinder.setMaterial(new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md")); 
+
+        electrify(chamber, "Materials/Electricity/electricity3_line1.j3m");
+
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            node.addControl(rotationControl);
+
+            attach(node, base, true);
+            attach(node, chamber, true);
+            return null;
+        }});
+    }
+    
 }

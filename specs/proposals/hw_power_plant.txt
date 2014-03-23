@@ -1,0 +1,32 @@
+Fusion Power Plant
+    
+
+
+
+
+
+DCPU-16 Hardware Info:
+
+    Name: Power Plant
+    ID: 0x1574886a, version: 0x0911
+    Manufacturer: 0x80a9ddea (Soratom)
+
+
+
+
+Description:
+
+    
+Interrupt behavior:
+    When a HWI is received by the Enter name here, it reads the A register and
+    does one of the following actions:
+    
+    0: GET_STATUS
+
+    1: SET_PRODUCTION
+
+    b <- MWs
+
+    2: GET_TEMPERATURE
+
+

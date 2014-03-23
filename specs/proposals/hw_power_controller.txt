@@ -1,0 +1,60 @@
+<Ender Innovations>
+"It's alive! Dear lord almighty, it's alive!"
+
+DCPU-16 Hardware Info:
+Name: UPCU 
+(Universal Power Control Unit)
+Version: 256
+ID: 0xaff14367
+Manufacturer: 0xE142A1FA (Ender Innovations)
+
+Description:
+	This is a central control unit that manages and watches the powerflow 
+        throughout the ship. This system features a power priority system in 
+        which latter hardware devices get power only after the preceeding 
+        devices get fully powered. Devices in same priority level get power
+        in unspecified order
+
+	The priority list starts at 0 (highest priority) and ends at 65535 
+        (lowest priority).
+
+        WARNING: UCPU must be installed in ship power grid core and UCPU's
+        generator control interface does not support multiple UCPUs in the
+        same power grid. Results for plugging two controllers are not defined.
+
+Interrupt behavior:
+
+A - Behavior
+
+0 - POLL_DEVICE Sets B to the state code, C to the error code.
+
+	Status codes:
+	0x0: generators inactive 
+	0x1: generators active 
+	
+	Error codes:
+	0x0: nominal
+	0x1: underflow (power needs > power input)
+	0x2: overflow (power input > power needs)
+	0x3: OVERLOAD (power overflow > overflow tolerance)
+	0xF: Unknown
+
+1 - GET_POWER_FLUX 
+
+    Sets B, C registers to information about power flux as defined 
+    below:
+	
+    B: Total power production rate (Megawatts)
+    C; Total power consumption rate (Megawatts)
+
+2 - SET_PRIORITY 
+    
+    Sets the priority of hardware with pin B to priority level C.
+
+    This DCPU is connected to pin 0xFFFF.
+
+3 - GET_PRIORITY 
+
+    Sets C to the priority of the device with hardware pin in B.
+
+    This DCPU is connected to pin 0xFFFF.

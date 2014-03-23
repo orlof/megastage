@@ -1,20 +1,26 @@
 package org.megastage.components.transfer;
 
 import org.megastage.components.BaseComponent;
+import org.megastage.components.dcpu.VirtualForceField;
 
 public class ForceFieldData extends BaseComponent {
-    public float energy;
     public float radius;
+    public char status;
 
-    public static ForceFieldData create(float radius, float damage) {
+    public static ForceFieldData create(float radius, char status) {
         ForceFieldData data = new ForceFieldData();
         data.radius = radius;
-        data.energy = damage;
+        data.status = status;
         return data;
+    }
+    
+    public boolean isVisible() {
+        return status == VirtualForceField.STATUS_FIELD_ACTIVE;
     }
 
     @Override
     public String toString() {
-        return "ForceFieldData{" + "energy=" + energy + ", radius=" + radius + '}';
+        return "ForceFieldData{" + "radius=" + radius + ", status=" + (int) status + '}';
     }
+
 }

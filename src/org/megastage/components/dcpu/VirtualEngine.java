@@ -11,7 +11,7 @@ import org.megastage.protocol.Message;
 import org.megastage.protocol.Network;
 import org.megastage.util.Vector3d;
 
-public class VirtualEngine extends DCPUHardware {
+public class VirtualEngine extends DCPUHardware implements PowerConsumer {
     public int x, y, z;
     public double maxForce;
 
@@ -88,5 +88,17 @@ public class VirtualEngine extends DCPUHardware {
     @Override
     public Message synchronize(Entity entity) {
         return replicateIfDirty(entity);
+    }
+
+    @Override
+    public double consume(double available, double delta) {
+        double intake = delta * getPowerLevel();
+        if(intake > available) {
+            Log.info("Not enough power: " + intake + "/" + available);
+            setPower((char) 0);
+            intake = 0;
+        }
+
+        return intake;
     }
 }

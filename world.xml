@@ -137,7 +137,7 @@
             <map z="10">   ###   ###   </map>
             <map z="11">   #       #   </map>
             <map z="12">   #       #   </map>
-            <map z="13">   #  GGG  #   </map>
+            <map z="13">   #* GGG *#   </map>
             <map z="14">   #########   </map>
             <map z="15">               </map>
           <map y="2" x="012345678901234"/>
@@ -259,11 +259,47 @@
                 <component type="srv.SynchronizeFlag"/>
                 <group name="replicate"/>
             </entity>
+            <entity name="Power Controller">
+                <component type="dcpu.VirtualPowerController"/>
+                <component type="gfx.BindTo"/>
+            </entity>
+            <entity name="PowerPlant">
+                <component type="Position" dx="4" dy="1" dz="13"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualPowerPlant" capacity="5000"/>
+                <component type="gfx.PowerPlantGeometry"/>
+                <component type="gfx.BindTo"/>
+                <group name="replicate"/>
+            </entity>
+            <entity name="PowerPlant">
+                <component type="Position" dx="4" dy="2" dz="13"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualPowerPlant" capacity="5000"/>
+                <component type="gfx.PowerPlantGeometry"/>
+                <component type="gfx.BindTo"/>
+                <group name="replicate"/>
+            </entity>
+            <entity name="Battery">
+                <component type="Position" dx="10" dy="1" dz="13"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualBattery" capacity="5000"/>
+                <component type="gfx.BatteryGeometry"/>
+                <component type="gfx.BindTo"/>
+                <group name="replicate"/>
+            </entity>
+            <entity name="Battery">
+                <component type="Position" dx="10" dy="2" dz="13"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualBattery" capacity="5000"/>
+                <component type="gfx.BatteryGeometry"/>
+                <component type="gfx.BindTo"/>
+                <group name="replicate"/>
+            </entity>
             <entity name="ForceField">
                 <component type="Position" dx="7" dy="1" dz="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <component type="CollisionSphere" radius="15"/>
-                <component type="dcpu.VirtualForceField" energy="200" max_energy="10000"/>
+                <component type="CollisionSphere" radius="0"/>
+                <component type="dcpu.VirtualForceField" min_radius="5" max_radius="30" energy_density="50" energy_evaporation="0.005" energy="0" power="1000"/>
                 <component type="gfx.ForceFieldGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
@@ -280,7 +316,7 @@
             <entity name="Engine">
                 <!-- engine vector specifies the direction of ship acceleration.
                      relative to ship's starting orientation (heading +z) -->
-                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_power="10e4"/>
+                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_power="10000"/>
                 <component type="Position" dx="7" dy="7" dz="6"/>
                 <component type="gfx.EngineGeometry"/>
                 <component type="gfx.BindTo"/>
@@ -288,7 +324,7 @@
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <group name="replicate"/>
             </entity>
-            <!--entity name="ThermalLaser">
+            <entity name="ThermalLaser">
                 <component type="dcpu.VirtualThermalLaser" />
                 <component type="Position" dx="0" dy="0" dz="2"/>
                 <component type="gfx.ThermalLaserGeometry"/>
@@ -305,7 +341,7 @@
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <group name="replicate"/>
-            </entity-->
+            </entity>
             <entity name="Gyroscope x">
                 <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" torque="600000"/>
                 <component type="gfx.GyroscopeGeometry"/>
@@ -410,7 +446,7 @@
             <map z="10">   ###   ###   </map>
             <map z="11">   #       #   </map>
             <map z="12">   #       #   </map>
-            <map z="13">   #  GGG  #   </map>
+            <map z="13">   #* GGG  #   </map>
             <map z="14">   #########   </map>
             <map z="15">               </map>
           <map y="2" x="012345678901234"/>
@@ -427,7 +463,7 @@
             <map z="10">   ###   ###   </map>
             <map z="11">   #       #   </map>
             <map z="12">   #       #   </map>
-            <map z="13">   #       #   </map>
+            <map z="13">   #*      #   </map>
             <map z="14">   #########   </map>
             <map z="15">       E       </map>
           <map y="3" x="012345678901234"/>
@@ -532,6 +568,42 @@
                 <component type="srv.SynchronizeFlag"/>
                 <group name="replicate"/>
             </entity>
+            <entity name="Power Controller">
+                <component type="dcpu.VirtualPowerController"/>
+                <component type="gfx.BindTo"/>
+            </entity>
+            <entity name="PowerPlant">
+                <component type="Position" dx="4" dy="1" dz="13"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualPowerPlant" capacity="5000"/>
+                <component type="gfx.PowerPlantGeometry"/>
+                <component type="gfx.BindTo"/>
+                <group name="replicate"/>
+            </entity>
+            <entity name="PowerPlant">
+                <component type="Position" dx="4" dy="2" dz="13"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualPowerPlant" capacity="5000"/>
+                <component type="gfx.PowerPlantGeometry"/>
+                <component type="gfx.BindTo"/>
+                <group name="replicate"/>
+            </entity>
+            <entity name="Battery">
+                <component type="Position" dx="10" dy="1" dz="13"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualBattery" capacity="5000"/>
+                <component type="gfx.BatteryGeometry"/>
+                <component type="gfx.BindTo"/>
+                <group name="replicate"/>
+            </entity>
+            <entity name="Battery">
+                <component type="Position" dx="10" dy="2" dz="13"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualBattery" capacity="5000"/>
+                <component type="gfx.BatteryGeometry"/>
+                <component type="gfx.BindTo"/>
+                <group name="replicate"/>
+            </entity>
             <entity name="Generic Keyboard">
                 <component type="dcpu.VirtualKeyboard"/>
                 <component type="gfx.BindTo"/>
@@ -543,7 +615,7 @@
             <entity name="Engine">
                 <!-- engine vector specifies the direction of ship acceleration.
                      relative to ship's starting orientation (heading +z) -->
-                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_power="10e4"/>
+                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_power="10000"/>
                 <component type="Position" dx="7" dy="7" dz="6"/>
                 <component type="gfx.EngineGeometry"/>
                 <component type="gfx.BindTo"/>
@@ -566,14 +638,14 @@
                 <component type="gfx.ThermalLaserGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
-                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="Rotation" x="0" y="-90" z="0"/>
                 <group name="replicate"/>
             </entity>
             <entity name="ForceField">
                 <component type="Position" dx="7" dy="1" dz="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <component type="CollisionSphere" radius="15"/>
-                <component type="dcpu.VirtualForceField" energy="200" max_energy="10000"/>
+                <component type="CollisionSphere" radius="0"/>
+                <component type="dcpu.VirtualForceField" min_radius="5" max_radius="30" energy_density="50" energy_evaporation="0.005" energy="0" power="1000"/>
                 <component type="gfx.ForceFieldGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>

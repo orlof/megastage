@@ -10,6 +10,7 @@ import org.megastage.systems.srv.EntitySynchronizeSystem;
 import com.artemis.World;
 import com.artemis.managers.GroupManager;
 import com.artemis.managers.TagManager;
+import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.systems.*;
@@ -20,6 +21,8 @@ import org.megastage.systems.srv.EntityDeleteSystem;
 import org.megastage.systems.srv.EntityReplicateSystem;
 import org.megastage.systems.srv.ExplosionSystem;
 import org.megastage.systems.srv.EntityInitializeSystem;
+import org.megastage.systems.srv.ForceFieldSystem;
+import org.megastage.systems.srv.PowerControllerSystem;
 import org.megastage.systems.srv.RadarManagerSystem;
 import org.megastage.systems.srv.TargetManagerSystem;
 import org.megastage.systems.srv.ShipMovementSystem;
@@ -53,6 +56,8 @@ public class Game {
         world.setSystem(new EntitySynchronizeSystem(50));
         world.setSystem(new NetworkSystem());
 
+        world.setSystem(new PowerControllerSystem(1000));
+        
         world.setSystem(new OrbitalMovementSystem());
 
         world.setSystem(new EngineAccelerationSystem());
@@ -68,6 +73,7 @@ public class Game {
         world.setSystem(new SphereOfInfluenceSystem(10000));
         world.setSystem(new TargetManagerSystem());
         
+        world.setSystem(new ForceFieldSystem(1000));
         world.setSystem(new ThermalLaserSystem());
 
         world.setSystem(new DCPUSystem());
@@ -85,6 +91,7 @@ public class Game {
     }
 
     public void loopForever() throws InterruptedException {
+        Time.value = System.currentTimeMillis() - 20;
         while (true) {
             long ctime = System.currentTimeMillis();
             world.setDelta((ctime - Time.value) / 1000.0f);

@@ -38,7 +38,7 @@ public class Main extends SimpleApplication {
         settings.setSettingsDialogImage("org/megastage/flash.jpg");
         settings.setTitle("Megastage");
         settings.setFullscreen(true);
-        settings.setResolution(ClientGlobals.gfxSettings.SCREEN_WIDTH, ClientGlobals.gfxSettings.SCREEN_HEIGHT);
+        //settings.setResolution(ClientGlobals.gfxSettings.SCREEN_WIDTH, ClientGlobals.gfxSettings.SCREEN_HEIGHT);
         Main app = new Main();
 
         ClientGlobals.app = app;
@@ -116,7 +116,7 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        Time.value = System.currentTimeMillis() + ClientGlobals.timeDiff;
+//        Time.value = System.currentTimeMillis() + ClientGlobals.timeDiff;
     }
 
     @Override
