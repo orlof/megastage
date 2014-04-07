@@ -40,6 +40,7 @@ public class ClientGlobals {
     public static Picture crosshair;
     public static String player;
     public static DCPUMenuState dcpuMenuState;
-    
+    public static String[] bootroms;
+    public static String[] floppies;
 }
 

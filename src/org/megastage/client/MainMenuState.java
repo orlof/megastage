@@ -42,7 +42,6 @@ public class MainMenuState extends BaseAppState {
 
     @Override
     protected void initialize( Application app ) {
-        Log.info("INITIALIZE");
         settings = new XMLSettings(".megastage", "user_options.xml");
 
         menu = new Container(new SpringGridLayout(), new ElementId(LemurStyles.MENU_ID), "retro");
@@ -117,7 +116,6 @@ public class MainMenuState extends BaseAppState {
 
     @Override
     protected void enable() {
-        Log.info("ENABLE");
         Main main = (Main)getApplication();
         main.getGuiNode().attachChild(menu);
         startMusic();
@@ -139,9 +137,6 @@ public class MainMenuState extends BaseAppState {
         public void execute( Button source ) {
             storeOptions();
             stopMusic();
-//            selectUp.playInstance();
-            //getStateManager().attach(new SinglePlayerState());
-            ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Inherit);
             setEnabled(false);
             getApplication().getInputManager().setCursorVisible(false);
             getStateManager().attach(ClientGlobals.artemis);

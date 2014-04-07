@@ -119,15 +119,15 @@ public class CommandHandler implements AnalogListener, ActionListener {
         ClientGlobals.userCommand.unpickItem();
     }
 
-    public int mode = CharacterMode.WALK;
+    public int mode = CharacterMode.NONE;
     private InputManager inputManager;
     private DCPURawInputListener dcpuListener = new DCPURawInputListener();
 
     public void registerWithInput(InputManager inputManager) {
         this.inputManager = inputManager;
 
-        inputManager.setCursorVisible(false);
-        initWalkMode();
+        //inputManager.setCursorVisible(false);
+        //initWalkMode();
     }
 
     public void unregisterInput() {
@@ -416,6 +416,11 @@ public class CommandHandler implements AnalogListener, ActionListener {
         inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
 
         inputManager.addListener(this, walkMappings);
+
+        ClientGlobals.app.enqueue(new Callable() { @Override public Object call() throws Exception {
+            ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Inherit);
+            return null;
+        }});
     }
 
     private void exitWalkMode() {
@@ -423,6 +428,11 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
         mode = CharacterMode.NONE;
         inputManager.clearMappings();
+
+        ClientGlobals.app.enqueue(new Callable() { @Override public Object call() throws Exception {
+            ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Always);
+            return null;
+        }});
     }
 
     public void initDCPUMode() {

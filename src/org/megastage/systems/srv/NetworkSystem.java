@@ -368,14 +368,14 @@ public class NetworkSystem extends VoidEntitySystem {
         
         VirtualFloppyDrive vdev = (VirtualFloppyDrive) connection.item;
         vdev.eject();
-        FloppyDisk disc = new FloppyDisk();
-        try {
-            disc.load(new File(change.filename));
-            Log.info("" + change.filename);
-        } catch (IOException ex) {
-            Log.warn("Error loading floppy image " + ex);
-        }
-        vdev.insert(disc);
+//        FloppyDisk disc = new FloppyDisk();
+//        try {
+//            disc.load(new File(change.filename));
+//            Log.info("" + change.filename);
+//        } catch (IOException ex) {
+//            Log.warn("Error loading floppy image " + ex);
+//        }
+        vdev.insert(change.filename);
         unpickItem(connection, null);
     }
 
@@ -385,7 +385,7 @@ public class NetworkSystem extends VoidEntitySystem {
         }
         
         VirtualFloppyDrive vdev = (VirtualFloppyDrive) connection.item;
-        vdev.dcpu.reset(change.filename);
+        vdev.reset(change.filename);
         unpickItem(connection, null);
     }
 

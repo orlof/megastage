@@ -2,13 +2,17 @@ package org.megastage.components.dcpu;
 
 import com.artemis.Entity;
 import com.artemis.World;
-import com.esotericsoftware.minlog.Log;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
-import org.megastage.util.Time;
+import org.megastage.components.transfer.VirtualFloppyDriveData;
+import org.megastage.protocol.Message;
 
 /**
  * Experimental, untested implementation of the MF35D Floppy Drive
@@ -57,6 +61,8 @@ public class VirtualFloppyDrive extends DCPUHardware {
     
     private FloppyDisk floppy;
     private FloppyOperation operation = new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
+    private HashMap<String, char[]> bootroms = new HashMap<>();
+    private HashMap<String, FloppyDisk> floppies = new HashMap<>();
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
@@ -66,20 +72,30 @@ public class VirtualFloppyDrive extends DCPUHardware {
 
         super.init(world, parent, element);
         
-        insert(new FloppyDisk());
-        
-        String filename = getStringValue(element, "floppy_image", null);
-        if(filename != null) {
-            try {
-                floppy.load(new File(filename));
-            } catch (IOException ex) {
-                Log.error(ex.toString());
+        File folder = new File("media");
+        for(File f: folder.listFiles()) {
+            if(f.isFile()) {
+                if(f.getName().endsWith(".bin")) {
+                    bootroms.put(f.getName(), load(f, 65536));
+                } else if(f.getName().endsWith(".d16")) {
+                    FloppyDisk fd = new FloppyDisk();
+                    fd.load(f);
+                    floppies.put(f.getName(), fd);
+                }
             }
         }
 
+        insert("empty.d16");
+        
         return null;
     }
 
+    @Override
+    public Message replicate(Entity entity) {
+        dirty = false;
+        return VirtualFloppyDriveData.create(bootroms, floppies).always(entity);
+    }
+    
     public void interrupt() {
         int a = dcpu.registers[0];
         if (a == 0) {
@@ -155,7 +171,7 @@ public class VirtualFloppyDrive extends DCPUHardware {
 
     @Override
     public void tick60hz() {
-        Log.info(operation.finish + " <= " + dcpu.cycles);
+        //Log.info(operation.finish + " <= " + dcpu.cycles);
         if (operation.finish <= dcpu.cycles) {
             switch (operation.type) {
                 case FloppyOperation.READ:
@@ -183,8 +199,8 @@ public class VirtualFloppyDrive extends DCPUHardware {
         }
     }
 
-    public void insert(FloppyDisk floppy) {
-        this.floppy = floppy;
+    public void insert(String title) {
+        this.floppy = floppies.get(title);
         if (floppy.isWriteProtected()) {
             setState(STATE_READY_WP);
         } else {
@@ -206,6 +222,10 @@ public class VirtualFloppyDrive extends DCPUHardware {
         return ejected;
     }
 
+    public void reset(String title) {
+        dcpu.reset(bootroms.get(title));
+    }
+
     private class FloppyOperation {
 
         private static final int NONE = 0;
@@ -218,16 +238,11 @@ public class VirtualFloppyDrive extends DCPUHardware {
         private long finish;
 
         public FloppyOperation(int type, int sector, int memory, long cycles) {
-            Log.info("" + cycles);
             this.type = type;
             this.sector = sector;
             this.memory = memory;
             //this.cycles = cycles;
-            if(cycles == Long.MAX_VALUE) {
-                this.finish = cycles;
-            } else {
-                this.finish = dcpu.cycles + cycles;
-            }
+            this.finish = cycles;
         }
     }
 
@@ -243,5 +258,21 @@ public class VirtualFloppyDrive extends DCPUHardware {
         this.track = 0;
         this.operation = new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
     }
+    
+    public char[] load(File file, int len) {
+        char[] data = new char[len];
+        try {
+            DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+            int i = 0;
+            for (; i < data.length; i++) {
+                data[i] = dis.readChar();
+            }
+            dis.close();
+        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (IOException e) {
+        }
+        return data;
+    }
+
 
 }

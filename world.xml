@@ -248,7 +248,16 @@
             <group name="replicate"/>
             <component type="gfx.VoidGeometry"/>
             <component type="gfx.BindTo"/>
-            <component type="dcpu.DCPU" bootrom="admiral.bin"/>
+            <component type="dcpu.DCPU" bootrom="media/admiral.bin"/>
+            <entity name="Floppy">
+                <component type="Position" dx="7" dy="1" dz="2"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualFloppyDrive" media="data"/>
+                <component type="gfx.FloppyDriveGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="UsableFlag"/>
+                <group name="replicate"/>
+            </entity>
             <entity name="LEM">
                 <component type="Position" dx="6" dy="1" dz="3"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
@@ -296,7 +305,7 @@
                 <group name="replicate"/>
             </entity>
             <entity name="ForceField">
-                <component type="Position" dx="7" dy="1" dz="2"/>
+                <component type="Position" dx="7" dy="2" dz="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="CollisionSphere" radius="0"/>
                 <component type="dcpu.VirtualForceField" min_radius="5" max_radius="30" energy_density="50" energy_evaporation="0.005" energy="0" power="1000"/>
@@ -557,11 +566,11 @@
             <group name="replicate"/>
             <component type="gfx.VoidGeometry"/>
             <component type="gfx.BindTo"/>
-            <component type="dcpu.DCPU" bootrom="admiral.bin"/>
+            <component type="dcpu.DCPU" bootrom="media/bootrom.bin"/>
             <entity name="Floppy">
                 <component type="Position" dx="7" dy="1" dz="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <component type="dcpu.VirtualFloppyDrive" floppy_image="admiral.d16"/>
+                <component type="dcpu.VirtualFloppyDrive" media="data"/>
                 <component type="gfx.FloppyDriveGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="UsableFlag"/>

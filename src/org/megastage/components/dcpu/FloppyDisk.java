@@ -15,20 +15,16 @@ public class FloppyDisk {
     private boolean writeProtected;
     private VirtualFloppyDrive drive;
 
-    public void load(File file) throws IOException {
-        DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
-        int i = 0;
+    public void load(File file) {
         try {
+            DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+            int i = 0;
             for (; i < data.length; i++) {
                 data[i] = dis.readChar();
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            for (; i < data.length; i++) {
-                data[i] = 0;
-            }
             dis.close();
+        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (IOException e) {
         }
     }
 

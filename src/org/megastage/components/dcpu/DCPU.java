@@ -51,7 +51,7 @@ public class DCPU extends BaseComponent {
     public BaseComponent[] init(World world, Entity parent, Element element) {
         this.ship = parent;
 
-        rom = getStringValue(element, "bootrom", "bootrom.bin");
+        rom = getStringValue(element, "bootrom", "media/bootrom.bin");
 
         try {
             load(new File(rom));
@@ -73,14 +73,8 @@ public class DCPU extends BaseComponent {
         return null;
     }
 
-    public void reset(String bootRom) {
-        Log.info(bootRom);
-        rom = bootRom;
-        try {
-            load(new File(rom));
-        } catch (IOException ex) {
-            Log.error("Cannot load bootRom", ex);
-        }
+    public void reset(char[] image) {
+        System.arraycopy(image, 0, ram, 0, image.length);
 
         powerOnTime = Time.value + 2500;
         startupTime = powerOnTime + 2500;

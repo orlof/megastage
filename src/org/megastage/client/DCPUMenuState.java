@@ -27,8 +27,6 @@ public class DCPUMenuState extends BaseAppState {
 
     private AudioNode music;
 
-    private Button b1,b2,b3,b4,exit;
-    
     public DCPUMenuState() {
     }
 
@@ -41,27 +39,23 @@ public class DCPUMenuState extends BaseAppState {
 
         Label title1 = menu.addChild(new Label("Change Boot-ROM", new ElementId(LemurStyles.MENU_TITLE_ID), "retro"));
 
-        b1 = menu.addChild(new Button("Control System", "retro"));
-        b1.addClickCommands(new ChangeBootROMCommand("bootrom.bin"));
-        b1.addCommands(Button.ButtonAction.HighlightOn, new Highlight());
-
-        b2 = menu.addChild(new Button("Admiral", "retro"));
-        b2.addClickCommands(new ChangeBootROMCommand("admiral.bin"));
-        b2.addCommands(Button.ButtonAction.HighlightOn, new Highlight());
-
+        for(String title: ClientGlobals.bootroms) {
+            Button b = menu.addChild(new Button(title, "retro"));
+            b.addClickCommands(new ChangeBootROMCommand(title));
+            b.addCommands(Button.ButtonAction.HighlightOn, new Highlight());
+        }
+        
         Label title2 = menu.addChild(new Label("Change Floppy", new ElementId(LemurStyles.MENU_TITLE_ID), "retro"));
 
-        b3 = menu.addChild(new Button("Admiral Utils", "retro"));
-        b3.addClickCommands(new ChangeFloppyCommand("admiral.d16"));
-        b3.addCommands(Button.ButtonAction.HighlightOn, new Highlight());
-
-        b4 = menu.addChild(new Button("Whatever", "retro"));
-        b4.addClickCommands(new ChangeFloppyCommand("empty.d16"));
-        b4.addCommands(Button.ButtonAction.HighlightOn, new Highlight());
-
+        for(String title: ClientGlobals.floppies) {
+            Button b = menu.addChild(new Button(title, "retro"));
+            b.addClickCommands(new ChangeFloppyCommand(title));
+            b.addCommands(Button.ButtonAction.HighlightOn, new Highlight());
+        }
+        
         // We'll add exit later in the grid to get some space for the
         // menu panel.
-        exit = menu.addChild(new Button("Resume", "retro"), 10, 0);
+        Button exit = menu.addChild(new Button("Resume", "retro"), 10, 0);
         exit.addClickCommands(new ResumeCommand());
         exit.addCommands(Button.ButtonAction.HighlightOn, new Highlight());
 
@@ -84,16 +78,9 @@ public class DCPUMenuState extends BaseAppState {
 
     @Override
     protected void enable() {
-        Log.info("");
-        for(Object o: exit.getClickCommands()) {
-            Log.info(o.toString());
-            Log.info(exit.toString());
-            Log.info(""+exit.isEnabled());
-        }
         ClientGlobals.app.enqueue(new Callable() { @Override public Object call() throws Exception {
             Main main = (Main)getApplication();
             main.getGuiNode().attachChild(menu);
-            ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Always);
             main.getInputManager().setCursorVisible(true);
             return null;
         }});
@@ -106,7 +93,6 @@ public class DCPUMenuState extends BaseAppState {
         ClientGlobals.app.enqueue(new Callable() { @Override public Object call() throws Exception {
             menu.removeFromParent();
             getApplication().getInputManager().setCursorVisible(false);
-            ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Inherit);
             return null;
         }});
 
