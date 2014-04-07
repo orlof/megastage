@@ -4,6 +4,7 @@ import com.artemis.Entity;
 import com.cubes.BlockTerrainControl;
 import com.cubes.Vector3Int;
 import com.esotericsoftware.minlog.Log;
+import com.jme3.app.state.AppStateManager;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.InputManager;
@@ -15,6 +16,8 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import java.util.concurrent.Callable;
 import org.megastage.components.Rotation;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.protocol.CharacterMode;
@@ -30,6 +33,10 @@ public class CommandHandler implements AnalogListener, ActionListener {
         "WALK_LookDown",
         "DCPU_Exit",
         "GAME_Exit",
+    };
+
+    private static String[] menuMappings = new String[]{
+        "MENU_Exit",
     };
 
     private static String[] walkMappings = new String[]{
@@ -140,6 +147,18 @@ public class CommandHandler implements AnalogListener, ActionListener {
         
         Log.info("Mode change " + mode + " -> " + newMode);
         
+        switch(mode) {
+            case CharacterMode.WALK:
+                exitWalkMode();
+                break;
+            case CharacterMode.DCPU:
+                exitDCPUMode();
+                break;
+            case CharacterMode.MENU:
+                exitMenuMode();
+                break;
+        }
+
         switch(newMode) {
             case CharacterMode.WALK:
                 initWalkMode();
@@ -147,63 +166,12 @@ public class CommandHandler implements AnalogListener, ActionListener {
             case CharacterMode.DCPU:
                 initDCPUMode();
                 break;
+            case CharacterMode.MENU:
+                initMenuMode();
+                break;
         }
     }
     
-    public void initWalkMode() {
-        mode = CharacterMode.WALK;
-
-        inputManager.clearMappings();
-        inputManager.clearRawInputListeners();
-
-        inputManager.addMapping("WALK_LookLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
-        inputManager.addMapping("WALK_LookRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
-        inputManager.addMapping("WALK_LookUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
-        inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
-
-        inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_D));
-
-        inputManager.addMapping("SHIP_MoveForward", new KeyTrigger(KeyInput.KEY_UP));
-        inputManager.addMapping("SHIP_MoveBackward", new KeyTrigger(KeyInput.KEY_DOWN));
-        inputManager.addMapping("SHIP_MoveUp", new KeyTrigger(KeyInput.KEY_PGUP));
-        inputManager.addMapping("SHIP_MoveDown", new KeyTrigger(KeyInput.KEY_PGDN));
-        inputManager.addMapping("SHIP_MoveLeft", new KeyTrigger(KeyInput.KEY_LEFT));
-        inputManager.addMapping("SHIP_MoveRight", new KeyTrigger(KeyInput.KEY_RIGHT));
-
-        inputManager.addMapping("SHIP_PitchUp", new KeyTrigger(KeyInput.KEY_I));
-        inputManager.addMapping("SHIP_PitchDown", new KeyTrigger(KeyInput.KEY_K));
-        inputManager.addMapping("SHIP_RollCW", new KeyTrigger(KeyInput.KEY_L));
-        inputManager.addMapping("SHIP_RollCCW", new KeyTrigger(KeyInput.KEY_J));
-        inputManager.addMapping("SHIP_YawLeft", new KeyTrigger(KeyInput.KEY_U));
-        inputManager.addMapping("SHIP_YawRight", new KeyTrigger(KeyInput.KEY_O));
-
-        inputManager.addMapping("ITEM_Pick", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-        inputManager.addMapping("ITEM_RightPick", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
-        inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
-
-        inputManager.addListener(this, walkMappings);
-    }
-
-    public void initDCPUMode() {
-        mode = CharacterMode.DCPU;
-
-        inputManager.clearMappings();
-
-        inputManager.addMapping("WALK_LookLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
-        inputManager.addMapping("WALK_LookRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
-        inputManager.addMapping("WALK_LookUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
-        inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
-
-        inputManager.addMapping("DCPU_Exit", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-        inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
-
-        inputManager.addRawInputListener(dcpuListener);
-        inputManager.addListener(this, dcpuMappings);
-    }
-
     @Override
     public void onAnalog(String name, float value, float tpf) {
         if (ClientGlobals.playerEntity == null) {
@@ -298,6 +266,12 @@ public class CommandHandler implements AnalogListener, ActionListener {
                 }
                 break;
             case "DCPU_Exit":
+                // Toggle on the up.
+                if (!value) {
+                    unpickItem();
+                }
+                break;
+            case "MENU_Exit":
                 // Toggle on the up.
                 if (!value) {
                     unpickItem();
@@ -406,5 +380,95 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
     private void yaw(float value) {
         ClientGlobals.userCommand.shipYaw(value);
+    }
+
+    public void initWalkMode() {
+        Log.info("");
+
+        mode = CharacterMode.WALK;
+
+        inputManager.addMapping("WALK_LookLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        inputManager.addMapping("WALK_LookRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        inputManager.addMapping("WALK_LookUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
+        inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
+
+        inputManager.addMapping("WALK_MoveForward", new KeyTrigger(KeyInput.KEY_W));
+        inputManager.addMapping("WALK_MoveBackward", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("WALK_MoveLeft", new KeyTrigger(KeyInput.KEY_A));
+        inputManager.addMapping("WALK_MoveRight", new KeyTrigger(KeyInput.KEY_D));
+
+        inputManager.addMapping("SHIP_MoveForward", new KeyTrigger(KeyInput.KEY_UP));
+        inputManager.addMapping("SHIP_MoveBackward", new KeyTrigger(KeyInput.KEY_DOWN));
+        inputManager.addMapping("SHIP_MoveUp", new KeyTrigger(KeyInput.KEY_PGUP));
+        inputManager.addMapping("SHIP_MoveDown", new KeyTrigger(KeyInput.KEY_PGDN));
+        inputManager.addMapping("SHIP_MoveLeft", new KeyTrigger(KeyInput.KEY_LEFT));
+        inputManager.addMapping("SHIP_MoveRight", new KeyTrigger(KeyInput.KEY_RIGHT));
+
+        inputManager.addMapping("SHIP_PitchUp", new KeyTrigger(KeyInput.KEY_I));
+        inputManager.addMapping("SHIP_PitchDown", new KeyTrigger(KeyInput.KEY_K));
+        inputManager.addMapping("SHIP_RollCW", new KeyTrigger(KeyInput.KEY_L));
+        inputManager.addMapping("SHIP_RollCCW", new KeyTrigger(KeyInput.KEY_J));
+        inputManager.addMapping("SHIP_YawLeft", new KeyTrigger(KeyInput.KEY_U));
+        inputManager.addMapping("SHIP_YawRight", new KeyTrigger(KeyInput.KEY_O));
+
+        inputManager.addMapping("ITEM_Pick", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping("ITEM_RightPick", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
+        inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
+
+        inputManager.addListener(this, walkMappings);
+    }
+
+    private void exitWalkMode() {
+        Log.info("");
+
+        mode = CharacterMode.NONE;
+        inputManager.clearMappings();
+    }
+
+    public void initDCPUMode() {
+        Log.info("");
+
+        mode = CharacterMode.DCPU;
+
+        inputManager.addMapping("WALK_LookLeft", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        inputManager.addMapping("WALK_LookRight", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        inputManager.addMapping("WALK_LookUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
+        inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
+
+        inputManager.addMapping("DCPU_Exit", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
+
+        inputManager.addRawInputListener(dcpuListener);
+        inputManager.addListener(this, dcpuMappings);
+    }
+
+    private void exitDCPUMode() {
+        Log.info("");
+
+        mode = CharacterMode.NONE;
+
+        inputManager.clearMappings();
+        inputManager.removeRawInputListener(dcpuListener);
+        //inputManager.clearRawInputListeners();
+    }
+
+    public void initMenuMode() {
+        Log.info("");
+        
+        mode = CharacterMode.MENU;
+        inputManager.addMapping("MENU_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
+        inputManager.addListener(this, menuMappings);
+        
+        ClientGlobals.app.getStateManager().attach(ClientGlobals.dcpuMenuState);
+        ClientGlobals.dcpuMenuState.setEnabled(true);
+    }
+
+    private void exitMenuMode() {
+        Log.info("");
+
+        mode = CharacterMode.NONE;
+        inputManager.clearMappings();
+        ClientGlobals.dcpuMenuState.setEnabled(false);
+        // ClientGlobals.app.getStateManager().detach(ClientGlobals.dcpuMenuState);
     }
 }

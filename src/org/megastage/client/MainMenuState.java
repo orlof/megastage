@@ -1,5 +1,6 @@
 package org.megastage.client;
 
+import com.esotericsoftware.minlog.Log;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
@@ -41,6 +42,7 @@ public class MainMenuState extends BaseAppState {
 
     @Override
     protected void initialize( Application app ) {
+        Log.info("INITIALIZE");
         settings = new XMLSettings(".megastage", "user_options.xml");
 
         menu = new Container(new SpringGridLayout(), new ElementId(LemurStyles.MENU_ID), "retro");
@@ -115,6 +117,7 @@ public class MainMenuState extends BaseAppState {
 
     @Override
     protected void enable() {
+        Log.info("ENABLE");
         Main main = (Main)getApplication();
         main.getGuiNode().attachChild(menu);
         startMusic();

@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
+import org.megastage.util.Time;
 
 /**
  * Experimental, untested implementation of the MF35D Floppy Drive
@@ -154,7 +155,8 @@ public class VirtualFloppyDrive extends DCPUHardware {
 
     @Override
     public void tick60hz() {
-        if ((operation.cycles -= 1667) <= 0) {
+        Log.info(operation.finish + " <= " + dcpu.cycles);
+        if (operation.finish <= dcpu.cycles) {
             switch (operation.type) {
                 case FloppyOperation.READ:
                     for (int i = 0; i < 512; i++) {
@@ -212,13 +214,20 @@ public class VirtualFloppyDrive extends DCPUHardware {
         private int type;
         private int sector;
         private int memory;
-        private long cycles;
+        //private long cycles;
+        private long finish;
 
         public FloppyOperation(int type, int sector, int memory, long cycles) {
+            Log.info("" + cycles);
             this.type = type;
             this.sector = sector;
             this.memory = memory;
-            this.cycles = cycles;
+            //this.cycles = cycles;
+            if(cycles == Long.MAX_VALUE) {
+                this.finish = cycles;
+            } else {
+                this.finish = dcpu.cycles + cycles;
+            }
         }
     }
 

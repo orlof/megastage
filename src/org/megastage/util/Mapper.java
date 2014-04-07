@@ -24,6 +24,7 @@ import org.megastage.components.srv.Acceleration;
 import org.megastage.components.srv.Identifier;
 import org.megastage.components.srv.SphereOfInfluence;
 import org.megastage.components.Velocity;
+import org.megastage.components.dcpu.VirtualFloppyDrive;
 import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.dcpu.VirtualPowerController;
 import org.megastage.components.dcpu.VirtualPowerPlant;
@@ -57,6 +58,7 @@ public class Mapper {
     public static ComponentMapper<Velocity> VELOCITY;
     public static ComponentMapper<Orbit> ORBIT;
     public static ComponentMapper<VirtualEngine> VIRTUAL_ENGINE;
+    public static ComponentMapper<VirtualFloppyDrive> VIRTUAL_FLOPPY_DRIVE;
     public static ComponentMapper<VirtualGyroscope> VIRTUAL_GYROSCOPE;
     public static ComponentMapper<VirtualRadar> VIRTUAL_RADAR;
     public static ComponentMapper<VirtualMonitor> VIRTUAL_MONITOR;
@@ -69,6 +71,7 @@ public class Mapper {
 
     public static void init(World world) {
         ENERGY = world.getMapper(Energy.class);
+        VIRTUAL_FLOPPY_DRIVE = world.getMapper(VirtualFloppyDrive.class);
         VIRTUAL_POWER_CONTROLLER = world.getMapper(VirtualPowerController.class);
         VIRTUAL_POWER_PLANT = world.getMapper(VirtualPowerPlant.class);
         VIRTUAL_FORCE_FIELD = world.getMapper(VirtualForceField.class);

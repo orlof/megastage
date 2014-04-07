@@ -9,10 +9,13 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
+import java.io.File;
 import org.megastage.components.dcpu.VirtualKeyboard;
 import org.megastage.protocol.Network;
 import org.megastage.protocol.PlayerConnection;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Position;
@@ -21,6 +24,8 @@ import org.megastage.components.SpawnPoint;
 import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.Mode;
+import org.megastage.components.dcpu.FloppyDisk;
+import org.megastage.components.dcpu.VirtualFloppyDrive;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.protocol.Action;
 import org.megastage.protocol.CharacterMode;
@@ -28,6 +33,8 @@ import org.megastage.protocol.Message;
 import org.megastage.protocol.PlayerIDMessage;
 import org.megastage.protocol.UserCommand;
 import org.megastage.protocol.UserCommand.Build;
+import org.megastage.protocol.UserCommand.ChangeBootRom;
+import org.megastage.protocol.UserCommand.ChangeFloppy;
 import org.megastage.protocol.UserCommand.Keyboard;
 import org.megastage.protocol.UserCommand.Unbuild;
 import org.megastage.server.TemplateManager;
@@ -196,6 +203,7 @@ public class NetworkSystem extends VoidEntitySystem {
     }
     
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
+        // TODO check player mode
         if(connection.player == null) return;
         
         if(cmd.build != null || cmd.unbuild != null) Log.info(cmd.toString());
@@ -231,6 +239,14 @@ public class NetworkSystem extends VoidEntitySystem {
         
         if(cmd.teleport != null) {
             teleport(connection, cmd.teleport);
+        }
+        
+        if(cmd.floppy != null) {
+            changeFloppy(connection, cmd.floppy);
+        }
+        
+        if(cmd.bootRom != null) {
+            changeBootRom(connection, cmd.bootRom);
         }
         
         Keyboard keys = cmd.keyboard;
@@ -273,19 +289,19 @@ public class NetworkSystem extends VoidEntitySystem {
         // Position pos = connection.player.getComponent(Position.class);
         // ===================
 
-        VirtualMonitor virtualMonitor = Mapper.VIRTUAL_MONITOR.get(target);
-        if(virtualMonitor != null) {
+        if(Mapper.VIRTUAL_MONITOR.has(target)) {
+            VirtualMonitor virtualMonitor = Mapper.VIRTUAL_MONITOR.get(target);
             connection.item = virtualMonitor.getHardware(VirtualKeyboard.class);
             Mode mode = Mapper.MODE.get(connection.player);
             mode.setMode(CharacterMode.DCPU);
             return;
-        }
-
-        SpawnPoint spawnPoint = Mapper.SPAWN_POINT.get(target);
-        if(spawnPoint != null) {
-            //TODO
+        } else if(Mapper.VIRTUAL_FLOPPY_DRIVE.has(target)) {
+            connection.item = Mapper.VIRTUAL_FLOPPY_DRIVE.get(target);
+            Mode mode = Mapper.MODE.get(connection.player);
+            mode.setMode(CharacterMode.MENU);
             return;
         }
+
     }
 
     private void updatePlayerPosition(Cube3dMap map, Entity player, UserCommand cmd) {
@@ -342,6 +358,35 @@ public class NetworkSystem extends VoidEntitySystem {
         shipRotationQuaternion = xRotation.multiply(shipRotationQuaternion).normalize();
 
         shipRotation.set(shipRotationQuaternion);
+    }
+
+    private void changeFloppy(PlayerConnection connection, ChangeFloppy change) {
+        Log.info("" + change.filename);
+        if(!(connection.item instanceof VirtualFloppyDrive)) {
+            return;
+        }
+        
+        VirtualFloppyDrive vdev = (VirtualFloppyDrive) connection.item;
+        vdev.eject();
+        FloppyDisk disc = new FloppyDisk();
+        try {
+            disc.load(new File(change.filename));
+            Log.info("" + change.filename);
+        } catch (IOException ex) {
+            Log.warn("Error loading floppy image " + ex);
+        }
+        vdev.insert(disc);
+        unpickItem(connection, null);
+    }
+
+    private void changeBootRom(PlayerConnection connection, ChangeBootRom change) {
+        if(!(connection.item instanceof VirtualFloppyDrive)) {
+            return;
+        }
+        
+        VirtualFloppyDrive vdev = (VirtualFloppyDrive) connection.item;
+        vdev.dcpu.reset(change.filename);
+        unpickItem(connection, null);
     }
 
     private void build(PlayerConnection connection, Build build, Cube3dMap map) {

@@ -4,6 +4,7 @@ import com.cubes.test.CubesTestAssets;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
+import com.jme3.app.state.AppStateManager;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
@@ -37,14 +38,14 @@ public class Main extends SimpleApplication {
         AppSettings settings = new AppSettings(true);
         settings.setSettingsDialogImage("org/megastage/flash.jpg");
         settings.setTitle("Megastage");
-        settings.setFullscreen(true);
-        //settings.setResolution(ClientGlobals.gfxSettings.SCREEN_WIDTH, ClientGlobals.gfxSettings.SCREEN_HEIGHT);
+        settings.setFullscreen(false);
+        settings.setResolution(ClientGlobals.gfxSettings.SCREEN_WIDTH, ClientGlobals.gfxSettings.SCREEN_HEIGHT);
         Main app = new Main();
 
         ClientGlobals.app = app;
 
         app.setSettings(settings);
-        app.showSettings = true;
+        app.showSettings = false;
         app.start();
     }
 
@@ -103,7 +104,10 @@ public class Main extends SimpleApplication {
         
         LemurStyles.initializeStyles(styles);
         stateManager.attach(new MainMenuState());
-        
+        //stateManager.getState(DCPUMenuState.class).disable();
+
+        ClientGlobals.dcpuMenuState = new DCPUMenuState(); 
+
         CubesManager.init(this);
         CubesTestAssets.registerBlocks();
 
