@@ -32,7 +32,6 @@ public class CommandHandler implements AnalogListener, ActionListener {
         "WALK_LookUp",
         "WALK_LookDown",
         "DCPU_Exit",
-        "GAME_Exit",
     };
 
     private static String[] menuMappings = new String[]{
@@ -445,8 +444,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
         inputManager.addMapping("WALK_LookUp", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
         inputManager.addMapping("WALK_LookDown", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
 
-        inputManager.addMapping("DCPU_Exit", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
-        inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
+        inputManager.addMapping("DCPU_Exit", new MouseButtonTrigger(MouseInput.BUTTON_LEFT), new KeyTrigger(KeyInput.KEY_ESCAPE));
 
         inputManager.addRawInputListener(dcpuListener);
         inputManager.addListener(this, dcpuMappings);
