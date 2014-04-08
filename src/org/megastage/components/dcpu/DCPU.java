@@ -9,6 +9,8 @@ import org.megastage.components.BaseComponent;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.megastage.util.Time;
 
 /**
@@ -21,6 +23,7 @@ public class DCPU extends BaseComponent {
     public static final int HARDWARE_TICK_INTERVAL = 1000 * KHZ / 60;
 
     public Entity ship;
+    public String rom;
 
     final public char[] ram = new char[65536];
     final public char[] registers = new char[8];
@@ -30,6 +33,7 @@ public class DCPU extends BaseComponent {
     public char ex;
     public char ia;
 
+    public long powerOnTime;
     public long startupTime;
     public long nextHardwareTick;
     public long cycles;
@@ -46,8 +50,11 @@ public class DCPU extends BaseComponent {
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) {
         this.ship = parent;
+
+        rom = getStringValue(element, "bootrom", "media/bootrom.bin");
+
         try {
-            load(new File("bootrom.bin"));
+            load(new File(rom));
 
             for(Element hwElement: element.getChildren("hardware")) {
                 Class clazz = Class.forName("org.megastage.components." + hwElement.getAttributeValue("type"));
@@ -55,24 +62,36 @@ public class DCPU extends BaseComponent {
                 hw.init(world, parent, hwElement);
                 connectHardware(hw);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        startupTime = Time.value + 2500;
+        powerOnTime = Time.value + 2500;
+        startupTime = powerOnTime + 2500;
         nextHardwareTick = HARDWARE_TICK_INTERVAL;
         
         return null;
     }
 
+    public void reset(char[] image) {
+        System.arraycopy(image, 0, ram, 0, image.length);
+
+        powerOnTime = Time.value + 2500;
+        startupTime = powerOnTime + 2500;
+        
+        for(int i=0; i < registers.length; i++) {
+            registers[i]=0;
+        }
+        for(int i=0; i < interrupts.length; i++) {
+            interrupts[i]=0;
+        }
+        pc=sp=ex=ia=0;
+        isSkipping = isOnFire = queueingEnabled = false;
+        ip=iwp=0;
+        cycles = 0;
+        nextHardwareTick = HARDWARE_TICK_INTERVAL;
+    }
+    
     public void interrupt(char a) {
         interrupts[iwp = iwp + 1 & 0xFF] = a;
         if (iwp == ip) isOnFire = true;
@@ -90,7 +109,7 @@ public class DCPU extends BaseComponent {
 
     public List<DCPUHardware> listHardware() {
         //TODO sync elsewhere
-        return new ArrayList<DCPUHardware>(hardware);
+        return new ArrayList<>(hardware);
     }
 
     public void run_ticks() {

@@ -23,6 +23,8 @@ public class UserCommand {
     public Pick pick;
     public Unpick unpick;
     public Build build;
+    public ChangeFloppy floppy;
+    public ChangeBootRom bootRom;
     public Unbuild unbuild;
 
     public UserCommand() {}
@@ -37,6 +39,8 @@ public class UserCommand {
         build = null;
         unbuild = null;
         teleport = null;
+        floppy = null;
+        bootRom = null;
     }
     
     public String toString() {
@@ -149,6 +153,20 @@ public class UserCommand {
         count++;
     }
 
+    public void changeFloppy(String filename) {
+        Log.info("Change Floppy");
+        floppy = new ChangeFloppy();
+        floppy.filename = filename;
+        count++;
+    }
+
+    public void changeBootRom(String filename) {
+        Log.info("Change BootRom");
+        bootRom = new ChangeBootRom();
+        bootRom.filename = filename;
+        count++;
+    }
+
     public static interface ExtendedCommand {}
     
     public static class MoveShip implements ExtendedCommand {
@@ -161,6 +179,14 @@ public class UserCommand {
 
     public static class Teleport implements ExtendedCommand {
         public int eid;
+    }
+
+    public static class ChangeFloppy implements ExtendedCommand {
+        public String filename;
+    }
+
+    public static class ChangeBootRom implements ExtendedCommand {
+        public String filename;
     }
 
     public static class Unpick implements ExtendedCommand {

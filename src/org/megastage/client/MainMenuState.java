@@ -1,5 +1,6 @@
 package org.megastage.client;
 
+import com.esotericsoftware.minlog.Log;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
@@ -136,9 +137,6 @@ public class MainMenuState extends BaseAppState {
         public void execute( Button source ) {
             storeOptions();
             stopMusic();
-//            selectUp.playInstance();
-            //getStateManager().attach(new SinglePlayerState());
-            ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Inherit);
             setEnabled(false);
             getApplication().getInputManager().setCursorVisible(false);
             getStateManager().attach(ClientGlobals.artemis);

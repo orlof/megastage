@@ -64,6 +64,7 @@ import org.megastage.components.UsableFlag;
 import org.megastage.components.gfx.VoidGeometry;
 import org.megastage.components.Explosion;
 import org.megastage.components.gfx.BatteryGeometry;
+import org.megastage.components.gfx.FloppyDriveGeometry;
 import org.megastage.components.gfx.ForceFieldGeometry;
 import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.ImposterGeometry;
@@ -648,6 +649,23 @@ public class SpatialManager {
 
             attach(node, base, true);
             attach(node, spinner, true);
+            return null;
+        }});
+    }
+
+    public void setupFloppyDrive(Entity entity, FloppyDriveGeometry comp) {
+        final Node node = getNode(entity);
+        final PositionControl positionControl = new PositionControl(entity, false);
+        final RotationControl rotationControl = new RotationControl(entity);
+
+        final Geometry base = new Geometry("dcpu", new Box(0.5f, 0.5f, 0.5f));
+        base.setMaterial(material(ColorRGBA.Black, true));
+        
+        app.enqueue(new Callable() {@Override public Object call() throws Exception {
+            node.addControl(positionControl);
+            node.addControl(rotationControl);
+
+            attach(node, base, true);
             return null;
         }});
     }

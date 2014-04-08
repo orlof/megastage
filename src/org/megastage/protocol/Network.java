@@ -4,7 +4,6 @@ import com.artemis.Entity;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
-import com.esotericsoftware.minlog.Log;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.components.Mass;
 import org.megastage.components.transfer.MonitorData;
@@ -31,6 +30,7 @@ import org.megastage.components.UsableFlag;
 import org.megastage.components.Explosion;
 import org.megastage.components.Velocity;
 import org.megastage.components.gfx.BatteryGeometry;
+import org.megastage.components.gfx.FloppyDriveGeometry;
 import org.megastage.components.gfx.ForceFieldGeometry;
 import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.PowerPlantGeometry;
@@ -41,7 +41,10 @@ import org.megastage.components.transfer.ForceFieldData;
 import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.components.transfer.RadarTargetData;
 import org.megastage.components.transfer.ThermalLaserData;
+import org.megastage.components.transfer.VirtualFloppyDriveData;
 import org.megastage.protocol.UserCommand.Build;
+import org.megastage.protocol.UserCommand.ChangeBootRom;
+import org.megastage.protocol.UserCommand.ChangeFloppy;
 import org.megastage.protocol.UserCommand.Keyboard;
 import org.megastage.protocol.UserCommand.MoveShip;
 import org.megastage.protocol.UserCommand.Pick;
@@ -50,7 +53,6 @@ import org.megastage.protocol.UserCommand.Unbuild;
 import org.megastage.protocol.UserCommand.Unpick;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.Cube3dMap.BlockChange;
-import org.megastage.util.ID;
 import org.megastage.util.RAM;
 import org.megastage.util.Vector3d;
 
@@ -66,6 +68,7 @@ public class Network {
             kryo.register(clazz);
         }
 
+        kryo.register(String[].class);
         kryo.register(char[].class);
         kryo.register(char[][].class);
         kryo.register(char[][][].class);
@@ -75,9 +78,12 @@ public class Network {
         kryo.register(BindTo.class);
         kryo.register(BlockChange.class);
         kryo.register(Build.class);
+        kryo.register(ChangeFloppy.class);
+        kryo.register(ChangeBootRom.class);
         kryo.register(CharacterGeometry.class);
         kryo.register(ComponentMessage.class);
         kryo.register(Cube3dMap.class);
+        kryo.register(FloppyDriveGeometry.class);
         kryo.register(DeleteFlag.class);
         kryo.register(EngineData.class);
         kryo.register(EngineGeometry.class);
@@ -118,6 +124,7 @@ public class Network {
         kryo.register(UserCommand.class);
         kryo.register(Vector3d.class);
         kryo.register(Velocity.class);
+        kryo.register(VirtualFloppyDriveData.class);
         kryo.register(VoidGeometry.class);
     }
 

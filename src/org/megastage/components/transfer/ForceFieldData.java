@@ -7,6 +7,9 @@ public class ForceFieldData extends BaseComponent {
     public float radius;
     public char status;
 
+    public ForceFieldData() {
+    }
+    
     public static ForceFieldData create(float radius, char status) {
         ForceFieldData data = new ForceFieldData();
         data.radius = radius;

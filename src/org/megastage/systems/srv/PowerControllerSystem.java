@@ -71,7 +71,7 @@ public class PowerControllerSystem extends EntitySystem {
             } 
         }
         
-        Log.info(ID.get(entity) + "total supply: " + ctrl.supply);
+        //Log.info(ID.get(entity) + "total supply: " + ctrl.supply);
         double powerLeft = ctrl.supply;
         
         ctrl.load = 0.0;
