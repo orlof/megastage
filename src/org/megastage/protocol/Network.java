@@ -67,7 +67,11 @@ public class Network {
         for(Class<?> clazz: Network.class.getDeclaredClasses()) {
             kryo.register(clazz);
         }
-
+        
+        registerSpecials(kryo);
+    }
+    
+    public static void registerSpecials(Kryo kryo) {
         kryo.register(String[].class);
         kryo.register(char[].class);
         kryo.register(char[][].class);
