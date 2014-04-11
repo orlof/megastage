@@ -89,6 +89,12 @@
     <include name="boot.png"/>
   </fileset>
 </copy>
+<copy todir="${dist.jar.dir}/media">
+  <fileset dir="media"/>
+</copy>
+<chmod dir="${dist.jar.dir}" perm="ug+rx" includes="**/*.sh"/>
+<zip destfile="megastage.zip">
+    <zipfileset dir="dist" prefix="megastage"/>
+</zip>
 </target>
-
 </project>
