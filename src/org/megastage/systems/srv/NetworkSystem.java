@@ -9,13 +9,10 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
-import java.io.File;
 import org.megastage.components.dcpu.VirtualKeyboard;
 import org.megastage.protocol.Network;
 import org.megastage.protocol.PlayerConnection;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Position;
@@ -24,10 +21,8 @@ import org.megastage.components.SpawnPoint;
 import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.Mode;
-import org.megastage.components.dcpu.FloppyDisk;
 import org.megastage.components.dcpu.VirtualFloppyDrive;
 import org.megastage.components.gfx.ShipGeometry;
-import org.megastage.protocol.Action;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.Message;
 import org.megastage.protocol.PlayerIDMessage;
@@ -62,7 +57,7 @@ public class NetworkSystem extends VoidEntitySystem {
             }
         };
 
-        Network.register(server);
+        Network.register(server.getKryo(), 0);
 
         new Thread(server).start();
 

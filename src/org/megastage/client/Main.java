@@ -23,7 +23,7 @@ import jmeplanet.test.Utility;
 import org.megastage.client.controls.SystemPositionControl;
 import org.megastage.client.controls.SystemRotationControl;
 import org.megastage.util.LogFormat;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class Main extends SimpleApplication {
 

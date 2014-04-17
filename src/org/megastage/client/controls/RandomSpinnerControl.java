@@ -12,7 +12,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import java.util.Random;
 import org.megastage.client.SoundManager;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class RandomSpinnerControl extends AbstractControl {
     public RandomSpinnerControl() {
@@ -28,15 +28,15 @@ public class RandomSpinnerControl extends AbstractControl {
     
     @Override
     protected void controlUpdate(float tpf) {
-        if(Time.value > next) {
+        if(GlobalTime.value > next) {
             int mode = rnd.nextInt(20);
             if(mode == 0) {
                 //AudioNode an = SoundManager.get(SoundManager.RETRO_COMPUTER);
                 //an.setVolume(0.1f);
                 //an.playInstance();
-                next = Time.value + 5500;
+                next = GlobalTime.value + 5500;
             } else {
-                next = Time.value + rnd.nextInt(5000)+1000;
+                next = GlobalTime.value + rnd.nextInt(5000)+1000;
             }
             
             if(mode < 8) {

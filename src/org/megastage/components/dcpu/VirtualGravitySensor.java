@@ -70,10 +70,6 @@ public class VirtualGravitySensor extends DCPUHardware {
         }
     }
 
-    @Override
-    public void tick60hz() {
-    }
-
     // INTERRUPTS
     
     private boolean storeFieldSignatures() {

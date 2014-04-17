@@ -13,7 +13,7 @@ import org.megastage.protocol.Network;
 import java.io.IOException;
 import org.megastage.protocol.Message;
 import org.megastage.client.ClientGlobals;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class ClientNetworkSystem extends EntitySystem {
     private Client client;
@@ -28,8 +28,8 @@ public class ClientNetworkSystem extends EntitySystem {
     
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
+        if(GlobalTime.value >= acc) {
+                acc = GlobalTime.value + interval;
                 return true;
         }
         return false;
@@ -38,7 +38,7 @@ public class ClientNetworkSystem extends EntitySystem {
     @Override
     public void initialize() {
         client = new Client(16*1024, 8*1024);
-        Network.register(client);
+        Network.register(client.getKryo(), 0);
 
         Thread kryoThread = new Thread(client);
         kryoThread.setDaemon(true);

@@ -6,7 +6,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class CleanupSystem extends EntityProcessingSystem {
     private long interval;
@@ -19,8 +19,8 @@ public class CleanupSystem extends EntityProcessingSystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
+        if(GlobalTime.value >= acc) {
+                acc = GlobalTime.value + interval;
                 return true;
         }
         return false;

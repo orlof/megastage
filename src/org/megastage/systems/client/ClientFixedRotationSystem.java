@@ -7,7 +7,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.jme3.math.Quaternion;
 import org.megastage.components.FixedRotation;
 import org.megastage.components.Rotation;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,9 +35,9 @@ public class ClientFixedRotationSystem extends EntityProcessingSystem {
         FixedRotation fr = FIXED_ROTATION.get(entity);
         
         Quaternion rotation = new Quaternion().fromAngles(
-                (float) fr.getX(Time.value), 
-                (float) fr.getY(Time.value), 
-                (float) fr.getZ(Time.value)).normalizeLocal();
+                (float) fr.getX(GlobalTime.value), 
+                (float) fr.getY(GlobalTime.value), 
+                (float) fr.getZ(GlobalTime.value)).normalizeLocal();
 
         Rotation r = ROTATION.get(entity);
         r.x = rotation.getX();

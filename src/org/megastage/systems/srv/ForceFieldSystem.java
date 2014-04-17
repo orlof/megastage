@@ -11,7 +11,7 @@ import static org.megastage.components.dcpu.VirtualForceField.STATUS_FIELD_ACTIV
 import static org.megastage.components.dcpu.VirtualForceField.STATUS_FIELD_FORMING;
 import static org.megastage.components.dcpu.VirtualForceField.STATUS_POWER_OFF;
 import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class ForceFieldSystem extends EntitySystem {
     private long interval;
@@ -29,9 +29,9 @@ public class ForceFieldSystem extends EntitySystem {
     }
 
     protected boolean checkProcessing() {
-        if(Time.value >= wakeup) {
-            delta = (Time.value + interval - wakeup) / 1000.0;
-            wakeup = Time.value + interval;
+        if(GlobalTime.value >= wakeup) {
+            delta = (GlobalTime.value + interval - wakeup) / 1000.0;
+            wakeup = GlobalTime.value + interval;
             return true;
         }
         return false;

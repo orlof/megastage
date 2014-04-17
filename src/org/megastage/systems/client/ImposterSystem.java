@@ -9,7 +9,7 @@ import org.megastage.client.ClientGlobals;
 import org.megastage.components.Position;
 import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.util.ID;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 import org.megastage.util.Vector3d;
 
 public class ImposterSystem extends EntityProcessingSystem {
@@ -33,8 +33,8 @@ private long interval;
     
     @Override
     protected boolean checkProcessing() {
-        if(ClientGlobals.shipEntity != null && POSITION.has(ClientGlobals.shipEntity) && Time.value >= acc) {
-            acc = Time.value + interval;
+        if(ClientGlobals.shipEntity != null && POSITION.has(ClientGlobals.shipEntity) && GlobalTime.value >= acc) {
+            acc = GlobalTime.value + interval;
             return true;
         }
         return false;

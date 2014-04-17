@@ -10,7 +10,7 @@ import org.megastage.components.srv.InitializeFlag;
 import org.megastage.components.srv.ReplicateFlag;
 import org.megastage.protocol.Message;
 import org.megastage.util.ServerGlobals;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class EntityInitializeSystem extends EntityProcessingSystem {
     private long interval;
@@ -23,8 +23,8 @@ public class EntityInitializeSystem extends EntityProcessingSystem {
 
     @Override
     public boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
+        if(GlobalTime.value >= acc) {
+                acc = GlobalTime.value + interval;
                 return true;
         }
         return false;

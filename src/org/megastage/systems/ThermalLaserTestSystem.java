@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import org.megastage.components.dcpu.VirtualEngine;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class ThermalLaserTestSystem extends EntitySystem {
     private long interval;
@@ -22,8 +22,8 @@ public class ThermalLaserTestSystem extends EntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
+        if(GlobalTime.value >= acc) {
+                acc = GlobalTime.value + interval;
                 return true;
         }
         return false;

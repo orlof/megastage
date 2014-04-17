@@ -13,7 +13,7 @@ import org.megastage.components.dcpu.PowerSupply;
 import org.megastage.components.dcpu.VirtualPowerController;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class PowerControllerSystem extends EntitySystem {
     private long interval;
@@ -32,13 +32,13 @@ public class PowerControllerSystem extends EntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= wakeup) {
+        if(GlobalTime.value >= wakeup) {
             if(wakeup == 0) {
                 delta = 0;
             } else {
-                delta = (Time.value + interval - wakeup) / 1000.0;
+                delta = (GlobalTime.value + interval - wakeup) / 1000.0;
             }
-            wakeup = Time.value + interval;
+            wakeup = GlobalTime.value + interval;
             return true;
         }
         return false;

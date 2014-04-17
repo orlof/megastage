@@ -8,7 +8,7 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Position;
 import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class VirtualPPS extends DCPUHardware {
     @Override
@@ -62,7 +62,7 @@ public class VirtualPPS extends DCPUHardware {
         mem[ptr++] = (char) (z >> 16);
         mem[ptr++] = (char) z;
 
-        mem[ptr++] = (char) Time.value;
+        mem[ptr++] = (char) GlobalTime.value;
         
         return true;
     }

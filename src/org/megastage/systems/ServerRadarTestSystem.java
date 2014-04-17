@@ -6,7 +6,7 @@ import com.artemis.systems.EntitySystem;
 import com.badlogic.gdx.utils.Array;
 import org.megastage.components.dcpu.VirtualRadar;
 import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class ServerRadarTestSystem extends EntitySystem {
     private long interval;
@@ -19,8 +19,8 @@ public class ServerRadarTestSystem extends EntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
+        if(GlobalTime.value >= acc) {
+                acc = GlobalTime.value + interval;
                 return true;
         }
         return false;

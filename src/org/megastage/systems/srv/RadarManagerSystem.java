@@ -8,7 +8,7 @@ import org.megastage.components.Position;
 import org.megastage.components.Mass;
 import org.megastage.components.RadarEcho;
 import org.megastage.server.RadarManager;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 /**
  * User: Orlof
@@ -26,8 +26,8 @@ public class RadarManagerSystem extends EntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
+        if(GlobalTime.value >= acc) {
+                acc = GlobalTime.value + interval;
                 return true;
         }
         return false;

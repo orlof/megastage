@@ -18,7 +18,7 @@ import org.megastage.protocol.Network.ComponentMessage;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
 import org.megastage.util.ServerGlobals;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class EntityDeleteSystem extends EntityProcessingSystem {
     private long interval;

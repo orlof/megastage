@@ -4,6 +4,7 @@ import com.jme3.math.Vector3f;
 import org.megastage.components.Position;
 
 public class Vector3d {
+    public static transient final boolean CAN_SAVE = true;
 
     public static transient final Vector3d ZERO = new Vector3d();
     public static transient Vector3d UNIT_X = new Vector3d(1.0d, 0.0d, 0.0d);

@@ -29,7 +29,4 @@ public class VirtualNavigator extends DCPUHardware {
         }
     }
 
-    @Override
-    public void tick60hz() {
-    }
 }

@@ -8,7 +8,7 @@ import org.megastage.protocol.Message;
 import org.megastage.protocol.Network.ComponentMessage;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 /**
  * MegaStage
@@ -17,7 +17,7 @@ import org.megastage.util.Time;
  * Time: 20:58
  */
 public class Explosion extends BaseComponent {
-    public transient long startTime = Time.value;
+    public long startTime = GlobalTime.value;
 
     public int state = -1;
 

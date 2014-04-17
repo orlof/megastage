@@ -4,7 +4,7 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.systems.EntitySystem;
 import com.badlogic.gdx.utils.Array;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class SystemTemplate extends EntitySystem {
     private long interval;
@@ -23,9 +23,9 @@ public class SystemTemplate extends EntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= wakeup) {
-            delta = (Time.value + interval - wakeup) / 1000.0;
-            wakeup = Time.value + interval;
+        if(GlobalTime.value >= wakeup) {
+            delta = (GlobalTime.value + interval - wakeup) / 1000.0;
+            wakeup = GlobalTime.value + interval;
             return true;
         }
         return false;

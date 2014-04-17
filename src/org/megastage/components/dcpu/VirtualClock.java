@@ -8,10 +8,10 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 
 public class VirtualClock extends DCPUHardware {
-    private int interval;
-    private int intCount;
-    private char ticks;
-    private char interruptMessage;
+    public int interval;
+    public int intCount;
+    public char ticks;
+    public char interruptMessage;
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
@@ -24,20 +24,30 @@ public class VirtualClock extends DCPUHardware {
         return null;
     }
 
-    public void interrupt() {
+    public void interrupt(DCPU dcpu) {
         int a = dcpu.registers[0];
-        if (a == 0)
-            interval = dcpu.registers[1];
-        else if (a == 1)
-            dcpu.registers[2] = ticks;
-        else if (a == 2)
-            interruptMessage = dcpu.registers[1];
+
+        switch(dcpu.registers[0]) {
+            case 0:
+                interval = dcpu.registers[1];
+                break;
+            case 1:
+                dcpu.registers[2] = ticks;
+                break;
+            case 2:
+                interruptMessage = dcpu.registers[1];
+                break;
+        }
     }
 
-    public void tick60hz() {
+    @Override
+    public void tick60hz(DCPU dcpu) {
         if (interval == 0) return;
+
         if (++intCount >= interval) {
-            if (interruptMessage != 0) dcpu.interrupt(interruptMessage);
+            if (interruptMessage != 0) {
+                dcpu.interrupt(interruptMessage);
+            }
             intCount = 0;
             ticks++;
         }

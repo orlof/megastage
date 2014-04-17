@@ -10,7 +10,7 @@ import org.megastage.components.Position;
 import org.megastage.client.ClientGlobals;
 import org.megastage.util.ID;
 import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 /**
  *
@@ -59,12 +59,12 @@ public class PositionControl extends AbstractControl {
             
             long duration = 
                     (cpos.x == 0f && cpos.y == 0f && cpos.z == 0f) ? 
-                    0: Time.value - lastUpdateTime; 
+                    0: GlobalTime.value - lastUpdateTime; 
             if(duration > 100) duration = 100;
             
-            lastUpdateTime = Time.value;
+            lastUpdateTime = GlobalTime.value;
 
-            interpolator.update(Time.value, Time.value + duration, cpos, tpos);
+            interpolator.update(GlobalTime.value, GlobalTime.value + duration, cpos, tpos);
         }
         
         interpolator.apply();
@@ -94,18 +94,18 @@ public class PositionControl extends AbstractControl {
         }
 
         public final void apply() {
-            if( Time.value >= endTime) {
+            if( GlobalTime.value >= endTime) {
                 spatial.setLocalTranslation((float) ex, (float) ey, (float) ez);
                 return;
             } 
             
-            if( Time.value <= startTime) {
+            if( GlobalTime.value <= startTime) {
                 spatial.setLocalTranslation((float) sx, (float) sy, (float) sz);
                 return;
             } 
             
             // Interpolate... guaranteed to have a non-zero time delta here
-            double part = (Time.value - st) / dt;                
+            double part = (GlobalTime.value - st) / dt;                
 
             double x = sx + dx * part;
             double y = sy + dy * part;

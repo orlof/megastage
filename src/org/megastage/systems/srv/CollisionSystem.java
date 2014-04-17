@@ -11,7 +11,7 @@ import org.megastage.components.srv.CollisionType;
 import org.megastage.components.Explosion;
 import org.megastage.components.srv.Identifier;
 import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class CollisionSystem extends EntitySystem {
     private long interval;
@@ -36,8 +36,8 @@ public class CollisionSystem extends EntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
+        if(GlobalTime.value >= acc) {
+                acc = GlobalTime.value + interval;
                 return true;
         }
         return false;

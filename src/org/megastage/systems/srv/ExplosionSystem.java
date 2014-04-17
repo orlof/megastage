@@ -8,7 +8,7 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
 import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class ExplosionSystem extends EntityProcessingSystem {
     private long interval;
@@ -21,8 +21,8 @@ public class ExplosionSystem extends EntityProcessingSystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
+        if(GlobalTime.value >= acc) {
+                acc = GlobalTime.value + interval;
                 return true;
         }
         return false;
@@ -72,7 +72,7 @@ public class ExplosionSystem extends EntityProcessingSystem {
 
     public int currentState(Explosion exp) {
         for(int state = -1; state+1 < delay.length; state++) {
-            if(Time.value < exp.startTime + delay[state+1]) {
+            if(GlobalTime.value < exp.startTime + delay[state+1]) {
                 return state;
             }
         }

@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import org.megastage.components.Position;
 import org.megastage.components.srv.SphereOfInfluence;
 import org.megastage.server.SOIManager;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 /**
  * User: Orlof
@@ -23,8 +23,8 @@ public class SphereOfInfluenceSystem extends EntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
+        if(GlobalTime.value >= acc) {
+                acc = GlobalTime.value + interval;
                 return true;
         }
         return false;

@@ -24,6 +24,8 @@ import org.megastage.components.srv.Acceleration;
 import org.megastage.components.srv.Identifier;
 import org.megastage.components.srv.SphereOfInfluence;
 import org.megastage.components.Velocity;
+import org.megastage.components.dcpu.DCPUHardwareInfo;
+import org.megastage.components.dcpu.VirtualClock;
 import org.megastage.components.dcpu.VirtualFloppyDrive;
 import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.dcpu.VirtualPowerController;
@@ -68,13 +70,17 @@ public class Mapper {
     public static ComponentMapper<ShipGeometry> SHIP_GEOMETRY;
     public static ComponentMapper<Mode> MODE;
     public static ComponentMapper<SphereOfInfluence> SPHERE_OF_INFLUENCE;
+    public static ComponentMapper<VirtualClock> VIRTUAL_CLOCK;
+    public static ComponentMapper<DCPUHardwareInfo> DCPU_HARDWARE_INFO;
 
     public static void init(World world) {
+        DCPU_HARDWARE_INFO = world.getMapper(DCPUHardwareInfo.class);
         ENERGY = world.getMapper(Energy.class);
         VIRTUAL_FLOPPY_DRIVE = world.getMapper(VirtualFloppyDrive.class);
         VIRTUAL_POWER_CONTROLLER = world.getMapper(VirtualPowerController.class);
         VIRTUAL_POWER_PLANT = world.getMapper(VirtualPowerPlant.class);
         VIRTUAL_FORCE_FIELD = world.getMapper(VirtualForceField.class);
+        VIRTUAL_CLOCK = world.getMapper(VirtualClock.class);
         FORCE_FIELD_DATA = world.getMapper(ForceFieldData.class);
         COLLISION_SPHERE = world.getMapper(CollisionSphere.class);
         VIRTUAL_THERMAL_LASER = world.getMapper(VirtualThermalLaser.class);

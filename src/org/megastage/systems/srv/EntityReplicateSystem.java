@@ -9,7 +9,7 @@ import org.megastage.components.BaseComponent;
 import org.megastage.components.srv.ReplicateFlag;
 import org.megastage.protocol.Message;
 import org.megastage.util.ServerGlobals;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class EntityReplicateSystem extends EntityProcessingSystem {
     private long interval;

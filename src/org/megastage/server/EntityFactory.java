@@ -19,8 +19,9 @@ import org.megastage.components.srv.ReplicateFlag;
  * Time: 20:01
  */
 public class EntityFactory {
-    public static Entity create(World world, Element element, Entity parent) {
+    public static Entity create(World world, Element element, Entity parent) throws Exception {
         Entity entity = world.createEntity();
+        entity.addToWorld();
         
         Identifier id = new Identifier();
         id.name = element.getAttributeValue("name");
@@ -28,49 +29,29 @@ public class EntityFactory {
 
         Log.info(entity.toString());
 
-        try {
-            for(Element e: element.getChildren("component")) {
-                Class clazz = Class.forName("org.megastage.components." + e.getAttributeValue("type"));
-                BaseComponent comp = (BaseComponent) clazz.newInstance();
+        for(Element e: element.getChildren("component")) {
+            Class clazz = Class.forName("org.megastage.components." + e.getAttributeValue("type"));
+            BaseComponent comp = (BaseComponent) clazz.newInstance();
 
-                BaseComponent[] additionalComponents = comp.init(world, parent, e);
-                entity.addComponent(comp);
-                Log.info(" Component: " + comp.toString());
+            BaseComponent[] additionalComponents = comp.init(world, parent, e);
+            entity.addComponent(comp);
+            Log.info(" Component: " + comp.toString());
 
-                if(additionalComponents != null) {
-                    for(BaseComponent c: additionalComponents) {
-                        entity.addComponent(c);
-                        Log.info(" Component: " + c.toString());
-                    }
+            if(additionalComponents != null) {
+                for(BaseComponent c: additionalComponents) {
+                    entity.addComponent(c);
+                    Log.info(" Component: " + c.toString());
                 }
             }
-            entity.addComponent(new InitializeFlag());
-
-            for(Element e: element.getChildren("group")) {
-                String groupName = e.getAttributeValue("name");
-
-                world.getManager(GroupManager.class).add(entity, groupName);
-                if(groupName.equals("replicate")) {
-                    entity.addComponent(new ReplicateFlag());
-                }
-            }
-
-            for(Element e: element.getChildren("tag")) {
-                String tagName = e.getAttributeValue("name");
-                world.getManager(TagManager.class).register(tagName, entity);
-            }
-
-            entity.addToWorld();
-
-            for(Element e: element.getChildren("entity")) {
-                create(world, e, entity);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(0);
         }
-        
+        entity.addComponent(new InitializeFlag());
+
+        entity.changedInWorld();
+
+        for(Element e: element.getChildren("entity")) {
+            create(world, e, entity);
+        }
+
         return entity;
     }
 }

@@ -30,7 +30,7 @@ import org.megastage.systems.srv.SphereOfInfluenceSystem;
 import org.megastage.systems.srv.ThermalLaserSystem;
 import org.megastage.util.Mapper;
 import org.megastage.util.ServerGlobals;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 /**
  * User: Orlof
@@ -91,11 +91,11 @@ public class Game {
     }
 
     public void loopForever() throws InterruptedException {
-        Time.value = System.currentTimeMillis() - 20;
+        GlobalTime.set(System.currentTimeMillis() - 20);
         while (true) {
             long ctime = System.currentTimeMillis();
-            world.setDelta((ctime - Time.value) / 1000.0f);
-            Time.value = ctime;
+            world.setDelta((ctime - GlobalTime.value) / 1000.0f);
+            GlobalTime.set(ctime);
 
             world.process();
             

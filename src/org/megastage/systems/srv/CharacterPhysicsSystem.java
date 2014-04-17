@@ -8,7 +8,7 @@ import org.megastage.components.Mode;
 import org.megastage.components.Position;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.ShipGeometry;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class CharacterPhysicsSystem extends EntityProcessingSystem {
     ComponentMapper<Position> POSITION;
@@ -32,8 +32,8 @@ public class CharacterPhysicsSystem extends EntityProcessingSystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
+        if(GlobalTime.value >= acc) {
+                acc = GlobalTime.value + interval;
                 return true;
         }
         return false;

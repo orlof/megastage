@@ -16,13 +16,48 @@ public class VirtualMonitor extends DCPUHardware {
 
     @Override
     public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        type = TYPE_LEM;
-        revision = 0x1802;
-        manufactorer = MANUFACTORER_NYA_ELEKTRISKA;
+        info = new DCPUHardwareInfo(TYPE_LEM, 0x1802, MANUFACTORER_NYA_ELEKTRISKA);
 
         super.init(world, parent, element);
         
         return null;
+    }
+
+    @Override
+    public void interrupt(DCPU dcpu) {
+        char a = dcpu.registers[0];
+        char b = dcpu.registers[1];
+
+        switch(a) {
+            case 0:
+                data.videoAddr = b;
+                break;
+            case 1:
+                data.fontAddr = b;
+                break;
+            case 2:
+                data.paletteAddr = b;
+                break;
+            case 3:
+                // borderColor = (dcpu.registers[1] & 0xF);
+                break;
+            case 4:
+                // dump font
+                int offs = dcpu.registers[1];
+                for (int i = 0; i < LEMUtil.defaultFont.length; i++) {
+                    dcpu.ram[(offs + i & 0xFFFF)] = LEMUtil.defaultFont[i];
+                }
+                dcpu.cycles += 256;
+                break;
+            case 5:
+                // dump palette
+                offs = dcpu.registers[1];
+                for (int i = 0; i < LEMUtil.defaultPalette.length; i++) {
+                    dcpu.ram[(offs + i & 0xFFFF)] = LEMUtil.defaultPalette[i];
+                }
+                dcpu.cycles += 16;
+                break;
+        }
     }
     
     @Override
@@ -50,33 +85,4 @@ public class VirtualMonitor extends DCPUHardware {
         return replicateIfTrue(entity, videoChanged || fontChanged || paletteChanged);
     }
 
-    @Override
-    public void interrupt() {
-        char a = dcpu.registers[0];
-        char b = dcpu.registers[1];
-
-        if (a == 0) {
-            data.videoAddr = b;
-        } else if (a == 1) {
-            data.fontAddr = b;
-        } else if (a == 2) {
-            data.paletteAddr = b;
-        } else if (a == 3) {
-//            borderColor = (dcpu.registers[1] & 0xF);
-        } else if (a == 4) {
-            // dump font
-            int offs = dcpu.registers[1];
-            for (int i = 0; i < LEMUtil.defaultFont.length; i++) {
-                dcpu.ram[(offs + i & 0xFFFF)] = LEMUtil.defaultFont[i];
-            }
-            dcpu.cycles += 256;
-        } else if (a == 5) {
-            // dump palette
-            int offs = dcpu.registers[1];
-            for (int i = 0; i < LEMUtil.defaultPalette.length; i++) {
-                dcpu.ram[(offs + i & 0xFFFF)] = LEMUtil.defaultPalette[i];
-            }
-            dcpu.cycles += 16;
-        }
-    }
 }

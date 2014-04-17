@@ -8,7 +8,7 @@ import org.megastage.components.srv.GravityFieldFlag;
 import org.megastage.components.Mass;
 import org.megastage.components.Position;
 import org.megastage.server.GravityManager;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class GravityManagerSystem extends EntitySystem {
     private long interval;
@@ -26,8 +26,8 @@ public class GravityManagerSystem extends EntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
+        if(GlobalTime.value >= acc) {
+                acc = GlobalTime.value + interval;
                 return true;
         }
         return false;

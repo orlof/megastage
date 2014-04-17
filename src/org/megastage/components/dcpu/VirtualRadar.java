@@ -85,10 +85,6 @@ public class VirtualRadar extends DCPUHardware {
         }
     }
 
-    @Override
-    public void tick60hz() {
-    }
-
     // INTERRUPT ROUTINES
     
     private boolean storeRadarSignatures() {

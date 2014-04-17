@@ -2,6 +2,7 @@ package org.megastage.protocol;
 
 import com.artemis.Entity;
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.EndPoint;
 import org.megastage.components.transfer.EngineData;
@@ -24,7 +25,9 @@ import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.gfx.VoidGeometry;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.BaseComponent;
+import org.megastage.components.CollisionSphere;
 import org.megastage.components.DeleteFlag;
+import org.megastage.components.Energy;
 import org.megastage.components.Mode;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.Explosion;
@@ -61,75 +64,83 @@ public class Network {
 
     public static int serverPort = 12358;
 
-    static public void register(EndPoint endPoint) {
-        Kryo kryo = endPoint.getKryo();
-
+    static public void register(Kryo kryo, int purpose) {
         for(Class<?> clazz: Network.class.getDeclaredClasses()) {
             kryo.register(clazz);
         }
-        
-        registerSpecials(kryo);
-    }
-    
-    public static void registerSpecials(Kryo kryo) {
-        kryo.register(String[].class);
-        kryo.register(char[].class);
-        kryo.register(char[][].class);
-        kryo.register(char[][][].class);
-        kryo.register(Object[].class);
-        kryo.register(BaseComponent.class);
-        kryo.register(BatteryGeometry.class);
-        kryo.register(BindTo.class);
-        kryo.register(BlockChange.class);
-        kryo.register(Build.class);
-        kryo.register(ChangeFloppy.class);
-        kryo.register(ChangeBootRom.class);
-        kryo.register(CharacterGeometry.class);
-        kryo.register(ComponentMessage.class);
-        kryo.register(Cube3dMap.class);
-        kryo.register(FloppyDriveGeometry.class);
-        kryo.register(DeleteFlag.class);
-        kryo.register(EngineData.class);
-        kryo.register(EngineGeometry.class);
-        kryo.register(Explosion.class);
-        kryo.register(FixedRotation.class);
-        kryo.register(ForceFieldData.class);
-        kryo.register(ForceFieldGeometry.class);
-        kryo.register(GyroscopeData.class);
-        kryo.register(GyroscopeGeometry.class);
-        kryo.register(Identifier.class);
-        kryo.register(ImposterGeometry.class);
-        kryo.register(Keyboard.class);
-        kryo.register(Mass.class);
-        kryo.register(Mode.class);
-        kryo.register(MonitorData.class);
-        kryo.register(MonitorGeometry.class);
-        kryo.register(MoveShip.class);
-        kryo.register(Orbit.class);
-        kryo.register(Pick.class);
-        kryo.register(PlanetGeometry.class);
-        kryo.register(PlayerIDMessage.class);
-        kryo.register(Position.class);
-        kryo.register(PowerPlantGeometry.class);
-        kryo.register(PPSGeometry.class);
-        kryo.register(RadarGeometry.class);
-        kryo.register(RadarTargetData.class);
-        kryo.register(RAM.class);
-        kryo.register(Rotation.class);
-        kryo.register(ShipGeometry.class);
-        kryo.register(SpawnPoint.class);
-        kryo.register(SunGeometry.class);
-        kryo.register(Teleport.class);
-        kryo.register(ThermalLaserData.class);
-        kryo.register(ThermalLaserGeometry.class);
-        kryo.register(Unbuild.class);
-        kryo.register(Unpick.class);
-        kryo.register(UsableFlag.class);
-        kryo.register(UserCommand.class);
-        kryo.register(Vector3d.class);
-        kryo.register(Velocity.class);
-        kryo.register(VirtualFloppyDriveData.class);
-        kryo.register(VoidGeometry.class);
+
+        Object[][] register = new Object[][] {
+            new Object[] {String[].class, null, null},
+            new Object[] {char[].class, null, null},
+            new Object[] {char[][].class, null, null},
+            new Object[] {char[][][].class, null, null},
+            new Object[] {Object[].class, null, null},
+            new Object[] {BaseComponent.class, null, null},
+            new Object[] {BatteryGeometry.class, null, null},
+            new Object[] {BindTo.class, null, null},
+            new Object[] {BlockChange.class, null, null},
+            new Object[] {Build.class, null, null},
+            new Object[] {ChangeFloppy.class, null, null},
+            new Object[] {ChangeBootRom.class, null, null},
+            new Object[] {CharacterGeometry.class, null, null},
+            new Object[] {CollisionSphere.class, null, null},
+            new Object[] {ComponentMessage.class, null, null},
+            new Object[] {Cube3dMap.class, null, null},
+            new Object[] {FloppyDriveGeometry.class, null, null},
+            new Object[] {DeleteFlag.class, null, null},
+            new Object[] {Energy.class, null, null},
+            new Object[] {EngineData.class, null, null},
+            new Object[] {EngineGeometry.class, null, null},
+            new Object[] {Explosion.class, null, null},
+            new Object[] {FixedRotation.class, null, null},
+            new Object[] {ForceFieldData.class, null, null},
+            new Object[] {ForceFieldGeometry.class, null, null},
+            new Object[] {GyroscopeData.class, null, null},
+            new Object[] {GyroscopeGeometry.class, null, null},
+            new Object[] {Identifier.class, null, null},
+            new Object[] {ImposterGeometry.class, null, null},
+            new Object[] {Keyboard.class, null, null},
+            new Object[] {Mass.class, null, null},
+            new Object[] {Mode.class, null, null},
+            new Object[] {MonitorData.class, null, null},
+            new Object[] {MonitorGeometry.class, null, null},
+            new Object[] {MoveShip.class, null, null},
+            new Object[] {Orbit.class, null, null},
+            new Object[] {Pick.class, null, null},
+            new Object[] {PlanetGeometry.class, null, null},
+            new Object[] {PlayerIDMessage.class, null, null},
+            new Object[] {Position.class, null, null},
+            new Object[] {PowerPlantGeometry.class, null, null},
+            new Object[] {PPSGeometry.class, null, null},
+            new Object[] {RadarGeometry.class, null, null},
+            new Object[] {RadarTargetData.class, null, null},
+            new Object[] {RAM.class, null, null},
+            new Object[] {Rotation.class, null, null},
+            new Object[] {ShipGeometry.class, null, null},
+            new Object[] {SpawnPoint.class, null, null},
+            new Object[] {SunGeometry.class, null, null},
+            new Object[] {Teleport.class, null, null},
+            new Object[] {ThermalLaserData.class, null, null},
+            new Object[] {ThermalLaserGeometry.class, null, null},
+            new Object[] {Unbuild.class, null, null},
+            new Object[] {Unpick.class, null, null},
+            new Object[] {UsableFlag.class, null, null},
+            new Object[] {UserCommand.class, null, null},
+            new Object[] {Vector3d.class, null, null},
+            new Object[] {Velocity.class, null, null},
+            new Object[] {VirtualFloppyDriveData.class, null, null},
+            new Object[] {VoidGeometry.class, null, null},
+        };
+
+        for(Object[] data: register) {
+            Class clazz = (Class) data[0];
+            Serializer s = (Serializer) data[purpose+1];
+            if(s == null) {
+                kryo.register(clazz);
+            } else {
+                kryo.register(clazz, s);
+            }
+        }
     }
 
     static public class Login extends EventMessage {}

@@ -8,7 +8,7 @@
         <component type="srv.GravityFieldFlag"/>
         <component type="srv.SphereOfInfluence"/>
         <component type="srv.CollisionType" radius="50000" item="CELESTIAL"/>
-        <group name="replicate"/>
+        <component type="srv.ReplicateFlag"/>
         <entity name="Earth">
             <component type="Mass" kg="5.972e17"/>
             <component type="srv.GravityFieldFlag"/>
@@ -21,7 +21,7 @@
             <component type="FixedRotation" period_y="1.0"/>
             <component type="srv.SphereOfInfluence"/>
             <component type="srv.CollisionType" radius="5000" item="CELESTIAL"/>
-            <group name="replicate"/>
+            <component type="srv.ReplicateFlag"/>
             <entity name="Moon">
                 <component type="Mass" kg="7.3e13"/>
                 <component type="srv.GravityFieldFlag"/>
@@ -34,7 +34,7 @@
                 <component type="FixedRotation" period_y="0.1"/>
                 <component type="srv.SphereOfInfluence"/>
                 <component type="srv.CollisionType" radius="1600" item="CELESTIAL"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
         </entity>
         <!--entity name="Water World">
@@ -94,7 +94,7 @@
     </entity>
 
     <entity name="Borg Ship">
-        <group name="replicate"/>
+        <component type="srv.ReplicateFlag"/>
         <component type="srv.SynchronizeFlag"/>
         <component type="Position" x="30" y="0" z="250000"/>
         <component type="Rotation"/>
@@ -245,7 +245,7 @@
         </component>
         <!--component type="Mass" mass="1e6"/-->
         <entity name="DCPU">
-            <group name="replicate"/>
+            <component type="srv.ReplicateFlag"/>
             <component type="gfx.VoidGeometry"/>
             <component type="gfx.BindTo"/>
             <component type="dcpu.DCPU" bootrom="media/admiral.bin"/>
@@ -256,7 +256,7 @@
                 <component type="gfx.FloppyDriveGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="UsableFlag"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="LEM">
                 <component type="Position" dx="6" dy="1" dz="3"/>
@@ -266,7 +266,7 @@
                 <component type="gfx.BindTo"/>
                 <component type="UsableFlag"/>
                 <component type="srv.SynchronizeFlag"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Power Controller">
                 <component type="dcpu.VirtualPowerController"/>
@@ -278,7 +278,7 @@
                 <component type="dcpu.VirtualPowerPlant" capacity="5000"/>
                 <component type="gfx.PowerPlantGeometry"/>
                 <component type="gfx.BindTo"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="PowerPlant">
                 <component type="Position" dx="4" dy="2" dz="13"/>
@@ -286,7 +286,7 @@
                 <component type="dcpu.VirtualPowerPlant" capacity="5000"/>
                 <component type="gfx.PowerPlantGeometry"/>
                 <component type="gfx.BindTo"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Battery">
                 <component type="Position" dx="10" dy="1" dz="13"/>
@@ -294,7 +294,7 @@
                 <component type="dcpu.VirtualBattery" capacity="5000"/>
                 <component type="gfx.BatteryGeometry"/>
                 <component type="gfx.BindTo"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Battery">
                 <component type="Position" dx="10" dy="2" dz="13"/>
@@ -302,7 +302,7 @@
                 <component type="dcpu.VirtualBattery" capacity="5000"/>
                 <component type="gfx.BatteryGeometry"/>
                 <component type="gfx.BindTo"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="ForceField">
                 <component type="Position" dx="7" dy="2" dz="2"/>
@@ -312,7 +312,7 @@
                 <component type="gfx.ForceFieldGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Generic Keyboard">
                 <component type="dcpu.VirtualKeyboard"/>
@@ -331,7 +331,7 @@
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="ThermalLaser">
                 <component type="dcpu.VirtualThermalLaser" />
@@ -340,7 +340,7 @@
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="ThermalLaser">
                 <component type="dcpu.VirtualThermalLaser" />
@@ -349,7 +349,7 @@
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Gyroscope x">
                 <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" torque="600000"/>
@@ -358,7 +358,7 @@
                 <component type="Position" dx="6" dy="1" dz="13"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="-90" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Gyroscope y">
                 <component type="dcpu.VirtualGyroscope" x="0" y="1" z="0" torque="2000000"/>
@@ -367,7 +367,7 @@
                 <component type="Position" dx="7" dy="1" dz="13"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="90" y="0" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Gyroscope z">
                 <component type="dcpu.VirtualGyroscope" x="0" y="0" z="1" torque="1600000"/>
@@ -376,7 +376,7 @@
                 <component type="Position" dx="8" dy="1" dz="13"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="180" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="PPS">
                 <component type="dcpu.VirtualPPS"/>
@@ -385,7 +385,7 @@
                 <component type="Position" dx="0" dy="1" dz="4"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="srv.SynchronizeFlag"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Radar">
                 <component type="dcpu.VirtualRadar"/>
@@ -394,7 +394,7 @@
                 <component type="Position" dx="14" dy="1" dz="4"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Gravity Sensor">
                 <component type="dcpu.VirtualGravitySensor"/>
@@ -409,11 +409,11 @@
         <component type="Rotation" x="0" y="180" z="0"/>
         <component type="gfx.CharacterGeometry"/>
         <component type="srv.SynchronizeFlag"/>
-        <group name="replicate"/>
+        <component type="srv.ReplicateFlag"/>
     </entity-template>
 
     <entity-template name="Apollo 13">
-        <group name="replicate"/>
+        <component type="srv.ReplicateFlag"/>
         <component type="srv.SynchronizeFlag"/>
         <component type="Position" x="0" y="0" z="250000"/>
         <component type="Rotation"/>
@@ -563,7 +563,7 @@
         </component>
         <!--component type="Mass" mass="1e6"/-->
         <entity name="DCPU">
-            <group name="replicate"/>
+            <component type="srv.ReplicateFlag"/>
             <component type="gfx.VoidGeometry"/>
             <component type="gfx.BindTo"/>
             <component type="dcpu.DCPU" bootrom="media/bootrom.bin"/>
@@ -574,7 +574,7 @@
                 <component type="gfx.FloppyDriveGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="UsableFlag"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="LEM">
                 <component type="Position" dx="6" dy="1" dz="3"/>
@@ -584,7 +584,7 @@
                 <component type="gfx.BindTo"/>
                 <component type="UsableFlag"/>
                 <component type="srv.SynchronizeFlag"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Power Controller">
                 <component type="dcpu.VirtualPowerController"/>
@@ -596,7 +596,7 @@
                 <component type="dcpu.VirtualPowerPlant" capacity="5000"/>
                 <component type="gfx.PowerPlantGeometry"/>
                 <component type="gfx.BindTo"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="PowerPlant">
                 <component type="Position" dx="4" dy="2" dz="13"/>
@@ -604,7 +604,7 @@
                 <component type="dcpu.VirtualPowerPlant" capacity="5000"/>
                 <component type="gfx.PowerPlantGeometry"/>
                 <component type="gfx.BindTo"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Battery">
                 <component type="Position" dx="10" dy="1" dz="13"/>
@@ -612,7 +612,7 @@
                 <component type="dcpu.VirtualBattery" capacity="5000"/>
                 <component type="gfx.BatteryGeometry"/>
                 <component type="gfx.BindTo"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Battery">
                 <component type="Position" dx="10" dy="2" dz="13"/>
@@ -620,7 +620,7 @@
                 <component type="dcpu.VirtualBattery" capacity="5000"/>
                 <component type="gfx.BatteryGeometry"/>
                 <component type="gfx.BindTo"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Generic Keyboard">
                 <component type="dcpu.VirtualKeyboard"/>
@@ -639,7 +639,7 @@
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="ThermalLaser">
                 <component type="dcpu.VirtualThermalLaser" range="100" cooldown_speed="20"/>
@@ -648,7 +648,7 @@
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="ThermalLaser">
                 <component type="dcpu.VirtualThermalLaser" range="100" cooldown_speed="20"/>
@@ -657,7 +657,7 @@
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="-90" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="ForceField">
                 <component type="Position" dx="7" dy="2" dz="2"/>
@@ -667,7 +667,7 @@
                 <component type="gfx.ForceFieldGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="srv.SynchronizeFlag"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Gyroscope x">
                 <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" torque="600000"/>
@@ -676,7 +676,7 @@
                 <component type="Position" dx="6" dy="1" dz="13"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="-90" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Gyroscope y">
                 <component type="dcpu.VirtualGyroscope" x="0" y="1" z="0" torque="2000000"/>
@@ -685,7 +685,7 @@
                 <component type="Position" dx="7" dy="1" dz="13"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="90" y="0" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Gyroscope z">
                 <component type="dcpu.VirtualGyroscope" x="0" y="0" z="1" torque="1600000"/>
@@ -694,7 +694,7 @@
                 <component type="Position" dx="8" dy="1" dz="13"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="180" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="PPS">
                 <component type="dcpu.VirtualPPS"/>
@@ -703,7 +703,7 @@
                 <component type="Position" dx="0" dy="1" dz="4"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="srv.SynchronizeFlag"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Radar">
                 <component type="dcpu.VirtualRadar"/>
@@ -712,7 +712,7 @@
                 <component type="Position" dx="14" dy="1" dz="4"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
-                <group name="replicate"/>
+                <component type="srv.ReplicateFlag"/>
             </entity>
             <entity name="Gravity Sensor">
                 <component type="dcpu.VirtualGravitySensor"/>

@@ -18,7 +18,7 @@ import org.megastage.systems.client.ClientNetworkSystem;
 import org.megastage.systems.OrbitalMovementSystem;
 import org.megastage.systems.client.ImposterSystem;
 import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 /**
  *
@@ -49,7 +49,7 @@ public class ArtemisState extends AbstractAppState {
     @Override
     public void update(float tpf) {
         world.setDelta(tpf);
-        Time.value = System.currentTimeMillis() + ClientGlobals.timeDiff;
+        GlobalTime.set(System.currentTimeMillis() + ClientGlobals.timeDiff);
         
         world.process();
     }

@@ -11,7 +11,7 @@ import com.shaderblow.forceshield.ForceShieldControl;
 import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.transfer.ForceFieldData;
 import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 
 public class ForceFieldControl extends ForceShieldControl {
     public static int INTERVAL = 1500;
@@ -56,10 +56,10 @@ public class ForceFieldControl extends ForceShieldControl {
         Long last = lastHit.get(id);
         if(last == null) last = 0l;
 
-        if(Time.value < last + INTERVAL) {
+        if(GlobalTime.value < last + INTERVAL) {
             return;
         }
-        lastHit.put(id, Time.value);
+        lastHit.put(id, GlobalTime.value);
         super.registerHit(position);
     }
 

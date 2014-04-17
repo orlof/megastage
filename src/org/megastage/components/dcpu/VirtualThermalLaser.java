@@ -8,7 +8,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.protocol.Message;
-import org.megastage.util.Time;
+import org.megastage.util.GlobalTime;
 import org.megastage.util.Vector3d;
 
 public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
@@ -72,7 +72,7 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     }
     
     public void setStatusCooldown() {
-        startTime = Time.value;
+        startTime = GlobalTime.value;
         duration = duration * wattage / cooldownSpeed;
         status = VirtualThermalLaser.STATUS_COOLDOWN;
         dirty = true;
@@ -82,7 +82,7 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
         if(status == STATUS_DORMANT && wattage > 0 && duration <= 300) {
             dirty = true;
             status = STATUS_FIRING;
-            startTime = Time.value;
+            startTime = GlobalTime.value;
             this.duration = 100 * duration;
         }
     }
