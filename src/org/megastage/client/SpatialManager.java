@@ -1,7 +1,6 @@
 package org.megastage.client;
 
 import org.megastage.client.controls.ExplosionControl;
-import com.artemis.Entity;
 import com.cubes.Block;
 import com.cubes.BlockTerrainControl;
 import com.esotericsoftware.minlog.Log;
@@ -43,7 +42,6 @@ import jmeplanet.Planet;
 import jmeplanet.PlanetAppState;
 import jmeplanet.test.Utility;
 import org.megastage.client.controls.AxisRotationControl;
-import org.megastage.client.controls.DeleteControl;
 import org.megastage.client.controls.EngineControl;
 import org.megastage.client.controls.ForceFieldControl;
 import org.megastage.client.controls.GyroscopeControl;
@@ -63,6 +61,8 @@ import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.UsableFlag;
 import org.megastage.components.gfx.VoidGeometry;
 import org.megastage.components.Explosion;
+import org.megastage.components.Position;
+import org.megastage.components.Rotation;
 import org.megastage.components.gfx.BatteryGeometry;
 import org.megastage.components.gfx.FloppyDriveGeometry;
 import org.megastage.components.gfx.ForceFieldGeometry;
@@ -72,10 +72,10 @@ import org.megastage.components.gfx.PPSGeometry;
 import org.megastage.components.gfx.PowerPlantGeometry;
 import org.megastage.components.gfx.RadarGeometry;
 import org.megastage.components.gfx.ThermalLaserGeometry;
+import org.megastage.ecs.CompType;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.ID;
-import org.megastage.util.Mapper;
 
 /**
  *
@@ -87,7 +87,7 @@ public class SpatialManager {
     private final AssetManager assetManager;
 
     private HashMap<Integer, Node> nodes = new HashMap<>();
-    private HashMap<Node, Entity> entities = new HashMap<>();
+    private HashMap<Node, Integer> entities = new HashMap<>();
     
     public SpatialManager(SimpleApplication app) {
         super();
@@ -97,8 +97,16 @@ public class SpatialManager {
         ExplosionNode.initialize(assetManager);
     }
 
-    public void deleteEntity(Entity entity) {
-        final Node node = nodes.get(entity.id);
+    public int nodeToEid(Node node) {
+        return entities.containsKey(node) ? entities.get(node): 0;
+    }
+    
+    public Node eidToNode(int eid) {
+        return nodes.get(eid);
+    }
+    
+    public void deleteEntity(int eid) {
+        final Node node = eidToNode(eid);
 
         if(node != null) {
             app.enqueue(new Callable() {
@@ -112,50 +120,40 @@ public class SpatialManager {
         }
     }
     
-    public Entity getUsableEntity(Node node, boolean onlyUsable) {
-        Entity entity = entities.get(node);
-        if(entity == null) {
-            return null;
+    public int getUsableEntity(Node node, boolean onlyUsable) {
+        int eid = nodeToEid(node);
+        if(eid == 0) {
+            return 0;
         }
 
         if(onlyUsable) {
-            UsableFlag usable = Mapper.USABLE_FLAG.get(entity);
-            return usable == null ? null: entity;
+            UsableFlag usable = (UsableFlag) ClientGlobals.world.getComponent(eid, CompType.UsableFlag);
+            return usable == null ? 0: eid;
         }
         
-        return entity;
+        return eid;
     }
     
-    public Node getNode(int id) {
-        Node node = nodes.get(id);
+    public Node getNode(int eid) {
+        Node node = nodes.get(eid);
  
         if(node == null) {
-            Entity entity = ClientGlobals.artemis.world.getEntity(id);
-            node = createNode(entity);
+            ClientGlobals.world.createEntity(eid);
+            node = createNode(eid);
         }
         
         return node;
     }
     
-    public Node getNode(Entity entity) {
-        Node node = nodes.get(entity.id);
- 
-        if(node == null) {
-            node = createNode(entity);
-        }
-        
-        return node;
-    }
-
-    private Node createNode(Entity entity) {
-        Node node = new Node(ID.get(entity));
+    private Node createNode(int eid) {
+        Node node = new Node(ID.get(eid));
         node.attachChild(new Node("offset"));
-        nodes.put(entity.id, node);
-        entities.put(node, entity);
+        nodes.put(eid, node);
+        entities.put(node, eid);
         return node;
     }
     
-    public void changeShip(final Entity shipEntity) {
+    public void changeShip(final int shipEntity) {
         app.enqueue(new Callable() {
             @Override
             public Object call() throws Exception {
@@ -166,7 +164,7 @@ public class SpatialManager {
         });
     }
     
-    public void bindTo(final Entity parentEntity, final Entity childEntity) {
+    public void bindTo(final int parentEntity, final int childEntity) {
         final Node parent = getNode(parentEntity);
         final Node child = getNode(childEntity);
 
@@ -217,12 +215,12 @@ public class SpatialManager {
         return (Node) node.getChild(0);
     }
     
-    public void setupSunLikeBody(final Entity entity, final SunGeometry data) {
+    public void setupSunLikeBody(final int eid, final SunGeometry data) {
         ColorRGBA colorRGBA = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
 
-        final Node node = getNode(entity);
-        node.addControl(new PositionControl(entity, false));
-        node.addControl(new RotationControl(entity));
+        final Node node = getNode(eid);
+        node.addControl(new PositionControl(eid, false));
+        node.addControl(new RotationControl(eid));
         
         attach(node, createSphere(data.radius, colorRGBA, false), true);
 
@@ -230,7 +228,7 @@ public class SpatialManager {
         light.setColor(colorRGBA);
         light.setRadius(data.lightRadius);
 
-        LightNode lightNode = new LightNode(entity.toString() + " LightNode", light);
+        LightNode lightNode = new LightNode(eid + " LightNode", light);
         attach(node, lightNode, true);
 
         app.enqueue(new Callable() {
@@ -243,12 +241,12 @@ public class SpatialManager {
         });
     }
 
-    public void setupPlanetLikeBody(final Entity entity, PlanetGeometry data) {
+    public void setupPlanetLikeBody(final int eid, PlanetGeometry data) {
         // Add planet
-        final Node node = getNode(entity);
+        final Node node = getNode(eid);
 
-        final PositionControl positionControl = new PositionControl(entity, false);
-        final RotationControl rotationControl = new RotationControl(entity);
+        final PositionControl positionControl = new PositionControl(eid, false);
+        final RotationControl rotationControl = new RotationControl(eid);
         
         if(ClientGlobals.gfxSettings.ENABLE_PLANETS) {
             final Planet planet = createPlanet(data);
@@ -290,14 +288,15 @@ public class SpatialManager {
         }
     }
     
-    public void setupVoidNode(Entity entity, VoidGeometry data) {
-        getNode(entity);
+    public void setupVoidNode(int eid, VoidGeometry data) {
+        getNode(eid);
     }
     
-    public void updateShip(Entity entity, ShipGeometry data) {
-        Cube3dMap theMap = Mapper.SHIP_GEOMETRY.get(entity).map;
+    public void updateShip(int eid, ShipGeometry data) {
+        ShipGeometry sgeo = (ShipGeometry) ClientGlobals.world.getComponent(eid, CompType.Geometry);
+        Cube3dMap theMap = sgeo.map;
         
-        final Node node = getNode(entity);
+        final Node node = getNode(eid);
         BlockTerrainControl ctrl = offset(node).getControl(BlockTerrainControl.class);
 
         int xsize = Math.max(data.map.xsize, theMap.xsize);
@@ -322,11 +321,12 @@ public class SpatialManager {
         }
     }
         
-    public void updateShipBlock(Entity entity, final BlockChange data) {
-        Cube3dMap theMap = Mapper.SHIP_GEOMETRY.get(entity).map;
+    public void updateShipBlock(int eid, final BlockChange data) {
+        ShipGeometry sg = (ShipGeometry) ClientGlobals.world.getComponent(eid, CompType.Geometry);
+        Cube3dMap theMap = sg.map;
         theMap.set(data.x, data.y, data.z, data.type, data.event);
         
-        final Node node = getNode(entity);
+        final Node node = getNode(eid);
         BlockTerrainControl ctrl = offset(node).getControl(BlockTerrainControl.class);
 
         if(data.type == 0) {
@@ -356,7 +356,7 @@ public class SpatialManager {
         }
     }
         
-    public void setupShip(Entity entity, ShipGeometry data) {
+    public void setupShip(int eid, ShipGeometry data) {
         BlockTerrainControl blockControl = CubesManager.getControl(data.map);
         for(int x = 0; x <= data.map.xsize; x++) {
             for(int y = 0; y <= data.map.ysize; y++) {
@@ -370,9 +370,9 @@ public class SpatialManager {
             }
         }
         
-        final Node node = getNode(entity);
-        node.addControl(new PositionControl(entity, true));
-        node.addControl(new RotationControl(entity));
+        final Node node = getNode(eid);
+        node.addControl(new PositionControl(eid, true));
+        node.addControl(new RotationControl(eid));
 
         if(ClientGlobals.gfxSettings.ENABLE_SHIP_SHADOWS) {
             node.setShadowMode(ShadowMode.CastAndReceive);
@@ -394,14 +394,14 @@ public class SpatialManager {
         }});
     }
 
-    public void setupEngine(Entity entity, EngineGeometry data) {
-        final Node node = getNode(entity);
-        final PositionControl positionControl = new  PositionControl(entity, false);
-        final RotationControl rotationControl = new  RotationControl(entity);
+    public void setupEngine(int eid, EngineGeometry data) {
+        final Node node = getNode(eid);
+        final PositionControl positionControl = new  PositionControl(eid, false);
+        final RotationControl rotationControl = new  RotationControl(eid);
 
         final Node burn = (Node) assetManager.loadModel("Scenes/testScene.j3o"); 
         ParticleEmitter emitter = (ParticleEmitter) burn.getChild("Emitter");
-        emitter.addControl(new EngineControl(entity));
+        emitter.addControl(new EngineControl(eid));
         emitter.setEnabled(true);
 
         final Geometry geom = new Geometry("", new Cylinder(16, 16, 0.5f, 1, true));
@@ -417,10 +417,10 @@ public class SpatialManager {
         }});
     }
     
-    public void setupMonitor(Entity entity, MonitorGeometry data) {
-        final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, false);
-        final RotationControl rotationControl = new RotationControl(entity);
+    public void setupMonitor(int eid, MonitorGeometry data) {
+        final Node node = getNode(eid);
+        final PositionControl positionControl = new PositionControl(eid, false);
+        final RotationControl rotationControl = new RotationControl(eid);
 
         BufferedImage img = new BufferedImage(128, 96, BufferedImage.TYPE_INT_ARGB);
         Image img2 = new AWTLoader().load(img, false);
@@ -433,14 +433,14 @@ public class SpatialManager {
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setTexture("ColorMap", tex);
 
-        final Geometry panel = new Geometry(entity.toString(), new Quad(data.width-0.2f, data.height-0.2f, true));
+        final Geometry panel = new Geometry("LEM panel", new Quad(data.width-0.2f, data.height-0.2f, true));
         panel.setMaterial(mat);
         panel.setLocalTranslation(-0.5f+0.1f, -0.5f+0.1f, 0f);
 
-        ClientRaster rasterComponent = ClientGlobals.artemis.getComponent(entity, ClientRaster.class);
+        ClientRaster rasterComponent = (ClientRaster) ClientGlobals.world.getComponent(eid, CompType.ClientRaster);
         rasterComponent.raster = raster;
 
-        final Geometry box = new Geometry(entity.toString(), new Box(data.width/2.0f, data.height/2.0f, 0.1f));
+        final Geometry box = new Geometry("LEM box", new Box(data.width/2.0f, data.height/2.0f, 0.1f));
         box.setMaterial(material(ColorRGBA.Gray, true));
         box.setLocalTranslation(-0.5f + data.width/2.0f, -0.5f + data.height/2.0f, -0.3f);
 
@@ -454,11 +454,11 @@ public class SpatialManager {
         }});
     }
 
-    public void setupCharacter(Entity entity, CharacterGeometry data) {
-        final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, true);
-        final AxisRotationControl bodyRotationControl = new AxisRotationControl(entity, false, true, false);
-        final AxisRotationControl headRotationControl = new AxisRotationControl(entity, true, false, false);
+    public void setupCharacter(int eid, CharacterGeometry data) {
+        final Node node = getNode(eid);
+        final PositionControl positionControl = new PositionControl(eid, true);
+        final AxisRotationControl bodyRotationControl = new AxisRotationControl(eid, false, true, false);
+        final AxisRotationControl headRotationControl = new AxisRotationControl(eid, true, false, false);
 
         Material mat = material(new ColorRGBA(data.red, data.green, data.blue, data.alpha), true);
 
@@ -513,47 +513,49 @@ public class SpatialManager {
     }
 
     private void leaveShip() {
-        Entity ship = ClientGlobals.shipEntity;
+        int ship = ClientGlobals.shipEntity;
         
-        if(ship != null) {
+        if(ship != 0) {
             Log.info(ID.get(ship));
 
             Node shipNode = getNode(ship);
             ClientGlobals.sysMovNode.attachChild(shipNode);
 
-            ClientGlobals.shipEntity = null;
-            Mapper.ROTATION.get(ship).dirty = true;
-            Mapper.POSITION.get(ship).dirty = true;
+            ClientGlobals.shipEntity = 0;
+            Rotation rot = (Rotation) ClientGlobals.world.getComponent(ship, CompType.Rotation);
+            rot.dirty = true;
+            Position pos = (Position) ClientGlobals.world.getComponent(ship, CompType.Position);
+            pos.dirty = true;
             
             ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
         }
     }
 
-    private void enterShip(Entity shipEntity) {
-        Log.info(ID.get(shipEntity));
+    private void enterShip(int shipEid) {
+        Log.info(ID.get(shipEid));
 
-        ClientGlobals.shipEntity = shipEntity;
+        ClientGlobals.shipEntity = shipEid;
 
-        Node shipNode = getNode(shipEntity);
+        Node shipNode = getNode(shipEid);
         ClientGlobals.fixedNode.attachChild(shipNode);
         attach(shipNode, ClientGlobals.playerNode, true);
         ClientGlobals.playerNode.setLocalTranslation(0, 0, 0);
     }
 
-    public void setupPlayer(final Entity entity) {
-        final AxisRotationControl bodyRotationControl = new AxisRotationControl(entity, false, true, false);
-        final AxisRotationControl headRotationControl = new AxisRotationControl(entity, true, false, false);
+    public void setupPlayer(final int eid) {
+        final AxisRotationControl bodyRotationControl = new AxisRotationControl(eid, false, true, false);
+        final AxisRotationControl headRotationControl = new AxisRotationControl(eid, true, false, false);
 
         app.enqueue(new Callable() { @Override public Object call() throws Exception {
-            ClientGlobals.playerNode.addControl(new PositionControl(entity, true));
+            ClientGlobals.playerNode.addControl(new PositionControl(eid, true));
             ClientGlobals.playerNode.addControl(bodyRotationControl);
             ClientGlobals.playerNode.getChild(0).addControl(headRotationControl);
             return null;
         }});
     }
 
-    public void setupExplosion(final Entity entity, final Explosion explosion) {
-        final Node node = getNode(entity);
+    public void setupExplosion(final int eid, final Explosion explosion) {
+        final Node node = getNode(eid);
         final ExplosionNode explosionNode = new ExplosionNode("ExplosionFX");
 
         explosionNode.addControl((Control) new ExplosionControl(explosion, explosionNode));
@@ -565,8 +567,8 @@ public class SpatialManager {
     }
 
     
-    public void imposter(Entity entity, boolean gfxVisible) {
-        Node node = getNode(entity);
+    public void imposter(int eid, boolean gfxVisible) {
+        Node node = getNode(eid);
 
         for(Spatial s: node.getChildren()) {
             if(s.getName().equals("imposter")) {
@@ -616,23 +618,23 @@ public class SpatialManager {
         return geom;
     }
 
-    public void setupImposter(final Entity entity, final ImposterGeometry data) {
+    public void setupImposter(final int eid, final ImposterGeometry data) {
         ColorRGBA colorRGBA = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
 
         final Geometry imposter = createImposter(data.radius, colorRGBA);
-        final Node node = getNode(entity);
+        final Node node = getNode(eid);
         
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
-            node.addControl(new ImposterPositionControl(entity));
+            node.addControl(new ImposterPositionControl(eid));
             node.attachChild(imposter);
             return null;
         }});
     }
 
-    public void setupPPS(Entity entity, PPSGeometry aThis) {
-        final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, false);
-        final RotationControl rotationControl = new RotationControl(entity);
+    public void setupPPS(int eid, PPSGeometry aThis) {
+        final Node node = getNode(eid);
+        final PositionControl positionControl = new PositionControl(eid, false);
+        final RotationControl rotationControl = new RotationControl(eid);
 
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         base.setMaterial(getMaterial("rock09.jpg"));
@@ -653,10 +655,10 @@ public class SpatialManager {
         }});
     }
 
-    public void setupFloppyDrive(Entity entity, FloppyDriveGeometry comp) {
-        final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, false);
-        final RotationControl rotationControl = new RotationControl(entity);
+    public void setupFloppyDrive(int eid, FloppyDriveGeometry comp) {
+        final Node node = getNode(eid);
+        final PositionControl positionControl = new PositionControl(eid, false);
+        final RotationControl rotationControl = new RotationControl(eid);
 
         final Geometry base = new Geometry("dcpu", new Box(0.5f, 0.5f, 0.5f));
         base.setMaterial(material(ColorRGBA.Black, true));
@@ -670,10 +672,10 @@ public class SpatialManager {
         }});
     }
 
-    public void setupRadar(Entity entity, RadarGeometry aThis) {
-        final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, false);
-        final RotationControl rotationControl = new RotationControl(entity);
+    public void setupRadar(int eid, RadarGeometry aThis) {
+        final Node node = getNode(eid);
+        final PositionControl positionControl = new PositionControl(eid, false);
+        final RotationControl rotationControl = new RotationControl(eid);
 
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         base.setMaterial(getMaterial("rock09.jpg"));
@@ -694,7 +696,7 @@ public class SpatialManager {
         outside.setMaterial(material(new ColorRGBA(0.8f, 0.8f, 0.8f, 1.0f), true));
         spinner.attachChild(outside);
         
-        spinnerRotator.addControl(new LookAtControl(entity));
+        spinnerRotator.addControl(new LookAtControl(eid));
 
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
             node.addControl(positionControl);
@@ -706,9 +708,9 @@ public class SpatialManager {
         }});
     }
 
-    public void setupGyroscope(Entity entity, GyroscopeGeometry aThis) {
-        final Node node = getNode(entity);
-        final PositionControl positionControl = new PositionControl(entity, false);
+    public void setupGyroscope(int eid, GyroscopeGeometry aThis) {
+        final Node node = getNode(eid);
+        final PositionControl positionControl = new PositionControl(eid, false);
 
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         //base.setMaterial(material(new ColorRGBA(0.7f, 0.7f, 0.7f, 0.5f), true));
@@ -718,8 +720,8 @@ public class SpatialManager {
         final Geometry wheel = new Geometry("wheel", new Cylinder(5, 5, 0.35f, 0.35f, 0.45f, true, false));
         wheel.setMaterial(getMaterial("rock09.jpg"));
 
-        wheel.addControl(new GyroscopeControl(entity));
-        wheel.addControl(new RotationControl(entity));
+        wheel.addControl(new GyroscopeControl(eid));
+        wheel.addControl(new RotationControl(eid));
 
         app.enqueue(new Callable() {@Override public Object call() throws Exception {
             node.addControl(positionControl);
@@ -734,11 +736,11 @@ public class SpatialManager {
         offset(node).setLocalTranslation(value);
     }
 
-    public void setupThermalLaser(Entity entity, ThermalLaserGeometry data) {
-        final Node node = getNode(entity);
+    public void setupThermalLaser(int eid, ThermalLaserGeometry data) {
+        final Node node = getNode(eid);
 
-        final PositionControl positionControl = new  PositionControl(entity, false);
-        final RotationControl rotationControl = new  RotationControl(entity);
+        final PositionControl positionControl = new  PositionControl(eid, false);
+        final RotationControl rotationControl = new  RotationControl(eid);
         final Cylinder cyl = new Cylinder(6, 6, 0.2f, 0.2f, 100, true, false);
 
         final Geometry beam = new Geometry("beam", cyl);
@@ -752,7 +754,7 @@ public class SpatialManager {
         // TRANSPARENT?
         mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         // ---
-        beam.addControl(new ThermalLaserControl(entity, cyl));
+        beam.addControl(new ThermalLaserControl(eid, cyl));
 
         final Geometry weapon = new Geometry("weapon", new Cylinder(16, 16, 0.5f, 0.3f, data.length, true, false));
         weapon.setLocalTranslation(0, 0, -data.length/2f + 0.5f);
@@ -768,10 +770,10 @@ public class SpatialManager {
         }});
     }
 
-    public void setupForceField(Entity entity, ForceFieldGeometry aThis) {
-        final Node node = getNode(entity);
-        final PositionControl positionControl = new  PositionControl(entity, false);
-        //final RotationControl rotationControl = new  RotationControl(entity);
+    public void setupForceField(int eid, ForceFieldGeometry aThis) {
+        final Node node = getNode(eid);
+        final PositionControl positionControl = new  PositionControl(eid, false);
+        //final RotationControl rotationControl = new  RotationControl(eid);
 
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         base.setMaterial(getMaterial("rock09.jpg"));
@@ -807,7 +809,7 @@ public class SpatialManager {
         material.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         material.setFloat("MaxDistance", 1);
 
-        ForceFieldControl forceFieldControl = new ForceFieldControl(entity, shield, material, sphere);
+        ForceFieldControl forceFieldControl = new ForceFieldControl(eid, shield, material, sphere);
         shield.addControl(forceFieldControl); // Add the control to the spatial
         forceFieldControl.setEffectSize(10f); // Set the effect size
         forceFieldControl.setColor(new ColorRGBA(0, 0, 1, 1)); // Set effect color
@@ -826,10 +828,10 @@ public class SpatialManager {
         }});
     }
 
-    public void setupPowerPlant(Entity entity, PowerPlantGeometry aThis) {
-        final Node node = getNode(entity);
-        final PositionControl positionControl = new  PositionControl(entity, false);
-        final RotationControl rotationControl = new  RotationControl(entity);
+    public void setupPowerPlant(int eid, PowerPlantGeometry aThis) {
+        final Node node = getNode(eid);
+        final PositionControl positionControl = new  PositionControl(eid, false);
+        final RotationControl rotationControl = new  RotationControl(eid);
 
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         base.setMaterial(getMaterial("rock09.jpg"));
@@ -875,10 +877,10 @@ public class SpatialManager {
         }
     }
 
-    public void setupBattery(Entity entity, BatteryGeometry aThis) {
-        final Node node = getNode(entity);
-        final PositionControl positionControl = new  PositionControl(entity, false);
-        final RotationControl rotationControl = new  RotationControl(entity);
+    public void setupBattery(int eid, BatteryGeometry aThis) {
+        final Node node = getNode(eid);
+        final PositionControl positionControl = new  PositionControl(eid, false);
+        final RotationControl rotationControl = new  RotationControl(eid);
 
         final Geometry base = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         base.setMaterial(getMaterial("rock09.jpg"));

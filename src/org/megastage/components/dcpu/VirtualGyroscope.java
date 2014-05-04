@@ -1,7 +1,5 @@
 package org.megastage.components.dcpu;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -9,7 +7,10 @@ import org.megastage.components.BaseComponent;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.Explosion;
 import org.megastage.components.transfer.GyroscopeData;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
+import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector3d;
 
 public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
@@ -28,12 +29,9 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     public double inertia;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        type = TYPE_GYRO;
-        revision = 0xabcd;
-        manufactorer = MANUFACTORER_GENERAL_DRIVES;
-
-        super.init(world, parent, element);
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        super.init(world, parentEid, element);
+        setInfo(TYPE_GYRO, 0xabcd, MANUFACTORER_GENERAL_DRIVES);
 
         axis = new Vector3d(
                 getIntegerValue(element, "x", 0) & 0xf,
@@ -45,12 +43,13 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
         return null;
     }
 
-    public void interrupt() {
+    @Override
+    public void interrupt(DCPU dcpu) {
         char a = dcpu.registers[0];
 
         if (a == 0) {
 
-            setTorque(dcpu.registers[1]);
+            setTorque(shipEID, dcpu.registers[1]);
         } else if (a == 1) {
             if(power == 0) {
                 dcpu.registers[1] = STATUS_OFF;
@@ -68,10 +67,9 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
         }
     }
 
-    public void setTorque(char torque) {
+    public void setTorque(int ship, char torque) {
         if(torque == 0x8000) {
-            ship.addComponent(new Explosion());
-            ship.changedInWorld();
+            ServerGlobals.world.addComponent(ship, CompType.Explosion, new Explosion());
             return;
         } 
 
@@ -100,26 +98,26 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     }
     
     @Override
-    public Message replicate(Entity entity) {
+    public Message replicate(int eid) {
         dirty = false;
 
         GyroscopeData data = new GyroscopeData();
         data.power = power;
 
-        return data.always(entity);
+        return data.always(eid);
     }
     
     @Override
-    public Message synchronize(Entity entity) {
-        return replicateIfDirty(entity);
+    public Message synchronize(int eid) {
+        return replicateIfDirty(eid);
     }
 
     @Override
-    public double consume(double available, double delta) {
+    public double consume(World world, int ship, double available, double delta) {
         double intake = delta * getPowerLevel();
         if(intake > available) {
             Log.info("Not enough power: " + intake + "/" + available);
-            setTorque((char) 0);
+            setTorque(ship, (char) 0);
             intake = 0;
         }
 

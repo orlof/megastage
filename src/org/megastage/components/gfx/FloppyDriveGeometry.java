@@ -1,23 +1,19 @@
 package org.megastage.components.gfx;
 
-import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.BaseComponent;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
     
-/**
- *
- * @author Orlof
- */
 public class FloppyDriveGeometry extends BaseComponent {
     @Override
-    public void receive(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.setupFloppyDrive(entity, this);
+    public void receive(World world, Connection pc, int eid) {
+        ClientGlobals.spatialManager.setupFloppyDrive(eid, this);
     }
     
     @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+    public Message replicate(int eid) {
+        return always(eid);
     }
 }

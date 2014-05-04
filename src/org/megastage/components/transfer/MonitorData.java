@@ -1,11 +1,11 @@
 package org.megastage.components.transfer;
 
-import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.components.client.ClientVideoMemory;
 import org.megastage.components.dcpu.LEMUtil;
-import org.megastage.client.ClientGlobals;
 import org.megastage.components.BaseComponent;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.util.RAM;
 
 public class MonitorData extends BaseComponent {
@@ -19,12 +19,12 @@ public class MonitorData extends BaseComponent {
     public RAM palette = new RAM(LEMUtil.defaultPalette);
 
     @Override
-    public void receive(Connection pc, Entity entity) {
-//        Log.info(ID.get(entity));
+    public void receive(World world, Connection pc, int eid) {
+//        Log.info(ID.get(eid));
 //        Log.info("video   [" + ((int) videoAddr) + "] " + video.toString());
 //        Log.info("font    [" + ((int) fontAddr) + "] " + font.toString());
 //        Log.info("palette [" + ((int) paletteAddr) + "] " + palette.toString());
-        ClientVideoMemory videoMemory = ClientGlobals.artemis.getComponent(entity, ClientVideoMemory.class);
+        ClientVideoMemory videoMemory = (ClientVideoMemory) world.getComponent(eid, CompType.ClientVideoMemory);
         videoMemory.update(this);
     }
 }

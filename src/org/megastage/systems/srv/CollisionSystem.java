@@ -1,88 +1,51 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.artemis.Entity;
-import com.artemis.systems.EntitySystem;
-import com.badlogic.gdx.utils.Array;
+import org.megastage.ecs.World;
+import org.megastage.ecs.Processor;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
 import org.megastage.components.srv.CollisionType;
 import org.megastage.components.Explosion;
 import org.megastage.components.srv.Identifier;
-import org.megastage.util.Mapper;
-import org.megastage.util.GlobalTime;
+import org.megastage.ecs.CompType;
 
-public class CollisionSystem extends EntitySystem {
-    private long interval;
-    private long acc;
-
-    ComponentMapper<CollisionType> COLLISION_TYPE;
-    ComponentMapper<Position> POSITION;
-    ComponentMapper<Explosion> EXPLOSION;
-    
-    public CollisionSystem(long interval) {
-        super(Aspect.getAspectForAll(CollisionType.class, Position.class));
-        this.interval = interval;
+public class CollisionSystem extends Processor {
+    public CollisionSystem(World world, long interval) {
+        super(world, interval, CompType.CollisionType, CompType.Position);
     }
 
     @Override
-    public void initialize() {
-        
-        COLLISION_TYPE = world.getMapper(CollisionType.class);
-        POSITION = world.getMapper(Position.class);
-        EXPLOSION = world.getMapper(Explosion.class);
-    }
-
-    @Override
-    protected boolean checkProcessing() {
-        if(GlobalTime.value >= acc) {
-                acc = GlobalTime.value + interval;
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    protected void processEntities(Array<Entity> entities) {
-        for(int i=0; i < entities.size; i++) {
-            Entity a = entities.get(i);
+    protected void process() {
+        for(group.pairIterator(); group.nextPair(); /**/ ) {
+            CollisionType cola = (CollisionType) world.getComponent(group.left, CompType.CollisionType);
+            Position posa = (Position) world.getComponent(group.left, CompType.Position);
             
-            CollisionType cola = COLLISION_TYPE.get(a);
-            Position posa = POSITION.get(a);
+            CollisionType colb = (CollisionType) world.getComponent(group.right, CompType.CollisionType);
+            Position posb = (Position) world.getComponent(group.right, CompType.Position);
             
-            for(int j=i+1; j < entities.size; j++) {
-                Entity b = entities.get(j);
+            if(cola.isShip() || colb.isShip()) {
+                double dx = (posa.x - posb.x) / 1000.0;
+                double dy = (posa.y - posb.y) / 1000.0;
+                double dz = (posa.z - posb.z) / 1000.0;
 
-                CollisionType colb = COLLISION_TYPE.get(b);
-                Position posb = POSITION.get(b);
+                double range = cola.radius + colb.radius;
 
-                if(cola.isShip() || colb.isShip()) {
-                    double dx = (posa.x - posb.x) / 1000.0;
-                    double dy = (posa.y - posb.y) / 1000.0;
-                    double dz = (posa.z - posb.z) / 1000.0;
+                if(range * range > dx*dx + dy*dy + dz*dz) {
+                    // we have an impact
 
-                    double range = cola.radius + colb.radius;
-                    
-                    if(range * range > dx*dx + dy*dy + dz*dz) {
-                        // we have an impact
-                        
-                        Identifier ida = Mapper.IDENTIFIER.get(a);
-                        Identifier idb = Mapper.IDENTIFIER.get(b);
+                    Identifier ida = (Identifier) world.getComponent(group.left, CompType.Identifier);
+                    Identifier idb = (Identifier) world.getComponent(group.right, CompType.Identifier);
 
-                        if(cola.isShip() && !EXPLOSION.has(a)) {
-                            a.addComponent(new Explosion());
-                            a.changedInWorld();
-                            // TODO damage a
-                            Log.info(ida.toString() + " was damaged in collision with " + idb.toString());
-                        }
-                        
-                        if(colb.isShip() && !EXPLOSION.has(b)) {
-                            b.addComponent(new Explosion());
-                            b.changedInWorld();
-                            // TODO damage b
-                            Log.info(idb.toString() + " was damaged in collision with " + ida.toString());
-                        }
+                    if(cola.isShip() && !world.hasComponent(group.left, CompType.Explosion)) {
+                        world.addComponent(group.left, CompType.Explosion, new Explosion());
+                        // TODO damage a
+                        Log.info(ida.toString() + " was damaged in collision with " + idb.toString());
+                    }
+
+                    if(colb.isShip() && !world.hasComponent(group.right, CompType.Explosion)) {
+                        world.addComponent(group.right, CompType.Explosion, new Explosion());
+                        // TODO damage b
+                        Log.info(idb.toString() + " was damaged in collision with " + ida.toString());
                     }
                 }
             }

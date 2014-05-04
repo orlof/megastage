@@ -1,11 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.util;
 
-import com.artemis.Entity;
-import com.badlogic.gdx.utils.Array;
 import com.cubes.Vector3Int;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
@@ -13,13 +7,8 @@ import com.jme3.math.Vector3f;
 import java.util.LinkedList;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.BaseComponent;
-import org.megastage.protocol.Message;
+import org.megastage.ecs.World;
 
-
-/**
- *
- * @author Orlof
- */
 public class Cube3dMap {
     private final static transient int INITIAL_CAPACITY = 16;
 
@@ -206,9 +195,9 @@ public class Cube3dMap {
         }
 
         @Override
-        public void receive(Connection pc, Entity entity) {
-            Log.info(ID.get(entity) + toString());
-            ClientGlobals.spatialManager.updateShipBlock(entity, this);
+        public void receive(World world, Connection pc, int eid) {
+            Log.info(ID.get(eid) + toString());
+            ClientGlobals.spatialManager.updateShipBlock(eid, this);
         }
 
         @Override

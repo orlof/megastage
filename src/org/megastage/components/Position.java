@@ -1,7 +1,5 @@
 package org.megastage.components;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import com.cubes.Vector3Int;
 import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
@@ -9,22 +7,18 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 import org.megastage.util.Globals;
-import org.megastage.util.Mapper;
 import org.megastage.util.Quaternion;
-import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector3d;
 
 public class Position extends BaseComponent {
     public long x, y, z;
     
-    public Position() {
-        super();
-    }
-
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
         if(hasValue(element, "x")) {
             x = 1000 * getLongValue(element, "x", 0);
             y = 1000 * getLongValue(element, "y", 0);
@@ -39,20 +33,20 @@ public class Position extends BaseComponent {
     }
 
     @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+    public Message replicate(int eid) {
+        return always(eid);
     }
 
     @Override
-    public Message synchronize(Entity entity) {
-        return ifDirty(entity);
+    public Message synchronize(int eid) {
+        return ifDirty(eid);
     }
 
     @Override
-    public void receive(Connection pc, Entity entity) {
-        Position pos = Mapper.POSITION.get(entity);
+    public void receive(World world, Connection pc, int eid) {
+        Position pos = (Position) world.getComponent(eid, CompType.Position);
         if(pos == null) {
-            super.receive(pc, entity);
+            super.receive(world, pc, eid);
             return;
         }
         pos.set(this);
@@ -69,57 +63,60 @@ public class Position extends BaseComponent {
         add(velocity.getPositionChange(time));
     }
     
-    public Vector3d getGlobalCoordinates(Entity entity) {
+    public Vector3d getGlobalCoordinates(World world, int eid) {
         Vector3d coord = getVector3d();
         
-        BindTo bindTo = Mapper.BIND_TO.get(entity);
+        BindTo bindTo = (BindTo) world.getComponent(eid, CompType.BindTo);
         while(bindTo != null) {
-            entity = ServerGlobals.world.getEntity(bindTo.parent);
-            if(entity == null) return null;
+            if(bindTo.parent == 0) return null;
 
-            ShipGeometry sg = Mapper.SHIP_GEOMETRY.get(entity);
+            ShipGeometry sg = (ShipGeometry) world.getComponent(eid, CompType.ShipGeometry);
             if(sg != null) {
                 coord = coord.sub(sg.map.getCenter3d());
+
+                Rotation shipRot = (Rotation) world.getComponent(eid, CompType.Rotation);
+                Quaternion shipRotQ = shipRot.getQuaternion4d();
+                coord = coord.multiply(shipRotQ);
                 
-                Quaternion shipRot = Mapper.ROTATION.get(entity).getQuaternion4d();
-                coord = coord.multiply(shipRot);
-                
-                Vector3d shipPos = Mapper.POSITION.get(entity).getVector3d();
-                coord = coord.add(shipPos);
+                Position shipPos = (Position) world.getComponent(eid, CompType.Position);
+                Vector3d shipPosVec = shipPos.getVector3d();
+                coord = coord.add(shipPosVec);
                 
                 return coord;
             }
             
 // not needed as midle components currently have no position
-//            Position pos = Mapper.POSITION.get(entity);
+//            Position pos = Mapper.POSITION.get(eid);
 //            if(pos != null) {
 //                coord.add(pos.getVector3d());
 //            }
-            bindTo = Mapper.BIND_TO.get(entity);
+            bindTo = (BindTo) world.getComponent(eid, CompType.BindTo);
         }
         
         
         return coord;
     }
     
-    public Vector3d getBlockCoordinates(Entity entity, Vector3Int block, boolean center) {
+    public Vector3d getBlockCoordinates(World world, int eid, Vector3Int block, boolean center) {
         double offset = center ? 0.5: 0.0;
         
         Vector3d coord = new Vector3d(block.getX() + offset, block.getY() + offset, block.getZ() + offset);
-        ShipGeometry sg = Mapper.SHIP_GEOMETRY.get(entity);
+        ShipGeometry sg = (ShipGeometry) world.getComponent(eid, CompType.ShipGeometry);
         coord = coord.sub(sg.map.getCenter3d());
 
-        Quaternion shipRot = Mapper.ROTATION.get(entity).getQuaternion4d();
-        coord = coord.multiply(shipRot);
+        Rotation shipRot = (Rotation) world.getComponent(eid, CompType.Rotation);
+        Quaternion shipRotQ = shipRot.getQuaternion4d();
+        coord = coord.multiply(shipRotQ);
 
-        Vector3d shipPos = Mapper.POSITION.get(entity).getVector3d();
+        Position pos = (Position) world.getComponent(eid, CompType.Position);
+        Vector3d shipPos = pos.getVector3d();
         coord = coord.add(shipPos);
 
         return coord;
     }
             
-    public Vector3d getBaseCoordinates(Entity entity) {
-        return getBlockCoordinates(entity, new Vector3Int(0,0,0), false);
+    public Vector3d getBaseCoordinates(World world, int eid) {
+        return getBlockCoordinates(world, eid, new Vector3Int(0,0,0), false);
     }
             
     public Vector3f getVector3f() {

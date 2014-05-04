@@ -1,10 +1,8 @@
 package org.megastage.components.transfer;
 
-import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
 import org.megastage.components.BaseComponent;
-import org.megastage.util.ID;
+import org.megastage.ecs.World;
 
 public class ThermalLaserData extends BaseComponent {
     // TODO this should contain status, w, Hit, range
@@ -13,9 +11,9 @@ public class ThermalLaserData extends BaseComponent {
     public float range;
 
     @Override
-    public void receive(Connection pc, Entity entity) {
-        //Log.info(ID.get(entity) + toString());
-        super.receive(pc, entity); //To change body of generated methods, choose Tools | Templates.
+    public void receive(World world, Connection pc, int eid) {
+        //Log.info(ID.get(eid) + toString());
+        super.receive(world, pc, eid);
     }
     
     public static ThermalLaserData create(char status, char wattage, float range) {

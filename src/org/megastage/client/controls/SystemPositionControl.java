@@ -1,17 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.client.controls;
 
-import com.esotericsoftware.minlog.Log;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Position;
 import org.megastage.client.ClientGlobals;
-import org.megastage.util.Mapper;
+import org.megastage.ecs.CompType;
 
 public class SystemPositionControl extends AbstractControl {
 
@@ -20,12 +15,12 @@ public class SystemPositionControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        if(ClientGlobals.shipEntity == null) {
+        if(ClientGlobals.shipEntity == 0) {
             spatial.setLocalTranslation(Vector3f.ZERO);
             return;
         }
 
-        Position position = Mapper.POSITION.get(ClientGlobals.shipEntity);
+        Position position = (Position) ClientGlobals.world.getComponent(ClientGlobals.shipEntity, CompType.Position);
         if(position == null) {
             spatial.setLocalTranslation(Vector3f.ZERO);
         } else {

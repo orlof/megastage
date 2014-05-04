@@ -1,10 +1,5 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Component;
-import com.artemis.Entity;
-import com.artemis.managers.GroupManager;
-import com.artemis.systems.VoidEntitySystem;
-import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -21,8 +16,13 @@ import org.megastage.components.SpawnPoint;
 import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.Mode;
+import org.megastage.components.dcpu.DCPU;
+import org.megastage.components.dcpu.DCPUHardware;
 import org.megastage.components.dcpu.VirtualFloppyDrive;
 import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.Processor;
+import org.megastage.ecs.World;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.Message;
 import org.megastage.protocol.PlayerIDMessage;
@@ -33,19 +33,20 @@ import org.megastage.protocol.UserCommand.ChangeFloppy;
 import org.megastage.protocol.UserCommand.Keyboard;
 import org.megastage.protocol.UserCommand.Unbuild;
 import org.megastage.server.TemplateManager;
+import org.megastage.util.Bag;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.Cube3dMap.BlockChange;
-import org.megastage.util.Mapper;
 import org.megastage.util.Quaternion;
 import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector3d;
 
-public class NetworkSystem extends VoidEntitySystem {
+public class NetworkSystem extends Processor {
     private Server server;
     
-    public NetworkSystem() {
+    public NetworkSystem(World world, long interval) {
+        super(world, interval, CompType.ReplicateFlag);
     }
-    
+
     @Override
     public void initialize() {
         server = new Server(16*1024, 16*1024) {
@@ -57,7 +58,7 @@ public class NetworkSystem extends VoidEntitySystem {
             }
         };
 
-        Network.register(server.getKryo(), 0);
+        Network.register(server.getKryo());
 
         new Thread(server).start();
 
@@ -71,9 +72,9 @@ public class NetworkSystem extends VoidEntitySystem {
     }
     
     @Override
-    protected void processSystem() {
-        Array<Message> batch = ServerGlobals.getUpdates();
-        if(batch != null) {
+    protected void process() {
+        Bag<Message> batch = ServerGlobals.getUpdates();
+        if(batch != null && batch.size() > 0) {
             // batch.addAll(ServerGlobals.getComponentEvents());
             server.sendToAllUDP(batch.toArray());
         }
@@ -81,17 +82,16 @@ public class NetworkSystem extends VoidEntitySystem {
 
     @Override
     protected boolean checkProcessing() {
-        return ServerGlobals.updates != null;
+        return ServerGlobals.updates != null && ServerGlobals.updates.size() > 0;
     }
 
     private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
-        BindTo bindTo = Mapper.BIND_TO.get(connection.player);
+        BindTo bindTo = (BindTo) world.getComponent(connection.player, CompType.BindTo);
         if(bindTo != null) {
-            Entity e = world.getEntity(bindTo.parent);
-            if(e != null) e.addComponent(new DeleteFlag());
+            if(bindTo.parent != 0) world.addComponent(bindTo.parent, CompType.BindTo, new DeleteFlag());
         }
         
-        connection.player.addComponent(new DeleteFlag());
+        world.addComponent(connection.player, CompType.DeleteFlag, new DeleteFlag());
         connection.close();
         
         if(server.getConnections().length == 0) {
@@ -100,55 +100,49 @@ public class NetworkSystem extends VoidEntitySystem {
         }
     }
 
-    private void handleLoginMessage(PlayerConnection connection, Network.Login packet) {
+    private void handleLoginMessage(PlayerConnection connection, Network.Login packet) throws Exception {
         // replicate
         replicateAllEntities(connection);
 
         // create ship
-        Entity ship = world.getManager(TemplateManager.class).create("Apollo 13");
+        int ship = TemplateManager.create(world, "Apollo 13");
         
         // create character
-        connection.player = world.getManager(TemplateManager.class).create("Player");
+        connection.player = TemplateManager.create(world, "Player");
 
         // bind player to ship
         BindTo bind = new BindTo();
-        bind.parent = ship.id;
-        connection.player.addComponent(bind);
-        connection.player.changedInWorld();
-
-        SpawnPoint sp = Mapper.SPAWN_POINT.get(ship);
+        bind.parent = ship;
+        world.addComponent(connection.player, CompType.BindTo, bind);
         
-        Position pos = Mapper.POSITION.get(connection.player);
+        SpawnPoint sp = (SpawnPoint) world.getComponent(ship, CompType.SpawnPoint);
+        
+        Position pos = (Position) world.getComponent(connection.player, CompType.Position);
         pos.set(
                 1000 * sp.x + 500,
                 1000 * sp.y + 500,
                 1000 * sp.z + 500);
         
-        connection.sendTCP(new PlayerIDMessage(connection.player.id));
+        connection.sendTCP(new PlayerIDMessage(connection.player));
     }
 
     private void replicateAllEntities(PlayerConnection connection) {
-        Array<Entity> entities = world.getManager(GroupManager.class).getEntities("replicate");
-
-        for(Entity entity: entities) {
-            replicateComponents(connection, entity);
+        for(int eid = group.iterator(); eid != 0; eid = group.next()) {
+            replicateComponents(connection, eid);
         }        
     }
     
-    private void replicateComponents(PlayerConnection connection, Entity entity) {
-        Array<Component> all = new Array<>(20);
-        entity.getComponents(all);
-        
-        Array<Message> list = new Array<>(20);
+    private void replicateComponents(PlayerConnection connection, int eid) {
+        Bag<Message> list = new Bag<>(20);
 
-        for(Component comp: all) {
-            Message msg = ((BaseComponent) comp).replicate(entity);
+        for(Object comp=world.components(eid); comp != null; comp=world.nextComponent()) {
+            Message msg = ((BaseComponent) comp).replicate(eid);
             if(msg != null) {
                 list.add(msg);
             }
         }
 
-        if(list.size > 0) {
+        if(list.size() > 0) {
             connection.sendTCP(list.toArray());
         }
     }
@@ -199,21 +193,20 @@ public class NetworkSystem extends VoidEntitySystem {
     
     private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
         // TODO check player mode
-        if(connection.player == null) return;
+        if(connection.player == 0) return;
         
         if(cmd.build != null || cmd.unbuild != null) Log.info(cmd.toString());
         
-        BindTo bindTo = Mapper.BIND_TO.get(connection.player);
-        Entity ship = world.getEntity(bindTo.parent);
-        if(ship == null) return;
+        BindTo bindTo = (BindTo) world.getComponent(connection.player, CompType.BindTo);
+        if(bindTo.parent == 0) return;
 
-        ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(ship);
+        ShipGeometry geom = (ShipGeometry) world.getComponent(bindTo.parent, CompType.ShipGeometry);
 
         updatePlayerPosition(geom.map, connection.player, cmd);
         updatePlayerRotation(connection.player, cmd);
 
         if(cmd.ship != null) {
-            updateShip(ship, cmd);
+            updateShip(bindTo.parent, cmd);
         }
 
         if(cmd.pick != null) {
@@ -246,37 +239,35 @@ public class NetworkSystem extends VoidEntitySystem {
         
         Keyboard keys = cmd.keyboard;
         
-        if(keys.keyEventPtr > 0 && connection.item != null) {
-            VirtualKeyboard kbd = (VirtualKeyboard) connection.item;
-            if(!kbd.dcpu.ship.isActive()) {
-                unpickItem(connection, cmd);
-            } else {
-                for(int i=0; i < keys.keyEventPtr; /*NOP*/ ) {
-                    switch(keys.keyEvents[i++]) {
-                        case 'T':
-                            kbd.keyTyped(keys.keyEvents[i++]);
-                            break;
-                        case 'P':
-                            kbd.keyPressed(keys.keyEvents[i++]);
-                            break;
-                        case 'R':
-                            kbd.keyReleased(keys.keyEvents[i++]);
-                            break;
-                    }
+        if(keys.keyEventPtr > 0 && connection.item >= 0) {
+            VirtualKeyboard kbd = world.getComponent(connection.item, VirtualKeyboard.class);
+
+            for(int i=0; i < keys.keyEventPtr; /*NOP*/ ) {
+                switch(keys.keyEvents[i++]) {
+                    case 'T':
+                        kbd.keyTyped(keys.keyEvents[i++]);
+                        break;
+                    case 'P':
+                        kbd.keyPressed(keys.keyEvents[i++]);
+                        break;
+                    case 'R':
+                        kbd.keyReleased(keys.keyEvents[i++]);
+                        break;
                 }
             }
         }
     }
 
     private void unpickItem(PlayerConnection connection, UserCommand cmd) {
-        connection.item = null;
-        Mode mode = Mapper.MODE.get(connection.player);
+        connection.item = -1;
+        Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
         mode.setMode(CharacterMode.WALK);
     }
     
     private void pickItem(PlayerConnection connection, UserCommand cmd) {
-        Entity target = world.getEntity(cmd.pick.eid);
-        if(target == null) {
+        int target = cmd.pick.eid;
+        if(!world.hasEntity(target)) {
+            Log.error("No such item to pick: " + target);
             return;
         }
         
@@ -284,23 +275,30 @@ public class NetworkSystem extends VoidEntitySystem {
         // Position pos = connection.player.getComponent(Position.class);
         // ===================
 
-        if(Mapper.VIRTUAL_MONITOR.has(target)) {
-            VirtualMonitor virtualMonitor = Mapper.VIRTUAL_MONITOR.get(target);
-            connection.item = virtualMonitor.getHardware(VirtualKeyboard.class);
-            Mode mode = Mapper.MODE.get(connection.player);
-            mode.setMode(CharacterMode.DCPU);
-            return;
-        } else if(Mapper.VIRTUAL_FLOPPY_DRIVE.has(target)) {
-            connection.item = Mapper.VIRTUAL_FLOPPY_DRIVE.get(target);
-            Mode mode = Mapper.MODE.get(connection.player);
-            mode.setMode(CharacterMode.MENU);
-            return;
-        }
+        DCPUHardware hw = (DCPUHardware) world.getComponent(target, CompType.DCPUHardware);
+        if(hw != null) {
+            if(hw instanceof VirtualMonitor) {
+                DCPU dcpu = (DCPU) world.getComponent(hw.dcpuEID, CompType.DCPU);
 
+                for(int eid: dcpu.hardware.eid) {
+                    DCPUHardware info = (DCPUHardware) world.getComponent(eid, CompType.DCPUHardware);
+                    if(info.type == DCPUHardware.TYPE_KEYBOARD) {
+                        connection.item = eid;
+                        Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
+                        mode.setMode(CharacterMode.DCPU);
+                        return;
+                    }
+                }
+            } else if(hw instanceof VirtualFloppyDrive) {
+                connection.item = target;
+                Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
+                mode.setMode(CharacterMode.MENU);
+            }
+        }
     }
 
-    private void updatePlayerPosition(Cube3dMap map, Entity player, UserCommand cmd) {
-        Position pos = Mapper.POSITION.get(player);
+    private void updatePlayerPosition(Cube3dMap map, int player, UserCommand cmd) {
+        Position pos = (Position) world.getComponent(player, CompType.Position);
         int cx = block(pos.x);
         int cy = block(pos.y);
         int cz = block(pos.z);
@@ -319,20 +317,21 @@ public class NetworkSystem extends VoidEntitySystem {
         }
     }
 
-    private void updatePlayerRotation(Entity player, UserCommand cmd) {
-        Rotation rot = Mapper.ROTATION.get(player);
+    private void updatePlayerRotation(int player, UserCommand cmd) {
+        Rotation rot = (Rotation) world.getComponent(player, CompType.Rotation);
+
         rot.set(cmd.qx, cmd.qy, cmd.qz, cmd.qw);
     }
 
-    private void updateShip(Entity ship, UserCommand cmd) {
-        Rotation shipRotation = Mapper.ROTATION.get(ship);
+    private void updateShip(int ship, UserCommand cmd) {
+        Rotation shipRotation = (Rotation) world.getComponent(ship, CompType.Rotation);
         Quaternion shipRotationQuaternion = shipRotation.getQuaternion4d();
 
         Vector3d vel = new Vector3d(cmd.ship.left, cmd.ship.up, cmd.ship.forward).multiply(shipRotationQuaternion);
 
         vel = vel.multiply(10e3);
 
-        Position shipPos = Mapper.POSITION.get(ship);
+        Position shipPos = (Position) world.getComponent(ship, CompType.Position);
         shipPos.set(
                 shipPos.x + (long) (vel.x + 0.5),
                 shipPos.y + (long) (vel.y + 0.5),
@@ -356,32 +355,22 @@ public class NetworkSystem extends VoidEntitySystem {
     }
 
     private void changeFloppy(PlayerConnection connection, ChangeFloppy change) {
-        Log.info("" + change.filename);
-        if(!(connection.item instanceof VirtualFloppyDrive)) {
-            return;
+        VirtualFloppyDrive vfd = world.getComponent(connection.item, CompType.VirtualFloppyDrive, VirtualFloppyDrive.class);
+        if(vfd != null) {
+            DCPU dcpu = (DCPU) world.getComponent(vfd.dcpuEID, CompType.DCPU);
+            vfd.eject(dcpu);
+            vfd.insert(dcpu, change.filename);
+            unpickItem(connection, null);
         }
-        
-        VirtualFloppyDrive vdev = (VirtualFloppyDrive) connection.item;
-        vdev.eject();
-//        FloppyDisk disc = new FloppyDisk();
-//        try {
-//            disc.load(new File(change.filename));
-//            Log.info("" + change.filename);
-//        } catch (IOException ex) {
-//            Log.warn("Error loading floppy image " + ex);
-//        }
-        vdev.insert(change.filename);
-        unpickItem(connection, null);
     }
 
     private void changeBootRom(PlayerConnection connection, ChangeBootRom change) {
-        if(!(connection.item instanceof VirtualFloppyDrive)) {
-            return;
+        VirtualFloppyDrive vfd = world.getComponent(connection.item, CompType.VirtualFloppyDrive, VirtualFloppyDrive.class);
+        if(vfd != null) {
+            DCPU dcpu = (DCPU) world.getComponent(vfd.dcpuEID, CompType.DCPU);
+            dcpu.reset(change.filename);
+            unpickItem(connection, null);
         }
-        
-        VirtualFloppyDrive vdev = (VirtualFloppyDrive) connection.item;
-        vdev.reset(change.filename);
-        unpickItem(connection, null);
     }
 
     private void build(PlayerConnection connection, Build build, Cube3dMap map) {
@@ -411,13 +400,12 @@ public class NetworkSystem extends VoidEntitySystem {
     private void teleport(PlayerConnection connection, UserCommand.Teleport teleport) {
         // bind player to ship
         Log.info("");
-        BindTo bind = Mapper.BIND_TO.get(connection.player);
+        BindTo bind = (BindTo) world.getComponent(connection.player, CompType.BindTo);
         bind.setParent(teleport.eid);
 
-        Entity ship = world.getEntity(teleport.eid);
-        SpawnPoint sp = Mapper.SPAWN_POINT.get(ship);
+        SpawnPoint sp = (SpawnPoint) world.getComponent(teleport.eid, CompType.SpawnPoint);
         
-        Position pos = Mapper.POSITION.get(connection.player);
+        Position pos = (Position) world.getComponent(connection.player, CompType.Position);
         pos.set(
                 1000 * sp.x + 500,
                 1000 * sp.y + 500,
@@ -436,18 +424,21 @@ public class NetworkSystem extends VoidEntitySystem {
         @Override
         public void received(Connection connection, Object o) {
             Log.trace("Received: " + o.getClass().getName());
-            PlayerConnection pc = (PlayerConnection) connection;
+            try {
+                PlayerConnection pc = (PlayerConnection) connection;
 
-            if(o instanceof Network.Login) {
-                handleLoginMessage(pc, (Network.Login) o);
+                if(o instanceof Network.Login) {
+                    handleLoginMessage(pc, (Network.Login) o);
 
-            } else if(o instanceof Network.Logout) {
-                handleLogoutMessage(pc, (Network.Logout) o);
+                } else if(o instanceof Network.Logout) {
+                    handleLogoutMessage(pc, (Network.Logout) o);
 
-            } else if(o instanceof UserCommand) {
-                handleUserCmd(pc, (UserCommand) o);
+                } else if(o instanceof UserCommand) {
+                    handleUserCmd(pc, (UserCommand) o);
+                }
+            } catch(Exception ex) {
+                ex.printStackTrace();
             }
         }
     }
 }
-

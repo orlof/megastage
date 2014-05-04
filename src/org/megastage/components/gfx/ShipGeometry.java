@@ -1,9 +1,6 @@
 package org.megastage.components.gfx;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
 import java.util.List;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -12,18 +9,17 @@ import org.megastage.components.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.srv.CollisionType;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
-import org.megastage.protocol.Network;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.Cube3dMap.BlockChange;
-import org.megastage.util.Mapper;
 import org.megastage.util.Vector3d;
 
 public class ShipGeometry extends BaseComponent {
     public Cube3dMap map = new Cube3dMap();
     
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
 
         createMapFromXML(element);
         
@@ -39,41 +35,39 @@ public class ShipGeometry extends BaseComponent {
     }
     
     @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+    public Message replicate(int eid) {
+        return always(eid);
     }
 
     @Override
-    public Message synchronize(Entity entity) {
+    public Message synchronize(int eid) {
         if(map.pending != null && map.pending.size() > 0) {
             //Log.info(""+map.pending.toString());
             BlockChange change = map.pending.remove();
-            return change.always(entity);
+            return change.always(eid);
         }
         return null;
     }
 
     @Override
-    public void initialize(World world, Entity entity) {
+    public void initialize(World world, int eid) {
         map.trackChanges();
     }
 
-    
-    
     @Override
-    public void receive(Connection pc, Entity entity) {
-        if(Mapper.SHIP_GEOMETRY.has(entity)) {
-            ClientGlobals.spatialManager.updateShip(entity, this);
+    public void receive(World world, Connection pc, int eid) {
+        if(world.hasComponent(eid, ShipGeometry.class)) {
+            ClientGlobals.spatialManager.updateShip(eid, this);
         } else {
-            super.receive(pc, entity);
-            ClientGlobals.spatialManager.setupShip(entity, this);
+            super.receive(world, pc, eid);
+            ClientGlobals.spatialManager.setupShip(eid, this);
         }
     }
     
     @Override
-    public void delete(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.deleteEntity(entity);
-        entity.deleteFromWorld();
+    public void delete(World world, Connection pc, int eid) {
+        ClientGlobals.spatialManager.deleteEntity(eid);
+        world.deleteEntity(eid);
     }
     
     @Override

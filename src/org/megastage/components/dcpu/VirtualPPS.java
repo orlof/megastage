@@ -1,39 +1,36 @@
 package org.megastage.components.dcpu;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Position;
-import org.megastage.util.Mapper;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.util.GlobalTime;
+import org.megastage.util.ServerGlobals;
 
 public class VirtualPPS extends DCPUHardware {
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        type = TYPE_PPS;
-        revision = 0x6509;
-        manufactorer = MANUFACTORER_TALON_NAVIGATION;
-
-        super.init(world, parent, element);
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        super.init(world, parentEid, element);
+        setInfo(TYPE_PPS, 0x6509, MANUFACTORER_TALON_NAVIGATION);
         
         return null;
     }
 
-    public void interrupt() {
-        Log.info(""+(int)dcpu.registers[0]);
+    @Override
+    public void interrupt(DCPU dcpu) {
+        Log.info("" + (int) dcpu.registers[0]);
         switch(dcpu.registers[0]) {
             case 0:
-                if(getSectorNumber()) {
+                if(getSectorNumber(dcpu)) {
                     // _
                 } else {
                     // _
                 }
                 break;
             case 1:
-                if(storeCoordinates()) {
+                if(storeCoordinates(shipEID, dcpu)) {
                     dcpu.cycles += 7;
                 } else {
                     // _
@@ -42,13 +39,13 @@ public class VirtualPPS extends DCPUHardware {
         }
     }
     
-    private boolean storeCoordinates() {
+    private boolean storeCoordinates(int ship, DCPU dcpu) {
         writeCoordinatesToMemory(dcpu.ram, dcpu.registers[1], ship);
         return true;
     }
     
-    private boolean writeCoordinatesToMemory(char[] mem, char ptr, Entity ship) {
-        Position position = Mapper.POSITION.get(ship);
+    private boolean writeCoordinatesToMemory(char[] mem, char ptr, int ship) {
+        Position position = (Position) ServerGlobals.world.getComponent(ship, CompType.Position);
 
         long x = position.x / 100000; // 100m
         mem[ptr++] = (char) (x >> 16);
@@ -67,7 +64,7 @@ public class VirtualPPS extends DCPUHardware {
         return true;
     }
 
-    private boolean getSectorNumber() {
+    private boolean getSectorNumber(DCPU dcpu) {
         Log.info("");
         dcpu.registers[1] = 0x0000;
         return true;

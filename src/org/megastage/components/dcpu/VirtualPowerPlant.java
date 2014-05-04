@@ -1,11 +1,8 @@
 package org.megastage.components.dcpu;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import com.esotericsoftware.minlog.Log;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
+import org.megastage.ecs.World;
 
 public class VirtualPowerPlant extends DCPUHardware implements PowerSupply, PowerConsumer {
     
@@ -14,12 +11,9 @@ public class VirtualPowerPlant extends DCPUHardware implements PowerSupply, Powe
     public int capacity;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        type = TYPE_POWER_PLANT;
-        revision = 0x0911;
-        manufactorer = MANUFACTORER_SORATOM;
-
-        super.init(world, parent, element);
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        super.init(world, parentEid, element);
+        setInfo(TYPE_POWER_PLANT, 0x0911, MANUFACTORER_SORATOM);
         
         capacity = getIntegerValue(element, "capacity", 5000);
         production = capacity;
@@ -28,11 +22,11 @@ public class VirtualPowerPlant extends DCPUHardware implements PowerSupply, Powe
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt(DCPU dcpu) {
         switch(dcpu.registers[0]) {
             case 0:
                 // GET STATUS
-                getStatus();
+                getStatus(dcpu);
                 break;
             case 1:
                 setProduction(dcpu.registers[1]);
@@ -40,7 +34,7 @@ public class VirtualPowerPlant extends DCPUHardware implements PowerSupply, Powe
         }
     }
 
-    private boolean getStatus() {
+    private boolean getStatus(DCPU dcpu) {
         dcpu.registers[1] = 0;
         return true;
     }
@@ -58,7 +52,7 @@ public class VirtualPowerPlant extends DCPUHardware implements PowerSupply, Powe
     }
 
     @Override
-    public double consume(double available, double delta) {
+    public double consume(World world, int ship, double available, double delta) {
         double intake = delta * (production / 10.0);
         if(intake > available) {
             setProduction(0);

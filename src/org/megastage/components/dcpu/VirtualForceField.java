@@ -1,14 +1,11 @@
 package org.megastage.components.dcpu;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.transfer.ForceFieldData;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
-import org.megastage.util.Mapper;
 
 public class VirtualForceField extends DCPUHardware implements PowerConsumer {
     public static transient final char STATUS_POWER_OFF = 0;
@@ -26,13 +23,10 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
     public transient char status;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        type = TYPE_FORCE_FIELD;
-        revision = 0x0944;
-        manufactorer = MANUFACTORER_CRADLE_TECH;
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        super.init(world, parentEid, element);
+        setInfo(TYPE_FORCE_FIELD, 0x0944, MANUFACTORER_CRADLE_TECH);
 
-        super.init(world, parent, element);
-        
         energyEvaporation = getDoubleValue(element, "energy_evaporation", 0.005);
         energyDensity = getDoubleValue(element, "energy_density", 50);
         
@@ -49,16 +43,16 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt(DCPU dcpu) {
         switch(dcpu.registers[0]) {
             case 0:
-                getStatus();
+                getStatus(dcpu);
                 break;
             case 1:
-                getFieldRadius();
+                getFieldRadius(dcpu);
                 break;
             case 2:
-                getFieldEnergy();
+                getFieldEnergy(dcpu);
                 break;
             case 3:
                 setEnergyIntake(dcpu.registers[1]);
@@ -67,14 +61,14 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public Message replicate(Entity entity) {
+    public Message replicate(int eid) {
         dirty = false;
-        return ForceFieldData.create((float) radius, status).always(entity);
+        return ForceFieldData.create((float) radius, status).always(eid);
     }
     
     @Override
-    public Message synchronize(Entity entity) {
-        return replicateIfDirty(entity);
+    public Message synchronize(int eid) {
+        return replicateIfDirty(eid);
     }
 
     public void setEnergy(double energy) {
@@ -100,13 +94,13 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
         }
     }
     
-    public void damage(Entity entity, float damage) {
+    public void damage(int eid, float damage) {
         setEnergy(energy - damage);
         Log.info("Damage: " + damage + "/" + energy);
     }
 
     @Override
-    public double consume(double available, double delta) {
+    public double consume(World world, int ship, double available, double delta) {
         double intake = power * delta;
         if(intake > available) {
             intake = power = 0.0;
@@ -119,15 +113,15 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
         return intake;
     }
 
-    private void getStatus() {
+    private void getStatus(DCPU dcpu) {
         dcpu.registers[1] = status;
     }
 
-    private void getFieldRadius() {
+    private void getFieldRadius(DCPU dcpu) {
         dcpu.registers[1] = (char) Math.round(radius);
     }
 
-    private void getFieldEnergy() {
+    private void getFieldEnergy(DCPU dcpu) {
         final long e = Math.round(energy);
         dcpu.registers[1] = (char) (e >> 16 & 0xffff);
         dcpu.registers[2] = (char) (e & 0xffff);

@@ -1,66 +1,46 @@
 package org.megastage.systems;
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
-import com.esotericsoftware.minlog.Log;
-import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
 import org.megastage.components.Velocity;
-import org.megastage.util.ID;
-import org.megastage.util.GlobalTime;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.Processor;
+import org.megastage.ecs.World;
 import org.megastage.util.Vector3d;
 
-public class OrbitalMovementSystem extends EntityProcessingSystem {
-    ComponentMapper<Position> POSITION;
-    ComponentMapper<Velocity> VELOCITY;
-    ComponentMapper<Orbit> ORBIT;
-    ComponentMapper<Mass> MASS;
-
-    public OrbitalMovementSystem() {
-        super(Aspect.getAspectForAll(Position.class, Orbit.class));
+public class OrbitalMovementSystem extends Processor {
+    public OrbitalMovementSystem(World world, long interval) {
+        super(world, interval, CompType.Position, CompType.Orbit);
     }
 
     @Override
-    public void initialize() {
-        ORBIT = world.getMapper(Orbit.class);
-        POSITION = world.getMapper(Position.class);
-        VELOCITY = world.getMapper(Velocity.class);
-        MASS = world.getMapper(Mass.class);
-    }
-
-    @Override
-    protected void process(Entity entity) {
-        double time = GlobalTime.secs();
+    protected void process(int eid) {
+        double secs = world.time / 1000.0;
         
-        Orbit orbit = ORBIT.get(entity);
+        Orbit orbit = (Orbit) world.getComponent(eid, CompType.Orbit);
         
-        Entity center = world.getEntity(orbit.center);
-        Vector3d localSum = orbit.getLocalCoordinates(time);
+        Vector3d localSum = orbit.getLocalCoordinates(secs);
         
-        while(!isInFixedPosition(center)) {
-            orbit = ORBIT.get(center);
-            center = world.getEntity(orbit.center);
-            localSum = localSum.add(orbit.getLocalCoordinates(time));
+        while(!isInFixedPosition(orbit.center)) {
+            orbit = (Orbit) world.getComponent(eid, CompType.Orbit);
+            localSum = localSum.add(orbit.getLocalCoordinates(secs));
         }
 
-        Position fixedStar = POSITION.get(center);
+        Position fixedStar = (Position) world.getComponent(orbit.center, CompType.Position);
         long x = Math.round(1000 * localSum.x) + fixedStar.x;
         long y = fixedStar.y;
         long z = Math.round(1000* localSum.z) + fixedStar.z;
 
-        Position position = POSITION.get(entity);
-        Velocity velocity = VELOCITY.get(entity);
+        Position position = (Position) world.getComponent(eid, CompType.Position);
+        Velocity velocity = (Velocity) world.getComponent(eid, CompType.Velocity);
         velocity.vector = new Vector3d(x - position.x, y - position.y, z - position.z);
         
         position.set(x, y, z);
         //position.dirty = true;
     }
 
-    private boolean isInFixedPosition(Entity center) {
-        return !ORBIT.has(center);
+    private boolean isInFixedPosition(int centerEid) {
+        return !world.hasComponent(centerEid, CompType.Orbit);
     }
 
 }

@@ -1,23 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.components.transfer;
 
-import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.components.BaseComponent;
-import org.megastage.util.Mapper;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
 public class GyroscopeData extends BaseComponent {
     public char power = 0;
 
     @Override
-    public void receive(Connection pc, Entity entity) {
-        GyroscopeData data = Mapper.GYROSCOPE_DATA.get(entity);
+    public void receive(World world, Connection pc, int eid) {
+        GyroscopeData data = (GyroscopeData) world.getComponent(eid, CompType.GyroscopeData);
         if(data == null) {
-            entity.addComponent(this);
-            entity.changedInWorld();
+            world.addComponent(eid, CompType.GyroscopeData, this);
         } else {
             data.power = power;
         }

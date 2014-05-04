@@ -1,23 +1,20 @@
 package org.megastage.systems.srv;
 
 import org.megastage.components.srv.Acceleration;
-import com.artemis.Aspect;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
-import org.megastage.components.*;
-import org.megastage.components.srv.AffectedByGravityFlag;
-import org.megastage.server.GravityManager;
-import org.megastage.util.Mapper;
+import org.megastage.ecs.World;
+import org.megastage.ecs.Processor;
+import org.megastage.ecs.CompType;
 import org.megastage.util.Vector3d;
 
-public class GravityAccelerationSystem extends EntityProcessingSystem {
-    public GravityAccelerationSystem() {
-        super(Aspect.getAspectForAll(AffectedByGravityFlag.class, Acceleration.class, Position.class));
+public class GravityAccelerationSystem extends Processor {
+    public GravityAccelerationSystem(World world, long interval) {
+        super(world, interval, CompType.AffectedByGravityFlag, CompType.Acceleration, CompType.Position);
     }
 
     @Override
-    protected void process(Entity entity) {
-        Vector3d gravityField = GravityManager.getGravitationalAcceleration(entity);
-        Mapper.ACCELERATION.get(entity).add(gravityField);
+    protected void process(int eid) {
+        Vector3d gravityField = GravityManagerSystem.INSTANCE.getGravitationalAcceleration(eid);
+        Acceleration acceleration = (Acceleration) world.getComponent(eid, CompType.Acceleration);
+        acceleration.add(gravityField);
     }
 }

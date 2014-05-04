@@ -1,36 +1,21 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
+import org.megastage.ecs.World;
+import org.megastage.ecs.Processor;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
-import org.megastage.util.Mapper;
+import org.megastage.ecs.CompType;
 import org.megastage.util.GlobalTime;
 
-public class ExplosionSystem extends EntityProcessingSystem {
-    private long interval;
-    private long acc;
-
-    public ExplosionSystem(long interval) {
-        super(Aspect.getAspectForAll(Explosion.class));
-        this.interval = interval;
+public class ExplosionSystem extends Processor {
+    public ExplosionSystem(World world, long interval) {
+        super(world, interval, CompType.Explosion);
     }
 
     @Override
-    protected boolean checkProcessing() {
-        if(GlobalTime.value >= acc) {
-                acc = GlobalTime.value + interval;
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    protected void process(Entity e) {
-        Explosion explosion = Mapper.EXPLOSION.get(e);
+    protected void process(int eid) {
+        Explosion explosion = (Explosion) world.getComponent(eid, CompType.Explosion);
         
         explosion.setState(currentState(explosion));
 
@@ -46,7 +31,7 @@ public class ExplosionSystem extends EntityProcessingSystem {
                     //ServerGlobals.addUDPEvent(new ExplosionEvent(e, explosion.state));
                     break;
                 case 7:
-                    e.addComponent(new DeleteFlag());
+                    world.addComponent(eid, CompType.DeleteFlag, new DeleteFlag());
                     break;
             }
         }

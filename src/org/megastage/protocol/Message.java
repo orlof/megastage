@@ -5,11 +5,12 @@
 package org.megastage.protocol;
 
 import com.esotericsoftware.kryonet.Connection;
+import org.megastage.ecs.World;
 
 /**
  *
  * @author Orlof
  */
 public interface Message {
-    public void receive(Connection pc);
+    public void receive(World world, Connection pc);
 }

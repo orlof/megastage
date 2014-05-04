@@ -1,29 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.components;
 
-import com.artemis.Component;
-import com.artemis.Entity;
-import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryonet.Connection;
+import org.megastage.ecs.World;
 
-/**
- *
- * @author Orlof
- */
 public class DeleteFlag extends BaseComponent {
     @Override
-    public void receive(Connection pc, Entity entity) {
-        Array<Component> bag = new Array<>(20);
-        entity.getComponents(bag);
-        for(Component c: bag) {
+    public void receive(World world, Connection pc, int eid) {
+        for(Object c=world.components(eid); c != null; c = world.nextComponent()) {
             if(c instanceof BaseComponent) {
                 BaseComponent bc = (BaseComponent) c;
-                bc.delete(pc, entity);
+                bc.delete(world, pc, eid);
             }
         }
-        entity.deleteFromWorld();
+        world.deleteEntity(eid);
     }
 }

@@ -1,30 +1,19 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.components.gfx;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.client.ClientGlobals;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 
-
-    
-/**
- *
- * @author Orlof
- */
 public class SunGeometry extends BaseComponent {
     public float radius;
     public float red, green, blue, alpha;
     public float lightRadius;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
         radius = (float) (getFloatValue(element, "radius", 10.0f));
         lightRadius = (float) (getFloatValue(element, "light_radius", 2000000.0f));
         red = getFloatValue(element, "red", 1.0f); 
@@ -36,19 +25,19 @@ public class SunGeometry extends BaseComponent {
     }
 
     @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+    public Message replicate(int eid) {
+        return always(eid);
     }
     
     @Override
-    public void receive(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.setupSunLikeBody(entity, this);
+    public void receive(World world, Connection pc, int eid) {
+        ClientGlobals.spatialManager.setupSunLikeBody(eid, this);
     }
     
     @Override
-    public void delete(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.deleteEntity(entity);
-        entity.deleteFromWorld();
+    public void delete(World world, Connection pc, int eid) {
+        ClientGlobals.spatialManager.deleteEntity(eid);
+        world.deleteEntity(eid);
     }
     
     @Override

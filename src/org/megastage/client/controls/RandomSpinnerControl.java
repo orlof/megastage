@@ -4,14 +4,11 @@
  */
 package org.megastage.client.controls;
 
-import com.esotericsoftware.minlog.Log;
-import com.jme3.audio.AudioNode;
 import com.jme3.math.Quaternion;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import java.util.Random;
-import org.megastage.client.SoundManager;
 import org.megastage.util.GlobalTime;
 
 public class RandomSpinnerControl extends AbstractControl {

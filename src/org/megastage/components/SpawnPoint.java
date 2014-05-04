@@ -1,10 +1,9 @@
 package org.megastage.components;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.ecs.World;
 
 /**
  * MegaStage
@@ -16,7 +15,7 @@ public class SpawnPoint extends BaseComponent {
     public int x, y, z;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
         x = getIntegerValue(element, "dx", 0);
         y = getIntegerValue(element, "dy", 0);
         z = getIntegerValue(element, "dz", 0);

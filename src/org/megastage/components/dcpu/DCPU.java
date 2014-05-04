@@ -1,13 +1,14 @@
 package org.megastage.components.dcpu;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 
 import java.io.*;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.util.GlobalTime;
+import org.megastage.util.ServerGlobals;
 
 /**
  * Experimental 1.7 update to Notch's 1.4 emulator
@@ -46,8 +47,8 @@ public class DCPU extends BaseComponent {
     public int iwp;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws IOException {
-        this.shipEID = parent.id;
+    public BaseComponent[] init(World world, int parentEid, Element element) throws IOException {
+        this.shipEID = parentEid;
 
         rom = getStringValue(element, "bootrom", "media/bootrom.bin");
 
@@ -71,7 +72,8 @@ public class DCPU extends BaseComponent {
         isSkipping = true;
     }
 
-    public void reset(char[] image) {
+    public void reset(String imageName) {
+        char[] image = ServerGlobals.floppyManager.bootroms.get(imageName);
         System.arraycopy(image, 0, ram, 0, image.length);
 
         powerOnTime = GlobalTime.value + 2500;
@@ -126,5 +128,12 @@ public class DCPU extends BaseComponent {
         dos.close();
     }
 
+    public DCPUHardware getHardware(char b) {
+        if (b < hardware.size) {
+            int eid = hardware.eid[b];
+            return (DCPUHardware) ServerGlobals.world.getComponent(eid, CompType.DCPUHardware);
+        }
+        return null;
+    }
 
 }

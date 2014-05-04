@@ -1,26 +1,26 @@
 package org.megastage.util;
 
-import com.artemis.Entity;
-import com.badlogic.gdx.utils.Array;
 import com.cubes.Vector3Int;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.components.gfx.ShipGeometry;
-import org.megastage.server.TargetManager;
-import org.megastage.server.TargetManager.Hit;
-import org.megastage.server.TargetManager.ShipStructureHit;
-import org.megastage.server.TargetManager.Target;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
+import org.megastage.server.Hit;
+import org.megastage.server.NoHit;
+import org.megastage.server.ShipStructureHit;
+import org.megastage.server.Target;
 
 public class CubeCollisionDetector {
 
-    public static TargetManager.Hit hit(Target target, Vector3d attackVector, float attackRange) {
+    public static Hit hit(World world, Target target, Vector3d attackVector, float attackRange) {
         //Log.info("ATTACK " + target.toString() + " " + attackVector.toString() + " " + attackRange);
         long startTime = System.currentTimeMillis();
 
-        Position pos = Mapper.POSITION.get(target.entity);
-        ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(target.entity);
-        Rotation rot = Mapper.ROTATION.get(target.entity);
+        Position pos = (Position) world.getComponent(target.eid, CompType.Position);
+        ShipGeometry geom = (ShipGeometry) world.getComponent(target.eid, CompType.Geometry);
+        Rotation rot = (Rotation) world.getComponent(target.eid, CompType.Rotation);
 
         // calculate coordinates for center of block
         // center of mass is not equal to center of block!
@@ -28,7 +28,7 @@ public class CubeCollisionDetector {
         coord = coord.multiply(rot.getQuaternion4d());
         coord = coord.add(target.coord);
                 
-        Array<Block> candidates = new Array<>(1);
+        Bag<Block> candidates = new Bag<>(1);
         final Block block = new Block(coord, new Vector3Int(0, 0, 0));
         //Log.info(block.toString());
         candidates.add(block);
@@ -37,7 +37,7 @@ public class CubeCollisionDetector {
 
         if(candidates.size == 0) {
             //Log.info(TargetManager.NO_HIT.toString());
-            return TargetManager.NO_HIT;
+            return new NoHit();
         }
 
         candidates.sort();
@@ -60,7 +60,7 @@ public class CubeCollisionDetector {
         // calculate ship position relative to laser
         Vector3d shipLocalPos = shipCenter.sub(rayPos);
 
-        Array<Block> candidates = new Array<>(1);
+        Bag<Block> candidates = new Bag<>(1);
         candidates.add(new Block(shipLocalPos, new Vector3Int(0, 0, 0)));
         
         candidates = iteration(rayDir, map, candidates, 32, getCoordOffsets(32, shipRot));
@@ -76,14 +76,14 @@ public class CubeCollisionDetector {
         return candidates.first().base;
     }
     
-    private static Array<Block> iteration(Vector3d rayDir, Cube3dMap map, Array<Block> candidates, int chunkSize, Vector3d[] coordOffset) {
+    private static Bag<Block> iteration(Vector3d rayDir, Cube3dMap map, Bag<Block> candidates, int chunkSize, Vector3d[] coordOffset) {
         //Log.info("Chunk size: " + chunkSize + ", block count: " + candidates.size);
         // (d/2)^2 + (d/2)^2 + (d/2)^2 = 3(d/2)^2 = 3(d*d/4)
         chunkSize /= 2;
 
         double radius = Math.sqrt(3 * chunkSize * chunkSize);
         
-        Array<Block> next = new Array<>(8 * candidates.size);
+        Bag<Block> next = new Bag<>(8 * candidates.size);
         
         for(Block block: candidates) {
             // TODO replace chunksize with double type chunksize 0 -> 0.5

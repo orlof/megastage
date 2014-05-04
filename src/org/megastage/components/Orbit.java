@@ -1,24 +1,14 @@
 package org.megastage.components;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.client.ClientGlobals;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 import org.megastage.protocol.Network.ComponentMessage;
 import org.megastage.util.Globals;
-import org.megastage.util.Mapper;
 import org.megastage.util.Vector3d;
 
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:58
- */
 public class Orbit extends BaseComponent {
     public int center;
     public double distance;
@@ -26,29 +16,24 @@ public class Orbit extends BaseComponent {
     public double angularSpeed;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        center = parent.id;
+    public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
+        center = parentEid;
         distance = getDoubleValue(element, "orbital_distance", 0.0);
 
         return null;
     }
 
     @Override
-    public void initialize(World world, Entity entity) {
-        double mass = Mapper.MASS.get(world.getEntity(center)).mass;
-        angularSpeed = getAngularSpeed(mass);        
+    public void initialize(World world, int eid) {
+        Mass mass = (Mass) world.getComponent(center, CompType.Mass);
+        double m = mass.mass;
+        angularSpeed = getAngularSpeed(m);        
     }
     
     
     @Override
-    public Message replicate(Entity entity) {
-        return new ComponentMessage(entity, this);
-    }
-
-    @Override
-    public void receive(Connection pc, Entity entity) {
-        center = ClientGlobals.artemis.toClientEntity(center).id;
-        super.receive(pc, entity);
+    public Message replicate(int eid) {
+        return new ComponentMessage(eid, this);
     }
 
     public double getAngularSpeed(double centerMass) {

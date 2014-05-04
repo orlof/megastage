@@ -4,15 +4,12 @@
  */
 package org.megastage.client.controls;
 
-import com.artemis.Entity;
-import com.esotericsoftware.minlog.Log;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Position;
 import org.megastage.client.ClientGlobals;
-import org.megastage.util.ID;
-import org.megastage.util.Mapper;
+import org.megastage.ecs.CompType;
 import org.megastage.util.Vector3d;
 
 /**
@@ -20,20 +17,20 @@ import org.megastage.util.Vector3d;
  * @author Orlof
  */
 public class ImposterPositionControl extends AbstractControl {
-    private final Entity entity;
+    private final int eid;
 
-    public ImposterPositionControl(Entity entity) {
-        this.entity = entity;
+    public ImposterPositionControl(int eid) {
+        this.eid = eid;
         setEnabled(false);
     }
 
     @Override
     protected void controlUpdate(float tpf) {
-        Position position = Mapper.POSITION.get(entity);
+        Position position = (Position) ClientGlobals.world.getComponent(eid, CompType.Position);
         if(position != null) {
             Vector3d coord = position.getVector3d();
             
-            Position origoPos = Mapper.POSITION.get(ClientGlobals.shipEntity);
+            Position origoPos = (Position) ClientGlobals.world.getComponent(ClientGlobals.shipEntity, CompType.Position);
             if(origoPos == null) return;
             
             Vector3d origo = origoPos.getVector3d();

@@ -1,9 +1,8 @@
 package org.megastage.components;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.ecs.World;
 
 /**
  * MegaStage
@@ -14,10 +13,8 @@ import org.jdom2.Element;
 public class Energy extends BaseComponent {
     public double kws;
 
-    public Energy() {}
-    
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
         kws = getDoubleValue(element, "energy", 0.0);
         
         return null;

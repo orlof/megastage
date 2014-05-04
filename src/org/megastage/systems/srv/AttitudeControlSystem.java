@@ -1,42 +1,30 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.Rotation;
 import org.megastage.components.dcpu.VirtualGyroscope;
 import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.Processor;
+import org.megastage.ecs.World;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
 
-public class AttitudeControlSystem extends EntityProcessingSystem {
-    ComponentMapper<VirtualGyroscope> GYROSCOPE;
-    ComponentMapper<Rotation> ROTATION;
-    ComponentMapper<ShipGeometry> SHIP_GEOMETRY;
-
-    public AttitudeControlSystem() {
-        super(Aspect.getAspectForAll(VirtualGyroscope.class));
+public class AttitudeControlSystem extends Processor {
+    public AttitudeControlSystem(World world, long interval) {
+        super(world, interval, CompType.VirtualGyroscope);
     }
 
     @Override
-    public void initialize() {
-        GYROSCOPE = world.getMapper(VirtualGyroscope.class);
-        ROTATION = world.getMapper(Rotation.class);
-        SHIP_GEOMETRY = world.getMapper(ShipGeometry.class);
-    }
-
-    @Override
-    protected void process(Entity entity) {
-        VirtualGyroscope gyro = GYROSCOPE.get(entity);
+    protected void process(int eid) {
+        VirtualGyroscope gyro = (VirtualGyroscope) world.getComponent(eid, CompType.VirtualGyroscope);
         if(gyro.power == 0) return;
 
-        ShipGeometry geom = SHIP_GEOMETRY.get(gyro.ship);
+        ShipGeometry geom = (ShipGeometry) world.getComponent(gyro.shipEID, CompType.ShipGeometry);
         if(geom == null) return;
         
-        double angle = gyro.getRotation(geom) * world.getDelta();
+        double angle = gyro.getRotation(geom) * world.delta;
         
-        Rotation rotation = ROTATION.get(gyro.ship);
+        Rotation rotation = (Rotation) world.getComponent(gyro.shipEID, CompType.Rotation);
         Quaternion shipRotation = rotation.getQuaternion4d();
 
         Vector3d axis = gyro.axis.multiply(shipRotation);

@@ -4,7 +4,6 @@
  */
 package org.megastage.protocol;
 
-import com.artemis.Entity;
 import com.cubes.Vector3Int;
 import com.esotericsoftware.minlog.Log;
 import org.megastage.client.ClientGlobals;
@@ -103,10 +102,10 @@ public class UserCommand {
         count++;
     }
     
-    public void pickItem(Entity entity) {
-        Log.info("Pick " + ID.get(entity));
+    public void pickItem(int eid) {
+        Log.info("Pick " + ID.get(eid));
         pick = new Pick();
-        pick.eid = ClientGlobals.artemis.toServerID(entity.id);
+        pick.eid = eid;
         count++;
     }
 
@@ -147,9 +146,9 @@ public class UserCommand {
         count++;
     }
 
-    public void teleport(Entity entity) {
+    public void teleport(int eid) {
         teleport = new Teleport();
-        teleport.eid = ClientGlobals.artemis.toServerID(entity.id);
+        teleport.eid = eid;
         count++;
     }
 

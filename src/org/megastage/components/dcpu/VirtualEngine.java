@@ -1,14 +1,11 @@
 package org.megastage.components.dcpu;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.transfer.EngineData;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
-import org.megastage.protocol.Network;
 import org.megastage.util.Vector3d;
 
 public class VirtualEngine extends DCPUHardware implements PowerConsumer {
@@ -18,12 +15,9 @@ public class VirtualEngine extends DCPUHardware implements PowerConsumer {
     public char power = 0;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        type = TYPE_ENGINE;
-        revision = 0xad3c;
-        manufactorer = MANUFACTORER_GENERAL_DRIVES;
-
-        super.init(world, parent, element);
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        super.init(world, parentEid, element);
+        setInfo(TYPE_ENGINE, 0xad3c, MANUFACTORER_GENERAL_DRIVES);
 
         x = getIntegerValue(element, "x", 0);
         y = getIntegerValue(element, "y", 0);
@@ -35,7 +29,7 @@ public class VirtualEngine extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt(DCPU dcpu) {
         char a = dcpu.registers[0];
 
         if (a == 0) {
@@ -76,22 +70,22 @@ public class VirtualEngine extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public Message replicate(Entity entity) {
+    public Message replicate(int eid) {
         dirty = false;
 
         EngineData data = new EngineData();
         data.power = power;
 
-        return data.always(entity);
+        return data.always(eid);
     }
     
     @Override
-    public Message synchronize(Entity entity) {
-        return replicateIfDirty(entity);
+    public Message synchronize(int eid) {
+        return replicateIfDirty(eid);
     }
 
     @Override
-    public double consume(double available, double delta) {
+    public double consume(World world, int ship, double available, double delta) {
         double intake = delta * getPowerLevel();
         if(intake > available) {
             Log.info("Not enough power: " + intake + "/" + available);

@@ -1,21 +1,17 @@
 package org.megastage.client.controls;
 
-import com.artemis.Entity;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.audio.AudioNode;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
+import org.megastage.client.ClientGlobals;
 import org.megastage.client.SoundManager;
 import org.megastage.components.transfer.GyroscopeData;
-import org.megastage.util.Mapper;
+import org.megastage.ecs.CompType;
 
-/**
- *
- * @author Orlof
- */
 public class GyroscopeControl extends AbstractControl {
-    private final Entity entity;
+    private final int eid;
     private GyroscopeData data;
     
     private char power = 0;
@@ -23,8 +19,8 @@ public class GyroscopeControl extends AbstractControl {
 
     private AudioNode an;
     
-    public GyroscopeControl(Entity entity) {
-        this.entity = entity;
+    public GyroscopeControl(int eid) {
+        this.eid = eid;
         this.an = SoundManager.get(SoundManager.GYROSCOPE).clone();
         an.setLooping(true);
     }
@@ -32,7 +28,7 @@ public class GyroscopeControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(data == null) {
-            data = Mapper.GYROSCOPE_DATA.get(entity);
+            data = (GyroscopeData) ClientGlobals.world.getComponent(eid, CompType.GyroscopeData);
             if(data == null) {
                 return;
             }

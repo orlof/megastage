@@ -1,37 +1,21 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Aspect;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.gfx.BindTo;
-import org.megastage.util.Mapper;
-import org.megastage.util.GlobalTime;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.Processor;
+import org.megastage.ecs.World;
 
-public class CleanupSystem extends EntityProcessingSystem {
-    private long interval;
-    private long acc;
-    
-    public CleanupSystem(long interval) {
-        super(Aspect.getAspectForAll(BindTo.class));
-        this.interval = interval;
+public class CleanupSystem extends Processor {
+    public CleanupSystem(World world, long interval) {
+        super(world, interval, CompType.BindTo);
     }
 
     @Override
-    protected boolean checkProcessing() {
-        if(GlobalTime.value >= acc) {
-                acc = GlobalTime.value + interval;
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    protected void process(Entity e) {
-        BindTo bindTo = Mapper.BIND_TO.get(e);
-        if(world.getEntity(bindTo.parent) == null) {
-            e.addComponent(new DeleteFlag());
-            e.changedInWorld();
+    protected void process(int eid) {
+        BindTo bindTo = (BindTo) world.getComponent(eid, CompType.BindTo);
+        if(bindTo.parent == 0) {
+            world.addComponent(eid, CompType.DeleteFlag, new DeleteFlag());
         }
     }
     

@@ -1,20 +1,19 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Aspect;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
+import org.megastage.ecs.World;
+import org.megastage.ecs.Processor;
 import org.megastage.components.dcpu.*;
+import org.megastage.ecs.CompType;
 import org.megastage.util.GlobalTime;
-import org.megastage.util.Mapper;
 
-public class DCPUSystem extends EntityProcessingSystem {
-    public DCPUSystem() {
-        super(Aspect.getAspectForAll(DCPU.class));
+public class DCPUSystem extends Processor {
+    public DCPUSystem(World world, long interval) {
+        super(world, interval, CompType.DCPU);
     }
 
     @Override
-    protected void process(Entity entity) {
-        DCPU dcpu = Mapper.DCPU.get(entity);
+    protected void process(int eid) {
+        DCPU dcpu = (DCPU) world.getComponent(eid, CompType.DCPU);
 
         long uptime = GlobalTime.value - dcpu.startupTime;
         if(uptime < 0) return;
@@ -482,28 +481,21 @@ public class DCPUSystem extends EntityProcessingSystem {
     }
 
     private void interrupt(DCPU dcpu, int eid) {
-        Entity e = world.getEntity(eid);
-
-        if(Mapper.VIRTUAL_MONITOR.has(e)) {
-            VirtualMonitor mon = Mapper.VIRTUAL_MONITOR.get(e);
+        VirtualMonitor mon = world.getComponent(eid, CompType.DCPUHardware, VirtualMonitor.class);
+        if(mon != null) {
             mon.interrupt(dcpu);
         }
     }
 
     private void tick60hz(DCPU dcpu, int eid) {
-        Entity e = world.getEntity(eid);
-
-        if(Mapper.VIRTUAL_CLOCK.has(e)) {
-            VirtualClock clck = Mapper.VIRTUAL_CLOCK.get(e);
-            clck.tick60hz(dcpu);
+        VirtualClock clock = world.getComponent(eid, CompType.DCPUHardware, VirtualClock.class);
+        if(clock != null) {
+            clock.tick60hz(dcpu);
         }
     }
 
     private void query(DCPU dcpu, int eid) {
-        Entity e = world.getEntity(eid);
-        
-        DCPUHardwareInfo hwi = Mapper.DCPU_HARDWARE_INFO.get(e);
-        hwi.query(dcpu);
+        DCPUHardware hw = (DCPUHardware) world.getComponent(eid, CompType.DCPUHardware);
+        hw.query(dcpu);
     }
-
 }

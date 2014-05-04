@@ -1,10 +1,9 @@
 package org.megastage.components;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.srv.Acceleration;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 import org.megastage.util.Vector3d;
 
@@ -18,7 +17,7 @@ public class Velocity extends BaseComponent {
     public Vector3d vector;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
         double x = getDoubleValue(element, "x", 0);
         double y = getDoubleValue(element, "y", 0);
         double z = getDoubleValue(element, "z", 0);
@@ -29,8 +28,8 @@ public class Velocity extends BaseComponent {
     }
 
     @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+    public Message replicate(int eid) {
+        return always(eid);
     }
 
     public void add(Vector3d v) {

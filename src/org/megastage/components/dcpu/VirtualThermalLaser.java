@@ -1,15 +1,12 @@
 package org.megastage.components.dcpu;
 
 import org.megastage.components.transfer.ThermalLaserData;
-import com.artemis.Entity;
-import com.artemis.World;
 import com.esotericsoftware.minlog.Log;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 import org.megastage.util.GlobalTime;
-import org.megastage.util.Vector3d;
 
 public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     public static transient final char STATUS_DORMANT = 0;
@@ -31,13 +28,10 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     private float distance;
     
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        type = TYPE_THERMAL_LASER;
-        revision = 0x0010;
-        manufactorer = MANUFACTORER_ENDER_INNOVATIONS;
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        super.init(world, parentEid, element);
+        setInfo(TYPE_THERMAL_LASER, 0x0010, MANUFACTORER_ENDER_INNOVATIONS);
 
-        super.init(world, parent, element);
-        
         range = getFloatValue(element, "range", 100);
         cooldownSpeed = getIntegerValue(element, "cooldown_speed", 20);
 
@@ -45,10 +39,10 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt(DCPU dcpu) {
         switch(dcpu.registers[0]) {
             case 0:
-                getStatus();
+                getStatus(dcpu);
                 break;
             case 1:
                 setWattage(dcpu.registers[1]);
@@ -59,7 +53,7 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
         }
     }
 
-    public void getStatus() {
+    public void getStatus(DCPU dcpu) {
         dcpu.registers[1] = status;
         dcpu.registers[2] = ERROR_NOMINAL;
     }
@@ -88,14 +82,14 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public Message replicate(Entity entity) {
+    public Message replicate(int eid) {
         dirty = false;
-        return ThermalLaserData.create(status, wattage, distance).always(entity);
+        return ThermalLaserData.create(status, wattage, distance).always(eid);
     }
     
     @Override
-    public Message synchronize(Entity entity) {
-        return replicateIfDirty(entity);
+    public Message synchronize(int eid) {
+        return replicateIfDirty(eid);
     }
 
     public void setHit(float distance) {
@@ -110,7 +104,7 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public double consume(double available, double delta) {
+    public double consume(World world, int ship, double available, double delta) {
         double intake = status == STATUS_FIRING ? delta * wattage: 0.0;
         if(intake > available) {
             setStatusCooldown();

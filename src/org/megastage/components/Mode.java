@@ -1,8 +1,8 @@
 package org.megastage.components;
 
-import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.client.ClientGlobals;
+import org.megastage.ecs.World;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.Message;
 
@@ -10,13 +10,13 @@ public class Mode extends BaseComponent {
     public int value = CharacterMode.WALK; 
 
     @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+    public Message replicate(int eid) {
+        return always(eid);
     }
     
     @Override
-    public Message synchronize(Entity entity) {
-        return ifDirty(entity);
+    public Message synchronize(int eid) {
+        return ifDirty(eid);
     }
 
     public void setMode(int mode) {
@@ -25,8 +25,8 @@ public class Mode extends BaseComponent {
     }
 
     @Override
-    public void receive(Connection pc, Entity entity) {
-        if(ClientGlobals.playerEntity == entity) {
+    public void receive(World world, Connection pc, int eid) {
+        if(ClientGlobals.playerEntity == eid) {
             ClientGlobals.cmdHandler.changeMode(value);
         }
     }

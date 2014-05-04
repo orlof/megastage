@@ -1,57 +1,44 @@
 package org.megastage.server;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import com.artemis.managers.GroupManager;
-import com.artemis.managers.TagManager;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.srv.Identifier;
 import org.megastage.components.srv.InitializeFlag;
-import org.megastage.components.srv.ReplicateFlag;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
-
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:01
- */
 public class EntityFactory {
-    public static Entity create(World world, Element element, Entity parent) throws Exception {
-        Entity entity = world.createEntity();
-        entity.addToWorld();
+    public static int create(World world, Element element, int parentEid) throws Exception {
+        int eid = world.createEntity();
         
         Identifier id = new Identifier();
         id.name = element.getAttributeValue("name");
-        entity.addComponent(id);
+        world.addComponent(eid, CompType.Identifier, id);
 
-        Log.info(entity.toString());
+        Log.info(eid + " " + id.toString());
 
         for(Element e: element.getChildren("component")) {
             Class clazz = Class.forName("org.megastage.components." + e.getAttributeValue("type"));
             BaseComponent comp = (BaseComponent) clazz.newInstance();
 
-            BaseComponent[] additionalComponents = comp.init(world, parent, e);
-            entity.addComponent(comp);
+            BaseComponent[] additionalComponents = comp.init(world, parentEid, e);
+            world.addComponent(eid, CompType.cid(comp.getClass().getSimpleName()), comp);
             Log.info(" Component: " + comp.toString());
 
             if(additionalComponents != null) {
                 for(BaseComponent c: additionalComponents) {
-                    entity.addComponent(c);
+                    world.addComponent(eid, CompType.cid(c.getClass().getSimpleName()), c);
                     Log.info(" Component: " + c.toString());
                 }
             }
         }
-        entity.addComponent(new InitializeFlag());
-
-        entity.changedInWorld();
+        world.addComponent(eid, CompType.InitializeFlag, new InitializeFlag());
 
         for(Element e: element.getChildren("entity")) {
-            create(world, e, entity);
+            create(world, e, eid);
         }
 
-        return entity;
+        return eid;
     }
 }

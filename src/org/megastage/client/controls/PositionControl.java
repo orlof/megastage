@@ -1,6 +1,5 @@
 package org.megastage.client.controls;
 
-import com.artemis.Entity;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -8,8 +7,8 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Position;
 import org.megastage.client.ClientGlobals;
+import org.megastage.ecs.CompType;
 import org.megastage.util.ID;
-import org.megastage.util.Mapper;
 import org.megastage.util.GlobalTime;
 
 /**
@@ -17,14 +16,14 @@ import org.megastage.util.GlobalTime;
  * @author Orlof
  */
 public class PositionControl extends AbstractControl {
-    private final Entity entity;
+    private final int eid;
     private Position pos;
     private Interpolator interpolator = null;
 
     long lastUpdateTime;
     
-    public PositionControl(Entity entity, boolean useInterpolator) {
-        this.entity = entity;
+    public PositionControl(int eid, boolean useInterpolator) {
+         this.eid = eid; 
 
         if(useInterpolator) {
             interpolator = new Interpolator();
@@ -34,13 +33,13 @@ public class PositionControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(pos == null) {
-            pos = Mapper.POSITION.get(entity);
+            pos = (Position) ClientGlobals.world.getComponent(eid, CompType.Position);
             if(pos == null) {
                 return;
             }
         }
 
-        if(ClientGlobals.shipEntity == entity) {
+        if(ClientGlobals.shipEntity == eid) {
             spatial.setLocalTranslation(0,0,0);
             return;
         }
@@ -90,7 +89,7 @@ public class PositionControl extends AbstractControl {
             this.endTime = endTime;
 
             if(Log.TRACE)
-                Log.info(ID.get(entity) + start.toString() + "/" + (startTime % 100000) + ", " + end.toString() + "/" + (endTime % 100000));
+                Log.info(ID.get(eid) + start.toString() + "/" + (startTime % 100000) + ", " + end.toString() + "/" + (endTime % 100000));
         }
 
         public final void apply() {

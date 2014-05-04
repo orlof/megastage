@@ -1,83 +1,70 @@
 package org.megastage.components;
 
-import com.artemis.Component;
-import com.artemis.Entity;
-import com.artemis.World;
+import org.megastage.ecs.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.ecs.CompType;
 import org.megastage.protocol.Message;
 import org.megastage.protocol.Network;
 import org.megastage.util.Vector3d;
 
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:11
- */
-public abstract class BaseComponent implements Component {
+public abstract class BaseComponent {
     public transient boolean dirty = true;
 
     // TODO change to static create(...)
-    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
         return null;
     }
 
     /** This method is called after world is ready **/
-    public void initialize(World world, Entity entity) {}
+    public void initialize(World world, int eid) {}
 
-    public Message replicate(Entity entity) {
+    public Message replicate(int eid) {
         return null;
     }
 
-    public Message synchronize(Entity entity) {
+    public Message synchronize(int eid) {
         return null;
     }
 
-    public final Message ifDirty(Entity entity) {
+    public final Message ifDirty(int eid) {
         if(dirty) {
             dirty = false;
-            return new Network.ComponentMessage(entity, this);
+            return new Network.ComponentMessage(eid, this);
         }
         return null;
     }
 
-    public final Message replicateIfDirty(Entity entity) {
+    public final Message replicateIfDirty(int eid) {
         if(dirty) {
             dirty = false;
-            return replicate(entity);
+            return replicate(eid);
         }
         return null;
     }
 
-    public final Message replicateIfTrue(Entity entity, boolean check) {
+    public final Message replicateIfTrue(int eid, boolean check) {
         if(check) {
             dirty = false;
-            return replicate(entity);
+            return replicate(eid);
         }
         return null;
     }
 
-    public final Message always(Entity entity) {
+    public final Message always(int eid) {
         dirty = false;
-        return new Network.ComponentMessage(entity, this);
+        return new Network.ComponentMessage(eid, this);
     }
 
-    public final Message never(Entity entity) {
+    public final Message never(int eid) {
         return null;
     }
 
-    public void receive(Connection pc, Entity entity) {
+    public void receive(World world, Connection pc, int eid) {
         this.dirty = true;
-
-        entity.addComponent(this);
-        entity.changedInWorld();
-    }
-
-    public void delete(Connection pc, Entity entity) {
-        entity.deleteFromWorld();
+        world.addComponent(eid, CompType.cid(getClass().getSimpleName()), this);
     }
 
     protected static boolean hasValue(Element config, String arrtName) {
@@ -184,12 +171,10 @@ public abstract class BaseComponent implements Component {
         return defaultValue;
     }
     
+    public void delete(World world, Connection pc, int eid) {}
     
     @Override
     public String toString() {
         return getClass().getSimpleName();
     }
-
-    @Override
-    public void reset() {}
 }

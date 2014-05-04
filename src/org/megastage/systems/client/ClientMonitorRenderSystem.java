@@ -1,31 +1,21 @@
 package org.megastage.systems.client;
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.ColorRGBA;
 import org.megastage.components.client.ClientRaster;
 import org.megastage.components.client.ClientVideoMemory;
 import org.megastage.client.ClientGlobals;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.Processor;
+import org.megastage.ecs.World;
 
-public class ClientMonitorRenderSystem extends EntityProcessingSystem {
-    ComponentMapper<ClientVideoMemory> videoMemoryMapper;
-    ComponentMapper<ClientRaster> rasterComponentMapper;
-
-    public ClientMonitorRenderSystem() {
-        super(Aspect.getAspectForAll(ClientVideoMemory.class, ClientRaster.class));
+public class ClientMonitorRenderSystem extends Processor {
+    public ClientMonitorRenderSystem(World world, long interval) {
+        super(world, interval, CompType.ClientVideoMemory, CompType.ClientRaster);
     }
 
-    @Override
-    public void initialize() {
-        videoMemoryMapper = world.getMapper(ClientVideoMemory.class);
-        rasterComponentMapper = world.getMapper(ClientRaster.class);
-    }
-
-    protected void process(Entity entity) {
-        ClientVideoMemory videoMemory = videoMemoryMapper.get(entity);
+    protected void process(int eid) {
+        ClientVideoMemory clientVideoMemory = (ClientVideoMemory) world.getComponent(eid, CompType.ClientVideoMemory);
         
         boolean blink = true;
         
@@ -34,12 +24,12 @@ public class ClientMonitorRenderSystem extends EntityProcessingSystem {
             blink = time / 20L % 2L == 0L;
         }
         
-        if(videoMemory.isDirty || blink != videoMemory.blink) {
-            videoMemory.isDirty = false;
-            videoMemory.blink = blink;
+        if(clientVideoMemory.isDirty || blink != clientVideoMemory.blink) {
+            clientVideoMemory.isDirty = false;
+            clientVideoMemory.blink = blink;
             
-            ClientRaster rasterComponent = rasterComponentMapper.get(entity);
-            render(videoMemory, blink, rasterComponent);
+            ClientRaster clientRaster = (ClientRaster) world.getComponent(eid, CompType.ClientRaster);
+            render(clientVideoMemory, blink, clientRaster);
         }
     }
 

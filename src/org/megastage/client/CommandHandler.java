@@ -1,10 +1,8 @@
 package org.megastage.client;
 
-import com.artemis.Entity;
 import com.cubes.BlockTerrainControl;
 import com.cubes.Vector3Int;
 import com.esotericsoftware.minlog.Log;
-import com.jme3.app.state.AppStateManager;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.InputManager;
@@ -20,9 +18,8 @@ import com.jme3.scene.Spatial;
 import java.util.concurrent.Callable;
 import org.megastage.components.Rotation;
 import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.ecs.CompType;
 import org.megastage.protocol.CharacterMode;
-import org.megastage.util.ID;
-import org.megastage.util.Mapper;
 
 public class CommandHandler implements AnalogListener, ActionListener {
 
@@ -74,21 +71,21 @@ public class CommandHandler implements AnalogListener, ActionListener {
             if(!closest.getGeometry().getName().equals("forceshield")) {
                 Node target = closest.getGeometry().getParent();
 
-                Entity entity = null;
+                int eid = 0;
                 while(true) {
                     if(target == ClientGlobals.rootNode) {
                         return;
                     }
 
-                    entity = ClientGlobals.spatialManager.getUsableEntity(target, true);
+                    eid = ClientGlobals.spatialManager.getUsableEntity(target, true);
                     //Log.info("Pick entity: " + ID.get(entity));
-                    if(entity != null) break;
+                    if(eid != 0) break;
                     target = target.getParent();
                 }
 
-                ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(entity);
-                if(geom != null) {
-                    if(entity == ClientGlobals.shipEntity) {
+                Object geom = ClientGlobals.world.getComponent(eid, CompType.Geometry);
+                if(geom != null && geom instanceof ShipGeometry) {
+                    if(eid == ClientGlobals.shipEntity) {
                         Node offset = (Node) target.getChild("offset");
                         Vector3Int loc = CubesManager.getCurrentPointedBlockLocation(offset, !right);
                         if(loc != null) {
@@ -103,11 +100,11 @@ public class CommandHandler implements AnalogListener, ActionListener {
                         }
                     } else {
                         // TELEPORT
-                        ClientGlobals.userCommand.teleport(entity);
+                        ClientGlobals.userCommand.teleport(eid);
                         Log.info("TELEPORT");
                     }
                 } else {
-                    ClientGlobals.userCommand.pickItem(entity);
+                    ClientGlobals.userCommand.pickItem(eid);
                 }
                 return;
             }
@@ -173,7 +170,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        if (ClientGlobals.playerEntity == null) {
+        if (ClientGlobals.playerEntity == 0) {
             return;
         }
 
@@ -306,7 +303,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     protected void lookUp(float value) {
-        Rotation rot = Mapper.ROTATION.get(ClientGlobals.playerEntity);
+        Rotation rot = (Rotation) ClientGlobals.world.getComponent(ClientGlobals.playerEntity, CompType.Rotation);
         if (rot == null) {
             return;
         }
@@ -325,7 +322,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     protected void lookLeft(float value) {
-        Rotation rot = Mapper.ROTATION.get(ClientGlobals.playerEntity);
+        Rotation rot = (Rotation) ClientGlobals.world.getComponent(ClientGlobals.playerEntity, CompType.Rotation);
         if (rot == null) {
             return;
         }
@@ -342,14 +339,14 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     protected void move(float value, boolean sideways) {
-        Rotation playerRotation = Mapper.ROTATION.get(ClientGlobals.playerEntity);
-        if (playerRotation == null) {
+        Rotation rot = (Rotation) ClientGlobals.world.getComponent(ClientGlobals.playerEntity, CompType.Rotation);
+        if (rot == null) {
             return;
         }
 
         Quaternion playerQuaternion = new Quaternion(
-                (float) playerRotation.x, (float) playerRotation.y,
-                (float) playerRotation.z, (float) playerRotation.w);
+                (float) rot.x, (float) rot.y,
+                (float) rot.z, (float) rot.w);
 
         float[] eulerAngles = playerQuaternion.toAngles(null);
         eulerAngles[0] = 0f;

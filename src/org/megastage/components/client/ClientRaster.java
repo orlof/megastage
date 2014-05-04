@@ -4,17 +4,12 @@
  */
 package org.megastage.components.client;
 
-import com.artemis.Component;
 import com.jme3.texture.image.ImageRaster;
 
 /**
  *
  * @author Orlof
  */
-public class ClientRaster implements Component {
+public class ClientRaster {
     public ImageRaster raster;
-
-    @Override
-    public void reset() {
-    }
 }

@@ -1,29 +1,28 @@
 package org.megastage.client.controls;
 
-import com.artemis.Entity;
-import com.badlogic.gdx.utils.IntMap;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
+import com.jme3.util.IntMap;
 import com.shaderblow.forceshield.ForceShieldControl;
-import org.megastage.components.dcpu.VirtualForceField;
+import org.megastage.client.ClientGlobals;
 import org.megastage.components.transfer.ForceFieldData;
-import org.megastage.util.Mapper;
+import org.megastage.ecs.CompType;
 import org.megastage.util.GlobalTime;
 
 public class ForceFieldControl extends ForceShieldControl {
     public static int INTERVAL = 1500;
     
-    Entity entity;
+    int eid;
     Spatial spatial;
     Sphere sphere;
     IntMap<Long> lastHit = new IntMap<>();
     
-    public ForceFieldControl(Entity entity, Spatial spatial, Material material, Sphere sphere) {
+    public ForceFieldControl(int eid, Spatial spatial, Material material, Sphere sphere) {
         super(material);
-        this.entity = entity;
+        this.eid = eid;
         this.spatial = spatial;
         this.sphere = sphere;
     }
@@ -34,7 +33,7 @@ public class ForceFieldControl extends ForceShieldControl {
     
     @Override
     public void update(float tpf) {
-        ForceFieldData data = Mapper.FORCE_FIELD_DATA.get(entity);
+        ForceFieldData data = (ForceFieldData) ClientGlobals.world.getComponent(eid, CompType.ForceFieldGeometry);
         if(data == null) return;
 
         if(!isVisible() && data.isVisible()) {
@@ -62,6 +61,4 @@ public class ForceFieldControl extends ForceShieldControl {
         lastHit.put(id, GlobalTime.value);
         super.registerHit(position);
     }
-
-    
 }

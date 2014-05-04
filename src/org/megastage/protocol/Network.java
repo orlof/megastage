@@ -1,10 +1,8 @@
 package org.megastage.protocol;
 
-import com.artemis.Entity;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.EndPoint;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.components.Mass;
 import org.megastage.components.transfer.MonitorData;
@@ -23,7 +21,6 @@ import org.megastage.components.gfx.PPSGeometry;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.gfx.VoidGeometry;
-import org.megastage.client.ClientGlobals;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.CollisionSphere;
 import org.megastage.components.DeleteFlag;
@@ -45,6 +42,7 @@ import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.components.transfer.RadarTargetData;
 import org.megastage.components.transfer.ThermalLaserData;
 import org.megastage.components.transfer.VirtualFloppyDriveData;
+import org.megastage.ecs.World;
 import org.megastage.protocol.UserCommand.Build;
 import org.megastage.protocol.UserCommand.ChangeBootRom;
 import org.megastage.protocol.UserCommand.ChangeFloppy;
@@ -64,82 +62,80 @@ public class Network {
 
     public static int serverPort = 12358;
 
-    static public void register(Kryo kryo, int purpose) {
+    public static void registerComponents(Kryo kryo) {
+        
+    }
+    
+    static public void register(Kryo kryo) {
         for(Class<?> clazz: Network.class.getDeclaredClasses()) {
             kryo.register(clazz);
         }
 
-        Object[][] register = new Object[][] {
-            new Object[] {String[].class, null, null},
-            new Object[] {char[].class, null, null},
-            new Object[] {char[][].class, null, null},
-            new Object[] {char[][][].class, null, null},
-            new Object[] {Object[].class, null, null},
-            new Object[] {BaseComponent.class, null, null},
-            new Object[] {BatteryGeometry.class, null, null},
-            new Object[] {BindTo.class, null, null},
-            new Object[] {BlockChange.class, null, null},
-            new Object[] {Build.class, null, null},
-            new Object[] {ChangeFloppy.class, null, null},
-            new Object[] {ChangeBootRom.class, null, null},
-            new Object[] {CharacterGeometry.class, null, null},
-            new Object[] {CollisionSphere.class, null, null},
-            new Object[] {ComponentMessage.class, null, null},
-            new Object[] {Cube3dMap.class, null, null},
-            new Object[] {FloppyDriveGeometry.class, null, null},
-            new Object[] {DeleteFlag.class, null, null},
-            new Object[] {Energy.class, null, null},
-            new Object[] {EngineData.class, null, null},
-            new Object[] {EngineGeometry.class, null, null},
-            new Object[] {Explosion.class, null, null},
-            new Object[] {FixedRotation.class, null, null},
-            new Object[] {ForceFieldData.class, null, null},
-            new Object[] {ForceFieldGeometry.class, null, null},
-            new Object[] {GyroscopeData.class, null, null},
-            new Object[] {GyroscopeGeometry.class, null, null},
-            new Object[] {Identifier.class, null, null},
-            new Object[] {ImposterGeometry.class, null, null},
-            new Object[] {Keyboard.class, null, null},
-            new Object[] {Mass.class, null, null},
-            new Object[] {Mode.class, null, null},
-            new Object[] {MonitorData.class, null, null},
-            new Object[] {MonitorGeometry.class, null, null},
-            new Object[] {MoveShip.class, null, null},
-            new Object[] {Orbit.class, null, null},
-            new Object[] {Pick.class, null, null},
-            new Object[] {PlanetGeometry.class, null, null},
-            new Object[] {PlayerIDMessage.class, null, null},
-            new Object[] {Position.class, null, null},
-            new Object[] {PowerPlantGeometry.class, null, null},
-            new Object[] {PPSGeometry.class, null, null},
-            new Object[] {RadarGeometry.class, null, null},
-            new Object[] {RadarTargetData.class, null, null},
-            new Object[] {RAM.class, null, null},
-            new Object[] {Rotation.class, null, null},
-            new Object[] {ShipGeometry.class, null, null},
-            new Object[] {SpawnPoint.class, null, null},
-            new Object[] {SunGeometry.class, null, null},
-            new Object[] {Teleport.class, null, null},
-            new Object[] {ThermalLaserData.class, null, null},
-            new Object[] {ThermalLaserGeometry.class, null, null},
-            new Object[] {Unbuild.class, null, null},
-            new Object[] {Unpick.class, null, null},
-            new Object[] {UsableFlag.class, null, null},
-            new Object[] {UserCommand.class, null, null},
-            new Object[] {Vector3d.class, null, null},
-            new Object[] {Velocity.class, null, null},
-            new Object[] {VirtualFloppyDriveData.class, null, null},
-            new Object[] {VoidGeometry.class, null, null},
+        Class[] register = new Class[] {
+            String[].class,
+            char[].class,
+            char[][].class,
+            char[][][].class,
+            Object[].class,
+            BaseComponent.class,
+            BatteryGeometry.class,
+            BindTo.class,
+            BlockChange.class,
+            Build.class,
+            ChangeFloppy.class,
+            ChangeBootRom.class,
+            CharacterGeometry.class,
+            CollisionSphere.class,
+            ComponentMessage.class,
+            Cube3dMap.class,
+            FloppyDriveGeometry.class,
+            DeleteFlag.class,
+            Energy.class,
+            EngineData.class,
+            EngineGeometry.class,
+            Explosion.class,
+            FixedRotation.class,
+            ForceFieldData.class,
+            ForceFieldGeometry.class,
+            GyroscopeData.class,
+            GyroscopeGeometry.class,
+            Identifier.class,
+            ImposterGeometry.class,
+            Keyboard.class,
+            Mass.class,
+            Mode.class,
+            MonitorData.class,
+            MonitorGeometry.class,
+            MoveShip.class,
+            Orbit.class,
+            Pick.class,
+            PlanetGeometry.class,
+            PlayerIDMessage.class,
+            Position.class,
+            PowerPlantGeometry.class,
+            PPSGeometry.class,
+            RadarGeometry.class,
+            RadarTargetData.class,
+            RAM.class,
+            Rotation.class,
+            ShipGeometry.class,
+            SpawnPoint.class,
+            SunGeometry.class,
+            Teleport.class,
+            ThermalLaserData.class,
+            ThermalLaserGeometry.class,
+            Unbuild.class,
+            Unpick.class,
+            UsableFlag.class,
+            UserCommand.class,
+            Vector3d.class,
+            Velocity.class,
+            VirtualFloppyDriveData.class,
+            VoidGeometry.class,
         };
 
-        for(Object[] data: register) {
-            Class clazz = (Class) data[0];
-            Serializer s = (Serializer) data[purpose+1];
-            if(s == null) {
-                kryo.register(clazz);
-            } else {
-                kryo.register(clazz, s);
-            }
+        for(Class clazz: register) {
+            kryo.register(clazz);
         }
     }
 
@@ -152,17 +148,14 @@ public class Network {
 
         public ComponentMessage() { /* required for Kryo */ }
         
-        public ComponentMessage(Entity entity, BaseComponent c) {
-            owner = entity.id;
+        public ComponentMessage(int eid, BaseComponent c) {
+            owner = eid;
             component = c;
         }
 
         @Override
-        public void receive(Connection pc) {
-            Entity entity = ClientGlobals.artemis.toClientEntity(owner);
-            owner = entity.id;
-            
-            component.receive(pc, entity);
+        public void receive(World world, Connection pc) {
+            component.receive(world, pc, owner);
         }
         
         @Override

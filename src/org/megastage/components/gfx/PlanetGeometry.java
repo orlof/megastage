@@ -1,23 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.components.gfx;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.client.ClientGlobals;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 
-
-    
-/**
- *
- * @author Orlof
- */
 public class PlanetGeometry extends BaseComponent {
     public int center;
     public float radius;
@@ -25,8 +14,8 @@ public class PlanetGeometry extends BaseComponent {
     public String color;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
-        center = parent.id;
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        center = parentEid;
 
         radius = getFloatValue(element, "radius", 10.0f);
         generator = getStringValue(element, "generator", "Earth");
@@ -36,22 +25,23 @@ public class PlanetGeometry extends BaseComponent {
     }
 
     @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+    public Message replicate(int eid) {
+        return always(eid);
     }
     
     @Override
-    public void receive(Connection pc, Entity entity) {
+    public void receive(World world, Connection pc, int eid) {
         // center = ClientGlobals.artemis.get(center).getId();
-        ClientGlobals.spatialManager.setupPlanetLikeBody(entity, this);
+        ClientGlobals.spatialManager.setupPlanetLikeBody(eid, this);
     }
     
     @Override
-    public void delete(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.deleteEntity(entity);
-        entity.deleteFromWorld();
+    public void delete(World world, Connection pc, int eid) {
+        ClientGlobals.spatialManager.deleteEntity(eid);
+        world.deleteEntity(eid);
     }
     
+    @Override
     public String toString() {
         return "PlanetGeometry(center=" + center + ", generator='" + generator + "', radius=" + radius + ")";
     }

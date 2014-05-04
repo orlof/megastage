@@ -4,36 +4,27 @@
  */
 package org.megastage.server;
 
-import com.artemis.Entity;
-import com.artemis.managers.Manager;
 import java.util.HashMap;
 import org.jdom2.Element;
+import org.megastage.ecs.World;
 
 /**
  *
  * @author Orlof
  */
-public class TemplateManager extends Manager {
-    private HashMap<String, Element> templates = new HashMap<>();
+public class TemplateManager {
+    private static HashMap<String, Element> templates = new HashMap<>();
     
-    @Override
-    public void initialize() {
-    }
-
-    public void addTemplate(Element elem) {
+    public static void addTemplate(Element elem) {
         String name = elem.getAttributeValue("name");
         templates.put(name, elem);
     }
 
-    public Entity create(String name) {
+    public static int create(World world, String name) throws Exception {
         Element element = templates.get(name);
         if(element == null) {
             throw new RuntimeException("No template: " + name + " in " + templates.toString());
         }
-        return EntityFactory.create(world, element, null);
+        return EntityFactory.create(world, element, 0);
     }    
-
-    @Override
-    public void dispose() {
-    }
 }

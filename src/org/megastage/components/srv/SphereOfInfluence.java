@@ -1,15 +1,12 @@
 package org.megastage.components.srv;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
-import org.megastage.util.ID;
-import org.megastage.util.Mapper;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
 public class SphereOfInfluence extends BaseComponent {
     public double radius;
@@ -20,23 +17,21 @@ public class SphereOfInfluence extends BaseComponent {
     }
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
+    public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
         radius = getDoubleValue(element, "radius", 0.0);
         return null;
     }
 
     @Override
-    public void initialize(World world, Entity entity) {
-        Orbit orbit = Mapper.ORBIT.get(entity);
+    public void initialize(World world, int eid) {
+        Orbit orbit = (Orbit) world.getComponent(eid, CompType.Orbit);
         if(orbit == null) {
             priority = -1;
         } else {
-            Mass mass = Mapper.MASS.get(entity);
+            Mass mass = (Mass) world.getComponent(eid, CompType.Mass);
+            Mass centerMass = (Mass) world.getComponent(orbit.center, CompType.Mass);
 
-            Entity center = world.getEntity(orbit.center);        
-            Mass centerMass = Mapper.MASS.get(center);
-
-            if(Mapper.ORBIT.get(center) != null) {
+            if(world.hasComponent(orbit.center, CompType.Orbit)) {
                 priority++;
             }
 
