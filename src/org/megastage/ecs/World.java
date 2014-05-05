@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class World {
 
@@ -197,6 +198,9 @@ public class World {
         return population[eid][cid];
     }
 
+    /**
+     * @deprecated 
+     */
     public <E> E getComponent(int eid, Class<E> type) {
         return getComponent(eid, CompType.cid(type.getSimpleName()), type);
     }
@@ -206,6 +210,9 @@ public class World {
         return (E) (type.isInstance(obj) ? obj: null);
     }
 
+    /**
+     * @deprecated 
+     */
     public <T> T getOrCreateComponent(int eid, int cid, Class<T> type) {
         //ensureEntity(eid);
         Object comp = population[eid][cid];
@@ -247,7 +254,7 @@ public class World {
 
     private int componentIteratorEid = 0;
     private int componentIteratorCursor = 0;
-    private Class componentIteratorClass;
+    private Class componentIteratorType;
 
     public Object components(int eid) {
         return components(eid, Object.class);
@@ -256,14 +263,14 @@ public class World {
     public <E> E components(int eid, Class<E> clazz) {
         componentIteratorEid = eid;
         componentIteratorCursor = 0;
-        componentIteratorClass = clazz;
+        componentIteratorType = clazz;
         return (E) nextComponent();
     }
     
     public <E> E nextComponent() {
         while(componentIteratorCursor < componentCapacity) {
             Object comp = population[componentIteratorEid][componentIteratorCursor];
-            if(comp != null && componentIteratorClass.isInstance(comp)) {
+            if(comp != null && componentIteratorType.isInstance(comp)) {
                 return (E) population[componentIteratorEid][componentIteratorCursor++];
             }
             componentIteratorCursor++;
@@ -271,32 +278,84 @@ public class World {
 
         return null;
     }
+
+    // While version
     
-    public final Iterable xcomponents(int eid) {
+    private Object componentIteratorItem;
+    
+    public void componentIteratorInit(int eid) {
+        componentIteratorInit(eid, Object.class);
+    }
+
+    public void componentIteratorInit(int eid, Class type) {
+        componentIteratorEid = eid;
+        componentIteratorType = type;
+        componentIteratorCursor = -1;
+    }
+    
+    public boolean componentIteratorNext() {
+        while((++componentIteratorCursor) < componentCapacity) {
+            componentIteratorItem = population[componentIteratorEid][componentIteratorCursor];
+            if(componentIteratorItem != null && componentIteratorType.isInstance(componentIteratorItem)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
+    // Java iterator version
+    
+    public final Iterable componentIterator(int eid) {
         return componentIterator.init(eid, Object.class);
     }
     
-    private final ComponentIterator componentIterator = new ComponentIterator(); 
-    
-    public final class ComponentIterator<E> implements Iterable, Iterator<E> {
-        private int eid;
-        private int cursor, probe;
-        private Class type;
+    public final Iterable componentIterator(int eid, Class type) {
+        return componentIterator.init(eid, type);
+    }
 
-        public ComponentIterator<E> init(int eid, Class<E> type) {
+    private final ComponentIterator componentIterator = new ComponentIterator(0, Object.class);
+    
+    public final class ComponentIterator<E> implements Iterable<E>, Iterator<E> {
+        private int eid;
+        private int cursor;
+        private Class<E> type;
+
+        public ComponentIterator(int eid, Class<E> type) {
             this.eid = eid;
+            this.cursor = -1;
+            this.type = type;
+        }
+        
+        public ComponentIterator<E> init(int eid, Class type) {
+            this.eid = eid;
+            this.cursor = -1;
             this.type = type;
             return this;
         }
 
         @Override
         public boolean hasNext() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            int pos = cursor;
+            while((++pos) < componentCapacity) {
+                Object comp = population[eid][pos];
+                if(comp != null && type.isInstance(comp)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         @Override
         public E next() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            while((++cursor) < componentCapacity) {
+                Object comp = population[eid][cursor];
+                if(comp != null && type.isInstance(comp)) {
+                    return (E) comp;
+                }
+            }
+            
+            throw new NoSuchElementException("Iterated past last element");
         }
         
         @Override
@@ -307,6 +366,52 @@ public class World {
         @Override
         public Iterator<E> iterator() {
             return this;
+        }
+    }
+    
+    public static void main(String[] args) throws Exception {
+        System.out.println("Starting");
+        World w = new World(10,10);
+        int eid = w.createEntity();
+        w.addComponent(eid, 0, new Integer(0));
+        w.addComponent(eid, 3, new Double(3.0));
+        w.addComponent(eid, 5, new Integer(5));
+        w.addComponent(eid, 7, new Double(7.0));
+        w.addComponent(eid, 9, new Integer(9));
+        
+        System.out.println("List of all");
+        for(Object comp: w.componentIterator(eid)) {
+            System.out.println(comp.toString());
+        }
+
+        System.out.println("List of integer");
+        for(Object comp: w.componentIterator(eid, Integer.class)) {
+            System.out.println(comp.toString());
+        }
+
+        System.out.println("List of integer");
+        for(Integer comp=w.components(eid, Integer.class); comp != null; comp = w.nextComponent()) {
+            System.out.println(comp.toString());
+        }
+        
+        System.out.println("List of all");
+        for(w.componentIteratorInit(eid); w.componentIteratorNext(); /**/ ) {
+            System.out.println(w.componentIteratorItem.toString());
+        }
+
+        System.out.println("List of int");
+        for(w.componentIteratorInit(eid, Integer.class); w.componentIteratorNext(); /**/ ) {
+            System.out.println(w.componentIteratorItem.toString());
+        }
+
+        System.out.println("List of all");
+        for(Object comp = w.components(eid); comp != null; comp = w.nextComponent()) {
+            System.out.println(comp.toString());
+        }
+
+        System.out.println("List of int");
+        for(Integer comp = w.components(eid, Integer.class); comp != null; comp = w.nextComponent()) {
+            System.out.println(comp.toString());
         }
     }
 }
