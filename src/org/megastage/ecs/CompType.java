@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 
 public class CompType {
     public static int size = 0;
+    public static final int[] parent = new int[100];
+    
     public static final int NONE = size++;
     
     public static final int AffectedByGravityFlag = size++;
@@ -40,41 +42,73 @@ public class CompType {
     
     public static final int DCPU = size++;
     
-    public static final int VirtualBattery = size;
-    public static final int VirtualClock = size;
-    public static final int VirtualEngine = size;
-    public static final int VirtualFloppyDrive = size;
-    public static final int VirtualForceField = size;
-    public static final int VirtualGravitySensor = size;
-    public static final int VirtualGyroscope = size;
-    public static final int VirtualKeyboard = size;
-    public static final int VirtualMonitor = size;
-    public static final int VirtualPPS = size;
-    public static final int VirtualPowerController = size;
-    public static final int VirtualPowerPlant = size;
-    public static final int VirtualRadar = size;
-    public static final int VirtualThermalLaser = size;
     public static final int DCPUHardware = size++;
 
+    public static final int VirtualBattery = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualClock = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualEngine = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualFloppyDrive = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualForceField = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualGravitySensor = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualGyroscope = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualKeyboard = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualMonitor = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualPPS = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualPowerController = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualPowerPlant = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualRadar = size;
+    static { parent[size++] = DCPUHardware; }
+    public static final int VirtualThermalLaser = size;
+   static { parent[size++] = DCPUHardware; }
+ 
     public static final int BindTo = size++;
 
-    public static final int BatteryGeometry = size;
-    public static final int CharacterGeometry = size;
-    public static final int EngineGeometry = size;
-    public static final int FloppyDriveGeometry = size;
-    public static final int ForceFieldGeometry = size;
-    public static final int GyroscopeGeometry = size;
-    public static final int ImposterGeometry = size;
-    public static final int MonitorGeometry = size;
-    public static final int PPSGeometry = size;
-    public static final int PlanetGeometry = size;
-    public static final int PowerPlantGeometry = size;
-    public static final int RadarGeometry = size;
-    public static final int ShipGeometry = size;
-    public static final int SunGeometry = size;
-    public static final int ThermalLaserGeometry = size;
-    public static final int VoidGeometry = size;
     public static final int Geometry = size++;
+ 
+    public static final int BatteryGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int CharacterGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int EngineGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int FloppyDriveGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int ForceFieldGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int GyroscopeGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int ImposterGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int MonitorGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int PPSGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int PlanetGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int PowerPlantGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int RadarGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int ShipGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int SunGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int ThermalLaserGeometry = size;
+    static { parent[size++] = Geometry; }
+    public static final int VoidGeometry = size;
+    static { parent[size++] = Geometry; }
     
     public static int cid(String simpleName) {
         try {

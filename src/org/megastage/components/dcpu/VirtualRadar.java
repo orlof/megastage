@@ -14,7 +14,6 @@ import org.megastage.systems.srv.GravityManagerSystem;
 import org.megastage.systems.srv.RadarManagerSystem;
 import org.megastage.systems.srv.SoiManagerSystem;
 import org.megastage.util.Bag;
-import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector3d;
 
 public class VirtualRadar extends DCPUHardware {
@@ -148,7 +147,7 @@ public class VirtualRadar extends DCPUHardware {
         mem[ptr++] = 0x0002;
 
         // target mass
-        Mass targetMass = (Mass) ServerGlobals.world.getComponent(target, CompType.Mass);
+        Mass targetMass = (Mass) World.INSTANCE.getComponent(target, CompType.Mass);
         int mass = (int) targetMass.mass;
         //Log.info("MASS: " + mass);
 
@@ -156,10 +155,10 @@ public class VirtualRadar extends DCPUHardware {
         mem[ptr++] = (char) (mass & 0xffff);
 
         // distance (float)
-        Position shipPos = (Position) ServerGlobals.world.getComponent(ship, CompType.Position);
+        Position shipPos = (Position) World.INSTANCE.getComponent(ship, CompType.Position);
         Vector3d shipCoord = shipPos.getVector3d();
 
-        Position targetPos = (Position) ServerGlobals.world.getComponent(target, CompType.Position);
+        Position targetPos = (Position) World.INSTANCE.getComponent(target, CompType.Position);
         Vector3d targetCoord = targetPos.getVector3d();
         
         int distance = (int) Math.round(shipCoord.distance(targetCoord));

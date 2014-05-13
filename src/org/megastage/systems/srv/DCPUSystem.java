@@ -4,7 +4,6 @@ import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
 import org.megastage.components.dcpu.*;
 import org.megastage.ecs.CompType;
-import org.megastage.util.GlobalTime;
 
 public class DCPUSystem extends Processor {
     public DCPUSystem(World world, long interval) {
@@ -15,7 +14,7 @@ public class DCPUSystem extends Processor {
     protected void process(int eid) {
         DCPU dcpu = (DCPU) world.getComponent(eid, CompType.DCPU);
 
-        long uptime = GlobalTime.value - dcpu.startupTime;
+        long uptime = world.time - dcpu.startupTime;
         if(uptime < 0) return;
         
         long cycleTarget = uptime * dcpu.hz;
@@ -481,17 +480,13 @@ public class DCPUSystem extends Processor {
     }
 
     private void interrupt(DCPU dcpu, int eid) {
-        VirtualMonitor mon = world.getComponent(eid, CompType.DCPUHardware, VirtualMonitor.class);
-        if(mon != null) {
-            mon.interrupt(dcpu);
-        }
+        DCPUHardware hw = (DCPUHardware) world.getComponent(eid, CompType.DCPUHardware);
+        hw.interrupt(dcpu);
     }
 
     private void tick60hz(DCPU dcpu, int eid) {
-        VirtualClock clock = world.getComponent(eid, CompType.DCPUHardware, VirtualClock.class);
-        if(clock != null) {
-            clock.tick60hz(dcpu);
-        }
+        DCPUHardware hw = (DCPUHardware) world.getComponent(eid, CompType.DCPUHardware);
+        hw.tick60hz(dcpu);
     }
 
     private void query(DCPU dcpu, int eid) {

@@ -62,10 +62,6 @@ public class Network {
 
     public static int serverPort = 12358;
 
-    public static void registerComponents(Kryo kryo) {
-        
-    }
-    
     static public void register(Kryo kryo) {
         for(Class<?> clazz: Network.class.getDeclaredClasses()) {
             kryo.register(clazz);
@@ -163,4 +159,14 @@ public class Network {
             return "ComponentMessage(" + owner + ", " + component.toString() + ")";
         }
     }
+    
+    static public class TimestampMessage implements Message {
+        public long time;
+
+        @Override
+        public void receive(World world, Connection pc) {
+            world.synchronizeClocks(time, world.time);
+        }
+    }
+
 }

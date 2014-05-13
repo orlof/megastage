@@ -12,7 +12,6 @@ import org.megastage.components.dcpu.PowerSupply;
 import org.megastage.components.dcpu.VirtualPowerController;
 import org.megastage.ecs.CompType;
 import org.megastage.util.ID;
-import org.megastage.util.GlobalTime;
 
 public class PowerControllerSystem extends Processor {
 

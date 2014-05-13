@@ -5,7 +5,6 @@ import org.megastage.ecs.Processor;
 import org.megastage.components.BaseComponent;
 import org.megastage.ecs.CompType;
 import org.megastage.protocol.Message;
-import org.megastage.util.ServerGlobals;
 
 public class EntityReplicateSystem extends Processor {
     public EntityReplicateSystem(World world, long interval) {
@@ -16,10 +15,10 @@ public class EntityReplicateSystem extends Processor {
     protected void process(int eid) {
         world.removeComponent(eid, CompType.ReplicateFlag);
 
-        for(BaseComponent comp=world.components(eid, BaseComponent.class); comp != null; comp=world.nextComponent()) {
+        for(BaseComponent comp=world.compIter(eid, BaseComponent.class); comp != null; comp=world.compNext()) {
             Message msg = comp.replicate(eid);
             if(msg != null) {
-                ServerGlobals.updates.add(msg);
+                NetworkSystem.updates.add(msg);
             }
         }
     }

@@ -37,11 +37,11 @@ import org.megastage.util.Bag;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.Quaternion;
-import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector3d;
 
 public class NetworkSystem extends Processor {
     private Server server;
+    public static Bag<Message> updates = new Bag<>(100);
     
     public NetworkSystem(World world, long interval) {
         super(world, interval, CompType.ReplicateFlag);
@@ -73,7 +73,7 @@ public class NetworkSystem extends Processor {
     
     @Override
     protected void process() {
-        Bag<Message> batch = ServerGlobals.getUpdates();
+        Bag<Message> batch = getUpdates();
         if(batch != null && batch.size() > 0) {
             // batch.addAll(ServerGlobals.getComponentEvents());
             server.sendToAllUDP(batch.toArray());
@@ -82,7 +82,13 @@ public class NetworkSystem extends Processor {
 
     @Override
     protected boolean checkProcessing() {
-        return ServerGlobals.updates != null && ServerGlobals.updates.size() > 0;
+        return !updates.isEmpty();
+    }
+
+    private Bag<Message> getUpdates() {
+        Bag<Message> old = updates;
+        updates = new Bag<>(100);
+        return old;
     }
 
     private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
@@ -135,7 +141,7 @@ public class NetworkSystem extends Processor {
     private void replicateComponents(PlayerConnection connection, int eid) {
         Bag<Message> list = new Bag<>(20);
 
-        for(Object comp=world.components(eid); comp != null; comp=world.nextComponent()) {
+        for(Object comp=world.compIter(eid); comp != null; comp=world.compNext()) {
             Message msg = ((BaseComponent) comp).replicate(eid);
             if(msg != null) {
                 list.add(msg);
@@ -240,7 +246,7 @@ public class NetworkSystem extends Processor {
         Keyboard keys = cmd.keyboard;
         
         if(keys.keyEventPtr > 0 && connection.item >= 0) {
-            VirtualKeyboard kbd = world.getComponent(connection.item, VirtualKeyboard.class);
+            VirtualKeyboard kbd = (VirtualKeyboard) world.getComponent(connection.item, CompType.VirtualKeyboard);
 
             for(int i=0; i < keys.keyEventPtr; /*NOP*/ ) {
                 switch(keys.keyEvents[i++]) {
@@ -275,25 +281,28 @@ public class NetworkSystem extends Processor {
         // Position pos = connection.player.getComponent(Position.class);
         // ===================
 
-        DCPUHardware hw = (DCPUHardware) world.getComponent(target, CompType.DCPUHardware);
-        if(hw != null) {
-            if(hw instanceof VirtualMonitor) {
-                DCPU dcpu = (DCPU) world.getComponent(hw.dcpuEID, CompType.DCPU);
+        VirtualMonitor mon = (VirtualMonitor) world.getComponent(target, CompType.VirtualMonitor);
+        if(mon != null) {
+            DCPU dcpu = (DCPU) world.getComponent(mon.dcpuEID, CompType.DCPU);
 
-                for(int eid: dcpu.hardware.eid) {
-                    DCPUHardware info = (DCPUHardware) world.getComponent(eid, CompType.DCPUHardware);
-                    if(info.type == DCPUHardware.TYPE_KEYBOARD) {
-                        connection.item = eid;
-                        Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
-                        mode.setMode(CharacterMode.DCPU);
-                        return;
-                    }
+            for(int eid: dcpu.hardware.eid) {
+                VirtualKeyboard kbd = (VirtualKeyboard) world.getComponent(eid, CompType.VirtualKeyboard);
+                if(kbd != null) {
+                    connection.item = eid;
+                    Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
+                    mode.setMode(CharacterMode.DCPU);
+                    return;
                 }
-            } else if(hw instanceof VirtualFloppyDrive) {
-                connection.item = target;
-                Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
-                mode.setMode(CharacterMode.MENU);
             }
+            return;
+        }
+
+        VirtualFloppyDrive fd = (VirtualFloppyDrive) world.getComponent(target, CompType.VirtualFloppyDrive);
+        if(fd != null) {
+            connection.item = target;
+            Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
+            mode.setMode(CharacterMode.MENU);
+            return;
         }
     }
 
@@ -355,7 +364,7 @@ public class NetworkSystem extends Processor {
     }
 
     private void changeFloppy(PlayerConnection connection, ChangeFloppy change) {
-        VirtualFloppyDrive vfd = world.getComponent(connection.item, CompType.VirtualFloppyDrive, VirtualFloppyDrive.class);
+        VirtualFloppyDrive vfd = (VirtualFloppyDrive) world.getComponent(connection.item, CompType.VirtualFloppyDrive);
         if(vfd != null) {
             DCPU dcpu = (DCPU) world.getComponent(vfd.dcpuEID, CompType.DCPU);
             vfd.eject(dcpu);
@@ -365,7 +374,7 @@ public class NetworkSystem extends Processor {
     }
 
     private void changeBootRom(PlayerConnection connection, ChangeBootRom change) {
-        VirtualFloppyDrive vfd = world.getComponent(connection.item, CompType.VirtualFloppyDrive, VirtualFloppyDrive.class);
+        VirtualFloppyDrive vfd = (VirtualFloppyDrive) world.getComponent(connection.item, CompType.VirtualFloppyDrive);
         if(vfd != null) {
             DCPU dcpu = (DCPU) world.getComponent(vfd.dcpuEID, CompType.DCPU);
             dcpu.reset(change.filename);

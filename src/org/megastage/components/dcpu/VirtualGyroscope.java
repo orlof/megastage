@@ -10,7 +10,6 @@ import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
-import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector3d;
 
 public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
@@ -69,7 +68,7 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
 
     public void setTorque(int ship, char torque) {
         if(torque == 0x8000) {
-            ServerGlobals.world.addComponent(ship, CompType.Explosion, new Explosion());
+            World.INSTANCE.addComponent(ship, CompType.Explosion, new Explosion());
             return;
         } 
 

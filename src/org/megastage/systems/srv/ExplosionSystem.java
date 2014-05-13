@@ -6,7 +6,6 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
 import org.megastage.ecs.CompType;
-import org.megastage.util.GlobalTime;
 
 public class ExplosionSystem extends Processor {
     public ExplosionSystem(World world, long interval) {
@@ -57,7 +56,7 @@ public class ExplosionSystem extends Processor {
 
     public int currentState(Explosion exp) {
         for(int state = -1; state+1 < delay.length; state++) {
-            if(GlobalTime.value < exp.startTime + delay[state+1]) {
+            if(world.time < exp.startTime + delay[state+1]) {
                 return state;
             }
         }

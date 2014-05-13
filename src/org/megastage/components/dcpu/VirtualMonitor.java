@@ -6,7 +6,6 @@ import org.megastage.components.transfer.MonitorData;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
-import org.megastage.util.ServerGlobals;
 
 public class VirtualMonitor extends DCPUHardware {
     public MonitorData data = new MonitorData();
@@ -66,7 +65,7 @@ public class VirtualMonitor extends DCPUHardware {
     
     @Override
     public Message synchronize(int eid) {
-        DCPU dcpu = (DCPU) ServerGlobals.world.getComponent(eid, CompType.DCPU);
+        DCPU dcpu = (DCPU) World.INSTANCE.getComponent(dcpuEID, CompType.DCPU);
 
         boolean videoChanged = data.videoAddr == 0 ?
                 data.video.update(LEMUtil.defaultVideo):

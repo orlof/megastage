@@ -48,8 +48,7 @@ public class Target implements Comparable<Target> {
     }
 
     public boolean isForceField(World world) {
-        Object comp = world.getComponent(eid, CompType.DCPUHardware);
-        return comp != null && comp instanceof VirtualForceField;
+        return world.hasComponent(eid, CompType.VirtualForceField);
     }
 
     public double getImpactDistance(Vector3d attackVector) {

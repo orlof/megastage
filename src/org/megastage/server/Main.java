@@ -9,13 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import org.megastage.util.LogFormat;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Orlof
- * Date: 6.8.2013
- * Time: 13:43
- * To change this template use File | Settings | File Templates.
- */
 public class Main {
     public static void main(String args[]) throws Exception {
         Log.setLogger(new LogFormat());
@@ -23,6 +16,8 @@ public class Main {
         
         Element root = readConfig(args[0]);
         Game game = new Game(root);
+
+        game.world.setGametime(System.currentTimeMillis() - 20);
         game.loopForever();
     }
 

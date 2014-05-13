@@ -4,7 +4,6 @@ import com.cubes.test.CubesTestAssets;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
-import com.jme3.app.state.AppStateManager;
 import com.jme3.collision.CollisionResults;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
@@ -23,7 +22,6 @@ import jmeplanet.test.Utility;
 import org.megastage.client.controls.SystemPositionControl;
 import org.megastage.client.controls.SystemRotationControl;
 import org.megastage.util.LogFormat;
-import org.megastage.util.GlobalTime;
 
 public class Main extends SimpleApplication {
 

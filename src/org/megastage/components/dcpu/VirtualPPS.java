@@ -6,8 +6,6 @@ import org.megastage.components.BaseComponent;
 import org.megastage.components.Position;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
-import org.megastage.util.GlobalTime;
-import org.megastage.util.ServerGlobals;
 
 public class VirtualPPS extends DCPUHardware {
     @Override
@@ -30,7 +28,7 @@ public class VirtualPPS extends DCPUHardware {
                 }
                 break;
             case 1:
-                if(storeCoordinates(shipEID, dcpu)) {
+                if(storeCoordinates(shipEID, dcpu, World.INSTANCE.time)) {
                     dcpu.cycles += 7;
                 } else {
                     // _
@@ -39,13 +37,13 @@ public class VirtualPPS extends DCPUHardware {
         }
     }
     
-    private boolean storeCoordinates(int ship, DCPU dcpu) {
-        writeCoordinatesToMemory(dcpu.ram, dcpu.registers[1], ship);
+    private boolean storeCoordinates(int ship, DCPU dcpu, long time) {
+        writeCoordinatesToMemory(time, dcpu.ram, dcpu.registers[1], ship);
         return true;
     }
     
-    private boolean writeCoordinatesToMemory(char[] mem, char ptr, int ship) {
-        Position position = (Position) ServerGlobals.world.getComponent(ship, CompType.Position);
+    private boolean writeCoordinatesToMemory(long time, char[] mem, char ptr, int ship) {
+        Position position = (Position) World.INSTANCE.getComponent(ship, CompType.Position);
 
         long x = position.x / 100000; // 100m
         mem[ptr++] = (char) (x >> 16);
@@ -59,7 +57,7 @@ public class VirtualPPS extends DCPUHardware {
         mem[ptr++] = (char) (z >> 16);
         mem[ptr++] = (char) z;
 
-        mem[ptr++] = (char) GlobalTime.value;
+        mem[ptr++] = (char) time;
         
         return true;
     }

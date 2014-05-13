@@ -12,7 +12,6 @@ import java.io.IOException;
 import org.megastage.components.srv.PersistenceFlag;
 import org.megastage.ecs.CompType;
 import org.megastage.protocol.Network;
-import org.megastage.util.GlobalTime;
 
 public class PersistenceSystem extends Processor {
     Kryo kryo;    

@@ -2,11 +2,10 @@ package org.megastage.ecs;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 public class World {
+    public static World INSTANCE;
 
     // stores components for each entity
     public int capacity;
@@ -15,8 +14,8 @@ public class World {
     public Object[][] population;
 
     // manages int ids
-    private int[] next, prev;
-    private boolean[] free;
+    protected int[] next, prev;
+    protected boolean[] free;
 
     // manage groups (start using Bag if lot of changes)
     private Group[] groups = new Group[100];
@@ -31,14 +30,15 @@ public class World {
     // time management
     public long time;
     public float delta;
+    protected long offset;
     
-    private long offset;
-
     public World() {
         this(10000, CompType.size);
     }
 
     public World(int entityCapacity, int componentCapacity) {
+        INSTANCE = this;
+        
         capacity = entityCapacity;
         this.componentCapacity = componentCapacity;
         
@@ -72,14 +72,12 @@ public class World {
         }
     }
     
-    public void setOffset(long offset) {
-        this.offset = offset;
+    public void setGametime(long clocktime) {
+        time = clocktime + offset;
     }
-    
-    public void setTime(long time) {
-        time += offset;
-        this.delta = (time - this.time) / 1000.0f;
-        this.time = time;
+
+    public void synchronizeClocks(long gametime, long clocktime) {
+        offset = gametime - clocktime;
     }
     
     public void tick() {
@@ -90,12 +88,10 @@ public class World {
         }
     }
     
-    
     public void initialize() {
         for(int i=0; i < processorsSize; i++) {
             processors[i].initialize();
         }
-        offset = System.currentTimeMillis();
     }
     
     public void addProcessor(Processor processor) {
@@ -181,33 +177,22 @@ public class World {
 
     public void addComponent(int eid, int cid, Object comp) {
         population[eid][cid] = comp;
+        population[eid][CompType.parent[cid]] = comp;
         updateEntityInAllGroups(eid);
     }
 
     public void addComponent(int eid, Object comp) {
-        population[eid][CompType.cid(comp.getClass().getSimpleName())] = comp;
-        updateEntityInAllGroups(eid);
+        addComponent(eid, CompType.cid(comp.getClass().getSimpleName()), comp);
     }
 
     public void removeComponent(int eid, int cid) {
         population[eid][cid] = null;
+        population[eid][CompType.parent[cid]] = null;
         updateEntityInAllGroups(eid);
     }
 
     public Object getComponent(int eid, int cid) {
         return population[eid][cid];
-    }
-
-    /**
-     * @deprecated 
-     */
-    public <E> E getComponent(int eid, Class<E> type) {
-        return getComponent(eid, CompType.cid(type.getSimpleName()), type);
-    }
-
-    public <E> E getComponent(int eid, int cid, Class<E> type) {
-        Object obj = population[eid][cid];
-        return (E) (type.isInstance(obj) ? obj: null);
     }
 
     /**
@@ -242,133 +227,43 @@ public class World {
     }
 
     // Here is the single thread iterator
-    private int entityIteratorCursor;
+    private int eidIterPos;
 
-    public int entities() {
-        return entityIteratorCursor = next[0];
+    public int eidIter() {
+        return eidIterPos = next[0];
     }
 
-    public int nextEntity() {
-        return entityIteratorCursor = next[entityIteratorCursor];
+    public int eidNext() {
+        return eidIterPos = next[eidIterPos];
     }
 
-    private int componentIteratorEid = 0;
-    private int componentIteratorCursor = 0;
-    private Class componentIteratorType;
+    private int compIterEID = 0;
+    private int compIterPos = 0;
+    private Class compIterType;
 
-    public Object components(int eid) {
-        return components(eid, Object.class);
+    public Object compIter(int eid) {
+        return compIter(eid, Object.class);
     }
 
-    public <E> E components(int eid, Class<E> clazz) {
-        componentIteratorEid = eid;
-        componentIteratorCursor = 0;
-        componentIteratorType = clazz;
-        return (E) nextComponent();
+    public <E> E compIter(int eid, Class<E> clazz) {
+        compIterEID = eid;
+        compIterPos = 0;
+        compIterType = clazz;
+        return (E) compNext();
     }
     
-    public <E> E nextComponent() {
-        while(componentIteratorCursor < componentCapacity) {
-            Object comp = population[componentIteratorEid][componentIteratorCursor];
-            if(comp != null && componentIteratorType.isInstance(comp)) {
-                return (E) population[componentIteratorEid][componentIteratorCursor++];
+    public <E> E compNext() {
+        while(compIterPos < componentCapacity) {
+            Object comp = population[compIterEID][compIterPos];
+            if(comp != null && compIterType.isInstance(comp)) {
+                return (E) population[compIterEID][compIterPos++];
             }
-            componentIteratorCursor++;
+            compIterPos++;
         }
 
         return null;
     }
 
-    // While version
-    
-    private Object componentIteratorItem;
-    
-    public void componentIteratorInit(int eid) {
-        componentIteratorInit(eid, Object.class);
-    }
-
-    public void componentIteratorInit(int eid, Class type) {
-        componentIteratorEid = eid;
-        componentIteratorType = type;
-        componentIteratorCursor = -1;
-    }
-    
-    public boolean componentIteratorNext() {
-        while((++componentIteratorCursor) < componentCapacity) {
-            componentIteratorItem = population[componentIteratorEid][componentIteratorCursor];
-            if(componentIteratorItem != null && componentIteratorType.isInstance(componentIteratorItem)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    
-    // Java iterator version
-    
-    public final Iterable componentIterator(int eid) {
-        return componentIterator.init(eid, Object.class);
-    }
-    
-    public final Iterable componentIterator(int eid, Class type) {
-        return componentIterator.init(eid, type);
-    }
-
-    private final ComponentIterator componentIterator = new ComponentIterator(0, Object.class);
-    
-    public final class ComponentIterator<E> implements Iterable<E>, Iterator<E> {
-        private int eid;
-        private int cursor;
-        private Class<E> type;
-
-        public ComponentIterator(int eid, Class<E> type) {
-            this.eid = eid;
-            this.cursor = -1;
-            this.type = type;
-        }
-        
-        public ComponentIterator<E> init(int eid, Class type) {
-            this.eid = eid;
-            this.cursor = -1;
-            this.type = type;
-            return this;
-        }
-
-        @Override
-        public boolean hasNext() {
-            int pos = cursor;
-            while((++pos) < componentCapacity) {
-                Object comp = population[eid][pos];
-                if(comp != null && type.isInstance(comp)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public E next() {
-            while((++cursor) < componentCapacity) {
-                Object comp = population[eid][cursor];
-                if(comp != null && type.isInstance(comp)) {
-                    return (E) comp;
-                }
-            }
-            
-            throw new NoSuchElementException("Iterated past last element");
-        }
-        
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Iterator<E> iterator() {
-            return this;
-        }
-    }
-    
     public static void main(String[] args) throws Exception {
         System.out.println("Starting");
         World w = new World(10,10);
@@ -380,37 +275,12 @@ public class World {
         w.addComponent(eid, 9, new Integer(9));
         
         System.out.println("List of all");
-        for(Object comp: w.componentIterator(eid)) {
+        for(Object comp = w.compIter(eid); comp != null; comp = w.compNext()) {
             System.out.println(comp.toString());
         }
 
-        System.out.println("List of integer");
-        for(Object comp: w.componentIterator(eid, Integer.class)) {
-            System.out.println(comp.toString());
-        }
-
-        System.out.println("List of integer");
-        for(Integer comp=w.components(eid, Integer.class); comp != null; comp = w.nextComponent()) {
-            System.out.println(comp.toString());
-        }
-        
-        System.out.println("List of all");
-        for(w.componentIteratorInit(eid); w.componentIteratorNext(); /**/ ) {
-            System.out.println(w.componentIteratorItem.toString());
-        }
-
-        System.out.println("List of int");
-        for(w.componentIteratorInit(eid, Integer.class); w.componentIteratorNext(); /**/ ) {
-            System.out.println(w.componentIteratorItem.toString());
-        }
-
-        System.out.println("List of all");
-        for(Object comp = w.components(eid); comp != null; comp = w.nextComponent()) {
-            System.out.println(comp.toString());
-        }
-
-        System.out.println("List of int");
-        for(Integer comp = w.components(eid, Integer.class); comp != null; comp = w.nextComponent()) {
+        System.out.println("Integer");
+        for(Integer comp = w.compIter(eid, Integer.class); comp != null; comp = w.compNext()) {
             System.out.println(comp.toString());
         }
     }

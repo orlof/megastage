@@ -6,7 +6,6 @@ import org.megastage.components.Rotation;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.Processor;
 import org.megastage.ecs.World;
-import org.megastage.util.GlobalTime;
 
 public class ClientFixedRotationSystem extends Processor {
 
@@ -18,9 +17,9 @@ public class ClientFixedRotationSystem extends Processor {
         FixedRotation fr = (FixedRotation) world.getComponent(eid, CompType.FixedRotation);
         
         Quaternion rotation = new Quaternion().fromAngles(
-                (float) fr.getX(GlobalTime.value), 
-                (float) fr.getY(GlobalTime.value), 
-                (float) fr.getZ(GlobalTime.value)).normalizeLocal();
+                (float) fr.getX(world.time), 
+                (float) fr.getY(world.time), 
+                (float) fr.getZ(world.time)).normalizeLocal();
 
         Rotation r = (Rotation) world.getComponent(eid, CompType.Rotation);
         r.x = rotation.getX();

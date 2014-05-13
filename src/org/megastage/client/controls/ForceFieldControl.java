@@ -10,7 +10,7 @@ import com.shaderblow.forceshield.ForceShieldControl;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.transfer.ForceFieldData;
 import org.megastage.ecs.CompType;
-import org.megastage.util.GlobalTime;
+import org.megastage.ecs.World;
 
 public class ForceFieldControl extends ForceShieldControl {
     public static int INTERVAL = 1500;
@@ -55,10 +55,10 @@ public class ForceFieldControl extends ForceShieldControl {
         Long last = lastHit.get(id);
         if(last == null) last = 0l;
 
-        if(GlobalTime.value < last + INTERVAL) {
+        if(World.INSTANCE.time < last + INTERVAL) {
             return;
         }
-        lastHit.put(id, GlobalTime.value);
+        lastHit.put(id, World.INSTANCE.time);
         super.registerHit(position);
     }
 }

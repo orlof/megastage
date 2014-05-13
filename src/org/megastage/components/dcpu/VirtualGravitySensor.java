@@ -11,7 +11,6 @@ import org.megastage.systems.srv.GravityManagerSystem;
 import org.megastage.systems.srv.SoiManagerSystem;
 import org.megastage.util.Bag;
 import org.megastage.util.Globals;
-import org.megastage.util.ServerGlobals;
 
 public class VirtualGravitySensor extends DCPUHardware {
 
@@ -113,7 +112,7 @@ public class VirtualGravitySensor extends DCPUHardware {
 
     private void writeFieldDataToMemory(int ship, char[] mem, char ptr, int field) {
         // target mass
-        Mass mass = (Mass) ServerGlobals.world.getComponent(field, CompType.Mass);
+        Mass mass = (Mass) World.INSTANCE.getComponent(field, CompType.Mass);
         float sgp = (float) (mass.mass * Globals.G);
         ptr = writeFloatToMemory(mem, ptr, sgp);
         ptr = writePitchAndYawToMemory(mem, ptr, ship, field);

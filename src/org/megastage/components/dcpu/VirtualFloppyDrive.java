@@ -5,7 +5,7 @@ import org.megastage.components.BaseComponent;
 import org.megastage.components.transfer.VirtualFloppyDriveData;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
-import org.megastage.util.ServerGlobals;
+import org.megastage.server.FloppyManager;
 
 /**
  * Experimental, untested implementation of the MF35D Floppy Drive
@@ -170,7 +170,7 @@ public class VirtualFloppyDrive extends DCPUHardware {
     }
 
     public void insert(DCPU dcpu, String title) {
-        this.floppy = ServerGlobals.floppyManager.floppies.get(title);
+        this.floppy = FloppyManager.floppies.get(title);
         if (floppy.isWriteProtected()) {
             setState(dcpu, STATE_READY_WP);
         } else {

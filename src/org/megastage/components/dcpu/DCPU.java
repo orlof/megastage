@@ -7,8 +7,7 @@ import org.megastage.components.BaseComponent;
 import java.io.*;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
-import org.megastage.util.GlobalTime;
-import org.megastage.util.ServerGlobals;
+import org.megastage.server.FloppyManager;
 
 /**
  * Experimental 1.7 update to Notch's 1.4 emulator
@@ -54,7 +53,7 @@ public class DCPU extends BaseComponent {
 
         load(new File(rom));
 
-        powerOnTime = GlobalTime.value + 2500;
+        powerOnTime = world.time + 2500;
         startupTime = powerOnTime + 2500;
         nextHardwareTick = hardwareTickInterval;
         
@@ -73,10 +72,10 @@ public class DCPU extends BaseComponent {
     }
 
     public void reset(String imageName) {
-        char[] image = ServerGlobals.floppyManager.bootroms.get(imageName);
+        char[] image = FloppyManager.bootroms.get(imageName);
         System.arraycopy(image, 0, ram, 0, image.length);
 
-        powerOnTime = GlobalTime.value + 2500;
+        powerOnTime = World.INSTANCE.time + 2500;
         startupTime = powerOnTime + 2500;
         
         for(int i=0; i < registers.length; i++) {
@@ -131,7 +130,7 @@ public class DCPU extends BaseComponent {
     public DCPUHardware getHardware(char b) {
         if (b < hardware.size) {
             int eid = hardware.eid[b];
-            return (DCPUHardware) ServerGlobals.world.getComponent(eid, CompType.DCPUHardware);
+            return (DCPUHardware) World.INSTANCE.getComponent(eid, CompType.DCPUHardware);
         }
         return null;
     }

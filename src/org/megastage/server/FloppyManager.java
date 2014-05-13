@@ -3,8 +3,10 @@ package org.megastage.server;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import org.megastage.components.dcpu.FloppyDisk;
 
@@ -44,7 +46,8 @@ public class FloppyManager {
                 data[i] = dis.readChar();
             }
             dis.close();
-        } catch (Exception e) {
+        } catch (EOFException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return data;

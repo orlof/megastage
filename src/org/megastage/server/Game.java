@@ -23,17 +23,12 @@ import org.megastage.systems.srv.TargetManagerSystem;
 import org.megastage.systems.srv.ShipMovementSystem;
 import org.megastage.systems.srv.SoiManagerSystem;
 import org.megastage.systems.srv.ThermalLaserSystem;
-import org.megastage.util.ServerGlobals;
-import org.megastage.util.GlobalTime;
 
-/**
- * User: Orlof
- */
 public class Game {
     World world;
 
     public Game(Element root) throws Exception {
-        ServerGlobals.world = world = new World();
+        world = new World();
 
         world.addProcessor(new EntityInitializeSystem(world, 500));
         world.addProcessor(new CleanupSystem(world, 500));
@@ -76,10 +71,9 @@ public class Game {
     }
 
     public void loopForever() throws InterruptedException {
-        GlobalTime.set(System.currentTimeMillis() - 20);
         while (true) {
             long ctime = System.currentTimeMillis();
-            world.setTime(ctime);
+            world.setGametime(ctime);
 
             world.tick();
             

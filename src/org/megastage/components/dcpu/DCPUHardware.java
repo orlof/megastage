@@ -7,7 +7,6 @@ import org.megastage.components.Rotation;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.util.Quaternion;
-import org.megastage.util.ServerGlobals;
 import org.megastage.util.Vector3d;
 
 public abstract class DCPUHardware extends BaseComponent implements Comparable<DCPUHardware> {
@@ -104,14 +103,14 @@ public abstract class DCPUHardware extends BaseComponent implements Comparable<D
 
     public static char writePitchAndYawToMemory(char[] mem, char ptr, int shipEid, int targetEid) {
         // target direction
-        Rotation shipRot = (Rotation) ServerGlobals.world.getComponent(shipEid, CompType.Rotation);        
+        Rotation shipRot = (Rotation) World.INSTANCE.getComponent(shipEid, CompType.Rotation);        
         Quaternion shipRotQ = shipRot.getQuaternion4d();
 
         // vector from me to target in global coordinate system
-        Position shipPos = (Position) ServerGlobals.world.getComponent(shipEid, CompType.Position);
+        Position shipPos = (Position) World.INSTANCE.getComponent(shipEid, CompType.Position);
         Vector3d ownCoord = shipPos.getVector3d();
 
-        Position targetPos = (Position) ServerGlobals.world.getComponent(targetEid, CompType.Position);
+        Position targetPos = (Position) World.INSTANCE.getComponent(targetEid, CompType.Position);
         Vector3d othCoord = targetPos.getVector3d();
         
         Vector3d delta = othCoord.sub(ownCoord);

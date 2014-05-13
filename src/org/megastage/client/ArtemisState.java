@@ -10,10 +10,6 @@ import org.megastage.systems.client.ClientNetworkSystem;
 import org.megastage.systems.OrbitalMovementSystem;
 import org.megastage.systems.client.ImposterSystem;
 
-/**
- *
- * @author Orlof
- */
 public class ArtemisState extends AbstractAppState {
     public World world;
 
@@ -37,7 +33,7 @@ public class ArtemisState extends AbstractAppState {
 
     @Override
     public void update(float tpf) {
-        world.setTime(System.currentTimeMillis());
+        world.setGametime(System.currentTimeMillis());
         world.tick();
     }
 

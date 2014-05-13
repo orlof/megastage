@@ -17,17 +17,16 @@ public class Group {
         prev = new int[len];
 
         for (int i = 2; i < len; i++) {
-            next[i] = -1;
             prev[i] = -1;
         }
 
-        for (int eid = world.entities(); eid != 0; eid = world.nextEntity()) {
+        for (int eid = world.eidIter(); eid != 0; eid = world.eidNext()) {
             update(eid);
         }
     }
 
     public boolean contains(int eid) {
-        return next[eid] != -1;
+        return prev[eid] != -1;
     }
 
     public final void update(int eid) {
@@ -72,7 +71,6 @@ public class Group {
         if (contains(eid)) {
             next[prev[eid]] = next[eid];
             prev[next[eid]] = prev[eid];
-            next[eid] = -1;
             prev[eid] = -1;
             size--;
         }

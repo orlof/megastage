@@ -7,10 +7,9 @@ import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 import org.megastage.util.ID;
-import org.megastage.util.GlobalTime;
 
 public class Explosion extends BaseComponent {
-    public long startTime = GlobalTime.value;
+    public long startTime = World.INSTANCE.time;
 
     public int state = -1;
 

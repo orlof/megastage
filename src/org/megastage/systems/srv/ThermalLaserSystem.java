@@ -13,7 +13,6 @@ import org.megastage.server.Hit;
 import org.megastage.server.NoHit;
 import org.megastage.server.ShipStructureHit;
 import org.megastage.util.Cube3dMap.BlockChange;
-import org.megastage.util.GlobalTime;
 import org.megastage.util.Vector3d;
 
 public class ThermalLaserSystem extends Processor {
@@ -30,7 +29,7 @@ public class ThermalLaserSystem extends Processor {
             case VirtualThermalLaser.STATUS_DORMANT:
                 break;
             case VirtualThermalLaser.STATUS_FIRING:
-                if(GlobalTime.value < vtlComponent.startTime + vtlComponent.duration) {
+                if(world.time < vtlComponent.startTime + vtlComponent.duration) {
                     // firing
                     Hit hit = TargetManagerSystem.INSTANCE.findHit(eid, vtlComponent);
                     
@@ -62,11 +61,11 @@ public class ThermalLaserSystem extends Processor {
                     
                 } else {
                     // turn off
-                    vtlComponent.setStatusCooldown();
+                    vtlComponent.setStatusCooldown(world.time);
                 }
                 break;
             case VirtualThermalLaser.STATUS_COOLDOWN:
-                if(GlobalTime.value >= vtlComponent.startTime + vtlComponent.duration) {
+                if(world.time >= vtlComponent.startTime + vtlComponent.duration) {
                     vtlComponent.status = VirtualThermalLaser.STATUS_DORMANT;
                     vtlComponent.dirty = true;
                 }

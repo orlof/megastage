@@ -6,7 +6,6 @@ import org.jdom2.Element;
 import org.megastage.components.BaseComponent;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
-import org.megastage.util.GlobalTime;
 
 public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     public static transient final char STATUS_DORMANT = 0;
@@ -65,8 +64,8 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
         }
     }
     
-    public void setStatusCooldown() {
-        startTime = GlobalTime.value;
+    public void setStatusCooldown(long time) {
+        startTime = time;
         duration = duration * wattage / cooldownSpeed;
         status = VirtualThermalLaser.STATUS_COOLDOWN;
         dirty = true;
@@ -76,7 +75,7 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
         if(status == STATUS_DORMANT && wattage > 0 && duration <= 300) {
             dirty = true;
             status = STATUS_FIRING;
-            startTime = GlobalTime.value;
+            startTime = World.INSTANCE.time;
             this.duration = 100 * duration;
         }
     }
@@ -107,7 +106,7 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     public double consume(World world, int ship, double available, double delta) {
         double intake = status == STATUS_FIRING ? delta * wattage: 0.0;
         if(intake > available) {
-            setStatusCooldown();
+            setStatusCooldown(world.time);
             intake = 0;
         }
 

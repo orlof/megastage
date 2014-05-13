@@ -8,13 +8,9 @@ import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Position;
 import org.megastage.client.ClientGlobals;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.util.ID;
-import org.megastage.util.GlobalTime;
 
-/**
- *
- * @author Orlof
- */
 public class PositionControl extends AbstractControl {
     private final int eid;
     private Position pos;
@@ -58,12 +54,12 @@ public class PositionControl extends AbstractControl {
             
             long duration = 
                     (cpos.x == 0f && cpos.y == 0f && cpos.z == 0f) ? 
-                    0: GlobalTime.value - lastUpdateTime; 
+                    0: World.INSTANCE.time - lastUpdateTime; 
             if(duration > 100) duration = 100;
             
-            lastUpdateTime = GlobalTime.value;
+            lastUpdateTime = World.INSTANCE.time;
 
-            interpolator.update(GlobalTime.value, GlobalTime.value + duration, cpos, tpos);
+            interpolator.update(World.INSTANCE.time, World.INSTANCE.time + duration, cpos, tpos);
         }
         
         interpolator.apply();
@@ -93,18 +89,18 @@ public class PositionControl extends AbstractControl {
         }
 
         public final void apply() {
-            if( GlobalTime.value >= endTime) {
+            if(World.INSTANCE.time >= endTime) {
                 spatial.setLocalTranslation((float) ex, (float) ey, (float) ez);
                 return;
             } 
             
-            if( GlobalTime.value <= startTime) {
+            if(World.INSTANCE.time <= startTime) {
                 spatial.setLocalTranslation((float) sx, (float) sy, (float) sz);
                 return;
             } 
             
             // Interpolate... guaranteed to have a non-zero time delta here
-            double part = (GlobalTime.value - st) / dt;                
+            double part = (World.INSTANCE.time - st) / dt;                
 
             double x = sx + dx * part;
             double y = sy + dy * part;

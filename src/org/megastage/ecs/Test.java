@@ -38,7 +38,7 @@ public class Test {
         wem.addComponent(7, CompType.InitializeFlag, new InitializeFlag());
         wem.addComponent(8, CompType.InitializeFlag, new InitializeFlag());
         
-        for(DeleteFlag pos = wem.components(8, DeleteFlag.class); pos != null; pos = wem.nextComponent()) {
+        for(DeleteFlag pos = wem.compIter(8, DeleteFlag.class); pos != null; pos = wem.compNext()) {
             System.out.println(pos.toString() + pos.getClass().getName());
         }
 
@@ -107,7 +107,7 @@ public class Test {
 
     public static void printEntities(World wem) {
         System.out.print("Entities:");
-        for (int i = wem.entities(); i != 0; i = wem.nextEntity()) {
+        for (int i = wem.eidIter(); i != 0; i = wem.eidNext()) {
             System.out.print(" " + i);
         }
         System.out.println();
