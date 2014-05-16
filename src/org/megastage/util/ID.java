@@ -1,9 +1,15 @@
 package org.megastage.util;
 
 import org.megastage.components.srv.Identifier;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
 public class ID {
     public static String get(int eid) {
-        return "" + eid;
+        Identifier id = (Identifier) World.INSTANCE.getComponent(eid, CompType.Identifier);
+        if(id==null) {
+            return "[" + eid + "]" + id.toString();
+        }
+        return "[" + eid + "]";
     }
 }

@@ -1,12 +1,18 @@
 package org.megastage.ecs;
 
+import com.esotericsoftware.minlog.Log;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CompType {
     public static int size = 0;
     public static final int[] parent = new int[100];
     
-    public static final int NONE = size++;
+    public static final int NONE = size;
+    public static final int Replicate = size++;
     
     public static final int AffectedByGravityFlag = size++;
     public static final int DeleteFlag = size++;
@@ -14,7 +20,8 @@ public class CompType {
     public static final int InitializeFlag = size++;
     public static final int PersistenceFlag = size++;
     public static final int SynchronizeFlag = size++;
-    public static final int ReplicateFlag = size++;
+    public static final int ReplicateToNewConnectionsFlag = size++;
+    public static final int ReplicateToAllConnectionsFlag = size++;
     public static final int UsableFlag = size++;
     
     public static final int Acceleration = size++;
@@ -109,6 +116,24 @@ public class CompType {
     static { parent[size++] = Geometry; }
     public static final int VoidGeometry = size;
     static { parent[size++] = Geometry; }
+
+    public static final String[] map = new String[size+1];
+
+    static {
+        Field[] declaredFields = CompType.class.getDeclaredFields();
+        for (Field field : declaredFields) {
+            if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                try {
+                    //Log.info(field.getInt(null) + " " + field.getName());
+                    map[field.getInt(null)] = field.getName();
+                } catch (IllegalArgumentException ex) {
+                    Log.error(ex.toString());
+                } catch (IllegalAccessException ex) {
+                    Log.error(ex.toString());
+                }
+            }
+        }
+    }
     
     public static int cid(String simpleName) {
         try {

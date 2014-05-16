@@ -8,12 +8,12 @@ import org.megastage.protocol.Message;
 
 public class EntityReplicateSystem extends Processor {
     public EntityReplicateSystem(World world, long interval) {
-        super(world, interval, CompType.ReplicateFlag);
+        super(world, interval, CompType.ReplicateToAllConnectionsFlag);
     }
 
     @Override
     protected void process(int eid) {
-        world.removeComponent(eid, CompType.ReplicateFlag);
+        world.removeComponent(eid, CompType.ReplicateToAllConnectionsFlag);
 
         for(BaseComponent comp=world.compIter(eid, BaseComponent.class); comp != null; comp=world.compNext()) {
             Message msg = comp.replicate(eid);

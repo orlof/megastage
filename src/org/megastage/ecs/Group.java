@@ -1,17 +1,29 @@
 package org.megastage.ecs;
 
+import com.esotericsoftware.minlog.Log;
+import org.megastage.util.ID;
+
 public class Group {
 
     private World world;
     private int[] next, prev;
     private int[] allOf;
-    
-    public int size;
 
+    public String name;
+    public int size;
+    
     public Group(World world, int[] cids) {
         this.world = world;
         this.allOf = cids;
         
+        StringBuilder sb = new StringBuilder("Group[");
+        for(int i=0; i < allOf.length; i++) {
+            if(i > 0) sb.append(", ");
+            sb.append(CompType.map[allOf[i]]);
+        }
+        sb.append("]");
+        name = sb.toString();
+
         int len = world.capacity + 2;
         next = new int[len];
         prev = new int[len];
@@ -20,6 +32,7 @@ public class Group {
             prev[i] = -1;
         }
 
+        Log.info(name);
         for (int eid = world.eidIter(); eid != 0; eid = world.eidNext()) {
             update(eid);
         }
@@ -59,6 +72,7 @@ public class Group {
 
     public final void add(int eid) {
         if (!contains(eid)) {
+            Log.info(toString() + " " + ID.get(eid));
             next[eid] = 0;
             prev[eid] = prev[0];
             next[prev[0]] = eid;
@@ -94,6 +108,10 @@ public class Group {
             right = next[right];
         }
         return true;
+    }
+    
+    public String toString() {
+        return name;
     }
 }
 

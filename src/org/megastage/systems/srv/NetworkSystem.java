@@ -25,6 +25,7 @@ import org.megastage.ecs.Processor;
 import org.megastage.ecs.World;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.Message;
+import org.megastage.protocol.Network.TimestampMessage;
 import org.megastage.protocol.PlayerIDMessage;
 import org.megastage.protocol.UserCommand;
 import org.megastage.protocol.UserCommand.Build;
@@ -44,7 +45,7 @@ public class NetworkSystem extends Processor {
     public static Bag<Message> updates = new Bag<>(100);
     
     public NetworkSystem(World world, long interval) {
-        super(world, interval, CompType.ReplicateFlag);
+        super(world, interval, CompType.ReplicateToNewConnectionsFlag);
     }
 
     @Override
@@ -76,6 +77,7 @@ public class NetworkSystem extends Processor {
         Bag<Message> batch = getUpdates();
         if(batch != null && batch.size() > 0) {
             // batch.addAll(ServerGlobals.getComponentEvents());
+            batch.add(new TimestampMessage());
             server.sendToAllUDP(batch.toArray());
         }
     }
@@ -107,6 +109,9 @@ public class NetworkSystem extends Processor {
     }
 
     private void handleLoginMessage(PlayerConnection connection, Network.Login packet) throws Exception {
+        Log.info("");
+        connection.sendTCP(new TimestampMessage());
+        
         // replicate
         replicateAllEntities(connection);
 
@@ -133,17 +138,21 @@ public class NetworkSystem extends Processor {
     }
 
     private void replicateAllEntities(PlayerConnection connection) {
+        Log.info("");
         for(int eid = group.iterator(); eid != 0; eid = group.next()) {
+            Log.info("" + eid);
             replicateComponents(connection, eid);
         }        
     }
     
     private void replicateComponents(PlayerConnection connection, int eid) {
+        Log.info("");
         Bag<Message> list = new Bag<>(20);
 
         for(Object comp=world.compIter(eid); comp != null; comp=world.compNext()) {
             Message msg = ((BaseComponent) comp).replicate(eid);
             if(msg != null) {
+                Log.info("Component: " + comp.toString());
                 list.add(msg);
             }
         }

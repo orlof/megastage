@@ -96,6 +96,7 @@ public class World {
     
     public void addProcessor(Processor processor) {
         processors[processorsSize++] = processor;
+        processorsMap.put(processor.getClass(), processor);
     }
     
     public <T extends Processor> T getProcessor(Class<T> processorType) {
@@ -107,9 +108,7 @@ public class World {
             throw new RuntimeException("No space for new group");
         }
         
-        Group group = new Group(this, cid);
-        groups[groupsSize++] = group;
-        return group;
+        return groups[groupsSize++] = new Group(this, cid);
     }
 
     public int createEntity() {

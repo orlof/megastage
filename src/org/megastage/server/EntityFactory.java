@@ -21,15 +21,15 @@ public class EntityFactory {
         for(Element e: element.getChildren("component")) {
             Class clazz = Class.forName("org.megastage.components." + e.getAttributeValue("type"));
             BaseComponent comp = (BaseComponent) clazz.newInstance();
-
             BaseComponent[] additionalComponents = comp.init(world, parentEid, e);
-            world.addComponent(eid, CompType.cid(comp.getClass().getSimpleName()), comp);
+
             Log.info(" Component: " + comp.toString());
+            world.addComponent(eid, CompType.cid(comp.getClass().getSimpleName()), comp);
 
             if(additionalComponents != null) {
                 for(BaseComponent c: additionalComponents) {
-                    world.addComponent(eid, CompType.cid(c.getClass().getSimpleName()), c);
                     Log.info(" Component: " + c.toString());
+                    world.addComponent(eid, CompType.cid(c.getClass().getSimpleName()), c);
                 }
             }
         }

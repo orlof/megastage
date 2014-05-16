@@ -162,6 +162,10 @@ public class Network {
     
     static public class TimestampMessage implements Message {
         public long time;
+        
+        public TimestampMessage() {
+            time = World.INSTANCE.time;
+        }
 
         @Override
         public void receive(World world, Connection pc) {
