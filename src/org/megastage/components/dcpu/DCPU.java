@@ -8,6 +8,7 @@ import java.io.*;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.server.FloppyManager;
+import org.megastage.util.ID;
 
 /**
  * Experimental 1.7 update to Notch's 1.4 emulator
@@ -22,8 +23,9 @@ public class DCPU extends BaseComponent {
     
     public int shipEID;
     public String rom;
-    
-    public EntityList hardware = new EntityList();
+
+    public int[] hardware = new int[100];
+    public int hardwareSize = 0;
 
     final public char[] ram = new char[65536];
     final public char[] registers = new char[8];
@@ -91,9 +93,9 @@ public class DCPU extends BaseComponent {
         nextHardwareTick = hardwareTickInterval;
     }
     
-    public boolean connectHardware(int eid) {
-        hardware.add(eid);
-        return true;
+    public void addHardware(int eid) {
+        Log.info(ID.get(eid));
+        hardware[hardwareSize++] = eid;
     }
 
     public void load(File file) throws IOException {
@@ -128,9 +130,8 @@ public class DCPU extends BaseComponent {
     }
 
     public DCPUHardware getHardware(char b) {
-        if (b < hardware.size) {
-            int eid = hardware.eid[b];
-            return (DCPUHardware) World.INSTANCE.getComponent(eid, CompType.DCPUHardware);
+        if (b < hardwareSize) {
+            return (DCPUHardware) World.INSTANCE.getComponent(hardware[b], CompType.DCPUHardware);
         }
         return null;
     }

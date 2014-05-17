@@ -9,6 +9,7 @@ import com.jme3.scene.control.AbstractControl;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.Rotation;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.util.ID;
 
 public class AxisRotationControl extends AbstractControl {
@@ -32,7 +33,7 @@ public class AxisRotationControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(rot == null) {
-            rot = (Rotation) ClientGlobals.world.getComponent(eid, CompType.Rotation);
+            rot = (Rotation) World.INSTANCE.getComponent(eid, CompType.Rotation);
             if(rot == null) {
                 return;
             }

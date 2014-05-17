@@ -24,9 +24,9 @@ public class PowerControllerSystem extends Processor {
         VirtualPowerController ctrl = (VirtualPowerController) world.getComponent(eid, CompType.VirtualPowerController);
         DCPU dcpu = (DCPU) world.getComponent(ctrl.dcpuEID, CompType.DCPU);
 
-        DCPUHardware[] hw = new DCPUHardware[dcpu.hardware.size];
+        DCPUHardware[] hw = new DCPUHardware[dcpu.hardwareSize];
         for(int i=0; i < hw.length; i++) {
-            hw[i] = (DCPUHardware) world.getComponent(dcpu.hardware.eid[i], CompType.DCPUHardware);
+            hw[i] = (DCPUHardware) world.getComponent(dcpu.hardware[i], CompType.DCPUHardware);
         }
         
         Arrays.sort(hw);

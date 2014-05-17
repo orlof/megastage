@@ -19,6 +19,7 @@ import java.util.concurrent.Callable;
 import org.megastage.components.Rotation;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.protocol.CharacterMode;
 
 public class CommandHandler implements AnalogListener, ActionListener {
@@ -83,7 +84,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
                     target = target.getParent();
                 }
 
-                Object geom = ClientGlobals.world.getComponent(eid, CompType.Geometry);
+                Object geom = World.INSTANCE.getComponent(eid, CompType.Geometry);
                 if(geom != null && geom instanceof ShipGeometry) {
                     if(eid == ClientGlobals.shipEntity) {
                         Node offset = (Node) target.getChild("offset");
@@ -303,7 +304,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     protected void lookUp(float value) {
-        Rotation rot = (Rotation) ClientGlobals.world.getComponent(ClientGlobals.playerEntity, CompType.Rotation);
+        Rotation rot = (Rotation) World.INSTANCE.getComponent(ClientGlobals.playerEntity, CompType.Rotation);
         if (rot == null) {
             return;
         }
@@ -322,7 +323,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     protected void lookLeft(float value) {
-        Rotation rot = (Rotation) ClientGlobals.world.getComponent(ClientGlobals.playerEntity, CompType.Rotation);
+        Rotation rot = (Rotation) World.INSTANCE.getComponent(ClientGlobals.playerEntity, CompType.Rotation);
         if (rot == null) {
             return;
         }
@@ -339,7 +340,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     protected void move(float value, boolean sideways) {
-        Rotation rot = (Rotation) ClientGlobals.world.getComponent(ClientGlobals.playerEntity, CompType.Rotation);
+        Rotation rot = (Rotation) World.INSTANCE.getComponent(ClientGlobals.playerEntity, CompType.Rotation);
         if (rot == null) {
             return;
         }

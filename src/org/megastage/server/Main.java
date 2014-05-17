@@ -17,7 +17,8 @@ public class Main {
         Element root = readConfig(args[0]);
         Game game = new Game(root);
 
-        game.world.setGametime(System.currentTimeMillis() - 20);
+        game.world.synchronizeClocks(0, System.currentTimeMillis());
+        game.world.setGametime(-20);
         game.loopForever();
     }
 

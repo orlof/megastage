@@ -1,5 +1,6 @@
 package org.megastage.ecs;
 
+import com.esotericsoftware.minlog.Log;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,6 +83,7 @@ public class World {
     
     public void tick() {
         for(int i=0; i < processorsSize; i++) {
+            Log.trace(processors[i].getClass().getSimpleName());
             if(processors[i].checkProcessing()) {
                 processors[i].process();
             }
@@ -194,11 +196,7 @@ public class World {
         return population[eid][cid];
     }
 
-    /**
-     * @deprecated 
-     */
     public <T> T getOrCreateComponent(int eid, int cid, Class<T> type) {
-        //ensureEntity(eid);
         Object comp = population[eid][cid];
         if(comp == null) {
             try {
@@ -246,7 +244,7 @@ public class World {
 
     public <E> E compIter(int eid, Class<E> clazz) {
         compIterEID = eid;
-        compIterPos = 0;
+        compIterPos = 1;
         compIterType = clazz;
         return (E) compNext();
     }
@@ -254,7 +252,7 @@ public class World {
     public <E> E compNext() {
         while(compIterPos < componentCapacity) {
             Object comp = population[compIterEID][compIterPos];
-            if(comp != null && compIterType.isInstance(comp)) {
+            if(comp != null && compIterType.isInstance(comp) && CompType.parent[compIterPos] == 0) {
                 return (E) population[compIterEID][compIterPos++];
             }
             compIterPos++;

@@ -24,7 +24,7 @@ public class MonitorData extends BaseComponent {
 //        Log.info("video   [" + ((int) videoAddr) + "] " + video.toString());
 //        Log.info("font    [" + ((int) fontAddr) + "] " + font.toString());
 //        Log.info("palette [" + ((int) paletteAddr) + "] " + palette.toString());
-        ClientVideoMemory videoMemory = (ClientVideoMemory) world.getComponent(eid, CompType.ClientVideoMemory);
+        ClientVideoMemory videoMemory = world.getOrCreateComponent(eid, CompType.ClientVideoMemory, ClientVideoMemory.class);
         videoMemory.update(this);
     }
 }

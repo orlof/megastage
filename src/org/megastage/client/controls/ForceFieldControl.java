@@ -33,7 +33,7 @@ public class ForceFieldControl extends ForceShieldControl {
     
     @Override
     public void update(float tpf) {
-        ForceFieldData data = (ForceFieldData) ClientGlobals.world.getComponent(eid, CompType.ForceFieldGeometry);
+        ForceFieldData data = (ForceFieldData) World.INSTANCE.getComponent(eid, CompType.ForceFieldGeometry);
         if(data == null) return;
 
         if(!isVisible() && data.isVisible()) {

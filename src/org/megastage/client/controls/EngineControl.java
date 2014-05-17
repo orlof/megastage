@@ -9,6 +9,7 @@ import org.megastage.client.ClientGlobals;
 import org.megastage.client.SoundManager;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
 /**
  *
@@ -30,7 +31,7 @@ public class EngineControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        EngineData data = (EngineData) ClientGlobals.world.getComponent(eid, CompType.EngineData);
+        EngineData data = (EngineData) World.INSTANCE.getComponent(eid, CompType.EngineData);
         if(data != null && power != data.power) {
             ParticleEmitter emitter = (ParticleEmitter) spatial;
 

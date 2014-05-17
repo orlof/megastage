@@ -9,6 +9,7 @@ import org.megastage.client.ClientGlobals;
 import org.megastage.client.SoundManager;
 import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
 public class GyroscopeControl extends AbstractControl {
     private final int eid;
@@ -28,7 +29,7 @@ public class GyroscopeControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(data == null) {
-            data = (GyroscopeData) ClientGlobals.world.getComponent(eid, CompType.GyroscopeData);
+            data = (GyroscopeData) World.INSTANCE.getComponent(eid, CompType.GyroscopeData);
             if(data == null) {
                 return;
             }

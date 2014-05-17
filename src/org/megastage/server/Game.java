@@ -1,5 +1,6 @@
 package org.megastage.server;
 
+import com.esotericsoftware.minlog.Log;
 import org.megastage.systems.srv.AttitudeControlSystem;
 import org.megastage.systems.srv.DCPUSystem;
 import org.megastage.systems.srv.EngineAccelerationSystem;
@@ -79,6 +80,7 @@ public class Game {
             
             long tpt = System.currentTimeMillis() - ctime;
             if(tpt < 20) {
+                Log.trace("sleep for " + (20-tpt));
                 Thread.sleep(20-tpt);
             }
         }

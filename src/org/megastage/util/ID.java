@@ -8,8 +8,9 @@ public class ID {
     public static String get(int eid) {
         Identifier id = (Identifier) World.INSTANCE.getComponent(eid, CompType.Identifier);
         if(id==null) {
-            return "[" + eid + "]" + id.toString();
+            return "[" + eid + "]";
         }
-        return "[" + eid + "]";
+
+        return id.toString() + "[" + eid + "]";
     }
 }

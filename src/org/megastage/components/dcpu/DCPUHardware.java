@@ -71,7 +71,7 @@ public abstract class DCPUHardware extends BaseComponent implements Comparable<D
     @Override
     public void initialize(World world, int eid) {
         DCPU dcpu = (DCPU) world.getComponent(dcpuEID, CompType.DCPU);
-        dcpu.connectHardware(eid);
+        dcpu.addHardware(eid);
         shipEID = dcpu.shipEID;
     }
 

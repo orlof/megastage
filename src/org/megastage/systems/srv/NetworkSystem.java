@@ -42,10 +42,11 @@ import org.megastage.util.Vector3d;
 
 public class NetworkSystem extends Processor {
     private Server server;
-    public static Bag<Message> updates = new Bag<>(100);
+    public static Bag<Message> updates;
     
     public NetworkSystem(World world, long interval) {
         super(world, interval, CompType.ReplicateToNewConnectionsFlag);
+        getUpdates();
     }
 
     @Override
@@ -74,12 +75,17 @@ public class NetworkSystem extends Processor {
     
     @Override
     protected void process() {
-        Bag<Message> batch = getUpdates();
-        if(batch != null && batch.size() > 0) {
-            // batch.addAll(ServerGlobals.getComponentEvents());
-            batch.add(new TimestampMessage());
-            server.sendToAllUDP(batch.toArray());
+        for(Connection c: server.getConnections()) {
+            PlayerConnection pc = (PlayerConnection) c;
+            if(!pc.isInitialized) {
+                pc.isInitialized = true;
+                replicateAllEntities(pc);
+            }
         }
+        
+        ((TimestampMessage) updates.first()).time = world.time;
+        Bag<Message> batch = getUpdates();
+        server.sendToAllUDP(batch.toArray());
     }
 
     @Override
@@ -87,9 +93,10 @@ public class NetworkSystem extends Processor {
         return !updates.isEmpty();
     }
 
-    private Bag<Message> getUpdates() {
+    private static Bag<Message> getUpdates() {
         Bag<Message> old = updates;
         updates = new Bag<>(100);
+        updates.add(new TimestampMessage());
         return old;
     }
 
@@ -109,12 +116,6 @@ public class NetworkSystem extends Processor {
     }
 
     private void handleLoginMessage(PlayerConnection connection, Network.Login packet) throws Exception {
-        Log.info("");
-        connection.sendTCP(new TimestampMessage());
-        
-        // replicate
-        replicateAllEntities(connection);
-
         // create ship
         int ship = TemplateManager.create(world, "Apollo 13");
         
@@ -138,21 +139,17 @@ public class NetworkSystem extends Processor {
     }
 
     private void replicateAllEntities(PlayerConnection connection) {
-        Log.info("");
         for(int eid = group.iterator(); eid != 0; eid = group.next()) {
-            Log.info("" + eid);
             replicateComponents(connection, eid);
         }        
     }
     
     private void replicateComponents(PlayerConnection connection, int eid) {
-        Log.info("");
         Bag<Message> list = new Bag<>(20);
 
         for(Object comp=world.compIter(eid); comp != null; comp=world.compNext()) {
             Message msg = ((BaseComponent) comp).replicate(eid);
             if(msg != null) {
-                Log.info("Component: " + comp.toString());
                 list.add(msg);
             }
         }
@@ -294,10 +291,10 @@ public class NetworkSystem extends Processor {
         if(mon != null) {
             DCPU dcpu = (DCPU) world.getComponent(mon.dcpuEID, CompType.DCPU);
 
-            for(int eid: dcpu.hardware.eid) {
-                VirtualKeyboard kbd = (VirtualKeyboard) world.getComponent(eid, CompType.VirtualKeyboard);
+            for(int i=0; i < dcpu.hardwareSize; i++) {
+                VirtualKeyboard kbd = (VirtualKeyboard) world.getComponent(dcpu.hardware[i], CompType.VirtualKeyboard);
                 if(kbd != null) {
-                    connection.item = eid;
+                    connection.item = dcpu.hardware[i];
                     Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
                     mode.setMode(CharacterMode.DCPU);
                     return;

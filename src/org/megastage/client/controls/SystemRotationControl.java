@@ -7,6 +7,7 @@ import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Rotation;
 import org.megastage.client.ClientGlobals;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
 public class SystemRotationControl extends AbstractControl {
     
@@ -20,7 +21,7 @@ public class SystemRotationControl extends AbstractControl {
             return;
         }
 
-        Rotation rotation = (Rotation) ClientGlobals.world.getComponent(ClientGlobals.shipEntity, CompType.Rotation);
+        Rotation rotation = (Rotation) World.INSTANCE.getComponent(ClientGlobals.shipEntity, CompType.Rotation);
         if(rotation == null) {
             spatial.setLocalRotation(Quaternion.IDENTITY);            
             ClientGlobals.sceneNode.setLocalRotation(Quaternion.IDENTITY);

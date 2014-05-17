@@ -83,6 +83,7 @@ public class Group {
 
     public final void remove(int eid) {
         if (contains(eid)) {
+            Log.info(toString() + " " + ID.get(eid));
             next[prev[eid]] = next[eid];
             prev[next[eid]] = prev[eid];
             prev[eid] = -1;

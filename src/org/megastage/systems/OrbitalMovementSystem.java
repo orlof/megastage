@@ -1,11 +1,13 @@
 package org.megastage.systems;
 
+import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
 import org.megastage.components.Velocity;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.Processor;
 import org.megastage.ecs.World;
+import org.megastage.util.ID;
 import org.megastage.util.Vector3d;
 
 public class OrbitalMovementSystem extends Processor {
@@ -21,8 +23,8 @@ public class OrbitalMovementSystem extends Processor {
         
         Vector3d localSum = orbit.getLocalCoordinates(secs);
         
-        while(!isInFixedPosition(orbit.center)) {
-            orbit = (Orbit) world.getComponent(eid, CompType.Orbit);
+        while(isInOrbit(orbit.center)) {
+            orbit = (Orbit) world.getComponent(orbit.center, CompType.Orbit);
             localSum = localSum.add(orbit.getLocalCoordinates(secs));
         }
 
@@ -39,8 +41,7 @@ public class OrbitalMovementSystem extends Processor {
         //position.dirty = true;
     }
 
-    private boolean isInFixedPosition(int centerEid) {
-        return !world.hasComponent(centerEid, CompType.Orbit);
+    private boolean isInOrbit(int eid) {
+        return world.hasComponent(eid, CompType.Orbit);
     }
-
 }

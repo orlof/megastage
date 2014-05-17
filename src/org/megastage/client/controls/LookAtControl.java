@@ -8,6 +8,7 @@ import com.jme3.scene.control.AbstractControl;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.transfer.RadarTargetData;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
 public class LookAtControl extends AbstractControl {
     private final int eid;
@@ -22,7 +23,7 @@ public class LookAtControl extends AbstractControl {
             return;
         }
         
-        RadarTargetData rtd = (RadarTargetData) ClientGlobals.world.getComponent(eid, CompType.RadarTargetData);
+        RadarTargetData rtd = (RadarTargetData) World.INSTANCE.getComponent(eid, CompType.RadarTargetData);
         if(rtd == null || rtd.eid == 0) return;
 
         Node tn = ClientGlobals.spatialManager.getNode(rtd.eid);

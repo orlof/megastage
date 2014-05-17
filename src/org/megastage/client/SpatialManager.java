@@ -73,6 +73,7 @@ import org.megastage.components.gfx.PowerPlantGeometry;
 import org.megastage.components.gfx.RadarGeometry;
 import org.megastage.components.gfx.ThermalLaserGeometry;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.ID;
@@ -127,7 +128,7 @@ public class SpatialManager {
         }
 
         if(onlyUsable) {
-            UsableFlag usable = (UsableFlag) ClientGlobals.world.getComponent(eid, CompType.UsableFlag);
+            UsableFlag usable = (UsableFlag) World.INSTANCE.getComponent(eid, CompType.UsableFlag);
             return usable == null ? 0: eid;
         }
         
@@ -138,7 +139,7 @@ public class SpatialManager {
         Node node = nodes.get(eid);
  
         if(node == null) {
-            ClientGlobals.world.createEntity(eid);
+            World.INSTANCE.createEntity(eid);
             node = createNode(eid);
         }
         
@@ -293,7 +294,7 @@ public class SpatialManager {
     }
     
     public void updateShip(int eid, ShipGeometry data) {
-        ShipGeometry sgeo = (ShipGeometry) ClientGlobals.world.getComponent(eid, CompType.Geometry);
+        ShipGeometry sgeo = (ShipGeometry) World.INSTANCE.getComponent(eid, CompType.Geometry);
         Cube3dMap theMap = sgeo.map;
         
         final Node node = getNode(eid);
@@ -322,7 +323,7 @@ public class SpatialManager {
     }
         
     public void updateShipBlock(int eid, final BlockChange data) {
-        ShipGeometry sg = (ShipGeometry) ClientGlobals.world.getComponent(eid, CompType.Geometry);
+        ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponent(eid, CompType.Geometry);
         Cube3dMap theMap = sg.map;
         theMap.set(data.x, data.y, data.z, data.type, data.event);
         
@@ -437,7 +438,7 @@ public class SpatialManager {
         panel.setMaterial(mat);
         panel.setLocalTranslation(-0.5f+0.1f, -0.5f+0.1f, 0f);
 
-        ClientRaster rasterComponent = (ClientRaster) ClientGlobals.world.getComponent(eid, CompType.ClientRaster);
+        ClientRaster rasterComponent = World.INSTANCE.getOrCreateComponent(eid, CompType.ClientRaster, ClientRaster.class);
         rasterComponent.raster = raster;
 
         final Geometry box = new Geometry("LEM box", new Box(data.width/2.0f, data.height/2.0f, 0.1f));
@@ -522,9 +523,9 @@ public class SpatialManager {
             ClientGlobals.sysMovNode.attachChild(shipNode);
 
             ClientGlobals.shipEntity = 0;
-            Rotation rot = (Rotation) ClientGlobals.world.getComponent(ship, CompType.Rotation);
+            Rotation rot = (Rotation) World.INSTANCE.getComponent(ship, CompType.Rotation);
             rot.dirty = true;
-            Position pos = (Position) ClientGlobals.world.getComponent(ship, CompType.Position);
+            Position pos = (Position) World.INSTANCE.getComponent(ship, CompType.Position);
             pos.dirty = true;
             
             ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);

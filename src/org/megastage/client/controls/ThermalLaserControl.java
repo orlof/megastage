@@ -17,6 +17,7 @@ import org.megastage.client.SoundManager;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.components.transfer.ThermalLaserData;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
 /**
  *
@@ -40,7 +41,7 @@ public class ThermalLaserControl extends AbstractControl {
     
     @Override
     protected void controlUpdate(float tpf) {
-        ThermalLaserData data = (ThermalLaserData) ClientGlobals.world.getComponent(eid, CompType.ThermalLaserData);
+        ThermalLaserData data = (ThermalLaserData) World.INSTANCE.getComponent(eid, CompType.ThermalLaserData);
         if(data == null) {
             spatial.setCullHint(Spatial.CullHint.Always);
         } else {

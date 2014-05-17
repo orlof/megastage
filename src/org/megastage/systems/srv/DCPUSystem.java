@@ -1,9 +1,11 @@
 package org.megastage.systems.srv;
 
+import com.esotericsoftware.minlog.Log;
 import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
 import org.megastage.components.dcpu.*;
 import org.megastage.ecs.CompType;
+import org.megastage.util.ID;
 
 public class DCPUSystem extends Processor {
     public DCPUSystem(World world, long interval) {
@@ -17,7 +19,11 @@ public class DCPUSystem extends Processor {
         long uptime = world.time - dcpu.startupTime;
         if(uptime < 0) return;
         
-        long cycleTarget = uptime * dcpu.hz;
+        long cycleTarget = uptime * dcpu.hz / 1000;
+        
+        Log.trace("Gametime: " + world.time);
+        Log.trace("Uptime: " + uptime);
+        Log.trace("Cycles: " + dcpu.cycles + " / " + cycleTarget);
 
         while (dcpu.cycles < cycleTarget) {
             tick(dcpu);
@@ -31,8 +37,8 @@ public class DCPUSystem extends Processor {
     public void tickHardware(DCPU dcpu) {
         dcpu.nextHardwareTick += dcpu.hardwareTickInterval;
 
-        for(int eid: dcpu.hardware.eid) {
-            tick60hz(dcpu, eid);
+        for(int i=0; i < dcpu.hardwareSize; i++) {
+            tick60hz(dcpu, dcpu.hardware[i]);
         }
     }
 
@@ -121,21 +127,21 @@ public class DCPUSystem extends Processor {
                     case 16: //HWN
                         //Log.info("HWN " + hardware.size());
                         dcpu.cycles++;
-                        set(dcpu, aaddr, (char) dcpu.hardware.size);
+                        set(dcpu, aaddr, (char) dcpu.hardwareSize);
                         break;
                     case 17: //HWQ
                         dcpu.cycles += 3;
-                        if ((a >= 0) && (a < dcpu.hardware.size)) {
+                        if ((a >= 0) && (a < dcpu.hardwareSize)) {
                             //Log.info("HWQ " + ((int) a) + " " + hardware.get(a).toString());
-                            query(dcpu, dcpu.hardware.eid[a]);
+                            query(dcpu, dcpu.hardware[a]);
                         } else {
                             //Log.info("HWQ " + (int) a);
                         }
                         break;
                     case 18: //HWI
                         dcpu.cycles += 3;
-                        if ((a >= 0) && (a < dcpu.hardware.size)) {
-                            interrupt(dcpu, dcpu.hardware.eid[a]);
+                        if ((a >= 0) && (a < dcpu.hardwareSize)) {
+                            interrupt(dcpu, dcpu.hardware[a]);
                         } else {
                             //Log.info("HWI " + (int) a);
                         }
@@ -485,6 +491,7 @@ public class DCPUSystem extends Processor {
     }
 
     private void tick60hz(DCPU dcpu, int eid) {
+        Log.trace(ID.get(eid));
         DCPUHardware hw = (DCPUHardware) world.getComponent(eid, CompType.DCPUHardware);
         hw.tick60hz(dcpu);
     }

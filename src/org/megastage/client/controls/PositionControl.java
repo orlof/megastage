@@ -29,7 +29,7 @@ public class PositionControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(pos == null) {
-            pos = (Position) ClientGlobals.world.getComponent(eid, CompType.Position);
+            pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
             if(pos == null) {
                 return;
             }
