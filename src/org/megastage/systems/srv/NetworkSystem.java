@@ -8,6 +8,8 @@ import org.megastage.components.dcpu.VirtualKeyboard;
 import org.megastage.protocol.Network;
 import org.megastage.protocol.PlayerConnection;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.megastage.components.BaseComponent;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Position;
@@ -37,6 +39,7 @@ import org.megastage.server.TemplateManager;
 import org.megastage.util.Bag;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.Cube3dMap.BlockChange;
+import org.megastage.util.ID;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
 
@@ -75,19 +78,33 @@ public class NetworkSystem extends Processor {
     
     @Override
     protected void process() {
+        ((TimestampMessage) updates.first()).time = world.time;
+        Bag<Message> batch = getUpdates();
+        Message[] data = batch.toArray();
+
         for(Connection c: server.getConnections()) {
             PlayerConnection pc = (PlayerConnection) c;
             if(!pc.isInitialized) {
                 pc.isInitialized = true;
+                initNewPlayer(pc);
                 replicateAllEntities(pc);
             }
+
+            c.sendUDP(data);
         }
         
-        ((TimestampMessage) updates.first()).time = world.time;
-        Bag<Message> batch = getUpdates();
-        server.sendToAllUDP(batch.toArray());
     }
 
+    public void sendToAllUDP (Object object) {
+        Connection[] connections = server.getConnections();
+        for (int i = 0, n = connections.length; i < n; i++) {
+            // Log.info("" + System.currentTimeMillis() % 10000);
+            PlayerConnection connection = (PlayerConnection) connections[i];
+        }
+    }
+
+
+    
     @Override
     protected boolean checkProcessing() {
         return !updates.isEmpty();
@@ -115,31 +132,40 @@ public class NetworkSystem extends Processor {
         }
     }
 
-    private void handleLoginMessage(PlayerConnection connection, Network.Login packet) throws Exception {
-        // create ship
-        int ship = TemplateManager.create(world, "Apollo 13");
-        
-        // create character
-        connection.player = TemplateManager.create(world, "Player");
+    private void initNewPlayer(PlayerConnection connection) {
+        try {
+            // create ship
+            int ship = TemplateManager.create(world, "Apollo 13");
+            
+            // create character
+            connection.player = TemplateManager.create(world, "Player");
 
-        // bind player to ship
-        BindTo bind = new BindTo();
-        bind.parent = ship;
-        world.addComponent(connection.player, CompType.BindTo, bind);
+            // bind player to ship
+            BindTo bind = new BindTo();
+            bind.parent = ship;
+            world.addComponent(connection.player, CompType.BindTo, bind);
+            
+            SpawnPoint sp = (SpawnPoint) world.getComponent(ship, CompType.SpawnPoint);
+            
+            Position pos = (Position) world.getComponent(connection.player, CompType.Position);
+            pos.set(
+                    1000 * sp.x + 500,
+                    1000 * sp.y + 500,
+                    1000 * sp.z + 500);
+            
+            connection.sendTCP(new PlayerIDMessage(connection.player));
+        } catch (Exception ex) {
+            Logger.getLogger(NetworkSystem.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void handleLoginMessage(PlayerConnection connection, Network.Login packet) throws Exception {
         
-        SpawnPoint sp = (SpawnPoint) world.getComponent(ship, CompType.SpawnPoint);
-        
-        Position pos = (Position) world.getComponent(connection.player, CompType.Position);
-        pos.set(
-                1000 * sp.x + 500,
-                1000 * sp.y + 500,
-                1000 * sp.z + 500);
-        
-        connection.sendTCP(new PlayerIDMessage(connection.player));
     }
 
     private void replicateAllEntities(PlayerConnection connection) {
         for(int eid = group.iterator(); eid != 0; eid = group.next()) {
+            Log.info(ID.get(eid));
             replicateComponents(connection, eid);
         }        
     }

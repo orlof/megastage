@@ -14,7 +14,7 @@ import org.megastage.systems.*;
 
 import org.megastage.systems.srv.CollisionSystem;
 import org.megastage.systems.srv.EntityDeleteSystem;
-import org.megastage.systems.srv.EntityReplicateSystem;
+import org.megastage.systems.srv.EntityReplicateToAllSystem;
 import org.megastage.systems.srv.ExplosionSystem;
 import org.megastage.systems.srv.EntityInitializeSystem;
 import org.megastage.systems.srv.ForceFieldSystem;
@@ -34,7 +34,7 @@ public class Game {
         world.addProcessor(new EntityInitializeSystem(world, 500));
         world.addProcessor(new CleanupSystem(world, 500));
         world.addProcessor(new EntityDeleteSystem(world, 50));
-        world.addProcessor(new EntityReplicateSystem(world, 50));
+        world.addProcessor(new EntityReplicateToAllSystem(world, 50));
         world.addProcessor(new EntitySynchronizeSystem(world, 50));
         world.addProcessor(new NetworkSystem(world, 0));
 

@@ -72,7 +72,7 @@ public class Group {
 
     public final void add(int eid) {
         if (!contains(eid)) {
-            Log.info(toString() + " " + ID.get(eid));
+            Log.trace(toString() + " " + ID.get(eid));
             next[eid] = 0;
             prev[eid] = prev[0];
             next[prev[0]] = eid;
@@ -83,7 +83,7 @@ public class Group {
 
     public final void remove(int eid) {
         if (contains(eid)) {
-            Log.info(toString() + " " + ID.get(eid));
+            Log.trace(toString() + " " + ID.get(eid));
             next[prev[eid]] = next[eid];
             prev[next[eid]] = prev[eid];
             prev[eid] = -1;

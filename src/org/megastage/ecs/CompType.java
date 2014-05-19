@@ -29,6 +29,7 @@ public class CompType {
     public static final int EngineData = size++;
     public static final int Explosion = size++;
     public static final int FixedRotation = size++;
+    public static final int ForceFieldData = size++;
     public static final int GyroscopeData = size++;
     public static final int Identifier = size++;
     public static final int Mass = size++;

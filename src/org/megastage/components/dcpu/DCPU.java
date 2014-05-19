@@ -94,7 +94,7 @@ public class DCPU extends BaseComponent {
     }
     
     public void addHardware(int eid) {
-        Log.info(ID.get(eid));
+        Log.trace(ID.get(eid));
         hardware[hardwareSize++] = eid;
     }
 

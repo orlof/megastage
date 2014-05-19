@@ -171,6 +171,13 @@ public class Network {
         public void receive(World world, Connection pc) {
             world.synchronizeClocks(time, world.time);
         }
+
+        @Override
+        public String toString() {
+            return "TimestampMessage(time=" + time + ")";
+        }
+        
+        
     }
 
 }

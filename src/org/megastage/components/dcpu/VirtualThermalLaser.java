@@ -59,7 +59,7 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     
     public void setWattage(char wattage) {
         if(status != STATUS_FIRING && wattage <= 5000 && this.wattage != wattage) {
-            Log.info("" + (int) wattage);
+            Log.trace("" + (int) wattage);
             this.wattage = wattage;
         }
     }
