@@ -78,28 +78,22 @@ public class NetworkSystem extends Processor {
     
     @Override
     protected void process() {
-        ((TimestampMessage) updates.first()).time = world.time;
-        Bag<Message> batch = getUpdates();
-        Message[] data = batch.toArray();
+        Connection[] connections = server.getConnections();
 
-        for(Connection c: server.getConnections()) {
+        for(Connection c: connections) {
             PlayerConnection pc = (PlayerConnection) c;
             if(!pc.isInitialized) {
                 pc.isInitialized = true;
-                initNewPlayer(pc);
                 replicateAllEntities(pc);
+                initNewPlayer(pc);
             }
-
-            c.sendUDP(data);
         }
         
-    }
+        Message[] data = getUpdates().toArray(Message.class);
+        ((TimestampMessage) data[0]).time = world.time;
 
-    public void sendToAllUDP (Object object) {
-        Connection[] connections = server.getConnections();
-        for (int i = 0, n = connections.length; i < n; i++) {
-            // Log.info("" + System.currentTimeMillis() % 10000);
-            PlayerConnection connection = (PlayerConnection) connections[i];
+        for(Connection c: connections) {
+            c.sendUDP(data);
         }
     }
 
@@ -181,7 +175,7 @@ public class NetworkSystem extends Processor {
         }
 
         if(list.size() > 0) {
-            connection.sendTCP(list.toArray());
+            connection.sendTCP(list.toArray(Message.class));
         }
     }
 

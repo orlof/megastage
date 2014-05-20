@@ -72,6 +72,7 @@ public class Network {
             char[].class,
             char[][].class,
             char[][][].class,
+            Message[].class,
             Object[].class,
             BaseComponent.class,
             BatteryGeometry.class,

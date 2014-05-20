@@ -31,7 +31,7 @@ public class Game {
     public Game(Element root) throws Exception {
         world = new World();
 
-        world.addProcessor(new EntityInitializeSystem(world, 500));
+        world.addProcessor(new EntityInitializeSystem(world, 0));
         world.addProcessor(new CleanupSystem(world, 500));
         world.addProcessor(new EntityDeleteSystem(world, 50));
         world.addProcessor(new EntityReplicateToAllSystem(world, 50));

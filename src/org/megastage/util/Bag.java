@@ -47,10 +47,6 @@ public class Bag<E> implements Iterable<E> {
         data = (E[]) new Object[capacity];
     }
 
-    public E[] toArray() {
-        return (E[]) toArray(data.getClass().getComponentType());
-    }
-
     public <V> V[] toArray(Class<V> type) {
         V[] result = (V[]) java.lang.reflect.Array.newInstance(type, size);
         System.arraycopy(data, 0, result, 0, size);
