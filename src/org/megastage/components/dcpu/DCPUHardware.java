@@ -1,15 +1,17 @@
 package org.megastage.components.dcpu;
 
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
+import org.megastage.protocol.Message;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
 
-public abstract class DCPUHardware extends BaseComponent implements Comparable<DCPUHardware> {
+public abstract class DCPUHardware extends ReplicatedComponent implements Comparable<DCPUHardware> {
     public static transient final int TYPE_LEM = 0x7349F615;
     public static transient final int TYPE_RADAR = 0x3442980F;
     public static transient final int TYPE_FLOPPY = 0x4fd524c5;
@@ -69,8 +71,8 @@ public abstract class DCPUHardware extends BaseComponent implements Comparable<D
     }
 
     @Override
-    public void initialize(World world, int eid) {
-        DCPU dcpu = (DCPU) world.getComponent(dcpuEID, CompType.DCPU);
+    public void initialize(int eid) {
+        DCPU dcpu = (DCPU) World.INSTANCE.getComponent(dcpuEID, CompType.DCPU);
         dcpu.addHardware(eid);
         shipEID = dcpu.shipEID;
     }
@@ -104,7 +106,7 @@ public abstract class DCPUHardware extends BaseComponent implements Comparable<D
     public static char writePitchAndYawToMemory(char[] mem, char ptr, int shipEid, int targetEid) {
         // target direction
         Rotation shipRot = (Rotation) World.INSTANCE.getComponent(shipEid, CompType.Rotation);        
-        Quaternion shipRotQ = shipRot.getQuaternion4d();
+        Quaternion shipRotQ = shipRot.getQuaternion();
 
         // vector from me to target in global coordinate system
         Position shipPos = (Position) World.INSTANCE.getComponent(shipEid, CompType.Position);
@@ -127,6 +129,11 @@ public abstract class DCPUHardware extends BaseComponent implements Comparable<D
         ptr = writeRadiansToMemory(mem, ptr, yaw);
         
         return ptr;
+    }
+
+    @Override
+    public Message synchronize(int eid) {
+        return null;
     }
 
     @Override

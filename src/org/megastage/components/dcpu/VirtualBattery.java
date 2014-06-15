@@ -1,7 +1,7 @@
 package org.megastage.components.dcpu;
 
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
 public class VirtualBattery extends DCPUHardware implements PowerSupply, PowerConsumer {
@@ -68,7 +68,7 @@ public class VirtualBattery extends DCPUHardware implements PowerSupply, PowerCo
     }
 
     @Override
-    public double consume(World world, int ship, double available, double delta) {
+    public double consume(int ship, double available, double delta) {
         double intake = delta * input;
         if(intake > available) {
             setInput((char) 0);

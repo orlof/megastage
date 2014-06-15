@@ -8,22 +8,25 @@ import org.megastage.systems.client.ClientFixedRotationSystem;
 import org.megastage.systems.client.ClientMonitorRenderSystem;
 import org.megastage.systems.client.ClientNetworkSystem;
 import org.megastage.systems.OrbitalMovementSystem;
+import org.megastage.systems.client.EntityDeleteSystem;
 import org.megastage.systems.client.ImposterSystem;
 
-public class ArtemisState extends AbstractAppState {
+public class ECSState extends AbstractAppState {
     public World world;
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         world = new World();
 
-        world.addProcessor(new ImposterSystem(world, 1000));
+        //world.addProcessor(new ImposterSystem(world, 1000));
         world.addProcessor(new ClientMonitorRenderSystem(world, 0));
-        world.addProcessor(new OrbitalMovementSystem(world, 0));
+        //world.addProcessor(new OrbitalMovementSystem(world, 0));
         world.addProcessor(new ClientFixedRotationSystem(world, 0));
 
         ClientGlobals.network = new ClientNetworkSystem(world, 20);
         world.addProcessor(ClientGlobals.network);
+
+        world.addProcessor(new EntityDeleteSystem(world, 0));
 
         world.initialize();
 

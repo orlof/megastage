@@ -84,9 +84,9 @@ public class CommandHandler implements AnalogListener, ActionListener {
                     target = target.getParent();
                 }
 
-                Object geom = World.INSTANCE.getComponent(eid, CompType.Geometry);
+                Object geom = World.INSTANCE.getComponent(eid, CompType.GeometryComponent);
                 if(geom != null && geom instanceof ShipGeometry) {
-                    if(eid == ClientGlobals.shipEntity) {
+                    if(eid == ClientGlobals.playerParentEntity) {
                         Node offset = (Node) target.getChild("offset");
                         Vector3Int loc = CubesManager.getCurrentPointedBlockLocation(offset, !right);
                         if(loc != null) {
@@ -309,7 +309,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
             return;
         }
 
-        Quaternion q = rot.getQuaternion3f();
+        Quaternion q = rot.getJMEQuaternion();
 
         float[] eulerAngles = q.toAngles(null);
         eulerAngles[0] = FastMath.clamp(eulerAngles[0] + value, -0.9f * FastMath.HALF_PI, 0.9f * FastMath.HALF_PI);
@@ -328,7 +328,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
             return;
         }
 
-        Quaternion q = rot.getQuaternion3f();
+        Quaternion q = rot.getJMEQuaternion();
         float[] eulerAngles = q.toAngles(null);
         eulerAngles[1] = (eulerAngles[1] + value) % FastMath.TWO_PI;
         eulerAngles[2] = 0f;

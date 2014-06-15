@@ -3,7 +3,7 @@ package org.megastage.components.dcpu;
 import org.megastage.components.transfer.ThermalLaserData;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 
@@ -81,16 +81,10 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public Message replicate(int eid) {
-        dirty = false;
-        return ThermalLaserData.create(status, wattage, distance).always(eid);
+    public Message synchronize(int eid) {
+        return ThermalLaserData.create(status, wattage, distance).synchronize(eid);
     }
     
-    @Override
-    public Message synchronize(int eid) {
-        return replicateIfDirty(eid);
-    }
-
     public void setHit(float distance) {
         if(distance == 0f) {
             distance = range;
@@ -103,14 +97,13 @@ public class VirtualThermalLaser extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public double consume(World world, int ship, double available, double delta) {
+    public double consume(int ship, double available, double delta) {
         double intake = status == STATUS_FIRING ? delta * wattage: 0.0;
         if(intake > available) {
-            setStatusCooldown(world.time);
+            setStatusCooldown(World.INSTANCE.time);
             intake = 0;
         }
 
         return intake;
     }
-
 }

@@ -67,7 +67,7 @@ public class ThermalLaserSystem extends Processor {
             case VirtualThermalLaser.STATUS_COOLDOWN:
                 if(world.time >= vtlComponent.startTime + vtlComponent.duration) {
                     vtlComponent.status = VirtualThermalLaser.STATUS_DORMANT;
-                    vtlComponent.dirty = true;
+                    vtlComponent.setDirty(true);
                 }
                 break;
         }

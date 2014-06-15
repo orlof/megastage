@@ -1,13 +1,10 @@
 package org.megastage.components.gfx;
 
-import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
-import org.megastage.client.ClientGlobals;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
-import org.megastage.protocol.Message;
 
-public class MonitorGeometry extends BaseComponent {
+public class MonitorGeometry extends GeometryComponent {
     public float width, height;
 
     @Override
@@ -16,15 +13,5 @@ public class MonitorGeometry extends BaseComponent {
         height = getFloatValue(element, "height", 2.0f);
         
         return null;
-    }
-
-    @Override
-    public Message replicate(int eid) {
-        return always(eid);
-    }
-    
-    @Override
-    public void receive(World world, Connection pc, int eid) {
-        ClientGlobals.spatialManager.setupMonitor(eid, this);
     }
 }

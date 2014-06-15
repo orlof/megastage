@@ -13,22 +13,28 @@ import java.util.List;
 import org.megastage.client.ExplosionNode;
 import org.megastage.client.SoundManager;
 import org.megastage.components.Explosion;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
 public class ExplosionControl extends AbstractControl {
-    private final ExplosionNode node;
-    private final Explosion explosion;
+    private int eid;
+    
     private int state = -1;
 
-    public ExplosionControl(Explosion explosion, ExplosionNode node) {
-        this.explosion = explosion;
-        this.node = node;
+    public ExplosionControl(int eid) {
+        this.eid = eid;
     }
     
     @Override
     protected void controlUpdate(float tpf) {
+        Explosion explosion = (Explosion) World.INSTANCE.getComponent(eid, CompType.Explosion);
+
         while(state < explosion.state) {
             state++;
             Log.info("Render explosion state: "+ state + "/" + explosion.state);
+
+            ExplosionNode node = (ExplosionNode) spatial;
+
             switch(state) {
                 case 0:
                     break;

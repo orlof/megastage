@@ -1,7 +1,6 @@
 package org.megastage.util;
 
 import com.cubes.Vector3Int;
-import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.components.gfx.ShipGeometry;
@@ -19,13 +18,13 @@ public class CubeCollisionDetector {
         long startTime = System.currentTimeMillis();
 
         Position pos = (Position) world.getComponent(target.eid, CompType.Position);
-        ShipGeometry geom = (ShipGeometry) world.getComponent(target.eid, CompType.Geometry);
+        ShipGeometry geom = (ShipGeometry) world.getComponent(target.eid, CompType.GeometryComponent);
         Rotation rot = (Rotation) world.getComponent(target.eid, CompType.Rotation);
 
         // calculate coordinates for center of block
         // center of mass is not equal to center of block!
         Vector3d coord = new Vector3d(8,8,8).sub(geom.map.getCenter3d());
-        coord = coord.multiply(rot.getQuaternion4d());
+        coord = coord.multiply(rot.getQuaternion());
         coord = coord.add(target.coord);
                 
         Bag<Block> candidates = new Bag<>(1);
@@ -33,7 +32,7 @@ public class CubeCollisionDetector {
         //Log.info(block.toString());
         candidates.add(block);
         
-        candidates = iteration(attackVector, geom.map, candidates, 16, getCoordOffsets(16, rot.getQuaternion4d()));
+        candidates = iteration(attackVector, geom.map, candidates, 16, getCoordOffsets(16, rot.getQuaternion()));
 
         if(candidates.size == 0) {
             //Log.info(TargetManager.NO_HIT.toString());
@@ -177,7 +176,5 @@ public class CubeCollisionDetector {
         public String toString() {
             return "Block{" + "center=" + center + ", base=" + base + ", distance=" + distance + '}';
         }
-        
-        
     }
 }

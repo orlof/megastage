@@ -1,7 +1,6 @@
 package org.megastage.ecs;
 
 import com.esotericsoftware.minlog.Log;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +11,7 @@ public class World {
     public int capacity;
     public int componentCapacity;
     public int size;
-    public Object[][] population;
+    public BaseComponent[][] population;
 
     // manages int ids
     protected int[] next, prev;
@@ -44,10 +43,10 @@ public class World {
         this.componentCapacity = componentCapacity;
         
         int len = capacity + 2;
-        population = new Object[len][];
+        population = new BaseComponent[len][];
 
         for (int i = 0; i < len; i++) {
-            population[i] = new Object[componentCapacity];
+            population[i] = new BaseComponent[componentCapacity];
         }
 
         next = new int[len];
@@ -128,9 +127,7 @@ public class World {
     }
     
     public int createEntity(int eid) {
-        if(!free[eid]) {
-            throw new RuntimeException("Entity already allocated " + eid);
-        }
+        assert free[eid]: "Entity already allocated " + eid;
         
         size++;
 
@@ -146,14 +143,12 @@ public class World {
         prev[0] = eid;
 
         updateEntityInAllGroups(eid);
-
+        
         return eid;
     }
 
     public void deleteEntity(int eid) {
-        if(free[eid]) {
-            throw new RuntimeException("Entity already free " + eid);
-        }
+        assert !free[eid]: "No entity " + eid;
         
         size--;
 
@@ -168,7 +163,10 @@ public class World {
         next[prev[1]] = eid;
         prev[1] = eid;
         
-        Arrays.fill(population[eid], null);
+        for(BaseComponent bc = compIter(eid); bc != null; bc = compNext()) {
+            bc.delete(eid);
+            population[eid][compIterPos] = null;
+        }
         updateEntityInAllGroups(eid);
     }
 
@@ -176,28 +174,38 @@ public class World {
         return !free[eid];
     }
 
-    public void addComponent(int eid, int cid, Object comp) {
+    public <E extends BaseComponent> E setComponent(int eid, int cid, E comp) {
+        ensureEntity(eid);
+
         population[eid][cid] = comp;
         population[eid][CompType.parent[cid]] = comp;
+        
         updateEntityInAllGroups(eid);
+        return comp;
     }
 
-    public void addComponent(int eid, Object comp) {
-        addComponent(eid, CompType.cid(comp.getClass().getSimpleName()), comp);
+    public <E extends BaseComponent> E setComponent(int eid, E comp) {
+        return setComponent(eid, CompType.cid(comp.getClass().getSimpleName()), comp);
     }
 
     public void removeComponent(int eid, int cid) {
+        assert !free[eid]: "No entity " + eid;
+
         population[eid][cid] = null;
         population[eid][CompType.parent[cid]] = null;
+        
         updateEntityInAllGroups(eid);
     }
 
-    public Object getComponent(int eid, int cid) {
+    public BaseComponent getComponent(int eid, int cid) {
+        ensureEntity(eid);
         return population[eid][cid];
     }
 
-    public <T> T getOrCreateComponent(int eid, int cid, Class<T> type) {
-        Object comp = population[eid][cid];
+    public <T extends BaseComponent> T getOrCreateComponent(int eid, int cid, Class<T> type) {
+        ensureEntity(eid);
+        
+        BaseComponent comp = population[eid][cid];
         if(comp == null) {
             try {
                 comp = population[eid][cid] = type.newInstance();
@@ -209,10 +217,14 @@ public class World {
     }
     
     public boolean hasComponent(int eid, int cid) {
+        assert !free[eid]: "No entity " + eid;
+
         return population[eid][cid] != null;
     }
     
     public boolean hasComponent(int eid, Class type) {
+        assert !free[eid]: "No entity " + eid;
+
         Object obj = population[eid][CompType.cid(type.getSimpleName())];
         return obj != null && type.isInstance(obj);
     }
@@ -238,8 +250,8 @@ public class World {
     private int compIterPos = 0;
     private Class compIterType;
 
-    public Object compIter(int eid) {
-        return compIter(eid, Object.class);
+    public BaseComponent compIter(int eid) {
+        return compIter(eid, BaseComponent.class);
     }
 
     public <E> E compIter(int eid, Class<E> clazz) {
@@ -261,15 +273,25 @@ public class World {
         return null;
     }
 
+    private static class BCInteger extends BaseComponent {
+        public int val = 0;
+        public BCInteger(int v) { val = v; }
+    }
+    
+    private static class BCDouble extends BaseComponent {
+        public double val = 0;
+        public BCDouble(double v) { val = v; }
+    }
+    
     public static void main(String[] args) throws Exception {
         System.out.println("Starting");
         World w = new World(10,10);
         int eid = w.createEntity();
-        w.addComponent(eid, 0, new Integer(0));
-        w.addComponent(eid, 3, new Double(3.0));
-        w.addComponent(eid, 5, new Integer(5));
-        w.addComponent(eid, 7, new Double(7.0));
-        w.addComponent(eid, 9, new Integer(9));
+        w.setComponent(eid, 0, new BCInteger(0));
+        w.setComponent(eid, 3, new BCDouble(3.0));
+        w.setComponent(eid, 5, new BCInteger(5));
+        w.setComponent(eid, 7, new BCDouble(7.0));
+        w.setComponent(eid, 9, new BCInteger(9));
         
         System.out.println("List of all");
         for(Object comp = w.compIter(eid); comp != null; comp = w.compNext()) {
@@ -277,7 +299,7 @@ public class World {
         }
 
         System.out.println("Integer");
-        for(Integer comp = w.compIter(eid, Integer.class); comp != null; comp = w.compNext()) {
+        for(BaseComponent comp = w.compIter(eid); comp != null; comp = w.compNext()) {
             System.out.println(comp.toString());
         }
     }

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.client.controls;
 
 import com.jme3.renderer.RenderManager;
@@ -13,10 +9,6 @@ import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.util.Vector3d;
 
-/**
- *
- * @author Orlof
- */
 public class ImposterPositionControl extends AbstractControl {
     private final int eid;
 
@@ -27,26 +19,27 @@ public class ImposterPositionControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
+        if(true) return;
         Position position = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
-        if(position != null) {
-            Vector3d coord = position.getVector3d();
-            
-            Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.shipEntity, CompType.Position);
-            if(origoPos == null) return;
-            
-            Vector3d origo = origoPos.getVector3d();
-            
-            Vector3d line = coord.sub(origo);
+        assert position != null;
+        
+        Vector3d coord = position.getVector3d();
 
-            double distance = line.length();
+        Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Position);
+        assert origoPos != null;
 
-            if(distance > 1000000.0) {
-                double scale = 1000000.0 / distance;
-                line = line.multiply(scale).add(origo);
-                spatial.setLocalTranslation(line.getVector3f());
-            } else {
-                spatial.setLocalTranslation(coord.getVector3f());
-            }
+        Vector3d origo = origoPos.getVector3d();
+
+        Vector3d line = coord.sub(origo);
+
+        double distance = line.length();
+
+        if(distance > 1000000.0) {
+            double scale = 1000000.0 / distance;
+            line = line.multiply(scale).add(origo);
+            spatial.setLocalTranslation(line.getVector3f());
+        } else {
+            spatial.setLocalTranslation(coord.getVector3f());
         }
     }
 

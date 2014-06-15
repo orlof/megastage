@@ -2,7 +2,6 @@ package org.megastage.systems.srv;
 
 import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
-import com.esotericsoftware.minlog.Log;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
 import org.megastage.ecs.CompType;
@@ -18,7 +17,7 @@ public class ExplosionSystem extends Processor {
         
         explosion.setState(currentState(explosion));
 
-        if(explosion.dirty) {
+        if(explosion.isDirty()) {
             switch(explosion.state) {
                 case 0: // create spatial
                 case 1: // particles
@@ -30,7 +29,7 @@ public class ExplosionSystem extends Processor {
                     //ServerGlobals.addUDPEvent(new ExplosionEvent(e, explosion.state));
                     break;
                 case 7:
-                    world.addComponent(eid, CompType.DeleteFlag, new DeleteFlag());
+                    world.setComponent(eid, CompType.DeleteFlag, new DeleteFlag());
                     break;
             }
         }

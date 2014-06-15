@@ -3,7 +3,7 @@ package org.megastage.components.dcpu;
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.Explosion;
 import org.megastage.components.transfer.GyroscopeData;
@@ -68,7 +68,7 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
 
     public void setTorque(int ship, char torque) {
         if(torque == 0x8000) {
-            World.INSTANCE.addComponent(ship, CompType.Explosion, new Explosion());
+            World.INSTANCE.setComponent(ship, CompType.Explosion, new Explosion());
             return;
         } 
 
@@ -97,22 +97,12 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     }
     
     @Override
-    public Message replicate(int eid) {
-        dirty = false;
-
-        GyroscopeData data = new GyroscopeData();
-        data.power = power;
-
-        return data.always(eid);
+    public Message synchronize(int eid) {
+        return GyroscopeData.create(power).synchronize(eid);
     }
     
     @Override
-    public Message synchronize(int eid) {
-        return replicateIfDirty(eid);
-    }
-
-    @Override
-    public double consume(World world, int ship, double available, double delta) {
+    public double consume(int ship, double available, double delta) {
         double intake = delta * getPowerLevel();
         if(intake > available) {
             Log.info("Not enough power: " + intake + "/" + available);

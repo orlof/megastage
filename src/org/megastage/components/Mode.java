@@ -1,23 +1,11 @@
 package org.megastage.components;
 
-import com.esotericsoftware.kryonet.Connection;
 import org.megastage.client.ClientGlobals;
-import org.megastage.ecs.World;
+import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.protocol.CharacterMode;
-import org.megastage.protocol.Message;
 
-public class Mode extends BaseComponent {
+public class Mode extends ReplicatedComponent {
     public int value = CharacterMode.WALK; 
-
-    @Override
-    public Message replicate(int eid) {
-        return always(eid);
-    }
-    
-    @Override
-    public Message synchronize(int eid) {
-        return ifDirty(eid);
-    }
 
     public void setMode(int mode) {
         this.value = mode;
@@ -25,13 +13,9 @@ public class Mode extends BaseComponent {
     }
 
     @Override
-    public void receive(World world, Connection pc, int eid) {
+    public void receive(int eid) {
         if(ClientGlobals.playerEntity == eid) {
             ClientGlobals.cmdHandler.changeMode(value);
         }
-    }
-
-    public String toString() {
-        return "Mode(mode=" + value + ")";
     }
 }

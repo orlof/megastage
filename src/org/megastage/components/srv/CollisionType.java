@@ -2,7 +2,7 @@ package org.megastage.components.srv;
 
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
 public class CollisionType extends BaseComponent {
@@ -12,13 +12,11 @@ public class CollisionType extends BaseComponent {
     public int item;
     public double radius;
 
-    public CollisionType() {
-        this(SHIP, 0);
-    }
-    
-    public CollisionType(int type, double radius) {
-        this.item = type;
-        this.radius = radius;
+    public static CollisionType create(int type, double radius) {
+        CollisionType ct = new CollisionType();
+        ct.item = type;
+        ct.radius = radius;
+        return ct;
     }
 
     @Override

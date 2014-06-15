@@ -10,20 +10,21 @@ import org.megastage.protocol.PlayerConnection;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
-import org.megastage.components.SpawnPoint;
+import org.megastage.components.srv.SpawnPoint;
 import org.megastage.components.dcpu.VirtualMonitor;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.Mode;
 import org.megastage.components.dcpu.DCPU;
-import org.megastage.components.dcpu.DCPUHardware;
 import org.megastage.components.dcpu.VirtualFloppyDrive;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.Group;
 import org.megastage.ecs.Processor;
+import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.Message;
@@ -45,11 +46,11 @@ import org.megastage.util.Vector3d;
 
 public class NetworkSystem extends Processor {
     private Server server;
-    public static Bag<Message> updates;
+    private Group deleted;
     
     public NetworkSystem(World world, long interval) {
-        super(world, interval, CompType.ReplicateToNewConnectionsFlag);
-        getUpdates();
+        super(world, interval, CompType.SynchronizeFlag);
+        deleted = world.createGroup(CompType.DeleteFlag);
     }
 
     @Override
@@ -78,46 +79,30 @@ public class NetworkSystem extends Processor {
     
     @Override
     protected void process() {
+        // Log.info(getClass().getSimpleName());
         Connection[] connections = server.getConnections();
-
-        for(Connection c: connections) {
-            PlayerConnection pc = (PlayerConnection) c;
-            if(!pc.isInitialized) {
-                pc.isInitialized = true;
-                replicateAllEntities(pc);
-                initNewPlayer(pc);
-            }
-        }
+        processNewConnections(connections);
         
-        Message[] data = getUpdates().toArray(Message.class);
-        ((TimestampMessage) data[0]).time = world.time;
+        Bag<Message> update = new Bag<>(100);
+        update.add(new TimestampMessage());
 
+        processDeletedEntities(update);
+        processSynchronizedEntities(update);        
+        
+        Message[] data = update.toArray(Message.class);
+        
         for(Connection c: connections) {
             c.sendUDP(data);
         }
     }
 
-
-    
-    @Override
-    protected boolean checkProcessing() {
-        return !updates.isEmpty();
-    }
-
-    private static Bag<Message> getUpdates() {
-        Bag<Message> old = updates;
-        updates = new Bag<>(100);
-        updates.add(new TimestampMessage());
-        return old;
-    }
-
     private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
         BindTo bindTo = (BindTo) world.getComponent(connection.player, CompType.BindTo);
         if(bindTo != null) {
-            if(bindTo.parent != 0) world.addComponent(bindTo.parent, CompType.BindTo, new DeleteFlag());
+            if(bindTo.parent != 0) world.setComponent(bindTo.parent, CompType.BindTo, new DeleteFlag());
         }
         
-        world.addComponent(connection.player, CompType.DeleteFlag, new DeleteFlag());
+        world.setComponent(connection.player, CompType.DeleteFlag, new DeleteFlag());
         connection.close();
         
         if(server.getConnections().length == 0) {
@@ -137,7 +122,7 @@ public class NetworkSystem extends Processor {
             // bind player to ship
             BindTo bind = new BindTo();
             bind.parent = ship;
-            world.addComponent(connection.player, CompType.BindTo, bind);
+            world.setComponent(connection.player, CompType.BindTo, bind);
             
             SpawnPoint sp = (SpawnPoint) world.getComponent(ship, CompType.SpawnPoint);
             
@@ -154,10 +139,9 @@ public class NetworkSystem extends Processor {
     }
     
     private void handleLoginMessage(PlayerConnection connection, Network.Login packet) throws Exception {
-        
     }
 
-    private void replicateAllEntities(PlayerConnection connection) {
+    private void replicateEntitiesToNewConnection(PlayerConnection connection) {
         for(int eid = group.iterator(); eid != 0; eid = group.next()) {
             Log.info(ID.get(eid));
             replicateComponents(connection, eid);
@@ -167,11 +151,10 @@ public class NetworkSystem extends Processor {
     private void replicateComponents(PlayerConnection connection, int eid) {
         Bag<Message> list = new Bag<>(20);
 
-        for(Object comp=world.compIter(eid); comp != null; comp=world.compNext()) {
-            Message msg = ((BaseComponent) comp).replicate(eid);
-            if(msg != null) {
-                list.add(msg);
-            }
+        for(ReplicatedComponent comp = world.compIter(eid, ReplicatedComponent.class); comp != null; comp=world.compNext()) {
+            Log.info(comp.toString());
+            Message msg = comp.synchronize(eid);
+            list.add(msg);
         }
 
         if(list.size() > 0) {
@@ -360,7 +343,7 @@ public class NetworkSystem extends Processor {
 
     private void updateShip(int ship, UserCommand cmd) {
         Rotation shipRotation = (Rotation) world.getComponent(ship, CompType.Rotation);
-        Quaternion shipRotationQuaternion = shipRotation.getQuaternion4d();
+        Quaternion shipRotationQuaternion = shipRotation.getQuaternion();
 
         Vector3d vel = new Vector3d(cmd.ship.left, cmd.ship.up, cmd.ship.forward).multiply(shipRotationQuaternion);
 
@@ -445,6 +428,40 @@ public class NetworkSystem extends Processor {
                 1000 * sp.x + 500,
                 1000 * sp.y + 500,
                 1000 * sp.z + 500);
+    }
+
+    public void processNewConnections(Connection[] connections) {
+        for(Connection c: connections) {
+            PlayerConnection pc = (PlayerConnection) c;
+            if(!pc.isInitialized) {
+                pc.isInitialized = true;
+                replicateEntitiesToNewConnection(pc);
+                initNewPlayer(pc);
+            }
+        }
+    }
+
+    public void processDeletedEntities(Bag<Message> update) {
+        for (int eid = deleted.iterator(); eid != 0; eid = deleted.next()) {
+            Log.info(ID.get(eid));
+            DeleteFlag df = (DeleteFlag) world.getComponent(eid, CompType.DeleteFlag);
+            update.add(new Network.ComponentMessage(eid, df));
+            world.deleteEntity(eid);
+       }
+    }
+
+    public void processSynchronizedEntities(Bag<Message> update) {
+        for (int eid = group.iterator(); eid != 0; eid = group.next()) {
+            for(ReplicatedComponent comp = world.compIter(eid, ReplicatedComponent.class); comp != null; comp = world.compNext()) {
+                if(comp.isDirty()) {
+                    Log.info("[" + eid + "] " + comp.toString());
+                    comp.setDirty(false);
+
+                    Message msg = comp.synchronize(eid);
+                    update.add(msg);
+                }
+            }
+        }
     }
 
     private class ServerNetworkListener extends Listener {

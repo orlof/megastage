@@ -15,7 +15,7 @@ public class CleanupSystem extends Processor {
     protected void process(int eid) {
         BindTo bindTo = (BindTo) world.getComponent(eid, CompType.BindTo);
         if(bindTo.parent == 0) {
-            world.addComponent(eid, CompType.DeleteFlag, new DeleteFlag());
+            world.setComponent(eid, CompType.DeleteFlag, new DeleteFlag());
         }
     }
     

@@ -1,12 +1,10 @@
 package org.megastage.components.transfer;
 
-import com.esotericsoftware.kryonet.Connection;
 import org.megastage.client.ClientGlobals;
-import org.megastage.components.BaseComponent;
-import org.megastage.ecs.World;
+import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.server.FloppyManager;
 
-public class VirtualFloppyDriveData extends BaseComponent {
+public class VirtualFloppyDriveData extends ReplicatedComponent {
     public String[] bootroms;
     public String[] floppies;
 
@@ -18,7 +16,7 @@ public class VirtualFloppyDriveData extends BaseComponent {
     }
 
     @Override
-    public void receive(World world, Connection pc, int eid) {
+    public void receive(int eid) {
         ClientGlobals.bootroms = bootroms;
         ClientGlobals.floppies = floppies;
     }

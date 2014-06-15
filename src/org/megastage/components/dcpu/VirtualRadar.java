@@ -1,7 +1,7 @@
 package org.megastage.components.dcpu;
 
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.components.Position;
 import org.megastage.components.transfer.RadarTargetData;
@@ -30,20 +30,10 @@ public class VirtualRadar extends DCPUHardware {
     }
 
     @Override
-    public Message replicate(int eid) {
-        dirty = false;
-
-        RadarTargetData data = new RadarTargetData();
-        data.eid = target;
-        
-        return data.always(eid);
+    public Message synchronize(int eid) {
+        return RadarTargetData.create(target).synchronize(eid);
     }
     
-    @Override
-    public Message synchronize(int eid) {
-        return replicateIfDirty(eid);
-    }
-
     // DCPU
     
     @Override

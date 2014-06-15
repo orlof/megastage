@@ -2,29 +2,24 @@ package org.megastage.protocol;
 
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.client.ClientGlobals;
-import org.megastage.ecs.World;
 
 public class PlayerIDMessage extends EventMessage {
     private int eid = 0;
-    private long ctime = System.currentTimeMillis();
 
     public PlayerIDMessage() {}
     public PlayerIDMessage(int id) {
-        this();
         this.eid = id;
     }
 
     @Override
-    public void receive(World world, Connection pc) {
-        long time = System.currentTimeMillis();
-        ClientGlobals.timeDiff = ctime - time;
-        
+    public void receive(Connection pc) {
         ClientGlobals.playerEntity = eid;
         ClientGlobals.spatialManager.setupPlayer(eid);
     }
 
+    @Override
     public String toString() {
-        return "LoginResponse(" + eid + ")";
+        return "PlayerIDMessage(" + eid + ")";
     }
 }
 

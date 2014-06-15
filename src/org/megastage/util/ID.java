@@ -1,6 +1,6 @@
 package org.megastage.util;
 
-import org.megastage.components.srv.Identifier;
+import org.megastage.components.Identifier;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 

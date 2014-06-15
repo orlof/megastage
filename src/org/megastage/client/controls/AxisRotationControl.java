@@ -6,7 +6,6 @@ import com.jme3.math.Quaternion;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
-import org.megastage.client.ClientGlobals;
 import org.megastage.components.Rotation;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
@@ -14,14 +13,13 @@ import org.megastage.util.ID;
 
 public class AxisRotationControl extends AbstractControl {
     private final int eid;
-    private Rotation rot;
     
     private final float[] angles = new float[3];
     private final boolean pitch;
     private final boolean yaw;
     private final boolean roll;
     
-    double x=0, y=0, z=0, w=0;
+    private double curx = 0, cury = 0, curz = 0, curw = 0;
     
     public AxisRotationControl(int eid, boolean pitch, boolean yaw, boolean roll) {
         this.eid = eid;
@@ -32,17 +30,17 @@ public class AxisRotationControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
+        Rotation rot  = (Rotation) World.INSTANCE.getComponent(eid, CompType.Rotation);
         if(rot == null) {
-            rot = (Rotation) World.INSTANCE.getComponent(eid, CompType.Rotation);
-            if(rot == null) {
-                return;
-            }
+            Log.warn("no rotation component for " + eid);
+            return;
         }
 
-        if (rot.x != x || rot.y != y || rot.z != z || rot.w != w) {
-            x = rot.x; y = rot.y; z = rot.z; w = rot.w;
+        if (rot.x != curx || rot.y != cury || rot.z != curz || rot.w != curw) {
+            // rotation changed
+            curx = rot.x; cury = rot.y; curz = rot.z; curw = rot.w;
 
-            Quaternion q = new Quaternion((float) rot.x, (float) rot.y, (float) rot.z, (float) rot.w);
+            Quaternion q = rot.getJMEQuaternion();
             q.toAngles(angles);
             
             if(!pitch) angles[0] = 0;

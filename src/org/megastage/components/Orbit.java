@@ -1,15 +1,15 @@
 package org.megastage.components;
 
+import org.megastage.ecs.BaseComponent;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
-import org.megastage.protocol.Message;
-import org.megastage.protocol.Network.ComponentMessage;
 import org.megastage.util.Globals;
 import org.megastage.util.Vector3d;
 
-public class Orbit extends BaseComponent {
+public class Orbit extends ReplicatedComponent {
     public int center;
     public double distance;
 
@@ -24,18 +24,11 @@ public class Orbit extends BaseComponent {
     }
 
     @Override
-    public void initialize(World world, int eid) {
-        Mass mass = (Mass) world.getComponent(center, CompType.Mass);
-        double m = mass.mass;
-        angularSpeed = getAngularSpeed(m);        
+    public void initialize(int eid) {
+        Mass mass = (Mass) World.INSTANCE.getComponent(center, CompType.Mass);
+        angularSpeed = getAngularSpeed(mass.mass);        
     }
     
-    
-    @Override
-    public Message replicate(int eid) {
-        return new ComponentMessage(eid, this);
-    }
-
     public double getAngularSpeed(double centerMass) {
         return 2.0 * Math.PI / getOrbitalPeriod(centerMass);
     }
@@ -68,10 +61,5 @@ public class Orbit extends BaseComponent {
                 0.0,
                 distance * -Math.sin(angle)
         );
-    }
-
-    @Override
-    public String toString() {
-        return "Orbit(" + center + ", " + distance + ", " + (2*Math.PI) / angularSpeed + ")";
     }
 }

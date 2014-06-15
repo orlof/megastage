@@ -19,35 +19,31 @@ import org.megastage.components.transfer.ThermalLaserData;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 
-/**
- *
- * @author Orlof
- */
 public class ThermalLaserControl extends AbstractControl {
     private final int eid;
-    private final Cylinder cylinder;
     private final AudioNode an;
     private char status = 0xffff;
     private float length;
 
-    public ThermalLaserControl(int eid, Cylinder cylinder) {
-         this.eid = eid; 
-        this.cylinder = cylinder;
+    public ThermalLaserControl(int eid) {
+        this.eid = eid; 
         this.an = SoundManager.get(SoundManager.LASER_BEAM).clone();
-        an.setLooping(true);
-     }
+        this.an.setLooping(true);
+    }
 
     private static final Vector3f FORWARD = new Vector3f(0,0,-1);
     
     @Override
     protected void controlUpdate(float tpf) {
         ThermalLaserData data = (ThermalLaserData) World.INSTANCE.getComponent(eid, CompType.ThermalLaserData);
+        
         if(data == null) {
             spatial.setCullHint(Spatial.CullHint.Always);
         } else {
             if(status != data.status) {
                 status = data.status;
                 //Log.info(ID.get(entity) + "status=" + (int) status);
+
                 switch(data.status) {
                     case VirtualThermalLaser.STATUS_FIRING:
                         an.play();
@@ -110,6 +106,7 @@ public class ThermalLaserControl extends AbstractControl {
                 }
             }                        
 
+            Cylinder cylinder = (Cylinder) ((Geometry) spatial).getMesh();
             if(distance != cylinder.getHeight()) {
                 cylinder.updateGeometry(8, 8, 0.2f, 0.2f, distance, true, false);
                 spatial.setLocalTranslation(0, 0, -distance/2f);

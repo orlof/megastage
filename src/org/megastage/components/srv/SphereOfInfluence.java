@@ -2,7 +2,7 @@ package org.megastage.components.srv;
 
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.ecs.CompType;
@@ -23,25 +23,20 @@ public class SphereOfInfluence extends BaseComponent {
     }
 
     @Override
-    public void initialize(World world, int eid) {
-        Orbit orbit = (Orbit) world.getComponent(eid, CompType.Orbit);
+    public void initialize(int eid) {
+        Orbit orbit = (Orbit) World.INSTANCE.getComponent(eid, CompType.Orbit);
         if(orbit == null) {
             priority = -1;
         } else {
-            Mass mass = (Mass) world.getComponent(eid, CompType.Mass);
-            Mass centerMass = (Mass) world.getComponent(orbit.center, CompType.Mass);
+            Mass mass = (Mass) World.INSTANCE.getComponent(eid, CompType.Mass);
+            Mass centerMass = (Mass) World.INSTANCE.getComponent(orbit.center, CompType.Mass);
 
-            if(world.hasComponent(orbit.center, CompType.Orbit)) {
+            if(World.INSTANCE.hasComponent(orbit.center, CompType.Orbit)) {
                 priority++;
             }
 
             radius = calculateSOI(orbit.distance, mass.mass, centerMass.mass);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "SphereOfInfluence(" + radius + ")";
     }
 
     public static double calculateSOI(double orbitalDistance, double mass, double centerMass) {

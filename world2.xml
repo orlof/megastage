@@ -1,0 +1,173 @@
+<root>
+    <entity name="Sun">
+        <component type="Position" x="0" y="0" z="0"/>
+        <component type="Mass" kg="1.989e21"/>
+        <component type="Velocity"/>
+        <component type="gfx.SunGeometry" radius="3500" light_radius="10000000" red="1.0" green="1.0" blue="0.67" alpha="1.0"/>
+        <component type="gfx.ImposterGeometry" radius="10" cutoff="500000" red="1.0" green="1.0" blue="0.67" alpha="0.5"/>
+        <component type="srv.GravityFieldFlag"/>
+        <component type="srv.SphereOfInfluence"/>
+        <component type="srv.CollisionType" radius="5000" item="CELESTIAL"/>
+        <component type="srv.SynchronizeFlag"/>
+    </entity>
+
+    <entity-template name="Player">
+        <component type="Mode"/>
+        <component type="Position" x="0" y="0" z="0"/>
+        <component type="Rotation" x="0" y="180" z="0"/>
+        <component type="gfx.CharacterGeometry"/>
+        <component type="srv.SynchronizeFlag"/>
+    </entity-template>
+
+    <entity-template name="Apollo 13">
+        <component type="srv.SynchronizeFlag"/>
+        <component type="Position" x="0" y="0" z="10000"/>
+        <component type="Rotation"/>
+        <component type="srv.AffectedByGravityFlag"/>
+        <component type="Velocity"/>
+        <component type="srv.Acceleration"/>
+        <component type="srv.SpawnPoint"  dx="7" dy="1" dz="6"/>
+        <component type="srv.RadarEcho" echo="0"/>
+        <component type="UsableFlag"/>
+        <component type="gfx.ShipGeometry">
+          <map y="0" x="012345678901234"/>
+            <map z="00">     #####     </map>
+            <map z="01">   #########   </map>
+            <map z="02"> ############# </map>
+            <map z="03">###############</map>
+            <map z="04">#  #########  #</map>
+            <map z="05">   #########   </map>
+            <map z="06">  ###########  </map>
+            <map z="07">  ###########  </map>
+            <map z="08">  ###########  </map>
+            <map z="09"> ############# </map>
+            <map z="10"> ############# </map>
+            <map z="11"> ############# </map>
+            <map z="12"> ############# </map>
+            <map z="13">###############</map>
+            <map z="14">###############</map>
+            <map z="15">  ###     ###  </map>
+          <map y="1" x="012345678901234"/>
+            <map z="00">               </map>
+            <map z="01">               </map>
+            <map z="02">       C       </map>
+            <map z="03">      LLL      </map>
+            <map z="04">P             R</map>
+            <map z="05">               </map>
+            <map z="06">  #         #  </map>
+            <map z="07">               </map>
+            <map z="08">               </map>
+            <map z="09">               </map>
+            <map z="10">   ###   ###   </map>
+            <map z="11">   #       #   </map>
+            <map z="12">   #       #   </map>
+            <map z="13">   #* GGG +#   </map>
+            <map z="14">   #########   </map>
+            <map z="15">               </map>
+          <map y="2" x="012345678901234"/>
+            <map z="00">               </map>
+            <map z="01">               </map>
+            <map z="02">       F       </map>
+            <map z="03">      LLL      </map>
+            <map z="04">               </map>
+            <map z="05">               </map>
+            <map z="06">  #         #  </map>
+            <map z="07">               </map>
+            <map z="08">               </map>
+            <map z="09">               </map>
+            <map z="10">   ###   ###   </map>
+            <map z="11">   #       #   </map>
+            <map z="12">   #       #   </map>
+            <map z="13">   #*     +#   </map>
+            <map z="14">   #########   </map>
+            <map z="15">       E       </map>
+          <map y="3" x="012345678901234"/>
+            <map z="00">               </map>
+            <map z="01">               </map>
+            <map z="02">               </map>
+            <map z="03">               </map>
+            <map z="04">               </map>
+            <map z="05">               </map>
+            <map z="06">  #         #  </map>
+            <map z="07">               </map>
+            <map z="08">               </map>
+            <map z="09">               </map>
+            <map z="10">    ##   ##    </map>
+            <map z="11">    #     #    </map>
+            <map z="12">    #     #    </map>
+            <map z="13">    #     #    </map>
+            <map z="14">    #######    </map>
+            <map z="15">               </map>
+          <map y="4" x="012345678901234"/>
+            <map z="00">               </map>
+            <map z="01">               </map>
+            <map z="02">               </map>
+            <map z="03">               </map>
+            <map z="04">               </map>
+            <map z="05">               </map>
+            <map z="06">  ###########  </map>
+            <map z="07">  ###########  </map>
+            <map z="08">  ###########  </map>
+            <map z="09">  ###########  </map>
+            <map z="10">   #########   </map>
+            <map z="11">   #########   </map>
+            <map z="12">   #########   </map>
+            <map z="13">   #########   </map>
+            <map z="14">   #########   </map>
+            <map z="15">               </map>
+          <map y="5" x="012345678901234"/>
+            <map z="00">               </map>
+            <map z="01">               </map>
+            <map z="02">               </map>
+            <map z="03">               </map>
+            <map z="04">               </map>
+            <map z="05">               </map>
+            <map z="06">       #       </map>
+            <map z="07">               </map>
+            <map z="08">               </map>
+            <map z="09">               </map>
+            <map z="10">               </map>
+            <map z="11">               </map>
+            <map z="12">               </map>
+            <map z="13">               </map>
+            <map z="14">               </map>
+            <map z="15">               </map>
+          <map y="6" x="012345678901234"/>
+            <map z="00">               </map>
+            <map z="01">               </map>
+            <map z="02">               </map>
+            <map z="03">               </map>
+            <map z="04">               </map>
+            <map z="05">               </map>
+            <map z="06">       #       </map>
+            <map z="07">               </map>
+            <map z="08">               </map>
+            <map z="09">               </map>
+            <map z="10">               </map>
+            <map z="11">               </map>
+            <map z="12">               </map>
+            <map z="13">               </map>
+            <map z="14">               </map>
+            <map z="15">               </map>
+          <map y="7" x="012345678901234"/>
+            <map z="00">               </map>
+            <map z="01">               </map>
+            <map z="02">               </map>
+            <map z="03">               </map>
+            <map z="04">               </map>
+            <map z="05">               </map>
+            <map z="06">       E       </map>
+            <map z="07">               </map>
+            <map z="08">               </map>
+            <map z="09">               </map>
+            <map z="10">               </map>
+            <map z="11">               </map>
+            <map z="12">               </map>
+            <map z="13">               </map>
+            <map z="14">               </map>
+            <map z="15">               </map>
+        </component>
+        <!--component type="Mass" mass="1e6"/-->
+    </entity-template>
+
+</root>

@@ -2,7 +2,7 @@ package org.megastage.systems.srv;
 
 import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
-import org.megastage.components.CollisionSphere;
+import org.megastage.components.srv.CollisionSphere;
 import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.ecs.CompType;
 

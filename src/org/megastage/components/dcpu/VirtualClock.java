@@ -1,7 +1,7 @@
 package org.megastage.components.dcpu;
 
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
 public class VirtualClock extends DCPUHardware {

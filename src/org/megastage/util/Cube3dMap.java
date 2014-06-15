@@ -1,15 +1,14 @@
 package org.megastage.util;
 
 import com.cubes.Vector3Int;
-import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.Vector3f;
 import java.util.LinkedList;
 import org.megastage.client.ClientGlobals;
-import org.megastage.components.BaseComponent;
-import org.megastage.ecs.World;
+import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.ToStringComponent;
 
-public class Cube3dMap {
+public class Cube3dMap extends ToStringComponent {
     private final static transient int INITIAL_CAPACITY = 16;
 
     public char[][][] data;
@@ -175,7 +174,7 @@ public class Cube3dMap {
         return inertia;
     }
     
-    public static class BlockChange extends BaseComponent {
+    public static class BlockChange extends ReplicatedComponent {
         public static final transient char UNBUILD = 0;
         public static final transient char BREAK = 1;
         public static final transient char BUILD = 2;
@@ -195,17 +194,9 @@ public class Cube3dMap {
         }
 
         @Override
-        public void receive(World world, Connection pc, int eid) {
+        public void receive(int eid) {
             Log.info(ID.get(eid) + toString());
             ClientGlobals.spatialManager.updateShipBlock(eid, this);
         }
-
-        @Override
-        public String toString() {
-            return "BlockChange{" + "x=" + x + ", y=" + y + ", z=" + z + ", type=" + (int) type + ", event=" + (int) event + '}';
-        }
-
-        
     }
 }
-

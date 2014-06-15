@@ -6,7 +6,7 @@ import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
 import org.megastage.components.srv.CollisionType;
 import org.megastage.components.Explosion;
-import org.megastage.components.srv.Identifier;
+import org.megastage.components.Identifier;
 import org.megastage.ecs.CompType;
 
 public class CollisionSystem extends Processor {
@@ -37,13 +37,13 @@ public class CollisionSystem extends Processor {
                     Identifier idb = (Identifier) world.getComponent(group.right, CompType.Identifier);
 
                     if(cola.isShip() && !world.hasComponent(group.left, CompType.Explosion)) {
-                        world.addComponent(group.left, CompType.Explosion, new Explosion());
+                        world.setComponent(group.left, CompType.Explosion, new Explosion());
                         // TODO damage a
                         Log.info(ida.toString() + " was damaged in collision with " + idb.toString());
                     }
 
                     if(colb.isShip() && !world.hasComponent(group.right, CompType.Explosion)) {
-                        world.addComponent(group.right, CompType.Explosion, new Explosion());
+                        world.setComponent(group.right, CompType.Explosion, new Explosion());
                         // TODO damage b
                         Log.info(idb.toString() + " was damaged in collision with " + ida.toString());
                     }

@@ -2,7 +2,7 @@ package org.megastage.components.dcpu;
 
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 
 import java.io.*;
 import org.megastage.ecs.CompType;

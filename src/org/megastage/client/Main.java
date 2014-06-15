@@ -4,23 +4,28 @@ import com.cubes.test.CubesTestAssets;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
+import com.jme3.bounding.BoundingSphere;
 import com.jme3.collision.CollisionResults;
+import com.jme3.material.Material;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.CameraNode;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl.ControlDirection;
+import com.jme3.scene.shape.Sphere;
 import com.jme3.system.AppSettings;
+import com.jme3.texture.Image;
+import com.jme3.texture.TextureCubeMap;
 import com.jme3.ui.Picture;
 import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.style.Styles;
-import jmeplanet.PlanetAppState;
-import jmeplanet.test.Utility;
-import org.megastage.client.controls.SystemPositionControl;
-import org.megastage.client.controls.SystemRotationControl;
+import org.megastage.client.controls.GlobalRotationControl;
 import org.megastage.util.LogFormat;
 
 public class Main extends SimpleApplication {
@@ -41,13 +46,12 @@ public class Main extends SimpleApplication {
         Main app = new Main();
 
         ClientGlobals.app = app;
-
         app.setSettings(settings);
         app.showSettings = ClientGlobals.gfxSettings.SHOW_SETTINGS;
         app.start();
     }
 
-    private PlanetAppState planetAppState;
+    // private PlanetAppState planetAppState;
     
     public Main() {
         super((AppState) null);
@@ -63,58 +67,33 @@ public class Main extends SimpleApplication {
         ClientGlobals.cmdHandler.registerWithInput(inputManager);
 
         ClientGlobals.spatialManager = new SpatialManager(this);
-        
-        CameraNode camNode = new CameraNode("main", cam);
-        camNode.setControlDir(ControlDirection.SpatialToCamera);
-        ClientGlobals.playerNode.attachChild(camNode);
-        camNode.setLocalTranslation(0, 1.0f, 0);
-        ClientGlobals.cam = cam;
-        
-        ClientGlobals.rootNode = rootNode;
-        //cam.setLocation(new Vector3f(16, 6, 60));
 
-        ClientGlobals.fixedNode.attachChild(ClientGlobals.playerNode);
+        initializeSystemNodes();
+        initializeBackground();
+        initializeCamera();
+        initializeCubes();
+        initializeCrosshair();
         
-        ClientGlobals.rootNode.attachChild(ClientGlobals.fixedNode);
-        
-        ClientGlobals.sysRotNode.addControl(new SystemRotationControl());
-        ClientGlobals.sysMovNode.addControl(new SystemPositionControl());
-        
-        rootNode.attachChild(ClientGlobals.sysRotNode);
-
-        ClientGlobals.sysRotNode.attachChild(ClientGlobals.sysMovNode);
-
-        // Add sky
-        ClientGlobals.sceneNode = new Node("Scene");
-        ClientGlobals.sceneNode.attachChild(Utility.createSkyBox(assetManager, "Textures/blue-glow-1024.dds"));
-        ClientGlobals.rootNode.attachChild(ClientGlobals.sceneNode);
-
         // Add planet app state
-        planetAppState = new PlanetAppState(null);
-        ////planetAppState.setShadowsEnabled(ClientGlobals.gfxSettings.PLANET_SHADOWS_ENABLED);
-        stateManager.attach(planetAppState);
+        //planetAppState = new PlanetAppState(null);
+        //planetAppState.setShadowsEnabled(ClientGlobals.gfxSettings.PLANET_SHADOWS_ENABLED);
+        //stateManager.attach(planetAppState);
 
         // Add ECS app state
-        ClientGlobals.artemis = new ArtemisState();
+        ClientGlobals.ecs = new ECSState();
 
         GuiGlobals.initialize(this);
         Styles styles = GuiGlobals.getInstance().getStyles();
         
         LemurStyles.initializeStyles(styles);
         stateManager.attach(new MainMenuState());
-        //stateManager.getState(DCPUMenuState.class).disable();
 
         ClientGlobals.dcpuMenuState = new DCPUMenuState(); 
 
-        CubesManager.init(this);
-        CubesTestAssets.registerBlocks();
-
-        ClientGlobals.crosshair = createCrosshair();
-        
 //        AmbientLight ambient = new AmbientLight();
 //        ambient.setColor(ColorRGBA.DarkGray);
 //        rootNode.addLight(ambient);
-}
+    }
 
     @Override
     public void simpleUpdate(float tpf) {
@@ -126,17 +105,16 @@ public class Main extends SimpleApplication {
         //TODO: add render code
     }
     
-    private Picture createCrosshair() {
-        Picture crosshair = new Picture("HUD Picture");
-        crosshair.setImage(assetManager, "Textures/crosshairs.png", true);
+    private void initializeCrosshair() {
+        ClientGlobals.crosshair = new Picture("HUD Picture");
+        ClientGlobals.crosshair.setImage(assetManager, "Textures/crosshairs.png", true);
         //pic.setWidth(settings.getWidth()/4);
         //pic.setHeight(settings.getHeight()/4);
-        crosshair.setWidth(100);
-        crosshair.setHeight(100);
-        crosshair.setPosition(settings.getWidth()/2-50, settings.getHeight()/2-50);
-        crosshair.setCullHint(Spatial.CullHint.Always);
-        guiNode.attachChild(crosshair);
-        return crosshair;
+        ClientGlobals.crosshair.setWidth(100);
+        ClientGlobals.crosshair.setHeight(100);
+        ClientGlobals.crosshair.setPosition(settings.getWidth()/2-50, settings.getHeight()/2-50);
+        ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Always);
+        guiNode.attachChild(ClientGlobals.crosshair);
     }
 
     public CollisionResults getRayCastingResults(Node node) {
@@ -148,6 +126,53 @@ public class Main extends SimpleApplication {
         node.collideWith(ray, results);
         return results;
     }
-    
 
+    private void initializeSystemNodes() {
+        ClientGlobals.rootNode = rootNode;
+
+        ClientGlobals.playerParentNode.attachChild(ClientGlobals.playerNode);        
+        ClientGlobals.rootNode.attachChild(ClientGlobals.playerParentNode);
+        
+        ClientGlobals.globalRotationNode.addControl(new GlobalRotationControl());
+        ClientGlobals.rootNode.attachChild(ClientGlobals.globalRotationNode);
+    }
+    
+    private void initializeBackground() {
+        Mesh sphere = new Sphere(10, 10, 10000f);
+        sphere.setStatic();
+        Geometry sky = new Geometry("SkyBox", sphere);
+        sky.setQueueBucket(RenderQueue.Bucket.Sky);
+        sky.setCullHint(Spatial.CullHint.Never);
+        sky.setShadowMode(RenderQueue.ShadowMode.Off);
+        sky.setModelBound(new BoundingSphere(Float.POSITIVE_INFINITY, Vector3f.ZERO));
+
+        Image cube = assetManager.loadTexture("Textures/blue-glow-1024.dds").getImage();
+        TextureCubeMap cubemap = new TextureCubeMap(cube);
+
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Sky.j3md");
+        mat.setBoolean("SphereMap", false);
+        mat.setTexture("Texture", cubemap);
+        mat.setVector3("NormalScale", Vector3f.UNIT_XYZ);
+        sky.setMaterial(mat);
+        
+        ClientGlobals.backgroundNode.attachChild(sky);
+        ClientGlobals.rootNode.attachChild(ClientGlobals.backgroundNode);
+    }
+
+    private void initializeCamera() {
+        ClientGlobals.cam = cam;
+        
+        float aspect = (float) cam.getWidth() / cam.getHeight();
+        cam.setFrustumPerspective(45f, aspect, 0.1f, 40000f);
+
+        CameraNode camNode = new CameraNode("main_camera", cam);
+        camNode.setControlDir(ControlDirection.SpatialToCamera);
+        ClientGlobals.playerNode.attachChild(camNode);
+        camNode.setLocalTranslation(0, 1.0f, 0);
+    }
+
+    private void initializeCubes() {
+        CubesManager.init(this);
+        CubesTestAssets.registerBlocks();
+    }
 }

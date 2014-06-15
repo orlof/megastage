@@ -17,24 +17,24 @@ public class ClientGlobals {
     public static ClientNetworkSystem network;
     
     public static int playerEntity;
-    public static int shipEntity;
+    public static int playerParentEntity;
     
     public static long timeDiff;
 
     public static Node rootNode;
-    public static Node sceneNode;
-    public static final Node sysRotNode = new Node("system_rotation_node");
-    public static final Node sysMovNode = new Node("system_move_node");
-    public static final Node fixedNode = new Node("fixed_node");
-    public static final Node playerNode = new Node("player");
+    public static final Node backgroundNode = new Node("background_node");
+    public static final Node globalRotationNode = new Node("global_rotation_node");
+    public static final Node playerParentNode = new Node("player_parent_node");
+    public static final Node playerNode = new Node("player_node");
 
     public static GraphicsSettings gfxSettings = GraphicsSettings.JOKE;
-    public static double scale = 1000.0;
+
+    public static final double SCALE = 1;
     public static final UserCommand userCommand = new UserCommand();
     public static Main app;
     public static CommandHandler cmdHandler;
     public static SpatialManager spatialManager;
-    public static ArtemisState artemis;
+    public static ECSState ecs;
     public static String serverHost = "localhost";
     public static Camera cam;
     public static Picture crosshair;

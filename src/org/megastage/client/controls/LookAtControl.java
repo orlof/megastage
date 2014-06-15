@@ -19,14 +19,10 @@ public class LookAtControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        if(eid == 0) {
-            return;
-        }
-        
-        RadarTargetData rtd = (RadarTargetData) World.INSTANCE.getComponent(eid, CompType.RadarTargetData);
-        if(rtd == null || rtd.eid == 0) return;
+        RadarTargetData data = (RadarTargetData) World.INSTANCE.getComponent(eid, CompType.RadarTargetData);
+        if(data == null || data.eid == 0) return;
 
-        Node tn = ClientGlobals.spatialManager.getNode(rtd.eid);
+        Node tn = ClientGlobals.spatialManager.getNode(data.eid);
         
         spatial.lookAt(tn.getWorldTranslation(), Vector3f.UNIT_Y.clone());
         //spatial.lookAt(new Vector3f(0,10000,0), Vector3f.UNIT_Y.clone());

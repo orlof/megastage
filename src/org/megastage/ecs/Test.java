@@ -32,11 +32,11 @@ public class Test {
 
         printEntities(wem);
 
-        wem.addComponent(6, CompType.DeleteFlag, new DeleteFlag());
-        wem.addComponent(8, CompType.DeleteFlag, new DeleteFlag());
-        wem.addComponent(7, CompType.DeleteFlag, new DeleteFlag());
-        wem.addComponent(7, CompType.InitializeFlag, new InitializeFlag());
-        wem.addComponent(8, CompType.InitializeFlag, new InitializeFlag());
+        wem.setComponent(6, CompType.DeleteFlag, new DeleteFlag());
+        wem.setComponent(8, CompType.DeleteFlag, new DeleteFlag());
+        wem.setComponent(7, CompType.DeleteFlag, new DeleteFlag());
+        wem.setComponent(7, CompType.InitializeFlag, new InitializeFlag());
+        wem.setComponent(8, CompType.InitializeFlag, new InitializeFlag());
         
         for(DeleteFlag pos = wem.compIter(8, DeleteFlag.class); pos != null; pos = wem.compNext()) {
             System.out.println(pos.toString() + pos.getClass().getName());

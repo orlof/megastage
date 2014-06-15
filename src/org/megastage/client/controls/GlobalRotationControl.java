@@ -9,30 +9,27 @@ import org.megastage.client.ClientGlobals;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 
-public class RotationControl extends AbstractControl {
-    private final int eid;
+public class GlobalRotationControl extends AbstractControl {
     
-    public RotationControl(int eid) {
-         this.eid = eid; 
+    public GlobalRotationControl() {
     }
 
     @Override
     protected void controlUpdate(float tpf) {
-        Rotation rot = (Rotation) World.INSTANCE.getComponent(eid, CompType.Rotation);
-        if(rot==null) {
+        if(ClientGlobals.playerParentEntity == 0) {
             return;
         }
 
-        if(ClientGlobals.playerParentEntity == eid) {
-            spatial.setLocalRotation(Quaternion.IDENTITY);            
-        } else if (rot.isDirty()) {
-            Quaternion q = rot.getJMEQuaternion();
-            spatial.setLocalRotation(q);
-            rot.setDirty(false);
-        }
+        Rotation rotation = (Rotation) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Rotation);
+        assert rotation != null;
+
+        Quaternion q = rotation.getJMEQuaternion();
+        spatial.setLocalRotation(q.inverse());
+        ClientGlobals.backgroundNode.setLocalRotation(q);
     }
 
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 }
+

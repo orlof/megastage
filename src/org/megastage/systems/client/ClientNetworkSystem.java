@@ -52,6 +52,7 @@ public class ClientNetworkSystem extends Processor {
 
     @Override
     protected void process() {
+        Log.info("");
         if(ClientGlobals.userCommand.count > 0) {
             client.sendUDP(ClientGlobals.userCommand);
             ClientGlobals.userCommand.reset();
@@ -73,6 +74,7 @@ public class ClientNetworkSystem extends Processor {
     private Bag received = new Bag(100);
 
     public void handleReceived() {
+        Log.info("" + received.size());
         Bag oldBag = received;
         received = new Bag(100);
         for(Object o: oldBag) {
@@ -93,8 +95,8 @@ public class ClientNetworkSystem extends Processor {
     public void handlePacket(final Connection pc, final Object o) {
         if(o instanceof Message) {
             Log.info(o.toString());
-            final Message msg = (Message) o;
-            msg.receive(world, pc);
+            Message msg = (Message) o;
+            msg.receive(pc);
         } else {
             Log.warn("Unknown message type: " + o.getClass().getSimpleName());
         } 

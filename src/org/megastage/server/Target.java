@@ -1,6 +1,5 @@
 package org.megastage.server;
 
-import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
@@ -43,7 +42,7 @@ public class Target implements Comparable<Target> {
     }
 
     public boolean isShip(World world) {
-        Object comp = world.getComponent(eid, CompType.Geometry);
+        Object comp = world.getComponent(eid, CompType.GeometryComponent);
         return comp != null && comp instanceof ShipGeometry;
     }
 

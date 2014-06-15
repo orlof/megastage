@@ -21,6 +21,7 @@ THE SOFTWARE.
 */
 package jmeplanet;
 
+import com.esotericsoftware.minlog.Log;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
@@ -81,7 +82,7 @@ public class PlanetAppState extends AbstractAppState {
         farCam = app.getCamera();
 
         float aspect = (float) farCam.getWidth() / farCam.getHeight();
-        farCam.setFrustumPerspective(45f, aspect, 0.1f, 1e7f);
+        farCam.setFrustumPerspective(45f, aspect, 1f, 40000f);
 
         if(ClientGlobals.gfxSettings.ENABLE_PLANET_FAR_FILTER) {
             farFilter=new FilterPostProcessor(app.getAssetManager());

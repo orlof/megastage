@@ -1,7 +1,7 @@
 package org.megastage.systems.srv;
 
 import com.esotericsoftware.minlog.Log;
-import org.megastage.components.CollisionSphere;
+import org.megastage.components.srv.CollisionSphere;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.components.dcpu.VirtualThermalLaser;
@@ -32,10 +32,10 @@ public class TargetManagerSystem extends Processor {
         }
 
         Rotation shipRot = (Rotation) world.getComponent(ship, CompType.Rotation);
-        Quaternion shipAngle = shipRot.getQuaternion4d();
+        Quaternion shipAngle = shipRot.getQuaternion();
         
         Rotation wpnRot = (Rotation) world.getComponent(vtlEntity, CompType.Rotation);
-        Quaternion weaponAngle = wpnRot.getQuaternion4d();
+        Quaternion weaponAngle = wpnRot.getQuaternion();
         
         Vector3d attackVector = Vector3d.FORWARD.multiply(weaponAngle).multiply(shipAngle);
         
@@ -87,7 +87,7 @@ public class TargetManagerSystem extends Processor {
             return null;
         }
 
-        Vector3d vtlCoord = vtlPosition.getGlobalCoordinates(world, vtlEntity);
+        Vector3d vtlCoord = vtlPosition.getGlobalCoordinates(vtlEntity);
         if(vtlCoord == null) {
             Log.error("Cannot convert VTL Position to global coordinates");
             return null;
@@ -107,7 +107,7 @@ public class TargetManagerSystem extends Processor {
                 continue;
             }
 
-            Vector3d targetCoord = targetPos.getGlobalCoordinates(world, target);
+            Vector3d targetCoord = targetPos.getGlobalCoordinates(target);
             if(targetCoord == null) {
                 Log.error("Cannot convert Position to global coordinates: " + ID.get(target));
                 continue;

@@ -1,7 +1,7 @@
 package org.megastage.systems.srv;
 
 import com.esotericsoftware.minlog.Log;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.Processor;
 import org.megastage.ecs.World;
@@ -21,8 +21,8 @@ public class EntityInitializeSystem extends Processor {
     }
 
     private void initializeComponents(int eid) {
-        for(Object c = world.compIter(eid); c != null; c=world.compNext()) {
-            ((BaseComponent) c).initialize(world, eid);
+        for(BaseComponent c = world.compIter(eid); c != null; c = world.compNext()) {
+            c.initialize(eid);
         }
     }
 }

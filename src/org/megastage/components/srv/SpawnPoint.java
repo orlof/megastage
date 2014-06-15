@@ -1,16 +1,11 @@
-package org.megastage.components;
+package org.megastage.components.srv;
 
+import org.megastage.ecs.BaseComponent;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.ecs.World;
 
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:58
- */
 public class SpawnPoint extends BaseComponent {
     public int x, y, z;
 
@@ -25,9 +20,5 @@ public class SpawnPoint extends BaseComponent {
 
     public Vector3f getAsVector() {
         return new Vector3f(x, y, z);
-    }
-    
-    public String toString() {
-        return "SpawnPoint(" + x + ", " + y + ", " + z + ")";
     }
 }

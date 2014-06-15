@@ -2,7 +2,7 @@ package org.megastage.components.dcpu;
 
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
@@ -70,22 +70,12 @@ public class VirtualEngine extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public Message replicate(int eid) {
-        dirty = false;
-
-        EngineData data = new EngineData();
-        data.power = power;
-
-        return data.always(eid);
+    public Message synchronize(int eid) {
+        return EngineData.create(power).synchronize(eid);
     }
     
     @Override
-    public Message synchronize(int eid) {
-        return replicateIfDirty(eid);
-    }
-
-    @Override
-    public double consume(World world, int ship, double available, double delta) {
+    public double consume(int ship, double available, double delta) {
         double intake = delta * getPowerLevel();
         if(intake > available) {
             Log.info("Not enough power: " + intake + "/" + available);

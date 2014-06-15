@@ -16,7 +16,7 @@ public class ImposterSystem extends Processor {
     @Override
     protected boolean checkProcessing() {
         if(super.checkProcessing()) {
-            if(ClientGlobals.shipEntity != 0 && world.hasComponent(ClientGlobals.shipEntity, CompType.Position)) {
+            if(ClientGlobals.playerParentEntity != 0 && world.hasComponent(ClientGlobals.playerParentEntity, CompType.Position)) {
                 return true;
             }
         }
@@ -27,7 +27,7 @@ public class ImposterSystem extends Processor {
     
     @Override
     protected void begin() {
-        origo = ((Position) world.getComponent(ClientGlobals.shipEntity, CompType.Position)).getVector3d();
+        origo = ((Position) world.getComponent(ClientGlobals.playerParentEntity, CompType.Position)).getVector3d();
     }
 
     @Override

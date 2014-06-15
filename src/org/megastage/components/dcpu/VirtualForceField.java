@@ -2,7 +2,7 @@ package org.megastage.components.dcpu;
 
 import com.esotericsoftware.minlog.Log;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.components.transfer.ForceFieldData;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
@@ -61,16 +61,10 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public Message replicate(int eid) {
-        dirty = false;
-        return ForceFieldData.create((float) radius, status).always(eid);
+    public Message synchronize(int eid) {
+        return ForceFieldData.create((float) radius, status).synchronize(eid);
     }
     
-    @Override
-    public Message synchronize(int eid) {
-        return replicateIfDirty(eid);
-    }
-
     public void setEnergy(double energy) {
         if(energy < 0 ) energy = 0;
         if(energy > maxEnergy) energy = maxEnergy;
@@ -100,7 +94,7 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
     }
 
     @Override
-    public double consume(World world, int ship, double available, double delta) {
+    public double consume(int ship, double available, double delta) {
         double intake = power * delta;
         if(intake > available) {
             intake = power = 0.0;

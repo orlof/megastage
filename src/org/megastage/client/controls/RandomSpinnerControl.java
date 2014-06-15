@@ -1,19 +1,21 @@
 package org.megastage.client.controls;
 
+import com.jme3.audio.AudioNode;
 import com.jme3.math.Quaternion;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import java.util.Random;
+import org.megastage.client.SoundManager;
 import org.megastage.ecs.World;
 
 public class RandomSpinnerControl extends AbstractControl {
     public RandomSpinnerControl() {
     }
 
-    Random rnd = new Random();
-    Quaternion q = Quaternion.IDENTITY;
-    long next = 0;
+    private static final Random rnd = new Random();
+    private Quaternion q = Quaternion.IDENTITY;
+    private long next = 0;
 
     private float frnd(float min, float max) {
         return (max-min) * rnd.nextFloat() + min;
@@ -24,9 +26,9 @@ public class RandomSpinnerControl extends AbstractControl {
         if(World.INSTANCE.time > next) {
             int mode = rnd.nextInt(20);
             if(mode == 0) {
-                //AudioNode an = SoundManager.get(SoundManager.RETRO_COMPUTER);
-                //an.setVolume(0.1f);
-                //an.playInstance();
+                AudioNode an = SoundManager.get(SoundManager.RETRO_COMPUTER);
+                an.setVolume(0.1f);
+                an.playInstance();
                 next = World.INSTANCE.time + 5500;
             } else {
                 next = World.INSTANCE.time + rnd.nextInt(5000)+1000;

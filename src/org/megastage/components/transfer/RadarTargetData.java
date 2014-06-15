@@ -1,11 +1,13 @@
 package org.megastage.components.transfer;
 
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.ReplicatedComponent;
 
-public class RadarTargetData extends BaseComponent {
+public class RadarTargetData extends ReplicatedComponent {
     public int eid;
 
-    public String toString() {
-        return "RadarTargetData(target=" + eid + ")";
+    public static RadarTargetData create(int target) {
+        RadarTargetData data = new RadarTargetData();
+        data.eid = target;
+        return data;
     }
 }

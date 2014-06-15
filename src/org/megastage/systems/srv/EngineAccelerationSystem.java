@@ -29,7 +29,7 @@ public class EngineAccelerationSystem extends Processor {
             // rotate acceleration into global coordinate system
             Rotation rotation = (Rotation) world.getComponent(engine.shipEID, CompType.Rotation);
             if(rotation != null) {
-                Quaternion shipRot = rotation.getQuaternion4d();
+                Quaternion shipRot = rotation.getQuaternion();
                 acc = acc.multiply(shipRot);
             }
 

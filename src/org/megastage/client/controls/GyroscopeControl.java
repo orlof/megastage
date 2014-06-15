@@ -5,7 +5,6 @@ import com.jme3.audio.AudioNode;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
-import org.megastage.client.ClientGlobals;
 import org.megastage.client.SoundManager;
 import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.ecs.CompType;
@@ -13,7 +12,6 @@ import org.megastage.ecs.World;
 
 public class GyroscopeControl extends AbstractControl {
     private final int eid;
-    private GyroscopeData data;
     
     private char power = 0;
     private float angularSpeed = 0;
@@ -28,12 +26,8 @@ public class GyroscopeControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        if(data == null) {
-            data = (GyroscopeData) World.INSTANCE.getComponent(eid, CompType.GyroscopeData);
-            if(data == null) {
-                return;
-            }
-        }
+        GyroscopeData data = (GyroscopeData) World.INSTANCE.getComponent(eid, CompType.GyroscopeData);
+        assert data != null;
 
         if(power != data.power) {
             if(power == 0) {

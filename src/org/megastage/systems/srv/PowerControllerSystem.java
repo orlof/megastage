@@ -47,7 +47,7 @@ public class PowerControllerSystem extends Processor {
             if(comp instanceof PowerConsumer) {
                 PowerConsumer consumer = (PowerConsumer) comp;
 
-                double consumption = consumer.consume(world, ctrl.shipEID, powerLeft, delta);
+                double consumption = consumer.consume(ctrl.shipEID, powerLeft, delta);
                 
                 ctrl.load += consumption;
                 powerLeft -= consumption;

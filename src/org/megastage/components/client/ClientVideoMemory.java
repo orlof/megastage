@@ -4,8 +4,9 @@ import com.esotericsoftware.minlog.Log;
 import com.jme3.math.ColorRGBA;
 import org.megastage.components.transfer.MonitorData;
 import org.megastage.components.dcpu.LEMUtil;
+import org.megastage.ecs.BaseComponent;
 
-public final class ClientVideoMemory {
+public final class ClientVideoMemory extends BaseComponent {
     public char[] screenMemRam = new char[384];
     public char[] fontMemRam = new char[256];
     public ColorRGBA[] colors = new ColorRGBA[16];

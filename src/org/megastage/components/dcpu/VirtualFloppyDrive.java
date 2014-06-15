@@ -1,8 +1,9 @@
 package org.megastage.components.dcpu;
 
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.components.transfer.VirtualFloppyDriveData;
+import org.megastage.ecs.ToStringComponent;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 import org.megastage.server.FloppyManager;
@@ -50,7 +51,7 @@ public class VirtualFloppyDrive extends DCPUHardware {
     private int track;
     
     private FloppyDisk floppy;
-    private FloppyOperation operation = new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
+    private FloppyOperation operation = new FloppyOperation(FloppyOperationType.NONE, 0, 0, Long.MAX_VALUE);
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
@@ -60,9 +61,8 @@ public class VirtualFloppyDrive extends DCPUHardware {
     }
 
     @Override
-    public Message replicate(int eid) {
-        dirty = false;
-        return VirtualFloppyDriveData.create().always(eid);
+    public Message synchronize(int eid) {
+        return VirtualFloppyDriveData.create().synchronize(eid);
     }
     
     @Override
@@ -83,7 +83,7 @@ public class VirtualFloppyDrive extends DCPUHardware {
         } else if (a == 2) {
             int sector = dcpu.registers[3];
             if (sector <= MAX_SECTOR && (state == STATE_READY || state == STATE_READY_WP)) {
-                operation = new FloppyOperation(FloppyOperation.READ, sector, dcpu.registers[4],
+                operation = new FloppyOperation(FloppyOperationType.READ, sector, dcpu.registers[4],
                         dcpu.cycles + READ_CYCLES_PER_SECTOR + SEEK_CYCLES_PER_TRACK
                         * Math.abs(track - (sector / SECTORS_PER_TRACK)));
                 dcpu.registers[1] = 1;
@@ -101,7 +101,7 @@ public class VirtualFloppyDrive extends DCPUHardware {
         } else if (a == 3) {
             int sector = dcpu.registers[3];
             if (sector <= MAX_SECTOR && state == STATE_READY) {
-                operation = new FloppyOperation(FloppyOperation.WRITE, sector, dcpu.registers[4],
+                operation = new FloppyOperation(FloppyOperationType.WRITE, sector, dcpu.registers[4],
                         dcpu.cycles + WRITE_CYCLES_PER_SECTOR + SEEK_CYCLES_PER_TRACK
                         * Math.abs(track - (sector / SECTORS_PER_TRACK)));
                 dcpu.registers[1] = 1;
@@ -144,25 +144,25 @@ public class VirtualFloppyDrive extends DCPUHardware {
         //Log.info(operation.finish + " <= " + dcpu.cycles);
         if (operation.finish <= dcpu.cycles) {
             switch (operation.type) {
-                case FloppyOperation.READ:
+                case READ:
                     for (int i = 0; i < 512; i++) {
                         if (operation.memory + i <= 65535) { //TODO
                             dcpu.ram[operation.memory + i] = floppy.data[operation.sector * WORDS_PER_SECTOR + i];
                         }
                     }
                     track = operation.sector / SECTORS_PER_TRACK;
-                    operation = new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
+                    operation = new FloppyOperation(FloppyOperationType.NONE, 0, 0, Long.MAX_VALUE);
                     setState(dcpu, floppy.isWriteProtected() ? STATE_READY_WP : STATE_READY, ERROR_NONE);
                     break;
-                case FloppyOperation.WRITE:
+                case WRITE:
                     for (int i = 0; i < 512; i++) {
                         floppy.data[operation.sector * WORDS_PER_SECTOR + i] = dcpu.ram[operation.memory + i];
                     }
                     track = operation.sector / SECTORS_PER_TRACK;
-                    operation = new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
+                    operation = new FloppyOperation(FloppyOperationType.NONE, 0, 0, Long.MAX_VALUE);
                     setState(dcpu, STATE_READY, ERROR_NONE);
                     break;
-                case FloppyOperation.NONE:
+                case NONE:
                     //new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
                     break;
             }
@@ -183,7 +183,7 @@ public class VirtualFloppyDrive extends DCPUHardware {
         floppy = null;
         
         if (state == STATE_BUSY) {
-            operation = new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
+            operation = new FloppyOperation(FloppyOperationType.NONE, 0, 0, Long.MAX_VALUE);
             setState(dcpu, STATE_NO_MEDIA, ERROR_EJECT);
         } else {
             setState(dcpu, STATE_NO_MEDIA);
@@ -191,25 +191,25 @@ public class VirtualFloppyDrive extends DCPUHardware {
         return ejected;
     }
 
-    private class FloppyOperation {
-
-        private static final int NONE = 0;
-        private static final int READ = 1;
-        private static final int WRITE = 2;
-        private int type;
-        private int sector;
-        private int memory;
-        private long finish;
-
-        public FloppyOperation(int type, int sector, int memory, long cycles) {
-            this.type = type;
-            this.sector = sector;
-            this.memory = memory;
-            this.finish = cycles;
-        }
-    }
-
     public FloppyDisk getDisk() {
         return floppy;
+    }
+}
+
+enum FloppyOperationType {
+    NONE, READ, WRITE;
+}
+
+class FloppyOperation extends ToStringComponent {
+    FloppyOperationType type;
+    int sector;
+    int memory;
+    long finish;
+
+    public FloppyOperation(FloppyOperationType type, int sector, int memory, long cycles) {
+        this.type = type;
+        this.sector = sector;
+        this.memory = memory;
+        this.finish = cycles;
     }
 }

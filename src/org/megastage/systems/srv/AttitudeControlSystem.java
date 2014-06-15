@@ -25,7 +25,7 @@ public class AttitudeControlSystem extends Processor {
         double angle = gyro.getRotation(geom) * world.delta;
         
         Rotation rotation = (Rotation) world.getComponent(gyro.shipEID, CompType.Rotation);
-        Quaternion shipRotation = rotation.getQuaternion4d();
+        Quaternion shipRotation = rotation.getQuaternion();
 
         Vector3d axis = gyro.axis.multiply(shipRotation);
 

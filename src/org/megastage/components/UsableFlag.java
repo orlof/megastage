@@ -1,10 +1,6 @@
 package org.megastage.components;
 
-import org.megastage.protocol.Message;
+import org.megastage.ecs.ReplicatedComponent;
 
-public class UsableFlag extends BaseComponent {
-    @Override
-    public Message replicate(int eid) {
-        return always(eid);
-    }
+public class UsableFlag extends ReplicatedComponent {
 }

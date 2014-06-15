@@ -1,7 +1,7 @@
 package org.megastage.components.dcpu;
 
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.components.transfer.MonitorData;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
@@ -54,32 +54,30 @@ public class VirtualMonitor extends DCPUHardware {
                 break;
         }
     }
-    
+
     @Override
-    public Message replicate(int eid) {
-        //Log.info("video   [" + ((int) data.videoAddr) + "] " + data.video.toString());
-        //Log.info("font    [" + ((int) data.fontAddr) + "] " + data.font.toString());
-        //Log.info("palette [" + ((int) data.paletteAddr) + "] " + data.palette.toString());
-        return data.always(eid);
-    }
-    
-    @Override
-    public Message synchronize(int eid) {
+    public boolean isDirty() {
         DCPU dcpu = (DCPU) World.INSTANCE.getComponent(dcpuEID, CompType.DCPU);
 
-        boolean videoChanged = data.videoAddr == 0 ?
+        dirty |= data.videoAddr == 0 ?
                 data.video.update(LEMUtil.defaultVideo):
                 data.video.update(dcpu.ram, data.videoAddr, 384);
 
-        boolean fontChanged = data.fontAddr == 0 ?
+        dirty |= data.fontAddr == 0 ?
                 data.font.update(LEMUtil.defaultFont):
                 data.font.update(dcpu.ram, data.fontAddr, 256);
 
-        boolean paletteChanged = data.paletteAddr == 0 ?
+        dirty |= data.paletteAddr == 0 ?
                 data.palette.update(LEMUtil.defaultPalette):
                 data.palette.update(dcpu.ram, data.paletteAddr, 16);
         
-        return replicateIfTrue(eid, videoChanged || fontChanged || paletteChanged);
+        return dirty;
+    }
+
+    
+    @Override
+    public Message synchronize(int eid) {
+        return data.synchronize(eid);
     }
 
 }

@@ -116,6 +116,7 @@ public class MainMenuState extends BaseAppState {
 
     @Override
     protected void enable() {
+        Log.info("");
         Main main = (Main)getApplication();
         main.getGuiNode().attachChild(menu);
         startMusic();
@@ -139,7 +140,7 @@ public class MainMenuState extends BaseAppState {
             stopMusic();
             setEnabled(false);
             getApplication().getInputManager().setCursorVisible(false);
-            getStateManager().attach(ClientGlobals.artemis);
+            getStateManager().attach(ClientGlobals.ecs);
         }
     }
 

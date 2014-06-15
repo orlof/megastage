@@ -1,12 +1,6 @@
 package org.megastage.components.srv;
 
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:58
- */
 public class InitializeFlag extends BaseComponent {
 }

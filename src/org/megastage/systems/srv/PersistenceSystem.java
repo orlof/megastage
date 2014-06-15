@@ -9,7 +9,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import org.megastage.components.srv.PersistenceFlag;
 import org.megastage.ecs.CompType;
 import org.megastage.protocol.Network;
 

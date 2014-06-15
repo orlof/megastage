@@ -1,5 +1,7 @@
 package org.megastage.ecs;
 
+import com.esotericsoftware.minlog.Log;
+
 public abstract class Processor {
     private long interval;
     private long wakeup;
@@ -30,6 +32,7 @@ public abstract class Processor {
     }
 
     protected void process() {
+        // Log.info(getClass().getSimpleName());
         begin();
         for (int eid = group.iterator(); eid != 0; eid = group.next()) {
             process(eid);
