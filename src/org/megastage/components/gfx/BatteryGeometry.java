@@ -8,12 +8,13 @@ import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Cylinder;
 import org.megastage.client.JME3Material;
 import org.megastage.client.JME3Electricity;
+import org.megastage.client.SpatialManager;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RotationControl;
 
 public class BatteryGeometry extends GeometryComponent {
     public void setupBattery(int eid, BatteryGeometry aThis) {
-        Node node = SpatialManager.getNode(eid);
+        Node node = SpatialManager.getOrCreateNode(eid);
         PositionControl positionControl = new  PositionControl(eid);
         RotationControl rotationControl = new  RotationControl(eid);
 

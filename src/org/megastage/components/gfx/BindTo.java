@@ -3,6 +3,7 @@ package org.megastage.components.gfx;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.client.ClientGlobals;
+import org.megastage.client.SpatialManager;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 
@@ -24,9 +25,9 @@ public class BindTo extends ReplicatedComponent {
     @Override
     public void receive(int eid) {
         if(ClientGlobals.playerEntity == eid) {
-            ClientGlobals.spatialManager.changeShip(parent);
+            SpatialManager.changeShip(parent);
         } else {
-            ClientGlobals.spatialManager.bindTo(parent, eid);
+            SpatialManager.attach(parent, eid, true);
         }
     }
 }
