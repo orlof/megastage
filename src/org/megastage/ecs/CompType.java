@@ -35,13 +35,14 @@ public class CompType {
     public static final int NodeComponent = 34;
     public static final int Orbit = 35;
     public static final int Position = 36;
-    public static final int RadarEcho = 37;
-    public static final int RadarTargetData = 38;
-    public static final int Rotation = 39;
-    public static final int SpawnPoint = 40;
-    public static final int SphereOfInfluence = 41;
-    public static final int ThermalLaserData = 42;
-    public static final int Velocity = 43;
+    public static final int PositionOffset = 37;
+    public static final int RadarEcho = 38;
+    public static final int RadarTargetData = 39;
+    public static final int Rotation = 40;
+    public static final int SpawnPoint = 41;
+    public static final int SphereOfInfluence = 42;
+    public static final int ThermalLaserData = 43;
+    public static final int Velocity = 44;
     
     public static final int DCPU = 50;
     
