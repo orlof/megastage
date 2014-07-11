@@ -7,6 +7,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Position;
 import org.megastage.client.ClientGlobals;
+import org.megastage.components.PositionOffset;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 
@@ -31,20 +32,27 @@ public class PositionControl extends AbstractControl {
         }
 
         Vector3f localPos = pos.getVector3f();
-
-        Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Position);
-        if(origoPos != null) {
-            localPos.subtractLocal(origoPos.getVector3f());
-        }
-
-        float distance = localPos.length();
-        float depth = depth(distance);
         
-        float scale = depth / distance;
-        localPos.multLocal(scale);
+        PositionOffset offset = (PositionOffset) World.INSTANCE.getComponent(eid, CompType.PositionOffset);
+        
+
+        if(spatial.getParent() == ClientGlobals.globalRotationNode) {
+            // calculate position relative to player's ship
+            Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Position);
+            if(origoPos != null) {
+                localPos.subtractLocal(origoPos.getVector3f());
+            }
+
+            // calculate depth scaling (logarithmic if distance > 20000)
+            float distance = localPos.length();
+            float depth = depth(distance);
+
+            float scale = depth / distance;
+            localPos.multLocal(scale);
+            spatial.scale(scale);
+        }
         
         spatial.setLocalTranslation(localPos);
-        spatial.scale(scale);
     }
     
     @Override

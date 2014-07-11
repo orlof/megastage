@@ -61,7 +61,7 @@ public class ShipGeometry extends GeometryComponent {
     
     @Override
     public void delete(int eid) {
-        ClientGlobals.spatialManager.deleteEntity(eid);
+        ClientGlobals.spatialManager.removeFromSceneGraph(eid);
     }
     
     public void createMapFromXML(Element element) throws DataConversionException {

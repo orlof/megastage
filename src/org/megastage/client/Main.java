@@ -60,13 +60,13 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         SoundManager.init(assetManager);
+        ExplosionNode.initialize(assetManager);
+        SpatialManager.initialize(assetManager);
 
         setPauseOnLostFocus(false);
         
         ClientGlobals.cmdHandler = new CommandHandler();
         ClientGlobals.cmdHandler.registerWithInput(inputManager);
-
-        ClientGlobals.spatialManager = new SpatialManager(this);
 
         initializeSystemNodes();
         initializeBackground();

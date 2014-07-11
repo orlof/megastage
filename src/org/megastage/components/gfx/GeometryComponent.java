@@ -15,6 +15,6 @@ public class GeometryComponent extends ReplicatedComponent {
 
     @Override
     public void delete(int eid) {
-        ClientGlobals.spatialManager.deleteEntity(eid);
+        ClientGlobals.spatialManager.removeFromSceneGraph(eid);
     }
 }

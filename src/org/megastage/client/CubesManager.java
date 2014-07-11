@@ -16,9 +16,9 @@ import org.megastage.util.Cube3dMap;
 
 public class CubesManager {
     private static CubesSettings settings;
-    private static final int CHUNK_SIZE_X = 24;
+    private static final int CHUNK_SIZE_X = 16;
     private static final int CHUNK_SIZE_Y = 16;
-    private static final int CHUNK_SIZE_Z = 32;
+    private static final int CHUNK_SIZE_Z = 16;
     
     public static void init(SimpleApplication appl) {
         settings = new CubesSettings(appl);
@@ -35,12 +35,12 @@ public class CubesManager {
     }
 
     public static BlockTerrainControl getControl(Cube3dMap map) {
-        Vector3Int chunkSizes = new Vector3Int(
-                map.xsize / CHUNK_SIZE_X + 1, 
-                map.ysize / CHUNK_SIZE_Y + 1, 
-                map.zsize / CHUNK_SIZE_Z + 1);
+//        Vector3Int chunkSizes = new Vector3Int(
+//                map.xsize / CHUNK_SIZE_X + 1, 
+//                map.ysize / CHUNK_SIZE_Y + 1, 
+//                map.zsize / CHUNK_SIZE_Z + 1);
 
-        return new BlockTerrainControl(settings, chunkSizes);
+        return new BlockTerrainControl(settings, new Vector3Int(3, 3, 3));
     }
 
     static Class<? extends Block> getBlock(char c) {
