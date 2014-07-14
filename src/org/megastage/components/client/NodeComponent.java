@@ -5,8 +5,4 @@ import org.megastage.ecs.BaseComponent;
 
 public class NodeComponent extends BaseComponent {
     public EntityNode node;
-
-    public NodeComponent(EntityNode node) {
-        this.node = node;
-    }
 }

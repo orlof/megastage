@@ -75,7 +75,7 @@ public class CompType {
     public static final int VirtualRadar = 64;
     static { parent[64] = 51; }
     public static final int VirtualThermalLaser = 65;
-   static { parent[65] = 51; }
+    static { parent[65] = 51; }
  
     public static final int BindTo = 69;
 

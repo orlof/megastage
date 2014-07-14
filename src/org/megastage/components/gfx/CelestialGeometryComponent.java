@@ -1,15 +1,10 @@
 package org.megastage.components.gfx;
 
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 import org.megastage.client.ClientGlobals;
 import org.megastage.client.EntityNode;
-import org.megastage.client.JME3Material;
 import org.megastage.client.SpatialManager;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RotationControl;

@@ -1,43 +1,24 @@
 package org.megastage.client;
 
-import org.megastage.client.controls.ExplosionControl;
 import com.esotericsoftware.minlog.Log;
-import com.jme3.light.PointLight;
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
-import com.jme3.scene.LightNode;
-import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.VertexBuffer;
-import com.jme3.scene.shape.Sphere;
-import com.jme3.util.BufferUtils;
-import jmeplanet.FractalDataSource;
-import jmeplanet.Planet;
-import jmeplanet.PlanetAppState;
-import jmeplanet.test.Utility;
 import org.megastage.client.controls.ImposterPositionControl;
 import org.megastage.client.controls.PositionControl;
-import org.megastage.client.controls.RotationControl;
-import org.megastage.components.gfx.PlanetGeometry;
-import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.client.NodeComponent;
-import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.util.ID;
 
 public class SpatialManager {
     public static EntityNode getOrCreateNode(int eid) {
-        EntityNode node = getNode(eid);
+        NodeComponent comp = (NodeComponent) World.INSTANCE.getOrCreateComponent(eid, CompType.NodeComponent, NodeComponent.class);
  
-        if(node == null) {
-            node = createNode(eid);
+        if(comp.node == null) {
+            comp.node = new EntityNode(eid);
         }
         
-        return node;
+        return comp.node;
     }
     
     private static int getEntity(Node node) {
@@ -49,23 +30,8 @@ public class SpatialManager {
         return 0;
     }
     
-    private static EntityNode getNode(int eid) {
-        NodeComponent nodeComponent = (NodeComponent) World.INSTANCE.getComponent(eid, CompType.NodeComponent);
-        return nodeComponent.node;
-    }
-    
-    private static EntityNode createNode(int eid) {
-        EntityNode node = new EntityNode(eid);
-        node.attachChild(new Node("offset"));
 
-        World.INSTANCE.setComponent(eid, CompType.NodeComponent, new NodeComponent(node));
-        
-        return node;
-    }
-    
-
-    
-    
+    // NOT VERIFIED
     
     public static int getUsableEntity(Node node, boolean onlyUsable) {
         int eid = getEntity(node);
@@ -117,11 +83,6 @@ public class SpatialManager {
         ClientGlobals.playerNode.setLocalTranslation(0, 0, 0);
     }
 
-    
-    
-    
-
-    
     public void imposter(int eid, boolean gfxVisible) {
         Node node = getOrCreateNode(eid);
 
@@ -152,5 +113,4 @@ public class SpatialManager {
     private boolean draw(Spatial s) {
         return s.getCullHint() != Spatial.CullHint.Always;
     }
-    
 }
