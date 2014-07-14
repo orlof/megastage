@@ -1,12 +1,21 @@
 package org.megastage.util;
 
+import com.cubes.Block;
+import com.cubes.BlockTerrainControl;
 import com.cubes.Vector3Int;
 import com.esotericsoftware.minlog.Log;
+import com.jme3.effect.ParticleEmitter;
 import com.jme3.math.Vector3f;
 import java.util.LinkedList;
-import org.megastage.client.ClientGlobals;
+import org.megastage.client.CubesManager;
+import org.megastage.client.EntityNode;
+import org.megastage.client.SoundManager;
+import org.megastage.client.SpatialManager;
+import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.ecs.CompType;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.ToStringComponent;
+import org.megastage.ecs.World;
 
 public class Cube3dMap extends ToStringComponent {
     private final static transient int INITIAL_CAPACITY = 16;
@@ -96,7 +105,7 @@ public class Cube3dMap extends ToStringComponent {
         version++;
     }
 
-    public Vector3f getCenter() {
+    public Vector3f getCenterOfMass() {
         return new Vector3f(
                 getCenter(xtotal),
                 getCenter(ytotal),
@@ -142,7 +151,7 @@ public class Cube3dMap extends ToStringComponent {
     }
 
     public double getCollisionRadius() {
-        return getCenter().length();
+        return getCenterOfMass().length();
     }
 
     public double getMass() {
@@ -196,7 +205,30 @@ public class Cube3dMap extends ToStringComponent {
         @Override
         public void receive(int eid) {
             Log.info(ID.get(eid) + toString());
-            ClientGlobals.spatialManager.updateShipBlock(eid, this);
+
+            ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponent(eid, CompType.ShipGeometry);
+            Cube3dMap theMap = sg.map;
+            theMap.set(x, y, z, type, event);
+
+            EntityNode node = SpatialManager.getOrCreateNode(eid);
+            BlockTerrainControl ctrl = node.offset.getControl(BlockTerrainControl.class);
+
+            if(type == 0) {
+                ctrl.removeBlock(x, y, z);
+                if(event == BlockChange.BREAK) {
+                    ParticleEmitter pe = (ParticleEmitter) node.getChild("BlockSparks");
+
+                    SoundManager.get(SoundManager.EXPLOSION_3).playInstance();
+
+                    pe.killAllParticles();
+                    pe.setLocalTranslation(x, y, z);
+                    pe.emitAllParticles();
+                    //pe.addControl(new DeleteControl(3000));
+                }
+            } else {
+                Class<? extends Block> block = CubesManager.getBlock(type);
+                ctrl.setBlock(x, y, z, block);
+            }
         }
     }
 }

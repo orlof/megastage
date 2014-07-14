@@ -5,7 +5,7 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.AbstractControl;
-import org.megastage.client.ClientGlobals;
+import org.megastage.client.SpatialManager;
 import org.megastage.components.transfer.RadarTargetData;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
@@ -22,10 +22,9 @@ public class LookAtControl extends AbstractControl {
         RadarTargetData data = (RadarTargetData) World.INSTANCE.getComponent(eid, CompType.RadarTargetData);
         if(data == null || data.eid == 0) return;
 
-        Node tn = ClientGlobals.spatialManager.getOrCreateNode(data.eid);
+        Node tn = SpatialManager.getOrCreateNode(data.eid);
         
         spatial.lookAt(tn.getWorldTranslation(), Vector3f.UNIT_Y.clone());
-        //spatial.lookAt(new Vector3f(0,10000,0), Vector3f.UNIT_Y.clone());
     }
 
     @Override

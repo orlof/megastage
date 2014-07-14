@@ -61,7 +61,6 @@ public class Main extends SimpleApplication {
     public void simpleInitApp() {
         SoundManager.init(assetManager);
         ExplosionNode.initialize(assetManager);
-        SpatialManager.initialize(assetManager);
 
         setPauseOnLostFocus(false);
         

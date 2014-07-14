@@ -1,8 +1,10 @@
 package org.megastage.components.gfx;
 
+import com.jme3.scene.Node;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.client.ClientGlobals;
+import org.megastage.client.EntityNode;
 import org.megastage.client.SpatialManager;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
@@ -13,7 +15,6 @@ public class BindTo extends ReplicatedComponent {
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
         this.parent = parentEid;
-        
         return null;
     }
 
@@ -27,7 +28,9 @@ public class BindTo extends ReplicatedComponent {
         if(ClientGlobals.playerEntity == eid) {
             SpatialManager.changeShip(parent);
         } else {
-            SpatialManager.attach(parent, eid, true);
+            EntityNode parentNode = SpatialManager.getOrCreateNode(parent);
+            EntityNode childNode = SpatialManager.getOrCreateNode(eid);
+            parentNode.offset.attachChild(childNode);
         }
     }
 }

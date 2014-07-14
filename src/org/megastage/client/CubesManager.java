@@ -43,7 +43,7 @@ public class CubesManager {
         return new BlockTerrainControl(settings, new Vector3Int(3, 3, 3));
     }
 
-    static Class<? extends Block> getBlock(char c) {
+    public static Class<? extends Block> getBlock(char c) {
         switch(c) {
             case '#':
                 return Combi.class;
