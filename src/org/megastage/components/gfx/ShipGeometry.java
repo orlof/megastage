@@ -20,7 +20,7 @@ import org.megastage.client.controls.RotationControl;
 import org.megastage.components.Mass;
 import org.megastage.components.srv.CollisionType;
 import org.megastage.ecs.BaseComponent;
-import org.megastage.ecs.CompType;
+import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 import org.megastage.util.Cube3dMap;
@@ -28,7 +28,7 @@ import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.Vector3d;
 
 
-public class ShipGeometry extends GeometryComponent {
+public class ShipGeometry extends ReplicatedComponent {
     public Cube3dMap map = new Cube3dMap();
     
     @Override
@@ -60,6 +60,18 @@ public class ShipGeometry extends GeometryComponent {
     }
 
     @Override
+    public void receive(int eid) {
+        super.receive(eid);
+
+        EntityNode node = SpatialManager.getOrCreateNode(eid);
+        node.addControl(new PositionControl(eid));
+        node.addControl(new RotationControl(eid));
+
+        initGeometry(node.offset, eid);
+
+        ClientGlobals.globalRotationNode.attachChild(node);
+    }
+
     protected void initGeometry(Node node, int eid) {
         Vector3f centerOfMass = map.getCenterOfMass();
         node.setLocalTranslation(centerOfMass.negateLocal());
@@ -86,6 +98,12 @@ public class ShipGeometry extends GeometryComponent {
         ParticleEmitter pe = ExplosionNode.blockSparks(ClientGlobals.app.getAssetManager());
         node.attachChild(pe);
         pe.setLocalTranslation(centerOfMass);
+    }
+
+    @Override
+    public void delete(int eid) {
+        EntityNode shipNode = SpatialManager.getOrCreateNode(eid);
+        shipNode.removeFromParent();
     }
 
     public double getInertia(Vector3d axis) {

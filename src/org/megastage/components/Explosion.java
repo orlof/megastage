@@ -1,6 +1,9 @@
 package org.megastage.components;
 
-import org.megastage.client.ClientGlobals;
+import org.megastage.client.EntityNode;
+import org.megastage.client.ExplosionNode;
+import org.megastage.client.SpatialManager;
+import org.megastage.client.controls.ExplosionControl;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
@@ -12,13 +15,15 @@ public class Explosion extends ReplicatedComponent {
 
     @Override
     public void receive(int eid) {
-        boolean noExplosion = !World.INSTANCE.hasComponent(eid, CompType.Explosion);
+        if(!World.INSTANCE.hasComponent(eid, CompType.Explosion)) {
+            ExplosionNode explosionNode = new ExplosionNode("ExplosionNode");
+            explosionNode.addControl(new ExplosionControl(eid));
+
+            EntityNode node = SpatialManager.getOrCreateNode(eid);
+            node.offset.attachChild(explosionNode);
+        }
 
         World.INSTANCE.setComponent(eid, this);
-        
-        if(noExplosion) {
-            ClientGlobals.spatialManager.setupExplosion(eid);
-        }
     }
 
     public void setState(int state) {

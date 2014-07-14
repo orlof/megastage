@@ -10,7 +10,7 @@ import com.jme3.scene.shape.Dome;
 import org.megastage.client.JME3Material;
 import org.megastage.client.controls.LookAtControl;
 
-public class RadarGeometry extends GeometryComponent {
+public class RadarGeometry extends ItemGeometryComponent {
 
     @Override
     protected void initGeometry(Node node, int eid) {

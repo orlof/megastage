@@ -18,7 +18,7 @@ import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 import org.megastage.util.Vector3d;
     
-public class ThermalLaserGeometry extends GeometryComponent {
+public class ThermalLaserGeometry extends ItemGeometryComponent {
     public float length;
     public Vector3d attackVector;
     

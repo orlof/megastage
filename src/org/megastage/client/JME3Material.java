@@ -53,14 +53,14 @@ public class JME3Material {
         spatial.setMaterial(getLightingMaterial(color));
     }
     
-    public static Material getTexturedMaterial(String filename) {
-        Material mat = getLightingMaterial(ColorRGBA.Gray);
+    public static Material getTexturedMaterial(ColorRGBA color, String filename) {
+        Material mat = getLightingMaterial(color);
         mat.setTexture("DiffuseMap", getTexture(filename));
         return mat;
     }
     
-    public static void setTexturedMaterial(Spatial spatial, String filename) {
-        spatial.setMaterial(getTexturedMaterial(filename));
+    public static void setTexturedMaterial(Spatial spatial, ColorRGBA color, String filename) {
+        spatial.setMaterial(getTexturedMaterial(color, filename));
     }
 
     public static Texture getTexture(String name) {

@@ -12,7 +12,7 @@ import org.megastage.client.JME3Electricity;
 import org.megastage.client.JME3Material;
 import org.megastage.client.controls.ForceFieldControl;
 
-public class ForceFieldGeometry extends GeometryComponent {
+public class ForceFieldGeometry extends ItemGeometryComponent {
 
     @Override
     protected void initGeometry(Node node, int eid) {

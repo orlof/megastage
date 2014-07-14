@@ -7,7 +7,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import org.megastage.client.JME3Material;
 
-public class FloppyDriveGeometry extends GeometryComponent {
+public class FloppyDriveGeometry extends ItemGeometryComponent {
 
     @Override
     protected void initGeometry(Node node, int eid) {

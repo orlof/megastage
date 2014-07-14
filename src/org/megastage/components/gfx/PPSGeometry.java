@@ -8,7 +8,7 @@ import com.jme3.scene.shape.Torus;
 import org.megastage.client.JME3Material;
 import org.megastage.client.controls.RandomSpinnerControl;
 
-public class PPSGeometry extends GeometryComponent {
+public class PPSGeometry extends ItemGeometryComponent {
     @Override
     protected void initGeometry(Node node, int eid) {
         node.attachChild(createBase());

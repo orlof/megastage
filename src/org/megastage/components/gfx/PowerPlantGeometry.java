@@ -9,7 +9,7 @@ import com.jme3.scene.shape.Cylinder;
 import org.megastage.client.JME3Electricity;
 import org.megastage.client.JME3Material;
 
-public class PowerPlantGeometry extends GeometryComponent {
+public class PowerPlantGeometry extends ItemGeometryComponent {
     @Override
     protected void initGeometry(Node node, int eid) {
         node.attachChild(createBase());

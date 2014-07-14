@@ -11,7 +11,7 @@ import org.megastage.client.controls.GyroscopeControl;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class GyroscopeGeometry extends GeometryComponent {
+public class GyroscopeGeometry extends ItemGeometryComponent {
     public float angleX, angleY, angleZ;
 
     @Override

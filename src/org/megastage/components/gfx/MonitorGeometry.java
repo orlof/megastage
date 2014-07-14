@@ -20,7 +20,7 @@ import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 
-public class MonitorGeometry extends GeometryComponent {
+public class MonitorGeometry extends ItemGeometryComponent {
     public float width, height;
 
     @Override

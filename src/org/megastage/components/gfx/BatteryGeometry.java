@@ -9,7 +9,7 @@ import com.jme3.scene.shape.Cylinder;
 import org.megastage.client.JME3Material;
 import org.megastage.client.JME3Electricity;
 
-public class BatteryGeometry extends GeometryComponent {
+public class BatteryGeometry extends ItemGeometryComponent {
 
     @Override
     protected void initGeometry(Node node, int eid) {

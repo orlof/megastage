@@ -13,7 +13,7 @@ import org.megastage.client.controls.EngineControl;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RotationControl;
 
-public class EngineGeometry extends GeometryComponent {
+public class EngineGeometry extends ItemGeometryComponent {
 
     @Override
     protected void initGeometry(Node node, int eid) {
