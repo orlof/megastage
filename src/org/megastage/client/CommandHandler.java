@@ -78,7 +78,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
                         return;
                     }
 
-                    eid = ClientGlobals.spatialManager.getUsableEntity(target, true);
+                    eid = SpatialManager.getUsableEntity(target, true);
                     //Log.info("Pick entity: " + ID.get(entity));
                     if(eid != 0) break;
                     target = target.getParent();
@@ -414,10 +414,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
         inputManager.addListener(this, walkMappings);
 
-        ClientGlobals.app.enqueue(new Callable() { @Override public Object call() throws Exception {
-            ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Inherit);
-            return null;
-        }});
+        ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Inherit);
     }
 
     private void exitWalkMode() {
@@ -426,10 +423,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
         mode = CharacterMode.NONE;
         inputManager.clearMappings();
 
-        ClientGlobals.app.enqueue(new Callable() { @Override public Object call() throws Exception {
-            ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Always);
-            return null;
-        }});
+        ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Always);
     }
 
     public void initDCPUMode() {
@@ -465,8 +459,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
         inputManager.addMapping("MENU_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
         inputManager.addListener(this, menuMappings);
         
-        ClientGlobals.app.getStateManager().attach(ClientGlobals.dcpuMenuState);
-        ClientGlobals.dcpuMenuState.setEnabled(true);
+        ClientGlobals.setAppStates(DCPUMenuState.class, ECSState.class);
     }
 
     private void exitMenuMode() {
@@ -474,7 +467,6 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
         mode = CharacterMode.NONE;
         inputManager.clearMappings();
-        ClientGlobals.dcpuMenuState.setEnabled(false);
-        // ClientGlobals.app.getStateManager().detach(ClientGlobals.dcpuMenuState);
+        ClientGlobals.setAppStates(ECSState.class);
     }
 }

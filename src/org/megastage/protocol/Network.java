@@ -1,8 +1,8 @@
 package org.megastage.protocol;
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryonet.Connection;
+import org.megastage.components.BlockChange;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.components.Mass;
 import org.megastage.components.transfer.MonitorData;
@@ -53,7 +53,6 @@ import org.megastage.protocol.UserCommand.Teleport;
 import org.megastage.protocol.UserCommand.Unbuild;
 import org.megastage.protocol.UserCommand.Unpick;
 import org.megastage.util.Cube3dMap;
-import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.RAM;
 import org.megastage.util.Vector3d;
 

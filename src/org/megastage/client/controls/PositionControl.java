@@ -33,9 +33,6 @@ public class PositionControl extends AbstractControl {
 
         Vector3f localPos = pos.getVector3f();
         
-        PositionOffset offset = (PositionOffset) World.INSTANCE.getComponent(eid, CompType.PositionOffset);
-        
-
         if(spatial.getParent() == ClientGlobals.globalRotationNode) {
             // calculate position relative to player's ship
             Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Position);

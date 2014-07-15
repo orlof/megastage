@@ -79,19 +79,11 @@ public class Main extends SimpleApplication {
         //stateManager.attach(planetAppState);
 
         // Add ECS app state
-        ClientGlobals.ecs = new ECSState();
-
         GuiGlobals.initialize(this);
         Styles styles = GuiGlobals.getInstance().getStyles();
-        
         LemurStyles.initializeStyles(styles);
-        stateManager.attach(new MainMenuState());
 
-        ClientGlobals.dcpuMenuState = new DCPUMenuState(); 
-
-//        AmbientLight ambient = new AmbientLight();
-//        ambient.setColor(ColorRGBA.DarkGray);
-//        rootNode.addLight(ambient);
+        ClientGlobals.setAppStates(MainMenuState.class);
     }
 
     @Override

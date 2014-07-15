@@ -38,6 +38,7 @@ public abstract class Processor {
             process(eid);
         }
         end();
+        // Log.info("Exit " + getClass().getSimpleName());
     }
 
     protected void begin() {}

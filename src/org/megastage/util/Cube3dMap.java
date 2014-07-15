@@ -1,37 +1,18 @@
 package org.megastage.util;
 
-import com.cubes.Block;
-import com.cubes.BlockTerrainControl;
 import com.cubes.Vector3Int;
-import com.esotericsoftware.minlog.Log;
-import com.jme3.effect.ParticleEmitter;
 import com.jme3.math.Vector3f;
-import java.util.LinkedList;
-import org.megastage.client.CubesManager;
-import org.megastage.client.EntityNode;
-import org.megastage.client.SoundManager;
-import org.megastage.client.SpatialManager;
-import org.megastage.components.gfx.ShipGeometry;
-import org.megastage.ecs.CompType;
-import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.ToStringComponent;
-import org.megastage.ecs.World;
 
 public class Cube3dMap extends ToStringComponent {
     private final static transient int INITIAL_CAPACITY = 16;
 
     public char[][][] data;
     public int xsize, ysize, zsize;
-    public int xtotal, ytotal, ztotal;
+    public int xsum, ysum, zsum;
     public int count;
     public int version = 0;
     
-    public transient LinkedList<BlockChange> pending;
-    
-    public void trackChanges() {
-        pending = new LinkedList<>();
-    }
-
     public char get(Vector3Int block) {
         return get(block.getX(), block.getY(), block.getZ());
     }
@@ -51,7 +32,7 @@ public class Cube3dMap extends ToStringComponent {
         return ydata[z];
     }
 
-    public void set(int x, int y, int z, char value, char event) {
+    public void set(int x, int y, int z, char value) {
         char old = get(x, y, z);
         
         if(value == old) {
@@ -59,19 +40,19 @@ public class Cube3dMap extends ToStringComponent {
         }
         
         if(value != 0) {
-            if(x > xsize) xsize = x;
-            if(y > ysize) ysize = y;
-            if(z > zsize) zsize = z;
+            if(x >= xsize) xsize = x+1;
+            if(y >= ysize) ysize = y+1;
+            if(z >= zsize) zsize = z+1;
 
-            xtotal += x;
-            ytotal += y;
-            ztotal += z;
+            xsum += x;
+            ysum += y;
+            zsum += z;
 
             count++;
         } else {
-            xtotal -= x;
-            ytotal -= y;
-            ztotal -= z;
+            xsum -= x;
+            ysum -= y;
+            zsum -= z;
             
             count--;
         }
@@ -101,26 +82,29 @@ public class Cube3dMap extends ToStringComponent {
         }
 
         data[x][y][z] = value;
-        if(pending != null) pending.add(new BlockChange(x, y, z, value, event));
         version++;
     }
 
-    public Vector3f getCenterOfMass() {
-        return new Vector3f(
-                getCenter(xtotal),
-                getCenter(ytotal),
-                getCenter(ztotal));
+    public Vector3d getCenter() {
+        return new Vector3d(xsize / 2.0, ysize / 2.0, zsize / 2.0);
     }
     
-    private float getCenter(float total) {
-        return total / count + 0.5f;
+    public Vector3f getCenterOfMass() {
+        return new Vector3f(
+                getCenter(xsum),
+                getCenter(ysum),
+                getCenter(zsum));
+    }
+    
+    private float getCenter(float sum) {
+        return sum / count + 0.5f;
     }
 
-    public Vector3d getCenter3d() {
+    public Vector3d getCenterOfMass3d() {
         return new Vector3d(
-                getCenter3d(xtotal),
-                getCenter3d(ytotal),
-                getCenter3d(ztotal));
+                getCenter3d(xsum),
+                getCenter3d(ysum),
+                getCenter3d(zsum));
     }
     
     private double getCenter3d(double total) {
@@ -151,7 +135,7 @@ public class Cube3dMap extends ToStringComponent {
     }
 
     public double getCollisionRadius() {
-        return getCenterOfMass().length();
+        return getCenter().length();
     }
 
     public double getMass() {
@@ -160,14 +144,14 @@ public class Cube3dMap extends ToStringComponent {
 
     public double getInertia(Vector3d axis) {
         // I = mr2
-        double xc = getCenter(xtotal);
-        double yc = getCenter(ytotal);
-        double zc = getCenter(ztotal);
+        double xc = getCenter(xsum);
+        double yc = getCenter(ysum);
+        double zc = getCenter(zsum);
         
         double inertia = 0;
-        for(int x=0; x <= xsize; x++) {
-            for(int y=0; y <= ysize; y++) {
-                for(int z=0; z <= zsize; z++) {
+        for(int x=0; x < xsize; x++) {
+            for(int y=0; y < ysize; y++) {
+                for(int z=0; z < zsize; z++) {
                     if(get(x, y, z) == '#') {
                         // mass = 1000kg
                         
@@ -183,52 +167,4 @@ public class Cube3dMap extends ToStringComponent {
         return inertia;
     }
     
-    public static class BlockChange extends ReplicatedComponent {
-        public static final transient char UNBUILD = 0;
-        public static final transient char BREAK = 1;
-        public static final transient char BUILD = 2;
-        
-        public int x, y, z;
-        public char type;
-        public char event;
-
-        public BlockChange() {}
-        
-        private BlockChange(int x, int y, int z, char value, char event) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.type = value;
-            this.event = event;
-        }
-
-        @Override
-        public void receive(int eid) {
-            Log.info(ID.get(eid) + toString());
-
-            ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponent(eid, CompType.ShipGeometry);
-            Cube3dMap theMap = sg.map;
-            theMap.set(x, y, z, type, event);
-
-            EntityNode node = SpatialManager.getOrCreateNode(eid);
-            BlockTerrainControl ctrl = node.offset.getControl(BlockTerrainControl.class);
-
-            if(type == 0) {
-                ctrl.removeBlock(x, y, z);
-                if(event == BlockChange.BREAK) {
-                    ParticleEmitter pe = (ParticleEmitter) node.getChild("BlockSparks");
-
-                    SoundManager.get(SoundManager.EXPLOSION_3).playInstance();
-
-                    pe.killAllParticles();
-                    pe.setLocalTranslation(x, y, z);
-                    pe.emitAllParticles();
-                    //pe.addControl(new DeleteControl(3000));
-                }
-            } else {
-                Class<? extends Block> block = CubesManager.getBlock(type);
-                ctrl.setBlock(x, y, z, block);
-            }
-        }
-    }
 }

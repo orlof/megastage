@@ -52,7 +52,6 @@ public class ClientNetworkSystem extends Processor {
 
     @Override
     protected void process() {
-        Log.info("");
         if(ClientGlobals.userCommand.count > 0) {
             client.sendUDP(ClientGlobals.userCommand);
             ClientGlobals.userCommand.reset();

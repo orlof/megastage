@@ -3,6 +3,7 @@ package org.megastage.systems.srv;
 import org.megastage.ecs.World;
 import com.esotericsoftware.minlog.Log;
 import java.util.Random;
+import org.megastage.components.BlockChange;
 import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.components.gfx.ShipGeometry;
@@ -12,7 +13,6 @@ import org.megastage.server.ForceFieldHit;
 import org.megastage.server.Hit;
 import org.megastage.server.NoHit;
 import org.megastage.server.ShipStructureHit;
-import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.Vector3d;
 
 public class ThermalLaserSystem extends Processor {
@@ -52,7 +52,7 @@ public class ThermalLaserSystem extends Processor {
 
                         double shotPower = world.delta * vtlComponent.wattage;
                         if(shotPower > 50.0 * random.nextDouble()) {
-                            geom.map.set(shit.block.getX(), shit.block.getY(), shit.block.getZ(), (char) 0, BlockChange.BREAK);
+                            geom.map.set(shit.block.getX(), shit.block.getY(), shit.block.getZ(), (char) 0);
                         }
                         
                     } else {

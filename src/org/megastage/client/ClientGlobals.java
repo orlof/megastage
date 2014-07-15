@@ -1,8 +1,11 @@
 package org.megastage.client;
 
+import com.jme3.app.state.AppState;
+import com.jme3.app.state.AppStateManager;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import com.jme3.ui.Picture;
+import java.util.HashMap;
 import org.megastage.protocol.UserCommand;
 import org.megastage.systems.client.ClientNetworkSystem;
 
@@ -32,14 +35,43 @@ public class ClientGlobals {
     public static final UserCommand userCommand = new UserCommand();
     public static Main app;
     public static CommandHandler cmdHandler;
-    public static SpatialManager spatialManager;
-    public static ECSState ecs;
     public static String serverHost = "localhost";
     public static Camera cam;
     public static Picture crosshair;
     public static String player;
-    public static DCPUMenuState dcpuMenuState;
     public static String[] bootroms;
     public static String[] floppies;
+
+    public static final HashMap<Class<?>, AppState> appStates = new HashMap<>(); 
+
+    static {
+        appStates.put(ECSState.class, new ECSState());
+        appStates.put(MainMenuState.class, new MainMenuState());
+        appStates.put(DCPUMenuState.class, new DCPUMenuState()); 
+    }
+    
+    public static void setAppStates(Class... enabledAppStates) {
+        AppStateManager mgr = app.getStateManager();
+        for(AppState appState: appStates.values()) {
+            
+            if(isInstance(appState, enabledAppStates)) {
+                mgr.attach(appState);
+                appState.setEnabled(true);
+            } else {
+                mgr.detach(appState);
+                appState.setEnabled(false);
+            }
+        }
+    }
+    
+    private static boolean isInstance(AppState appState, Class[] types) {
+        for(Class type: types) {
+            if(type.isInstance(appState)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 }
 

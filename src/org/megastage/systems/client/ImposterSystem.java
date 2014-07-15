@@ -1,6 +1,7 @@
 package org.megastage.systems.client;
 
 import org.megastage.client.ClientGlobals;
+import org.megastage.client.SpatialManager;
 import org.megastage.components.Position;
 import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.ecs.CompType;
@@ -41,6 +42,6 @@ public class ImposterSystem extends Processor {
         double d = origo.distance(coord);
         boolean visible = d < cutoff;
         
-        ClientGlobals.spatialManager.imposter(eid, visible);
+        SpatialManager.imposter(eid, visible);
     }
 }

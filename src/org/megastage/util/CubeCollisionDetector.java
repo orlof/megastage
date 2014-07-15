@@ -23,7 +23,7 @@ public class CubeCollisionDetector {
 
         // calculate coordinates for center of block
         // center of mass is not equal to center of block!
-        Vector3d coord = new Vector3d(8,8,8).sub(geom.map.getCenter3d());
+        Vector3d coord = new Vector3d(8,8,8).sub(geom.map.getCenterOfMass3d());
         coord = coord.multiply(rot.getQuaternion());
         coord = coord.add(target.coord);
                 

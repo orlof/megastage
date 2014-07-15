@@ -10,7 +10,7 @@ import org.megastage.protocol.PlayerConnection;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.megastage.ecs.BaseComponent;
+import org.megastage.components.BlockChange;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
@@ -21,6 +21,7 @@ import org.megastage.components.Mode;
 import org.megastage.components.dcpu.DCPU;
 import org.megastage.components.dcpu.VirtualFloppyDrive;
 import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.components.srv.BlockChanges;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.Group;
 import org.megastage.ecs.Processor;
@@ -39,7 +40,6 @@ import org.megastage.protocol.UserCommand.Unbuild;
 import org.megastage.server.TemplateManager;
 import org.megastage.util.Bag;
 import org.megastage.util.Cube3dMap;
-import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.ID;
 import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
@@ -233,11 +233,13 @@ public class NetworkSystem extends Processor {
         }
 
         if(cmd.build != null) {
-            build(connection, cmd.build, geom.map);
+            BlockChanges changes = (BlockChanges) world.getComponent(bindTo.parent, CompType.BlockChanges);
+            build(connection, cmd.build, geom.map, changes);
         }
         
         if(cmd.unbuild != null) {
-            unbuild(connection, cmd.unbuild, geom.map);
+            BlockChanges changes = (BlockChanges) world.getComponent(bindTo.parent, CompType.BlockChanges);
+            unbuild(connection, cmd.unbuild, geom.map, changes);
         }
         
         if(cmd.teleport != null) {
@@ -391,7 +393,7 @@ public class NetworkSystem extends Processor {
         }
     }
 
-    private void build(PlayerConnection connection, Build build, Cube3dMap map) {
+    private void build(PlayerConnection connection, Build build, Cube3dMap map, BlockChanges changes) {
         if(build.x < 0 || build.y < 0 || build.z < 0) {
             return;
         }
@@ -400,10 +402,11 @@ public class NetworkSystem extends Processor {
             return;
         }
 
-        map.set(build.x, build.y, build.z, '#', BlockChange.BUILD);
+        map.set(build.x, build.y, build.z, '#');
+        changes.changes.add(new BlockChange(build.x, build.y, build.z, '#', BlockChange.BUILD));
     }
 
-    private void unbuild(PlayerConnection connection, Unbuild unbuild, Cube3dMap map) {
+    private void unbuild(PlayerConnection connection, Unbuild unbuild, Cube3dMap map, BlockChanges changes) {
         if(unbuild.x < 0 || unbuild.y < 0 || unbuild.z < 0) {
             return;
         }
@@ -412,7 +415,8 @@ public class NetworkSystem extends Processor {
             return;
         }
 
-        map.set(unbuild.x, unbuild.y, unbuild.z, (char) 0, BlockChange.UNBUILD);
+        map.set(unbuild.x, unbuild.y, unbuild.z, (char) 0);
+        changes.changes.add(new BlockChange(unbuild.x, unbuild.y, unbuild.z, (char) 0, BlockChange.UNBUILD));
     }
 
     private void teleport(PlayerConnection connection, UserCommand.Teleport teleport) {

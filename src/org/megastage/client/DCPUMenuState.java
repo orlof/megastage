@@ -28,6 +28,7 @@ public class DCPUMenuState extends BaseAppState {
     private AudioNode music;
 
     public DCPUMenuState() {
+        setEnabled(false);
     }
 
     @Override

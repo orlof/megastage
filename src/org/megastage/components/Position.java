@@ -51,7 +51,7 @@ public class Position extends ReplicatedComponent {
             
             ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponent(bindTo.parent, CompType.ShipGeometry);
             if(sg != null) {
-                coord = coord.sub(sg.map.getCenter3d());
+                coord = coord.sub(sg.map.getCenterOfMass3d());
 
                 Rotation shipRot = (Rotation) World.INSTANCE.getComponent(bindTo.parent, CompType.Rotation);
                 Quaternion shipRotQ = shipRot.getQuaternion();
@@ -80,7 +80,7 @@ public class Position extends ReplicatedComponent {
         
         Vector3d coord = new Vector3d(block.getX() + offset, block.getY() + offset, block.getZ() + offset);
         ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponent(eid, CompType.ShipGeometry);
-        coord = coord.sub(sg.map.getCenter3d());
+        coord = coord.sub(sg.map.getCenterOfMass3d());
 
         Rotation shipRot = (Rotation) World.INSTANCE.getComponent(eid, CompType.Rotation);
         Quaternion shipRotQ = shipRot.getQuaternion();

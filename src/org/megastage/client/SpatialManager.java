@@ -77,13 +77,14 @@ public class SpatialManager {
 
         ClientGlobals.playerParentEntity = shipEid;
 
-        Node shipNode = getOrCreateNode(shipEid);
+        EntityNode shipNode = getOrCreateNode(shipEid);
         ClientGlobals.playerParentNode.attachChild(shipNode);
+        shipNode.offset.attachChild(ClientGlobals.playerNode);
         //attach(shipNode, ClientGlobals.playerNode, true);
         ClientGlobals.playerNode.setLocalTranslation(0, 0, 0);
     }
 
-    public void imposter(int eid, boolean gfxVisible) {
+    public static void imposter(int eid, boolean gfxVisible) {
         Node node = getOrCreateNode(eid);
 
         for(Spatial s: node.getChildren()) {
@@ -110,7 +111,7 @@ public class SpatialManager {
         }
     }
     
-    private boolean draw(Spatial s) {
+    private static boolean draw(Spatial s) {
         return s.getCullHint() != Spatial.CullHint.Always;
     }
 }

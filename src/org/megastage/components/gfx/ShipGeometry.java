@@ -22,9 +22,7 @@ import org.megastage.components.srv.CollisionType;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
-import org.megastage.protocol.Message;
 import org.megastage.util.Cube3dMap;
-import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.Vector3d;
 
 
@@ -44,22 +42,6 @@ public class ShipGeometry extends ReplicatedComponent {
     }
 
     @Override
-    public boolean isDirty() {
-        return map.pending != null && map.pending.size() > 0;
-    }
-
-    @Override
-    public Message synchronize(int eid) {
-        BlockChange change = map.pending.remove();
-        return change.synchronize(eid);
-    }
-    
-    @Override
-    public void initialize(int eid) {
-        map.trackChanges();
-    }
-
-    @Override
     public void receive(int eid) {
         super.receive(eid);
 
@@ -68,6 +50,7 @@ public class ShipGeometry extends ReplicatedComponent {
         node.addControl(new RotationControl(eid));
 
         initGeometry(node.offset, eid);
+        node.setOffset(map.getCenterOfMass());
 
         ClientGlobals.globalRotationNode.attachChild(node);
     }
@@ -129,7 +112,7 @@ public class ShipGeometry extends ReplicatedComponent {
             for(int x=0; x < blocks.length(); x++) {
                 char c = blocks.charAt(x);
                 if(c != ' ') {
-                    map.set(x, y, z, c, BlockChange.BUILD);
+                    map.set(x, y, z, c);
                 }
             }
         }

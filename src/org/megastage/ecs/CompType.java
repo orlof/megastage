@@ -114,6 +114,8 @@ public class CompType {
     public static final int VoidGeometry = 86;
     static { parent[86] = 70; }
 
+    public static final int BlockChanges = 90;
+
     public static transient final String[] map = new String[100];
 
     static {

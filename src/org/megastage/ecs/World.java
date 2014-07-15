@@ -82,7 +82,7 @@ public class World {
     
     public void tick() {
         for(int i=0; i < processorsSize; i++) {
-            Log.trace(processors[i].getClass().getSimpleName());
+            // Log.info(processors[i].getClass().getSimpleName());
             if(processors[i].checkProcessing()) {
                 processors[i].process();
             }
