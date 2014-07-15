@@ -15,33 +15,18 @@ import org.megastage.util.Quaternion;
 import org.megastage.util.Vector3d;
 
 public class Position extends ReplicatedComponent {
-    public long x, y, z;
+    public Vector3f coords;
     
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
-        if(hasValue(element, "x")) {
-            x = 1000 * getLongValue(element, "x", 0);
-            y = 1000 * getLongValue(element, "y", 0);
-            z = 1000 * getLongValue(element, "z", 0);
-        } else {
-            x = 1000 * getLongValue(element, "dx", 0) + 500;
-            y = 1000 * getLongValue(element, "dy", 0) + 500;
-            z = 1000 * getLongValue(element, "dz", 0) + 500;
-        }
+        coords = new Vector3f(
+                getFloatValue(element, "x", 0f),
+                getFloatValue(element, "y", 0f),
+                getFloatValue(element, "z", 0f));
         
         return null;
     }
 
-    public void add(Vector3d vector) {
-        set(x + Math.round(vector.x), 
-                y + Math.round(vector.y),
-                z + Math.round(vector.z));
-    }
-
-    public void move(Velocity velocity, float time) {
-        add(velocity.getPositionChange(time));
-    }
-    
     public Vector3d getGlobalCoordinates(int eid) {
         Vector3d coord = getVector3d();
         
