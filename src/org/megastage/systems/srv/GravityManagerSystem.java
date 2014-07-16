@@ -1,5 +1,6 @@
 package org.megastage.systems.srv;
 
+import com.jme3.math.Vector3f;
 import org.megastage.components.Mass;
 import org.megastage.components.Position;
 import org.megastage.components.Velocity;
@@ -45,9 +46,9 @@ public class GravityManagerSystem extends Processor {
             Position fieldPos = (Position) world.getComponent(fieldEid, CompType.Position);
             if(fieldPos == null) continue;
             
-            double dx = (fieldPos.x - pos.x) / 1000.0;
-            double dy = (fieldPos.y - pos.y) / 1000.0;
-            double dz = (fieldPos.z - pos.z) / 1000.0;
+            double dx = (fieldPos.coords.x - pos.coords.x);
+            double dy = (fieldPos.coords.y - pos.coords.y);
+            double dz = (fieldPos.coords.z - pos.coords.z);
             
             double distanceSquared = dx*dx + dy*dy + dz*dz;
             double fieldStr = getStandardGravitationalParameter(fieldEid) / distanceSquared;
@@ -62,22 +63,22 @@ public class GravityManagerSystem extends Processor {
         return gfields;
     }
     
-    public Vector3d getGravitationalAcceleration(int eid) {
+    public Vector3f getGravitationalAcceleration(int eid) {
         Position pos = (Position) world.getComponent(eid, CompType.Position);
 
-        Vector3d acc = new Vector3d();
+        Vector3f acc = new Vector3f();
 
         for(int fieldEid = group.iterator(); fieldEid != 0; fieldEid = group.next()) {
             Position p2 = (Position) world.getComponent(fieldEid, CompType.Position);
             
-            double dx = (p2.x - pos.x) / 1000.0;
-            double dy = (p2.y - pos.y) / 1000.0;
-            double dz = (p2.z - pos.z) / 1000.0;
+            float dx = (p2.coords.x - pos.coords.x);
+            float dy = (p2.coords.y - pos.coords.y);
+            float dz = (p2.coords.z - pos.coords.z);
             
-            double distanceSquared = dx*dx + dy*dy + dz*dz;
-            double gravitationalField = getStandardGravitationalParameter(fieldEid) / distanceSquared;
-            double distance = Math.sqrt(distanceSquared);
-            double multiplier = gravitationalField / distance;
+            float distanceSquared = dx*dx + dy*dy + dz*dz;
+            float gravitationalField = getStandardGravitationalParameter(fieldEid) / distanceSquared;
+            float distance = (float) Math.sqrt(distanceSquared);
+            float multiplier = gravitationalField / distance;
 
             acc = acc.add(multiplier * dx, multiplier * dy, multiplier * dz);
         }
@@ -85,24 +86,24 @@ public class GravityManagerSystem extends Processor {
         return acc;
     }    
 
-    public double getStandardGravitationalParameter(int eid) {
+    public float getStandardGravitationalParameter(int eid) {
         Mass mass = (Mass) world.getComponent(eid, CompType.Mass);
         return mass.mass * Globals.G;
     }
 
     public void writeOrbitalStateVectorToMemory(char[] mem, char ptr, int reference, int ship, boolean ieee754) {
         Position shipPos = (Position) world.getComponent(ship, CompType.Position);
-        Vector3d shipCoord = shipPos.getVector3d();
+        Vector3f shipCoord = shipPos.coords;
         Velocity shipVel = (Velocity) world.getComponent(ship, CompType.Velocity);
-        Vector3d shipVelVec = shipVel.vector;
+        Vector3f shipVelVec = shipVel.vector;
 
         Position refPos = (Position) world.getComponent(reference, CompType.Position);
-        Vector3d refCoord = refPos.getVector3d();
+        Vector3f refCoord = refPos.coords;
         Velocity refVel = (Velocity) world.getComponent(reference, CompType.Velocity);
-        Vector3d refVelVec = refVel.vector;
+        Vector3f refVelVec = refVel.vector;
         
-        Vector3d coord = shipCoord.sub(refCoord);
-        Vector3d veloc = shipVelVec.sub(refVelVec);
+        Vector3f coord = shipCoord.subtract(refCoord);
+        Vector3f veloc = shipVelVec.subtract(refVelVec);
 
         if(ieee754) {
             writeOrbitalStateVectorToMemoryFloat(mem, ptr, coord, veloc);
@@ -111,7 +112,7 @@ public class GravityManagerSystem extends Processor {
         }
     }
 
-    public static void writeOrbitalStateVectorToMemoryInt(char[] mem, char ptr, Vector3d coord, Vector3d veloc) {
+    public static void writeOrbitalStateVectorToMemoryInt(char[] mem, char ptr, Vector3f coord, Vector3f veloc) {
         int x = (int) (coord.x / 100.0);
         mem[ptr++] = (char) (x >> 16);
         mem[ptr++] = (char) x;
@@ -143,7 +144,7 @@ public class GravityManagerSystem extends Processor {
         //Log.info(""+dz);
     }
 
-    public static void writeOrbitalStateVectorToMemoryFloat(char[] mem, char ptr, Vector3d coord, Vector3d veloc) {
+    public static void writeOrbitalStateVectorToMemoryFloat(char[] mem, char ptr, Vector3f coord, Vector3f veloc) {
         ptr = writeFloatToMemory(mem, ptr, (float) coord.x);
         ptr = writeFloatToMemory(mem, ptr, (float) coord.y);
         ptr = writeFloatToMemory(mem, ptr, (float) coord.z);

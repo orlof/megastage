@@ -31,13 +31,13 @@ public class PositionControl extends AbstractControl {
             return;
         }
 
-        Vector3f localPos = pos.getVector3f();
+        Vector3f localPos = new Vector3f(pos.coords);
         
         if(spatial.getParent() == ClientGlobals.globalRotationNode) {
             // calculate position relative to player's ship
             Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Position);
             if(origoPos != null) {
-                localPos.subtractLocal(origoPos.getVector3f());
+                localPos.subtractLocal(origoPos.coords);
             }
 
             // calculate depth scaling (logarithmic if distance > 20000)
@@ -62,5 +62,4 @@ public class PositionControl extends AbstractControl {
             return VIEW_DIST_LINEAR + K * ((float) Math.log( distance / VIEW_DIST_LINEAR ));
         }
     }
-
 }

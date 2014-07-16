@@ -1,18 +1,14 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.protocol;
 
 import com.cubes.Vector3Int;
 import com.esotericsoftware.minlog.Log;
-import org.megastage.client.ClientGlobals;
+import com.jme3.math.Quaternion;
 import org.megastage.components.Rotation;
 import org.megastage.util.ID;
 
 public class UserCommand {
-    public double dx, dy, dz;
-    public double qx, qy, qz, qw;
+    public float dx, dy, dz;
+    public Quaternion rot;
     public transient int count;
 
     public Keyboard keyboard = new Keyboard();
@@ -29,7 +25,7 @@ public class UserCommand {
     public UserCommand() {}
 
     public void reset() {
-        dx = dy = dz = 0.0;
+        dx = dy = dz = 0.0f;
         keyboard.keyEventPtr = count = 0;
 
         ship = null;
@@ -48,7 +44,7 @@ public class UserCommand {
         sb.append("dx=").append(dx);
         sb.append(", dy=").append(dy);
         sb.append(", dz=").append(dz);
-        sb.append(", rotation(").append(qx).append(", ").append(qy).append(", ").append(qz).append(", ").append(qw).append(")");
+        sb.append(", rot(").append(rot.toString()).append(")");
         sb.append(", count=").append(count);
         sb.append(", keyboard=").append(keyboard);
         sb.append(", ship=").append(ship);
@@ -68,10 +64,7 @@ public class UserCommand {
     }
     
     public void look(Rotation rot) {
-        qx = rot.x;
-        qy = rot.y;
-        qz = rot.z;
-        qw = rot.w;
+        this.rot = new Quaternion(rot.value);
         count++;
     }
 
@@ -169,7 +162,7 @@ public class UserCommand {
     public static interface ExtendedCommand {}
     
     public static class MoveShip implements ExtendedCommand {
-        public double forward, left, up, pitch, roll, yaw;
+        public float forward, left, up, pitch, roll, yaw;
     }
 
     public static class Pick implements ExtendedCommand {

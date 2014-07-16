@@ -89,7 +89,7 @@ public class ShipGeometry extends ReplicatedComponent {
         shipNode.removeFromParent();
     }
 
-    public double getInertia(Vector3d axis) {
+    public float getInertia(Vector3f axis) {
         return map.getInertia(axis);
     }
 

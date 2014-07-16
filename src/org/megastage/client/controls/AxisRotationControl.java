@@ -19,7 +19,7 @@ public class AxisRotationControl extends AbstractControl {
     private final boolean yaw;
     private final boolean roll;
     
-    private double curx = 0, cury = 0, curz = 0, curw = 0;
+    private Quaternion curr;
     
     public AxisRotationControl(int eid, boolean pitch, boolean yaw, boolean roll) {
         this.eid = eid;
@@ -36,18 +36,17 @@ public class AxisRotationControl extends AbstractControl {
             return;
         }
 
-        if (rot.x != curx || rot.y != cury || rot.z != curz || rot.w != curw) {
+        if(!curr.equals(rot.value)) {
             // rotation changed
-            curx = rot.x; cury = rot.y; curz = rot.z; curw = rot.w;
+            curr = new Quaternion(rot.value);
 
-            Quaternion q = rot.getJMEQuaternion();
-            q.toAngles(angles);
+            rot.value.toAngles(angles);
             
             if(!pitch) angles[0] = 0;
             if(!yaw) angles[1] = 0;
             if(!roll) angles[2] = 0;
             
-            spatial.setLocalRotation(q.fromAngles(angles));
+            spatial.setLocalRotation(new Quaternion().fromAngles(angles));
 
             if(Log.TRACE) {
                 float[] eulerAngles = spatial.getLocalRotation().toAngles(null);

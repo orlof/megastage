@@ -1,6 +1,7 @@
 package org.megastage.components.dcpu;
 
 import com.esotericsoftware.minlog.Log;
+import com.jme3.math.Vector3f;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.components.transfer.EngineData;
@@ -10,7 +11,7 @@ import org.megastage.util.Vector3d;
 
 public class VirtualEngine extends DCPUHardware implements PowerConsumer {
     public int x, y, z;
-    public double maxForce;
+    public float maxForce;
 
     public char power = 0;
 
@@ -23,7 +24,7 @@ public class VirtualEngine extends DCPUHardware implements PowerConsumer {
         y = getIntegerValue(element, "y", 0);
         z = getIntegerValue(element, "z", -1);
         
-        maxForce = getDoubleValue(element, "max_power", 10000.0);
+        maxForce = getFloatValue(element, "max_power", 10000.0f);
         
         return null;
     }
@@ -51,13 +52,13 @@ public class VirtualEngine extends DCPUHardware implements PowerConsumer {
         }
     }
     
-    public double getPowerLevel() {
-        return power / 65535.0d;
+    public float getPowerLevel() {
+        return power / 65535.0f;
     }
 
-    public Vector3d getAcceleration(double shipMass) {
-        double m = maxForce * getPowerLevel() / shipMass;
-        return new Vector3d(m * x, m * y, m * z);
+    public Vector3f getAcceleration(float shipMass) {
+        float m = maxForce * getPowerLevel() / shipMass;
+        return new Vector3f(m * x, m * y, m * z);
     }
 
     public boolean isActive() {

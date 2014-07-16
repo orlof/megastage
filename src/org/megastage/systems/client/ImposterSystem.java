@@ -1,5 +1,6 @@
 package org.megastage.systems.client;
 
+import com.jme3.math.Vector3f;
 import org.megastage.client.ClientGlobals;
 import org.megastage.client.SpatialManager;
 import org.megastage.components.Position;
@@ -24,17 +25,17 @@ public class ImposterSystem extends Processor {
         return false;
     }
 
-    private Vector3d origo;
+    private Vector3f origo;
     
     @Override
     protected void begin() {
-        origo = ((Position) world.getComponent(ClientGlobals.playerParentEntity, CompType.Position)).getVector3d();
+        origo = ((Position) world.getComponent(ClientGlobals.playerParentEntity, CompType.Position)).coords;
     }
 
     @Override
     protected void process(int eid) {
         Position pos = (Position) world.getComponent(eid, CompType.Position);
-        Vector3d coord = pos.getVector3d();
+        Vector3f coord = pos.coords;
 
         ImposterGeometry imp = (ImposterGeometry) world.getComponent(eid, CompType.ImposterGeometry);
         double cutoff = imp.cutoff;

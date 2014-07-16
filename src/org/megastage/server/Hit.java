@@ -1,13 +1,13 @@
 package org.megastage.server;
 
+import com.jme3.math.Vector3f;
 import org.megastage.ecs.World;
 import org.megastage.util.CubeCollisionDetector;
-import org.megastage.util.Vector3d;
 
 public class Hit {
     public final double distance;
 
-    public static Hit create(World world, Target target, Vector3d attackVector, float range) {
+    public static Hit create(World world, Target target, Vector3f attackVector, float range) {
         if(target.isShip(world)) {
             return CubeCollisionDetector.hit(world, target, attackVector, range);
         } else if(target.isForceField(world)) {

@@ -1,6 +1,7 @@
 package org.megastage.components.dcpu;
 
 import com.esotericsoftware.minlog.Log;
+import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
@@ -17,27 +18,27 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     public static transient final char STATUS_ON = 1;
     public static transient final char STATUS_NO_POWER = 2;
 
-    public Vector3d axis;
+    public Vector3f axis;
 
-    public double maxTorque;
-    public double curTorque = 0;
+    public float maxTorque;
+    public float curTorque = 0;
 
     public char   power = 0;
 
     public int    mapVersion;
-    public double inertia;
+    public float inertia;
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
         super.init(world, parentEid, element);
         setInfo(TYPE_GYRO, 0xabcd, MANUFACTORER_GENERAL_DRIVES);
 
-        axis = new Vector3d(
+        axis = new Vector3f(
                 getIntegerValue(element, "x", 0) & 0xf,
                 getIntegerValue(element, "y", 0) & 0xf,
                 getIntegerValue(element, "z", 1) & 0xf);
         
-        maxTorque = getDoubleValue(element, "torque", 100.0);
+        maxTorque = getFloatValue(element, "torque", 100.0f);
         
         return null;
     }
@@ -75,7 +76,7 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
         if(power != torque) {
             power = torque;
 
-            double tmp = torque < 0x8000 ? torque: torque - 65536;
+            float tmp = torque < 0x8000 ? torque: torque - 65536;
             curTorque = maxTorque * tmp / 0x7fff;
             dirty = true;
         }
@@ -85,7 +86,7 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
         return Math.abs(curTorque / 200.0);
     }
     
-    public double getRotation(ShipGeometry geom) {
+    public float getRotation(ShipGeometry geom) {
         if(mapVersion < geom.map.version) {
             //TODO this is huge perf problem, inertia change should be 
             //     calculated only for changed block

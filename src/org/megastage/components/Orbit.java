@@ -1,5 +1,6 @@
 package org.megastage.components;
 
+import com.jme3.math.Vector3f;
 import org.megastage.ecs.BaseComponent;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -7,18 +8,17 @@ import org.megastage.ecs.CompType;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 import org.megastage.util.Globals;
-import org.megastage.util.Vector3d;
 
 public class Orbit extends ReplicatedComponent {
     public int center;
-    public double distance;
+    public float distance;
 
-    public double angularSpeed;
+    public float angularSpeed;
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
         center = parentEid;
-        distance = getDoubleValue(element, "orbital_distance", 0.0);
+        distance = getFloatValue(element, "orbital_distance", 0.0f);
 
         return null;
     }
@@ -29,8 +29,8 @@ public class Orbit extends ReplicatedComponent {
         angularSpeed = getAngularSpeed(mass.mass);        
     }
     
-    public double getAngularSpeed(double centerMass) {
-        return 2.0 * Math.PI / getOrbitalPeriod(centerMass);
+    public float getAngularSpeed(float centerMass) {
+        return (float) (2.0 * Math.PI / getOrbitalPeriod(centerMass));
     }
 
     public double getOrbitalPeriod(double centerMass) {
@@ -45,21 +45,21 @@ public class Orbit extends ReplicatedComponent {
         return Math.sqrt(centerMass * Globals.G / distance);
     }
     
-    public Vector3d getLocalCoordinates(double time) {
-        double angle = angularSpeed * time;
-        return new Vector3d(
-                distance * Math.sin(angle),
-                0.0,
-                distance * Math.cos(angle)
+    public Vector3f getLocalCoordinates(float time) {
+        float angle = angularSpeed * time;
+        return new Vector3f(
+                distance * (float) Math.sin(angle),
+                0.0f,
+                distance * (float) Math.cos(angle)
         );
     }
 
-    public Vector3d getLocalVelocity(double time, double centerMass) {
-        double angle = angularSpeed * time;
-        return new Vector3d(
-                distance * Math.cos(angle),
-                0.0,
-                distance * -Math.sin(angle)
+    public Vector3f getLocalVelocity(float time, float centerMass) {
+        float angle = angularSpeed * time;
+        return new Vector3f(
+                distance * (float) Math.cos(angle),
+                0.0f,
+                distance * (float) -Math.sin(angle)
         );
     }
 }

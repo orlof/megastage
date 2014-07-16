@@ -1,5 +1,7 @@
 package org.megastage.components.dcpu;
 
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.components.Position;
@@ -8,8 +10,6 @@ import org.megastage.ecs.CompType;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
-import org.megastage.util.Quaternion;
-import org.megastage.util.Vector3d;
 
 public abstract class DCPUHardware extends ReplicatedComponent implements Comparable<DCPUHardware> {
     public static transient final int TYPE_LEM = 0x7349F615;
@@ -106,18 +106,15 @@ public abstract class DCPUHardware extends ReplicatedComponent implements Compar
     public static char writePitchAndYawToMemory(char[] mem, char ptr, int shipEid, int targetEid) {
         // target direction
         Rotation shipRot = (Rotation) World.INSTANCE.getComponent(shipEid, CompType.Rotation);        
-        Quaternion shipRotQ = shipRot.getQuaternion();
 
         // vector from me to target in global coordinate system
         Position shipPos = (Position) World.INSTANCE.getComponent(shipEid, CompType.Position);
-        Vector3d ownCoord = shipPos.getVector3d();
 
         Position targetPos = (Position) World.INSTANCE.getComponent(targetEid, CompType.Position);
-        Vector3d othCoord = targetPos.getVector3d();
         
-        Vector3d delta = othCoord.sub(ownCoord);
+        Vector3f delta = targetPos.coords.subtract(shipPos.coords);
 
-        delta = delta.multiply(shipRotQ);
+        shipRot.value.multLocal(delta);
 
         double pitch = Math.atan2(delta.y, Math.sqrt(delta.x*delta.x + delta.z*delta.z));
         double yaw = Math.atan2(delta.x, -delta.z);

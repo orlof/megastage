@@ -10,9 +10,9 @@ public class CollisionType extends BaseComponent {
     public static final int CELESTIAL = 1;
     
     public int item;
-    public double radius;
+    public float radius;
 
-    public static CollisionType create(int type, double radius) {
+    public static CollisionType create(int type, float radius) {
         CollisionType ct = new CollisionType();
         ct.item = type;
         ct.radius = radius;
@@ -21,7 +21,7 @@ public class CollisionType extends BaseComponent {
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
-        radius = getDoubleValue(element, "radius", 0);
+        radius = getFloatValue(element, "radius", 0.0f);
         
         String itemName = getStringValue(element, "item", "SHIP");
 

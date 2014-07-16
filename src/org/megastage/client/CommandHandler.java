@@ -309,15 +309,11 @@ public class CommandHandler implements AnalogListener, ActionListener {
             return;
         }
 
-        Quaternion q = rot.getJMEQuaternion();
-
-        float[] eulerAngles = q.toAngles(null);
+        float[] eulerAngles = rot.value.toAngles(null);
         eulerAngles[0] = FastMath.clamp(eulerAngles[0] + value, -0.9f * FastMath.HALF_PI, 0.9f * FastMath.HALF_PI);
         eulerAngles[2] = 0f;
 
-        q.fromAngles(eulerAngles).normalizeLocal();
-
-        rot.set(q);
+        rot.value.fromAngles(eulerAngles);
 
         ClientGlobals.userCommand.look(rot);
     }
@@ -328,13 +324,11 @@ public class CommandHandler implements AnalogListener, ActionListener {
             return;
         }
 
-        Quaternion q = rot.getJMEQuaternion();
-        float[] eulerAngles = q.toAngles(null);
+        float[] eulerAngles = rot.value.toAngles(null);
         eulerAngles[1] = (eulerAngles[1] + value) % FastMath.TWO_PI;
         eulerAngles[2] = 0f;
 
-        q.fromAngles(eulerAngles).normalizeLocal();
-        rot.set(q);
+        rot.value.fromAngles(eulerAngles);
 
         ClientGlobals.userCommand.look(rot);
     }
@@ -345,22 +339,18 @@ public class CommandHandler implements AnalogListener, ActionListener {
             return;
         }
 
-        Quaternion playerQuaternion = new Quaternion(
-                (float) rot.x, (float) rot.y,
-                (float) rot.z, (float) rot.w);
-
-        float[] eulerAngles = playerQuaternion.toAngles(null);
+        float[] eulerAngles = rot.value.toAngles(null);
         eulerAngles[0] = 0f;
         if (sideways) {
             eulerAngles[1] += FastMath.HALF_PI;
         }
         eulerAngles[2] = 0f;
-        playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
+        Quaternion direction = new Quaternion().fromAngles(eulerAngles);
 
-        Vector3f playerMovement = new Vector3f(0, 0, value * walkSpeed);
-        playerQuaternion.multLocal(playerMovement);
+        Vector3f move = new Vector3f(0, 0, value * walkSpeed);
+        direction.multLocal(move);
 
-        ClientGlobals.userCommand.move(playerMovement.x, playerMovement.y, playerMovement.z);
+        ClientGlobals.userCommand.move(move.x, move.y, move.z);
     }
 
     private void moveShip(float x, float y, float z) {

@@ -2,7 +2,7 @@ package org.megastage.util;
 
 /**
  * ***********************************************************************
- * Compilation: javac Quaternion.java Execution: java Quaternion
+ * Compilation: javac Quaternion2.java Execution: java Quaternion2
  *
  * Data type for quaternions.
  *
@@ -15,11 +15,11 @@ package org.megastage.util;
  *
  ************************************************************************
  */
-public class Quaternion {
+public class Quaternion2 {
 
     public final double w, x, y, z;
 
-    public Quaternion() {
+    public Quaternion2() {
         this.w = 1.0d;
         this.x = 0.0d;
         this.y = 0.0d;
@@ -27,28 +27,28 @@ public class Quaternion {
     }
 
     // create a new object with the given components
-    public Quaternion(double w, double x, double y, double z) {
+    public Quaternion2(double w, double x, double y, double z) {
         this.w = w;
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Quaternion(Vector3d v) {
+    public Quaternion2(Vector3d v) {
         this.w = 0.0d;
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
     }
 
-    public Quaternion(com.jme3.math.Quaternion q) {
+    public Quaternion2(com.jme3.math.Quaternion q) {
         this.w = q.getW();
         this.x = q.getX();
         this.y = q.getY();
         this.z = q.getZ();
     }
 
-    public Quaternion(Vector3d axis, double angle) {
+    public Quaternion2(Vector3d axis, double angle) {
         Vector3d v = axis.normalize();
         if (axis.x == 0 && axis.y == 0 && axis.z == 0) {
             this.w = 1.0d;
@@ -80,57 +80,57 @@ public class Quaternion {
         return Math.sqrt(w * w + x * x + y * y + z * z);
     }
 
-    public Quaternion normalize(double tolerance) {
+    public Quaternion2 normalize(double tolerance) {
         double mag2 = w * w + x * x + y * y + z * z;
         if (Math.abs(mag2 - 1.0) > tolerance) {
             double mag = Math.sqrt(mag2);
-            return new Quaternion(w / mag, x / mag, y / mag, z / mag);
+            return new Quaternion2(w / mag, x / mag, y / mag, z / mag);
         }
         return this;
     }
 
-    public Quaternion normalize() {
+    public Quaternion2 normalize() {
         return normalize(0.00001d);
     }
 
     // return the quaternion conjugate
-    public Quaternion conjugate() {
-        //Quaternion q = normalize();
-        Quaternion q = this;
-        return new Quaternion(q.w, -q.x, -q.y, -q.z);
+    public Quaternion2 conjugate() {
+        //Quaternion2 q = normalize();
+        Quaternion2 q = this;
+        return new Quaternion2(q.w, -q.x, -q.y, -q.z);
     }
 
-    // return a new Quaternion whose value is (this + b)
-    public Quaternion plus(Quaternion b) {
-        Quaternion a = this;
-        return new Quaternion(a.w + b.w, a.x + b.x, a.y + b.y, a.z + b.z);
+    // return a new Quaternion2 whose value is (this + b)
+    public Quaternion2 plus(Quaternion2 b) {
+        Quaternion2 a = this;
+        return new Quaternion2(a.w + b.w, a.x + b.x, a.y + b.y, a.z + b.z);
     }
 
-    // return a new Quaternion whose value is (this * b)
-    public Quaternion multiply(Quaternion b) {
-        Quaternion a = this;
+    // return a new Quaternion2 whose value is (this * b)
+    public Quaternion2 multiply(Quaternion2 b) {
+        Quaternion2 a = this;
         double w1 = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
         double x1 = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
         double y1 = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x;
         double z1 = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w;
-        return new Quaternion(w1, x1, y1, z1);
+        return new Quaternion2(w1, x1, y1, z1);
     }
 
-    // return a new Quaternion whose value is the inverse of this
-    public Quaternion inverse() {
+    // return a new Quaternion2 whose value is the inverse of this
+    public Quaternion2 inverse() {
         double d = w * w + x * x + y * y + z * z;
-        return new Quaternion(w / d, -x / d, -y / d, -z / d);
+        return new Quaternion2(w / d, -x / d, -y / d, -z / d);
     }
 
     // return a / b
-    public Quaternion divide(Quaternion b) {
-        Quaternion a = this;
+    public Quaternion2 divide(Quaternion2 b) {
+        Quaternion2 a = this;
         return a.inverse().multiply(b);
     }
 
-    public Quaternion localRotation(Vector3d axis, double radians_angle) {
+    public Quaternion2 localRotation(Vector3d axis, double radians_angle) {
         Vector3d globalAxis = axis.multiply(this);
-        Quaternion rotation = new Quaternion(globalAxis, radians_angle);
+        Quaternion2 rotation = new Quaternion2(globalAxis, radians_angle);
         return rotation.multiply(this);
     }
 

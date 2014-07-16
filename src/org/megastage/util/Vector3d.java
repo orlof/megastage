@@ -27,18 +27,12 @@ public class Vector3d {
     }
 
     // create a new object with the given components
-    public Vector3d(Quaternion q) {
+    public Vector3d(Quaternion2 q) {
         this.x = q.x;
         this.y = q.y;
         this.z = q.z;
     }
     
-    public Vector3d(Position pos) {
-        this.x = pos.x / 1000.0;
-        this.y = pos.y / 1000.0;
-        this.z = pos.z / 1000.0;
-    }
-
     public Vector3d(Vector3d vec) {
         this.x = vec.x;
         this.y = vec.y;
@@ -92,9 +86,9 @@ public class Vector3d {
     }
 
     // return a vector rotated by a Quaternion (q * v * c(q))
-    public Vector3d multiply(Quaternion q) {
+    public Vector3d multiply(Quaternion2 q) {
         //Quaternion q2 = new Quaternion(normalize());
-        Quaternion q2 = new Quaternion(this);
+        Quaternion2 q2 = new Quaternion2(this);
         return new Vector3d(q.multiply(q2).multiply(q.conjugate()));
     }
 

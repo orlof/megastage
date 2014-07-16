@@ -7,9 +7,9 @@ import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 
 public class Mass extends ReplicatedComponent {
-    public double mass;
+    public float mass;
 
-    public static Mass create(double m) {
+    public static Mass create(float m) {
         Mass mass = new Mass();
         mass.mass = m;
         return mass;
@@ -17,7 +17,7 @@ public class Mass extends ReplicatedComponent {
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
-        mass = getDoubleValue(element, "kg", 0.0);
+        mass = getFloatValue(element, "kg", 0.0f);
         
         return null;
     }

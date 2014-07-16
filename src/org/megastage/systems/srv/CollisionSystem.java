@@ -24,13 +24,11 @@ public class CollisionSystem extends Processor {
             Position posb = (Position) world.getComponent(group.right, CompType.Position);
             
             if(cola.isShip() || colb.isShip()) {
-                double dx = (posa.x - posb.x) / 1000.0;
-                double dy = (posa.y - posb.y) / 1000.0;
-                double dz = (posa.z - posb.z) / 1000.0;
+                float distance = posa.coords.distance(posb.coords);
 
-                double range = cola.radius + colb.radius;
+                float range = cola.radius + colb.radius;
 
-                if(range * range > dx*dx + dy*dy + dz*dz) {
+                if(range > distance) {
                     // we have an impact
 
                     Identifier ida = (Identifier) world.getComponent(group.left, CompType.Identifier);

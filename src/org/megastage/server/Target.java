@@ -1,14 +1,17 @@
 package org.megastage.server;
 
+import com.jme3.math.Ray;
+import com.jme3.math.Vector3f;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.util.ID;
+import org.megastage.util.MathUtil;
 import org.megastage.util.Vector3d;
 
 public class Target implements Comparable<Target> {
     public int eid;
-    public Vector3d coord;
+    public Vector3f coord;
     public double closestDistance;
     public double collisionRadius;
     private double distanceFromLOF;
@@ -17,7 +20,7 @@ public class Target implements Comparable<Target> {
     public Target() {
     }
 
-    public Target(int eid, Vector3d coord, double distanceSquared, double closestDistance, double colrad) {
+    public Target(int eid, Vector3f coord, double distanceSquared, double closestDistance, double colrad) {
         this.eid = eid;
         this.coord = coord;
         this.distanceSquared = distanceSquared;
@@ -33,8 +36,8 @@ public class Target implements Comparable<Target> {
         return ray.x * coord.x <= 0 && ray.y * coord.y <= 0 && ray.z * coord.z <= 0;
     }
 
-    public void setDistanceFromLOF(Vector3d attackVector) {
-        this.distanceFromLOF = attackVector.distanceToPoint(coord);
+    public void setDistanceFromLOF(Vector3f attackVector) {
+        this.distanceFromLOF = MathUtil.distancePointToLine(coord, attackVector);
     }
 
     public boolean isInLOF() {
@@ -50,7 +53,7 @@ public class Target implements Comparable<Target> {
         return world.hasComponent(eid, CompType.VirtualForceField);
     }
 
-    public double getImpactDistance(Vector3d attackVector) {
+    public double getImpactDistance(Vector3f attackVector) {
         double distanceFromLOFSquared = distanceFromLOF * distanceFromLOF;
         double side = Math.sqrt(distanceSquared - distanceFromLOFSquared);
         side -= Math.sqrt(collisionRadius*collisionRadius - distanceFromLOFSquared);

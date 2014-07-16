@@ -13,6 +13,7 @@ public class ClientFixedRotationSystem extends Processor {
         super(world, interval, CompType.Rotation, CompType.FixedRotation);
     }
 
+    @Override
     protected void process(int eid) {
         FixedRotation fr = (FixedRotation) world.getComponent(eid, CompType.FixedRotation);
         
@@ -22,9 +23,6 @@ public class ClientFixedRotationSystem extends Processor {
                 (float) fr.getZ(world.time)).normalizeLocal();
 
         Rotation r = (Rotation) world.getComponent(eid, CompType.Rotation);
-        r.x = rotation.getX();
-        r.y = rotation.getY();
-        r.z = rotation.getZ();
-        r.w = rotation.getW();
+        r.value.set(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
     }
 }

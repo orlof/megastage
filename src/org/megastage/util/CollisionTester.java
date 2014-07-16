@@ -7,10 +7,10 @@ import com.cubes.*;
 import com.cubes.test.CubesTestAssets;
 import com.cubes.test.blocks.*;
 import com.esotericsoftware.minlog.Log;
+import com.jme3.math.Quaternion;
 import com.jme3.scene.Node;
 import com.jme3.ui.Picture;
 import java.util.Random;
-import org.megastage.components.BlockChange;
  
 public class CollisionTester extends SimpleApplication{
  
@@ -94,13 +94,13 @@ public class CollisionTester extends SimpleApplication{
     public void simpleUpdate(float tpf) {
         //tt+=tpf;
         tt=0;
-        com.jme3.math.Quaternion q = new com.jme3.math.Quaternion().fromAngles(tt/20, tt/15, 0);
+        Quaternion q = new Quaternion().fromAngles(tt/20, tt/15, 0);
         ship.setLocalRotation(q);
 
         Vector3Int collision = CubeCollisionDetector.getCollision(
-                new Vector3d(0,0,0), new Quaternion(q), map, 
-                new Vector3d(cam.getLocation()), 
-                new Vector3d(cam.getDirection()));
+                new Vector3f(0,0,0), new Quaternion(q), map, 
+                new Vector3f(cam.getLocation()), 
+                new Vector3f(cam.getDirection()));
 
         if(collision != prevCollision) {
             if(prevCollision != null) {

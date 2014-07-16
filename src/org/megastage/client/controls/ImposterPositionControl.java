@@ -1,5 +1,6 @@
 package org.megastage.client.controls;
 
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
@@ -7,7 +8,6 @@ import org.megastage.components.Position;
 import org.megastage.client.ClientGlobals;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
-import org.megastage.util.Vector3d;
 
 public class ImposterPositionControl extends AbstractControl {
     private final int eid;
@@ -20,26 +20,26 @@ public class ImposterPositionControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(true) return;
-        Position position = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
-        assert position != null;
+        Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
+        assert pos != null;
         
-        Vector3d coord = position.getVector3d();
+        Vector3f coord = pos.coords;
 
         Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Position);
         assert origoPos != null;
 
-        Vector3d origo = origoPos.getVector3d();
+        Vector3f origo = origoPos.coords;
 
-        Vector3d line = coord.sub(origo);
+        Vector3f line = coord.subtract(origo);
 
-        double distance = line.length();
+        float distance = line.length();
 
         if(distance > 1000000.0) {
-            double scale = 1000000.0 / distance;
-            line = line.multiply(scale).add(origo);
-            spatial.setLocalTranslation(line.getVector3f());
+            float scale = 1000000.0f / distance;
+            line.multLocal(scale).addLocal(origo);
+            spatial.setLocalTranslation(line);
         } else {
-            spatial.setLocalTranslation(coord.getVector3f());
+            spatial.setLocalTranslation(coord);
         }
     }
 

@@ -1,14 +1,12 @@
 package org.megastage.systems;
 
-import com.esotericsoftware.minlog.Log;
+import com.jme3.math.Vector3f;
 import org.megastage.components.Orbit;
 import org.megastage.components.Position;
 import org.megastage.components.Velocity;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.Processor;
 import org.megastage.ecs.World;
-import org.megastage.util.ID;
-import org.megastage.util.Vector3d;
 
 public class OrbitalMovementSystem extends Processor {
     public OrbitalMovementSystem(World world, long interval) {
@@ -17,11 +15,11 @@ public class OrbitalMovementSystem extends Processor {
 
     @Override
     protected void process(int eid) {
-        double secs = world.time / 1000.0;
+        float secs = world.time / 1000.0f;
         
         Orbit orbit = (Orbit) world.getComponent(eid, CompType.Orbit);
         
-        Vector3d localSum = orbit.getLocalCoordinates(secs);
+        Vector3f localSum = orbit.getLocalCoordinates(secs);
         
         while(isInOrbit(orbit.center)) {
             orbit = (Orbit) world.getComponent(orbit.center, CompType.Orbit);
@@ -29,15 +27,15 @@ public class OrbitalMovementSystem extends Processor {
         }
 
         Position fixedStar = (Position) world.getComponent(orbit.center, CompType.Position);
-        long x = Math.round(1000 * localSum.x) + fixedStar.x;
-        long y = fixedStar.y;
-        long z = Math.round(1000* localSum.z) + fixedStar.z;
+        float x = Math.round(1000 * localSum.x) + fixedStar.coords.x;
+        float y = fixedStar.coords.y;
+        float z = Math.round(1000* localSum.z) + fixedStar.coords.z;
 
         Position position = (Position) world.getComponent(eid, CompType.Position);
         Velocity velocity = (Velocity) world.getComponent(eid, CompType.Velocity);
-        velocity.vector = new Vector3d(x - position.x, y - position.y, z - position.z);
+        velocity.vector = new Vector3f(x - position.coords.x, y - position.coords.y, z - position.coords.z);
         
-        position.set(x, y, z);
+        position.coords = new Vector3f(x, y, z);
         //position.dirty = true;
     }
 

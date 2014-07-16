@@ -25,6 +25,7 @@ import com.jme3.texture.TextureCubeMap;
 import com.jme3.ui.Picture;
 import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.style.Styles;
+import org.megastage.client.controls.BackgroundRotationControl;
 import org.megastage.client.controls.GlobalRotationControl;
 import org.megastage.util.LogFormat;
 
@@ -148,6 +149,8 @@ public class Main extends SimpleApplication {
         
         ClientGlobals.backgroundNode.attachChild(sky);
         ClientGlobals.rootNode.attachChild(ClientGlobals.backgroundNode);
+        
+        ClientGlobals.backgroundNode.addControl(new BackgroundRotationControl());
     }
 
     private void initializeCamera() {

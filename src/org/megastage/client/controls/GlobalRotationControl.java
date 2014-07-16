@@ -1,6 +1,5 @@
 package org.megastage.client.controls;
 
-import com.jme3.math.Quaternion;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
@@ -20,12 +19,10 @@ public class GlobalRotationControl extends AbstractControl {
             return;
         }
 
-        Rotation rotation = (Rotation) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Rotation);
-        assert rotation != null;
+        Rotation rot = (Rotation) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Rotation);
+        assert rot != null;
 
-        Quaternion q = rotation.getJMEQuaternion();
-        spatial.setLocalRotation(q.inverse());
-        ClientGlobals.backgroundNode.setLocalRotation(q);
+        spatial.setLocalRotation(rot.value.inverse());
     }
 
     @Override

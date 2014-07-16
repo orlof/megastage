@@ -85,8 +85,8 @@ public class Cube3dMap extends ToStringComponent {
         version++;
     }
 
-    public Vector3d getCenter() {
-        return new Vector3d(xsize / 2.0, ysize / 2.0, zsize / 2.0);
+    public Vector3f getCenter() {
+        return new Vector3f(xsize / 2.0f, ysize / 2.0f, zsize / 2.0f);
     }
     
     public Vector3f getCenterOfMass() {
@@ -98,17 +98,6 @@ public class Cube3dMap extends ToStringComponent {
     
     private float getCenter(float sum) {
         return sum / count + 0.5f;
-    }
-
-    public Vector3d getCenterOfMass3d() {
-        return new Vector3d(
-                getCenter3d(xsum),
-                getCenter3d(ysum),
-                getCenter3d(zsum));
-    }
-    
-    private double getCenter3d(double total) {
-        return total / count + 0.5f;
     }
 
     private int getNewCapacity(char[][][] arr, int index) {
@@ -134,29 +123,29 @@ public class Cube3dMap extends ToStringComponent {
         return capacity;
     }
 
-    public double getCollisionRadius() {
+    public float getCollisionRadius() {
         return getCenter().length();
     }
 
-    public double getMass() {
-        return 1000.0 * count;
+    public float getMass() {
+        return 1000.0f * count;
     }
 
-    public double getInertia(Vector3d axis) {
+    public float getInertia(Vector3f axis) {
         // I = mr2
-        double xc = getCenter(xsum);
-        double yc = getCenter(ysum);
-        double zc = getCenter(zsum);
+        float xc = getCenter(xsum);
+        float yc = getCenter(ysum);
+        float zc = getCenter(zsum);
         
-        double inertia = 0;
+        float inertia = 0;
         for(int x=0; x < xsize; x++) {
             for(int y=0; y < ysize; y++) {
                 for(int z=0; z < zsize; z++) {
                     if(get(x, y, z) == '#') {
                         // mass = 1000kg
                         
-                        Vector3d point = new Vector3d(x - xc, y - yc, z - zc);
-                        double distance = axis.distanceToPoint(point);
+                        Vector3f point = new Vector3f(x - xc, y - yc, z - zc);
+                        float distance = MathUtil.distancePointToLine(point, axis);
 
                         inertia += 1000.0 * distance * distance;
                     }

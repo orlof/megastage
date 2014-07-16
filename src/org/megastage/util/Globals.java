@@ -7,7 +7,7 @@ package org.megastage.util;
  * Time: 20:50
  */
 public class Globals {
-    public static final double G = 6.67384e-11;
+    public static final float G = 6.67384e-11f;
 
     public static final int UNIT = 1000;
     public static final float UNIT_F = UNIT;

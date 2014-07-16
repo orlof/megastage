@@ -4,6 +4,8 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import org.megastage.components.dcpu.VirtualKeyboard;
 import org.megastage.protocol.Network;
 import org.megastage.protocol.PlayerConnection;
@@ -41,8 +43,6 @@ import org.megastage.server.TemplateManager;
 import org.megastage.util.Bag;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.ID;
-import org.megastage.util.Quaternion;
-import org.megastage.util.Vector3d;
 
 public class NetworkSystem extends Processor {
     private Server server;
@@ -127,10 +127,7 @@ public class NetworkSystem extends Processor {
             SpawnPoint sp = (SpawnPoint) world.getComponent(ship, CompType.SpawnPoint);
             
             Position pos = (Position) world.getComponent(connection.player, CompType.Position);
-            pos.set(
-                    1000 * sp.x + 500,
-                    1000 * sp.y + 500,
-                    1000 * sp.z + 500);
+            pos.coords.set(sp.x + 0.5f, sp.y + 0.5f, sp.z + 0.5f);
             
             connection.sendTCP(new PlayerIDMessage(connection.player));
         } catch (Exception ex) {
@@ -162,28 +159,26 @@ public class NetworkSystem extends Processor {
         }
     }
 
-    private int probe(long pos, long step) {
-        long target = pos + step;
+    private int probe(float pos, float step) {
+        float target = pos + step;
         if(step < 0) {
-            target -= 300;
+            target -= 0.300;
         } else if(step > 0) {
-            target += 300;
+            target += 0.300;
         }
 
         if(target < 0) {
-            target -= 1000;
+            target -= 1;
         }
 
-        target /= 1000;
         return (int) target;
     }
     
-    private int block(long pos) {
+    private int block(float pos) {
         if(pos < 0) {
-            pos -= 1000;
+            pos -= 1;
         }
 
-        pos /= 1000;
         return (int) pos;
     }
     
@@ -319,59 +314,58 @@ public class NetworkSystem extends Processor {
 
     private void updatePlayerPosition(Cube3dMap map, int player, UserCommand cmd) {
         Position pos = (Position) world.getComponent(player, CompType.Position);
-        int cx = block(pos.x);
-        int cy = block(pos.y);
-        int cz = block(pos.z);
+        int cx = block(pos.coords.x);
+        int cy = block(pos.coords.y);
+        int cz = block(pos.coords.z);
         
-        int xprobe = probe(pos.x, (long) (1000.0 * cmd.dx));
-        int yprobe = probe(pos.y, (long) (1000.0 * cmd.dy));
-        int zprobe = probe(pos.z, (long) (1000.0 * cmd.dz));
+        int xprobe = probe(pos.coords.x, cmd.dx);
+        int yprobe = probe(pos.coords.y, cmd.dy);
+        int zprobe = probe(pos.coords.z, cmd.dz);
         
         int collision = collisionXZ(map, cx, cy, cz, xprobe, yprobe, zprobe);
         if(collision == 0) {
-            pos.set(pos.x + (long) (1000 * cmd.dx + 0.5), pos.y, pos.z + (long) (1000 * cmd.dz + 0.5));
+            pos.coords.set(pos.coords.x + (long) (1000 * cmd.dx + 0.5), pos.coords.y, pos.coords.z + (long) (1000 * cmd.dz + 0.5));
         } else if((collision & 1) == 0) {
-            pos.set(pos.x + (long) (1000 * cmd.dx + 0.5), pos.y, pos.z);
+            pos.coords.set(pos.coords.x + (long) (1000 * cmd.dx + 0.5), pos.coords.y, pos.coords.z);
         } else if((collision & 2) == 0) {
-            pos.set(pos.x, pos.y, pos.z + (long) (1000 * cmd.dz + 0.5));
+            pos.coords.set(pos.coords.x, pos.coords.y, pos.coords.z + (long) (1000 * cmd.dz + 0.5));
         }
     }
 
     private void updatePlayerRotation(int player, UserCommand cmd) {
         Rotation rot = (Rotation) world.getComponent(player, CompType.Rotation);
-
-        rot.set(cmd.qx, cmd.qy, cmd.qz, cmd.qw);
+        rot.value = cmd.rot;
     }
 
     private void updateShip(int ship, UserCommand cmd) {
         Rotation shipRotation = (Rotation) world.getComponent(ship, CompType.Rotation);
-        Quaternion shipRotationQuaternion = shipRotation.getQuaternion();
+        Quaternion shipRotationQuaternion = shipRotation.value;
 
-        Vector3d vel = new Vector3d(cmd.ship.left, cmd.ship.up, cmd.ship.forward).multiply(shipRotationQuaternion);
+        Vector3f vel = shipRotationQuaternion.multLocal(new Vector3f(cmd.ship.left, cmd.ship.up, cmd.ship.forward));
 
-        vel = vel.multiply(10e3);
+        vel.multLocal(10e3f);
 
         Position shipPos = (Position) world.getComponent(ship, CompType.Position);
-        shipPos.set(
-                shipPos.x + (long) (vel.x + 0.5),
-                shipPos.y + (long) (vel.y + 0.5),
-                shipPos.z + (long) (vel.z + 0.5));
+        shipPos.coords.set(
+                shipPos.coords.x + (long) (vel.x + 0.5),
+                shipPos.coords.y + (long) (vel.y + 0.5),
+                shipPos.coords.z + (long) (vel.z + 0.5));
 
         // rotate rotation axis by fixedEntity rotation
-        Vector3d yAxis = new Vector3d(0, 1, 0).multiply(shipRotationQuaternion);
-        Quaternion yRotation = new Quaternion(yAxis, cmd.ship.yaw);
+        Vector3f yAxis = shipRotationQuaternion.multLocal(new Vector3f(0, 1, 0));
+        Quaternion yRotation = new Quaternion().fromAngleAxis(cmd.ship.yaw, yAxis);
 
-        Vector3d zAxis = new Vector3d(0, 0, 1).multiply(shipRotationQuaternion);
-        Quaternion zRotation = new Quaternion(zAxis, cmd.ship.roll);
+        Vector3f zAxis = shipRotationQuaternion.multLocal(new Vector3f(0, 0, 1));
+        Quaternion zRotation = new Quaternion().fromAngleAxis(cmd.ship.roll, zAxis);
 
-        Vector3d xAxis = new Vector3d(1, 0, 0).multiply(shipRotationQuaternion);
-        Quaternion xRotation = new Quaternion(xAxis, cmd.ship.pitch);
+        Vector3f xAxis = shipRotationQuaternion.multLocal(new Vector3f(1, 0, 0));
+        Quaternion xRotation = new Quaternion().fromAngleAxis(cmd.ship.pitch, zAxis);
 
-        shipRotationQuaternion = yRotation.multiply(shipRotationQuaternion).normalize();
-        shipRotationQuaternion = zRotation.multiply(shipRotationQuaternion).normalize();
-        shipRotationQuaternion = xRotation.multiply(shipRotationQuaternion).normalize();
+        shipRotationQuaternion = yRotation.mult(shipRotationQuaternion).normalizeLocal();
+        shipRotationQuaternion = zRotation.mult(shipRotationQuaternion).normalizeLocal();
+        shipRotationQuaternion = xRotation.mult(shipRotationQuaternion).normalizeLocal();
 
-        shipRotation.set(shipRotationQuaternion);
+        shipRotation.value.set(shipRotationQuaternion);
     }
 
     private void changeFloppy(PlayerConnection connection, ChangeFloppy change) {
@@ -428,10 +422,7 @@ public class NetworkSystem extends Processor {
         SpawnPoint sp = (SpawnPoint) world.getComponent(teleport.eid, CompType.SpawnPoint);
         
         Position pos = (Position) world.getComponent(connection.player, CompType.Position);
-        pos.set(
-                1000 * sp.x + 500,
-                1000 * sp.y + 500,
-                1000 * sp.z + 500);
+        pos.coords.set(sp.x + 0.5f, sp.y + 0.5f, sp.z + 0.5f);
     }
 
     public void processNewConnections(Connection[] connections) {
