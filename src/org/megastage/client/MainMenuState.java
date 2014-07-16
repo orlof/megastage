@@ -129,7 +129,7 @@ public class MainMenuState extends BaseAppState {
             storeOptions();
             stopMusic();
             setEnabled(false);
-            //getApplication().getInputManager().setCursorVisible(false);
+            getApplication().getInputManager().setCursorVisible(false);
             ClientGlobals.setAppStates(ECSState.class);
         }
     }

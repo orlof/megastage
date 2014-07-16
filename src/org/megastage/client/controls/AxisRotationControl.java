@@ -19,7 +19,7 @@ public class AxisRotationControl extends AbstractControl {
     private final boolean yaw;
     private final boolean roll;
     
-    private Quaternion curr;
+    private Quaternion curr = Quaternion.IDENTITY;
     
     public AxisRotationControl(int eid, boolean pitch, boolean yaw, boolean roll) {
         this.eid = eid;
