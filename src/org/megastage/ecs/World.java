@@ -28,9 +28,10 @@ public class World {
     private int processorsSize = 0;
     
     // time management
-    public long time;
-    public float delta;
-    protected long offset;
+    public long tickCount = 0;
+    public long time = 0;
+    public float delta = 0.0f;
+    protected long offset = 0;
     
     public World() {
         this(10000, CompType.size);
@@ -72,19 +73,30 @@ public class World {
         }
     }
     
-    public void setGametime(long clocktime) {
-        time = clocktime + offset;
-    }
+    public void tick(long clockTime) {
+        if(tickCount++ == 0) {
+            offset = -clockTime;
+            Log.info("Time offset: " + offset);
+        }
+        
+        long gameTime = clockTime + offset;
+        delta = (gameTime - time) / 1000.0f;
+        time = gameTime;
+        
+        //Log.info(String.format("Time: %s -> %s", World.INSTANCE.delta, World.INSTANCE.time));
 
-    public void synchronizeClocks(long gametime, long clocktime) {
-        offset = gametime - clocktime;
+        tick();
     }
     
     public void tick() {
         for(int i=0; i < processorsSize; i++) {
             // Log.info(processors[i].getClass().getSimpleName());
             if(processors[i].checkProcessing()) {
-                processors[i].process();
+                try {
+                    processors[i].process();
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }

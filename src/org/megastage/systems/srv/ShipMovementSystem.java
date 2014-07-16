@@ -3,11 +3,11 @@ package org.megastage.systems.srv;
 import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
 import com.esotericsoftware.minlog.Log;
+import com.jme3.math.Vector3f;
 import org.megastage.components.*;
 import org.megastage.components.srv.Acceleration;
 import org.megastage.components.Velocity;
 import org.megastage.ecs.CompType;
-import org.megastage.util.Vector3d;
 
 public class ShipMovementSystem extends Processor {
     public ShipMovementSystem(World world, long interval) {
@@ -21,15 +21,13 @@ public class ShipMovementSystem extends Processor {
         Position position = (Position) world.getComponent(eid, CompType.Position);
 
         if(Log.TRACE) {
-            Log.info(eid + acceleration.toString());
-            Log.info(eid + velocity.toString());
-            Log.info(eid + position.toString());
+            Log.info(String.format("[%d] %s / %s / %s", eid, position, velocity, acceleration));
         }
         
-        position.move(velocity, world.delta / 2.0f);
-        velocity.accelerate(acceleration, world.delta);
-        position.move(velocity, world.delta / 2.0f);
-
-        acceleration.set(Vector3d.ZERO);
+        position.coords.addLocal(velocity.vector.mult(world.delta / 2.0f));
+        velocity.vector.addLocal(acceleration.vector.mult(world.delta));
+        position.coords.addLocal(velocity.vector.mult(world.delta / 2.0f));
+        
+        acceleration.vector = Vector3f.ZERO;
     }
 }

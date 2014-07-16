@@ -1,5 +1,6 @@
 package org.megastage.systems.srv;
 
+import com.jme3.math.Vector3f;
 import org.megastage.components.Position;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.Processor;
@@ -27,7 +28,7 @@ public class RadarManagerSystem extends Processor {
             return new Bag<>(0);
         }
 
-        Vector3d coord = pos.getVector3d();
+        Vector3f coord = pos.coords;
         
         Bag<RadarSignal> signals = new Bag<>(100);
         for(int target = group.iterator(); target != 0; target = group.next()) {
@@ -35,9 +36,9 @@ public class RadarManagerSystem extends Processor {
 
             // System that stores targets checks for Position existence
             Position targetPos = (Position) world.getComponent(target, CompType.Position);
-            Vector3d targetPosVec = targetPos.getVector3d();
+            Vector3f targetPosVec = targetPos.coords;
 
-            double distanceSquared = coord.distanceSquared(targetPosVec);
+            float distanceSquared = coord.distanceSquared(targetPosVec);
             signals.add(new RadarSignal(target, distanceSquared));
         }
 

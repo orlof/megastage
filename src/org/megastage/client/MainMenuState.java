@@ -112,7 +112,6 @@ public class MainMenuState extends BaseAppState {
 
     @Override
     protected void enable() {
-        Log.info("");
         Main main = (Main) getApplication();
         main.getGuiNode().attachChild(menu);
         startMusic();
@@ -120,7 +119,6 @@ public class MainMenuState extends BaseAppState {
 
     @Override
     protected void disable() {
-        Log.info("");
         menu.removeFromParent();
         stopMusic();
     }

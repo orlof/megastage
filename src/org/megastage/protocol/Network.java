@@ -2,6 +2,8 @@ package org.megastage.protocol;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import org.megastage.components.BlockChange;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.components.Mass;
@@ -109,6 +111,7 @@ public class Network {
             Position.class,
             PowerPlantGeometry.class,
             PPSGeometry.class,
+            Quaternion.class,
             RadarGeometry.class,
             RadarTargetData.class,
             RAM.class,
@@ -123,7 +126,7 @@ public class Network {
             Unpick.class,
             UsableFlag.class,
             UserCommand.class,
-            Vector3d.class,
+            Vector3f.class,
             Velocity.class,
             VirtualFloppyDriveData.class,
             VoidGeometry.class,
@@ -168,7 +171,14 @@ public class Network {
 
         @Override
         public void receive(Connection pc) {
-            World.INSTANCE.synchronizeClocks(time, World.INSTANCE.time);
+            // TODO
+            // This updates end time to all position predictor components
+            // Position receive updates end position to position predictor components
+            // Position predictor processor updates position components based on position predictor components
+            // position control updates spatial from position component
+            // position predictor processor can be integrated into position control
+            // perhaps control should always copy position from component
+            // remember flappitaulu, you must use server time
         }
 
         @Override

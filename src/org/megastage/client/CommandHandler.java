@@ -15,7 +15,6 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import java.util.concurrent.Callable;
 import org.megastage.components.Rotation;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
@@ -23,98 +22,6 @@ import org.megastage.ecs.World;
 import org.megastage.protocol.CharacterMode;
 
 public class CommandHandler implements AnalogListener, ActionListener {
-
-    private static String[] dcpuMappings = new String[]{
-        "WALK_LookLeft",
-        "WALK_LookRight",
-        "WALK_LookUp",
-        "WALK_LookDown",
-        "DCPU_Exit",
-    };
-
-    private static String[] menuMappings = new String[]{
-        "MENU_Exit",
-    };
-
-    private static String[] walkMappings = new String[]{
-        "WALK_LookLeft",
-        "WALK_LookRight",
-        "WALK_LookUp",
-        "WALK_LookDown",
-        "WALK_MoveForward",
-        "WALK_MoveBackward",
-        "WALK_MoveLeft",
-        "WALK_MoveRight",
-        "SHIP_MoveForward",
-        "SHIP_MoveBackward",
-        "SHIP_MoveUp",
-        "SHIP_MoveDown",
-        "SHIP_MoveLeft",
-        "SHIP_MoveRight",
-        "SHIP_PitchUp",
-        "SHIP_PitchDown",
-        "SHIP_RollCW",
-        "SHIP_RollCCW",
-        "SHIP_YawLeft",
-        "SHIP_YawRight",
-        "WALK_InvertY",
-        "ITEM_Pick",
-        "ITEM_RightPick",
-        "GAME_Exit",
-    };
-
-    private void pickItem(boolean right) {
-        CollisionResults results = new CollisionResults();
-        Ray ray = new Ray(ClientGlobals.cam.getLocation(), ClientGlobals.cam.getDirection());
-        ClientGlobals.rootNode.collideWith(ray, results);
-        for(int i=0; i < results.size(); i++) {
-            CollisionResult closest = results.getCollision(i);
-            if(!closest.getGeometry().getName().equals("forceshield")) {
-                Node target = closest.getGeometry().getParent();
-
-                int eid = 0;
-                while(true) {
-                    if(target == ClientGlobals.rootNode) {
-                        return;
-                    }
-
-                    eid = SpatialManager.getUsableEntity(target, true);
-                    //Log.info("Pick entity: " + ID.get(entity));
-                    if(eid != 0) break;
-                    target = target.getParent();
-                }
-
-                Object geom = World.INSTANCE.getComponent(eid, CompType.GeometryComponent);
-                if(geom != null && geom instanceof ShipGeometry) {
-                    if(eid == ClientGlobals.playerParentEntity) {
-                        Node offset = (Node) target.getChild("offset");
-                        Vector3Int loc = CubesManager.getCurrentPointedBlockLocation(offset, !right);
-                        if(loc != null) {
-                            BlockTerrainControl ctrl = offset.getControl(BlockTerrainControl.class);
-                            if(!right) {
-                                ClientGlobals.userCommand.build(loc);
-                                //ctrl.setBlock(loc, CubesManager.Combi.class);
-                            } else {
-                                ClientGlobals.userCommand.unbuild(loc);
-                                //ctrl.removeBlock(loc);
-                            }
-                        }
-                    } else {
-                        // TELEPORT
-                        ClientGlobals.userCommand.teleport(eid);
-                        Log.info("TELEPORT");
-                    }
-                } else {
-                    ClientGlobals.userCommand.pickItem(eid);
-                }
-                return;
-            }
-        }
-    }
-    
-    private void unpickItem() {
-        ClientGlobals.userCommand.unpickItem();
-    }
 
     public int mode = CharacterMode.NONE;
     private InputManager inputManager;
@@ -171,6 +78,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     
     @Override
     public void onAnalog(String name, float value, float tpf) {
+        Log.info(name);
         if (ClientGlobals.playerEntity == 0) {
             return;
         }
@@ -241,6 +149,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
     @Override
     public void onAction(String name, boolean value, float tpf) {
+        Log.info(name);
         switch (name) {
             case "WALK_InvertY":
                 // Toggle on the up.
@@ -458,5 +367,97 @@ public class CommandHandler implements AnalogListener, ActionListener {
         mode = CharacterMode.NONE;
         inputManager.clearMappings();
         ClientGlobals.setAppStates(ECSState.class);
+    }
+    
+    private static String[] dcpuMappings = new String[]{
+        "WALK_LookLeft",
+        "WALK_LookRight",
+        "WALK_LookUp",
+        "WALK_LookDown",
+        "DCPU_Exit",
+    };
+
+    private static String[] menuMappings = new String[]{
+        "MENU_Exit",
+    };
+
+    private static String[] walkMappings = new String[]{
+        "WALK_LookLeft",
+        "WALK_LookRight",
+        "WALK_LookUp",
+        "WALK_LookDown",
+        "WALK_MoveForward",
+        "WALK_MoveBackward",
+        "WALK_MoveLeft",
+        "WALK_MoveRight",
+        "SHIP_MoveForward",
+        "SHIP_MoveBackward",
+        "SHIP_MoveUp",
+        "SHIP_MoveDown",
+        "SHIP_MoveLeft",
+        "SHIP_MoveRight",
+        "SHIP_PitchUp",
+        "SHIP_PitchDown",
+        "SHIP_RollCW",
+        "SHIP_RollCCW",
+        "SHIP_YawLeft",
+        "SHIP_YawRight",
+        "WALK_InvertY",
+        "ITEM_Pick",
+        "ITEM_RightPick",
+        "GAME_Exit",
+    };
+
+    private void pickItem(boolean right) {
+        CollisionResults results = new CollisionResults();
+        Ray ray = new Ray(ClientGlobals.cam.getLocation(), ClientGlobals.cam.getDirection());
+        ClientGlobals.rootNode.collideWith(ray, results);
+        for(int i=0; i < results.size(); i++) {
+            CollisionResult closest = results.getCollision(i);
+            if(!closest.getGeometry().getName().equals("forceshield")) {
+                Node target = closest.getGeometry().getParent();
+
+                int eid = 0;
+                while(true) {
+                    if(target == ClientGlobals.rootNode) {
+                        return;
+                    }
+
+                    eid = SpatialManager.getUsableEntity(target, true);
+                    //Log.info("Pick entity: " + ID.get(entity));
+                    if(eid != 0) break;
+                    target = target.getParent();
+                }
+
+                Object geom = World.INSTANCE.getComponent(eid, CompType.GeometryComponent);
+                if(geom != null && geom instanceof ShipGeometry) {
+                    if(eid == ClientGlobals.playerParentEntity) {
+                        Node offset = (Node) target.getChild("offset");
+                        Vector3Int loc = CubesManager.getCurrentPointedBlockLocation(offset, !right);
+                        if(loc != null) {
+                            BlockTerrainControl ctrl = offset.getControl(BlockTerrainControl.class);
+                            if(!right) {
+                                ClientGlobals.userCommand.build(loc);
+                                //ctrl.setBlock(loc, CubesManager.Combi.class);
+                            } else {
+                                ClientGlobals.userCommand.unbuild(loc);
+                                //ctrl.removeBlock(loc);
+                            }
+                        }
+                    } else {
+                        // TELEPORT
+                        ClientGlobals.userCommand.teleport(eid);
+                        Log.info("TELEPORT");
+                    }
+                } else {
+                    ClientGlobals.userCommand.pickItem(eid);
+                }
+                return;
+            }
+        }
+    }
+    
+    private void unpickItem() {
+        ClientGlobals.userCommand.unpickItem();
     }
 }

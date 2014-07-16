@@ -32,13 +32,13 @@ public abstract class Processor {
     }
 
     protected void process() {
-        // Log.info(getClass().getSimpleName());
+        //Log.info(getClass().getSimpleName());
         begin();
         for (int eid = group.iterator(); eid != 0; eid = group.next()) {
             process(eid);
         }
         end();
-        // Log.info("Exit " + getClass().getSimpleName());
+        //Log.info("Exit " + getClass().getSimpleName());
     }
 
     protected void begin() {}

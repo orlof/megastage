@@ -1,5 +1,6 @@
 package org.megastage.client;
 
+import com.esotericsoftware.minlog.Log;
 import com.jme3.app.state.AppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.renderer.Camera;
@@ -55,9 +56,11 @@ public class ClientGlobals {
         for(AppState appState: appStates.values()) {
             
             if(isInstance(appState, enabledAppStates)) {
+                Log.info(appState.getClass().getSimpleName() + " active");
                 mgr.attach(appState);
                 appState.setEnabled(true);
             } else {
+                Log.info(appState.getClass().getSimpleName() + " passive");
                 mgr.detach(appState);
                 appState.setEnabled(false);
             }

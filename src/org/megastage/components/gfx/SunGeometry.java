@@ -52,6 +52,4 @@ public class SunGeometry extends CelestialGeometryComponent {
 
         return new LightNode("LightNode", light);
     }
-
-    
 }

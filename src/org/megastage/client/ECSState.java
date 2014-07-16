@@ -1,16 +1,12 @@
 package org.megastage.client;
 
-import com.esotericsoftware.minlog.Log;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import org.megastage.ecs.World;
-import org.megastage.systems.client.ClientFixedRotationSystem;
 import org.megastage.systems.client.ClientMonitorRenderSystem;
 import org.megastage.systems.client.ClientNetworkSystem;
-import org.megastage.systems.OrbitalMovementSystem;
 import org.megastage.systems.client.EntityDeleteSystem;
-import org.megastage.systems.client.ImposterSystem;
 
 public class ECSState extends AbstractAppState {
     public World world;
@@ -41,8 +37,7 @@ public class ECSState extends AbstractAppState {
 
     @Override
     public void update(float tpf) {
-        world.setGametime(System.currentTimeMillis());
-        world.tick();
+        world.tick(System.currentTimeMillis());
     }
 
     @Override

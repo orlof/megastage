@@ -1,26 +1,12 @@
 package org.megastage.server;
 
 import com.esotericsoftware.minlog.Log;
-import org.megastage.systems.srv.AttitudeControlSystem;
 import org.megastage.systems.srv.DCPUSystem;
-import org.megastage.systems.srv.EngineAccelerationSystem;
-import org.megastage.systems.srv.GravityManagerSystem;
 import org.megastage.systems.srv.CleanupSystem;
 import org.megastage.systems.srv.NetworkSystem;
 import org.jdom2.Element;
 import org.megastage.ecs.World;
-import org.megastage.systems.*;
-
-import org.megastage.systems.srv.CollisionSystem;
-import org.megastage.systems.srv.ExplosionSystem;
 import org.megastage.systems.srv.EntityInitializeSystem;
-import org.megastage.systems.srv.ForceFieldSystem;
-import org.megastage.systems.srv.PowerControllerSystem;
-import org.megastage.systems.srv.RadarManagerSystem;
-import org.megastage.systems.srv.TargetManagerSystem;
-import org.megastage.systems.srv.ShipMovementSystem;
-import org.megastage.systems.srv.SoiManagerSystem;
-import org.megastage.systems.srv.ThermalLaserSystem;
 
 public class Game {
     World world;
@@ -68,15 +54,13 @@ public class Game {
 
     public void loopForever() throws InterruptedException {
         while (true) {
-            long ctime = System.currentTimeMillis();
-            world.setGametime(ctime);
+            long time = System.currentTimeMillis();
+            world.tick(time);
+            time = System.currentTimeMillis() - time;
 
-            world.tick();
-            
-            long tpt = System.currentTimeMillis() - ctime;
-            if(tpt < TICK_SPEED) {
-                Log.trace("sleep for " + (TICK_SPEED-tpt));
-                Thread.sleep(TICK_SPEED-tpt);
+            if(time < TICK_SPEED) {
+                Log.trace("sleep for " + (TICK_SPEED-time));
+                Thread.sleep(TICK_SPEED-time);
             }
         }
     }

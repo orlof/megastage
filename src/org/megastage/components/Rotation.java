@@ -28,7 +28,9 @@ public class Rotation extends ReplicatedComponent {
     @Override
     public void receive(int eid) {
         if(eid == ClientGlobals.playerEntity) {
-            return;
+            if(World.INSTANCE.hasComponent(eid, CompType.Rotation)) {
+                return;
+            }
         }
 
         World.INSTANCE.setComponent(eid, CompType.Rotation, this);

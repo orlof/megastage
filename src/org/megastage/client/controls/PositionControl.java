@@ -7,7 +7,6 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.components.Position;
 import org.megastage.client.ClientGlobals;
-import org.megastage.components.PositionOffset;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 

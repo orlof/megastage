@@ -1,6 +1,5 @@
 package org.megastage.components.gfx;
 
-import com.jme3.scene.Node;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.client.ClientGlobals;

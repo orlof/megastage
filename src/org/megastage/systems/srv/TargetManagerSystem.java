@@ -1,6 +1,7 @@
 package org.megastage.systems.srv;
 
 import com.esotericsoftware.minlog.Log;
+import com.jme3.math.Vector3f;
 import org.megastage.components.srv.CollisionSphere;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
@@ -13,8 +14,6 @@ import org.megastage.server.NoHit;
 import org.megastage.server.Target;
 import org.megastage.util.Bag;
 import org.megastage.util.ID;
-import org.megastage.util.Quaternion;
-import org.megastage.util.Vector3d;
 
 public class TargetManagerSystem extends Processor {
     public static TargetManagerSystem INSTANCE;
@@ -27,17 +26,14 @@ public class TargetManagerSystem extends Processor {
         int ship = vtlComponent.shipEID;
         Bag<Target> targets = getTargetsInRange(ship, vtlEntity, vtlComponent);
 
-        if(targets == null || targets.size() == 0) {
+        if(targets == null || targets.isEmpty()) {
             return new NoHit();
         }
 
         Rotation shipRot = (Rotation) world.getComponent(ship, CompType.Rotation);
-        Quaternion shipAngle = shipRot.getQuaternion();
-        
         Rotation wpnRot = (Rotation) world.getComponent(vtlEntity, CompType.Rotation);
-        Quaternion weaponAngle = wpnRot.getQuaternion();
         
-        Vector3d attackVector = Vector3d.FORWARD.multiply(weaponAngle).multiply(shipAngle);
+        Vector3f attackVector = shipRot.value.multLocal(wpnRot.value.multLocal(new Vector3f(0.0f, 0.0f, -1.0f)));
         
         //Log.info(attackVector.toString());
         //Vector3d attackVector = shipVector.multiply(weaponAngle);
@@ -87,7 +83,7 @@ public class TargetManagerSystem extends Processor {
             return null;
         }
 
-        Vector3d vtlCoord = vtlPosition.getGlobalCoordinates(vtlEntity);
+        Vector3f vtlCoord = vtlPosition.getGlobalCoordinates(vtlEntity);
         if(vtlCoord == null) {
             Log.error("Cannot convert VTL Position to global coordinates");
             return null;
@@ -107,14 +103,14 @@ public class TargetManagerSystem extends Processor {
                 continue;
             }
 
-            Vector3d targetCoord = targetPos.getGlobalCoordinates(target);
+            Vector3f targetCoord = targetPos.getGlobalCoordinates(target);
             if(targetCoord == null) {
                 Log.error("Cannot convert Position to global coordinates: " + ID.get(target));
                 continue;
             }
 
             // transfer target coordinates to vtl coordinates
-            targetCoord = targetCoord.sub(vtlCoord);
+            targetCoord.subtractLocal(vtlCoord);
             
             CollisionSphere cs = (CollisionSphere) world.getComponent(target, CompType.CollisionSphere);
             double distanceSquared = targetCoord.lengthSquared();

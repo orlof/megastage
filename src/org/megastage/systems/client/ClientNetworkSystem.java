@@ -73,7 +73,7 @@ public class ClientNetworkSystem extends Processor {
     private Bag received = new Bag(100);
 
     public void handleReceived() {
-        Log.info("" + received.size());
+        // Log.info("" + received.size());
         Bag oldBag = received;
         received = new Bag(100);
         for(Object o: oldBag) {
@@ -114,7 +114,11 @@ public class ClientNetworkSystem extends Processor {
 
         @Override
         public void received(Connection pc, Object o) {
-            received.add(o);
+            try {
+                received.add(o);
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
     }

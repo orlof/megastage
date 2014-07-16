@@ -43,6 +43,7 @@ import org.megastage.server.TemplateManager;
 import org.megastage.util.Bag;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.ID;
+import static java.lang.String.format;
 
 public class NetworkSystem extends Processor {
     private Server server;
@@ -92,6 +93,7 @@ public class NetworkSystem extends Processor {
         Message[] data = update.toArray(Message.class);
         
         for(Connection c: connections) {
+            Log.info(String.format("sending %d messages", data.length));
             c.sendUDP(data);
         }
     }
@@ -449,7 +451,7 @@ public class NetworkSystem extends Processor {
         for (int eid = group.iterator(); eid != 0; eid = group.next()) {
             for(ReplicatedComponent comp = world.compIter(eid, ReplicatedComponent.class); comp != null; comp = world.compNext()) {
                 if(comp.isDirty()) {
-                    Log.info("[" + eid + "] " + comp.toString());
+                    Log.info(format("[%d] %s", eid, comp));
                     comp.setDirty(false);
 
                     Message msg = comp.synchronize(eid);

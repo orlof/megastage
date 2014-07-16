@@ -32,7 +32,7 @@ public class Target implements Comparable<Target> {
         return this.closestDistance < 0.0;
     }
 
-    public boolean isBehind(Vector3d ray) {
+    public boolean isBehind(Vector3f ray) {
         return ray.x * coord.x <= 0 && ray.y * coord.y <= 0 && ray.z * coord.z <= 0;
     }
 

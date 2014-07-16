@@ -2,7 +2,6 @@ package org.megastage.components;
 
 import org.megastage.ecs.BaseComponent;
 import com.cubes.Vector3Int;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -11,7 +10,6 @@ import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
-import org.megastage.util.Globals;
 
 public class Position extends ReplicatedComponent {
     public Vector3f coords;
