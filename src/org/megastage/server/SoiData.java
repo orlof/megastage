@@ -18,7 +18,7 @@ public class SoiData implements Comparable<SoiData> {
         this.eid = eid;
 
         Position pos = (Position) world.getComponent(eid, CompType.Position);
-        this.coord = pos.coords;
+        this.coord = pos.get();
 
         SphereOfInfluence soi = (SphereOfInfluence) world.getComponent(eid, CompType.SphereOfInfluence);
         this.radius = soi.radius;

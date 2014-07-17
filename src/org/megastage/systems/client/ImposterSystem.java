@@ -29,13 +29,13 @@ public class ImposterSystem extends Processor {
     
     @Override
     protected void begin() {
-        origo = ((Position) world.getComponent(ClientGlobals.playerParentEntity, CompType.Position)).coords;
+        origo = ((Position) world.getComponent(ClientGlobals.playerParentEntity, CompType.Position)).get();
     }
 
     @Override
     protected void process(int eid) {
         Position pos = (Position) world.getComponent(eid, CompType.Position);
-        Vector3f coord = pos.coords;
+        Vector3f coord = pos.get();
 
         ImposterGeometry imp = (ImposterGeometry) world.getComponent(eid, CompType.ImposterGeometry);
         double cutoff = imp.cutoff;

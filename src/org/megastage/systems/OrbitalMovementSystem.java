@@ -23,20 +23,17 @@ public class OrbitalMovementSystem extends Processor {
         
         while(isInOrbit(orbit.center)) {
             orbit = (Orbit) world.getComponent(orbit.center, CompType.Orbit);
-            localSum = localSum.add(orbit.getLocalCoordinates(secs));
+            localSum.addLocal(orbit.getLocalCoordinates(secs));
         }
 
         Position fixedStar = (Position) world.getComponent(orbit.center, CompType.Position);
-        float x = Math.round(1000 * localSum.x) + fixedStar.coords.x;
-        float y = fixedStar.coords.y;
-        float z = Math.round(1000* localSum.z) + fixedStar.coords.z;
+        localSum.addLocal(fixedStar.get());
 
         Position position = (Position) world.getComponent(eid, CompType.Position);
         Velocity velocity = (Velocity) world.getComponent(eid, CompType.Velocity);
-        velocity.vector = new Vector3f(x - position.coords.x, y - position.coords.y, z - position.coords.z);
-        
-        position.coords = new Vector3f(x, y, z);
-        //position.dirty = true;
+
+        velocity.vector.set(localSum).subtractLocal(position.get());
+        position.set(localSum);
     }
 
     private boolean isInOrbit(int eid) {

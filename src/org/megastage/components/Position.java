@@ -12,7 +12,7 @@ import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 
 public class Position extends ReplicatedComponent {
-    public Vector3f coords;
+    private Vector3f coords;
     
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
@@ -22,6 +22,29 @@ public class Position extends ReplicatedComponent {
                 getFloatValue(element, "z", 0f));
         
         return null;
+    }
+    
+    public Vector3f get() {
+        return coords;
+    }
+    
+    public Vector3f getCopy() {
+        return coords.clone();
+    }
+    
+    public void set(Vector3f vector) {
+        coords.set(vector);
+        setDirty(true);
+    }
+            
+//    public void add(float x, float y, float z) {
+//        coords.addLocal(x, y, z);
+//        setDirty(true);
+//    }
+//
+    public void add(Vector3f v) {
+        coords.addLocal(v);
+        setDirty(true);
     }
 
     public Vector3f getGlobalCoordinates(int eid) {
@@ -64,5 +87,5 @@ public class Position extends ReplicatedComponent {
 
         return coord;
     }
-            
+
 }

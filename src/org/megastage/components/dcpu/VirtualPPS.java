@@ -45,15 +45,15 @@ public class VirtualPPS extends DCPUHardware {
     private boolean writeCoordinatesToMemory(long time, char[] mem, char ptr, int ship) {
         Position position = (Position) World.INSTANCE.getComponent(ship, CompType.Position);
 
-        long x = Math.round(position.coords.x / 100.0f); // 100m
+        long x = Math.round(position.get().x / 100.0f); // 100m
         mem[ptr++] = (char) (x >> 16);
         mem[ptr++] = (char) x;
 
-        long y = Math.round(position.coords.y / 100.0f); // 100m
+        long y = Math.round(position.get().y / 100.0f); // 100m
         mem[ptr++] = (char) (y >> 16);
         mem[ptr++] = (char) y;
 
-        long z = Math.round(position.coords.z / 100.0f); // 100m
+        long z = Math.round(position.get().z / 100.0f); // 100m
         mem[ptr++] = (char) (z >> 16);
         mem[ptr++] = (char) z;
 

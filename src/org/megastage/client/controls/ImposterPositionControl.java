@@ -23,12 +23,12 @@ public class ImposterPositionControl extends AbstractControl {
         Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
         assert pos != null;
         
-        Vector3f coord = pos.coords;
+        Vector3f coord = pos.get();
 
         Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Position);
         assert origoPos != null;
 
-        Vector3f origo = origoPos.coords;
+        Vector3f origo = origoPos.get();
 
         Vector3f line = coord.subtract(origo);
 

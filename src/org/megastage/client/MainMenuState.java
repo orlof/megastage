@@ -1,6 +1,5 @@
 package org.megastage.client;
 
-import com.esotericsoftware.minlog.Log;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
@@ -8,7 +7,6 @@ import com.jme3.audio.AudioSource;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
-import com.jme3.scene.Spatial;
 import com.simsilica.lemur.Axis;
 import com.simsilica.lemur.Button;
 import com.simsilica.lemur.Command;
@@ -129,7 +127,7 @@ public class MainMenuState extends BaseAppState {
             storeOptions();
             stopMusic();
             setEnabled(false);
-            getApplication().getInputManager().setCursorVisible(false);
+            //getApplication().getInputManager().setCursorVisible(false);
             ClientGlobals.setAppStates(ECSState.class);
         }
     }

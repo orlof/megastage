@@ -7,18 +7,15 @@ import org.jdom2.Element;
 import org.megastage.ecs.World;
 
 public class SpawnPoint extends BaseComponent {
-    public int x, y, z;
+    public Vector3f vector;
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
-        x = getIntegerValue(element, "dx", 0);
-        y = getIntegerValue(element, "dy", 0);
-        z = getIntegerValue(element, "dz", 0);
+        vector = new Vector3f(
+                getFloatValue(element, "x", 0.0f) + 0.5f,
+                getFloatValue(element, "y", 0.0f) + 0.5f,
+                getFloatValue(element, "z", 0.0f) + 0.5f);
         
         return null;
-    }
-
-    public Vector3f getAsVector() {
-        return new Vector3f(x, y, z);
     }
 }

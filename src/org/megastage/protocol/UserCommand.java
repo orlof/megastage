@@ -3,11 +3,12 @@ package org.megastage.protocol;
 import com.cubes.Vector3Int;
 import com.esotericsoftware.minlog.Log;
 import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import org.megastage.components.Rotation;
 import org.megastage.util.ID;
 
 public class UserCommand {
-    public float dx, dy, dz;
+    public Vector3f move = new Vector3f();
     public Quaternion rot;
     public transient int count;
 
@@ -25,7 +26,7 @@ public class UserCommand {
     public UserCommand() {}
 
     public void reset() {
-        dx = dy = dz = 0.0f;
+        move.zero();
         keyboard.keyEventPtr = count = 0;
 
         ship = null;
@@ -41,10 +42,8 @@ public class UserCommand {
     public String toString() {
         StringBuilder sb = new StringBuilder(100);
         sb.append("UserCommand(");
-        sb.append("dx=").append(dx);
-        sb.append(", dy=").append(dy);
-        sb.append(", dz=").append(dz);
-        sb.append(", rot(").append(rot.toString()).append(")");
+        sb.append("move=[").append(move.toString()).append("]");
+        sb.append(", rot=[").append(rot.toString()).append("]");
         sb.append(", count=").append(count);
         sb.append(", keyboard=").append(keyboard);
         sb.append(", ship=").append(ship);
@@ -56,10 +55,8 @@ public class UserCommand {
         return sb.toString();
     }
 
-    public void move(double dx, double dy, double dz) {
-        this.dx += dx;
-        this.dy += dy;
-        this.dz += dz;
+    public void move(float dx, float dy, float dz) {
+        move.addLocal(dx, dy, dz);
         count++;
     }
     

@@ -148,7 +148,7 @@ public class VirtualRadar extends DCPUHardware {
         Position shipPos = (Position) World.INSTANCE.getComponent(ship, CompType.Position);
         Position targetPos = (Position) World.INSTANCE.getComponent(target, CompType.Position);
         
-        int distance = (int) Math.round(shipPos.coords.distance(targetPos.coords));
+        int distance = (int) Math.round(shipPos.get().distance(targetPos.get()));
         //Log.info("DISTANCE: " + distance);
         
         mem[ptr++] = (char) ((distance >> 16) & 0xffff);

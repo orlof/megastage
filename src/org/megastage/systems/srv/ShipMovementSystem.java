@@ -24,9 +24,9 @@ public class ShipMovementSystem extends Processor {
             Log.info(String.format("[%d] %s / %s / %s", eid, position, velocity, acceleration));
         }
         
-        position.coords.addLocal(velocity.vector.mult(world.delta / 2.0f));
+        position.add(velocity.vector.mult(world.delta / 2.0f));
         velocity.vector.addLocal(acceleration.vector.mult(world.delta));
-        position.coords.addLocal(velocity.vector.mult(world.delta / 2.0f));
+        position.add(velocity.vector.mult(world.delta / 2.0f));
         
         acceleration.vector = Vector3f.ZERO;
     }

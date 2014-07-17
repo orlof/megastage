@@ -24,31 +24,39 @@ public class PositionControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
+        Log.info(spatial.getName());
+
         Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
         if(pos == null) {
             Log.warn("no position component for " + eid);
             return;
         }
 
-        Vector3f localPos = new Vector3f(pos.coords);
-        
         if(spatial.getParent() == ClientGlobals.globalRotationNode) {
             // calculate position relative to player's ship
+            Vector3f localPos = pos.getCopy();
             Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Position);
             if(origoPos != null) {
-                localPos.subtractLocal(origoPos.coords);
+                localPos.subtractLocal(origoPos.get());
+
+                // calculate depth scaling (logarithmic if distance > 20000)
+                float distance = localPos.length();
+                float depth = depth(distance);
+
+                float scale = depth / distance;
+                localPos.multLocal(scale);
+                Log.info(String.format("distance: %f, scale: %f", distance, scale));
+                spatial.scale(scale);
+
+                localPos.addLocal(origoPos.get());
+                spatial.setLocalTranslation(localPos);
+                Log.info("local " + spatial.getLocalTranslation());
+                Log.info("global " + spatial.getWorldTranslation());
             }
-
-            // calculate depth scaling (logarithmic if distance > 20000)
-            float distance = localPos.length();
-            float depth = depth(distance);
-
-            float scale = depth / distance;
-            localPos.multLocal(scale);
-            spatial.scale(scale);
+        } else {
+            spatial.setLocalTranslation(pos.get());
         }
         
-        spatial.setLocalTranslation(localPos);
     }
     
     @Override

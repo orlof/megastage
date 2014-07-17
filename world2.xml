@@ -26,7 +26,7 @@
         <!--component type="srv.AffectedByGravityFlag"/-->
         <component type="Velocity"/>
         <component type="srv.Acceleration"/>
-        <component type="srv.SpawnPoint"  dx="7" dy="1" dz="6"/>
+        <component type="srv.SpawnPoint"  x="7" y="1" z="6"/>
         <!--component type="srv.RadarEcho" echo="0"/-->
         <component type="UsableFlag"/>
         <component type="gfx.ShipGeometry">

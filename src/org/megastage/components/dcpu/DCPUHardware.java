@@ -112,7 +112,7 @@ public abstract class DCPUHardware extends ReplicatedComponent implements Compar
 
         Position targetPos = (Position) World.INSTANCE.getComponent(targetEid, CompType.Position);
         
-        Vector3f delta = targetPos.coords.subtract(shipPos.coords);
+        Vector3f delta = targetPos.get().subtract(shipPos.get());
 
         shipRot.value.multLocal(delta);
 

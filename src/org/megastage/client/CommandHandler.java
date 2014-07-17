@@ -78,7 +78,6 @@ public class CommandHandler implements AnalogListener, ActionListener {
     
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        Log.info(name);
         if (ClientGlobals.playerEntity == 0) {
             return;
         }
@@ -149,7 +148,6 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
     @Override
     public void onAction(String name, boolean value, float tpf) {
-        Log.info(name);
         switch (name) {
             case "WALK_InvertY":
                 // Toggle on the up.

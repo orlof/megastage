@@ -129,7 +129,9 @@ public class NetworkSystem extends Processor {
             SpawnPoint sp = (SpawnPoint) world.getComponent(ship, CompType.SpawnPoint);
             
             Position pos = (Position) world.getComponent(connection.player, CompType.Position);
-            pos.coords.set(sp.x + 0.5f, sp.y + 0.5f, sp.z + 0.5f);
+            pos.set(sp.vector);
+            
+            Log.info(sp.toString());
             
             connection.sendTCP(new PlayerIDMessage(connection.player));
         } catch (Exception ex) {
@@ -316,22 +318,24 @@ public class NetworkSystem extends Processor {
 
     private void updatePlayerPosition(Cube3dMap map, int player, UserCommand cmd) {
         Position pos = (Position) world.getComponent(player, CompType.Position);
-        int cx = block(pos.coords.x);
-        int cy = block(pos.coords.y);
-        int cz = block(pos.coords.z);
         
-        int xprobe = probe(pos.coords.x, cmd.dx);
-        int yprobe = probe(pos.coords.y, cmd.dy);
-        int zprobe = probe(pos.coords.z, cmd.dz);
+        Vector3f coord = pos.get();
+        int cx = block(coord.x);
+        int cy = block(coord.y);
+        int cz = block(coord.z);
+        
+        int xprobe = probe(coord.x, cmd.move.x);
+        int yprobe = probe(coord.y, cmd.move.y);
+        int zprobe = probe(coord.z, cmd.move.z);
         
         int collision = collisionXZ(map, cx, cy, cz, xprobe, yprobe, zprobe);
-        if(collision == 0) {
-            pos.coords.set(pos.coords.x + (long) (1000 * cmd.dx + 0.5), pos.coords.y, pos.coords.z + (long) (1000 * cmd.dz + 0.5));
-        } else if((collision & 1) == 0) {
-            pos.coords.set(pos.coords.x + (long) (1000 * cmd.dx + 0.5), pos.coords.y, pos.coords.z);
-        } else if((collision & 2) == 0) {
-            pos.coords.set(pos.coords.x, pos.coords.y, pos.coords.z + (long) (1000 * cmd.dz + 0.5));
+        if((collision & 1) != 0) {
+            cmd.move.setX(0.0f);
+        } 
+        if((collision & 2) != 0) {
+            cmd.move.setZ(0.0f);
         }
+        pos.add(cmd.move);
     }
 
     private void updatePlayerRotation(int player, UserCommand cmd) {
@@ -348,10 +352,7 @@ public class NetworkSystem extends Processor {
         vel.multLocal(10e3f);
 
         Position shipPos = (Position) world.getComponent(ship, CompType.Position);
-        shipPos.coords.set(
-                shipPos.coords.x + (long) (vel.x + 0.5),
-                shipPos.coords.y + (long) (vel.y + 0.5),
-                shipPos.coords.z + (long) (vel.z + 0.5));
+        shipPos.add(vel);
 
         // rotate rotation axis by fixedEntity rotation
         Vector3f yAxis = shipRotationQuaternion.multLocal(new Vector3f(0, 1, 0));
@@ -424,7 +425,7 @@ public class NetworkSystem extends Processor {
         SpawnPoint sp = (SpawnPoint) world.getComponent(teleport.eid, CompType.SpawnPoint);
         
         Position pos = (Position) world.getComponent(connection.player, CompType.Position);
-        pos.coords.set(sp.x + 0.5f, sp.y + 0.5f, sp.z + 0.5f);
+        pos.set(sp.vector);
     }
 
     public void processNewConnections(Connection[] connections) {
@@ -472,7 +473,7 @@ public class NetworkSystem extends Processor {
 
         @Override
         public void received(Connection connection, Object o) {
-            Log.trace("Received: " + o.getClass().getName());
+            // Log.info("Received: " + o.getClass().getName());
             try {
                 PlayerConnection pc = (PlayerConnection) connection;
 

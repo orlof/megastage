@@ -46,11 +46,8 @@ public class GravityManagerSystem extends Processor {
             Position fieldPos = (Position) world.getComponent(fieldEid, CompType.Position);
             if(fieldPos == null) continue;
             
-            double dx = (fieldPos.coords.x - pos.coords.x);
-            double dy = (fieldPos.coords.y - pos.coords.y);
-            double dz = (fieldPos.coords.z - pos.coords.z);
+            float distanceSquared = fieldPos.get().distanceSquared(pos.get());
             
-            double distanceSquared = dx*dx + dy*dy + dz*dz;
             double fieldStr = getStandardGravitationalParameter(fieldEid) / distanceSquared;
             gfields.add(new GravityField(fieldEid, fieldStr));
         }
@@ -70,17 +67,16 @@ public class GravityManagerSystem extends Processor {
 
         for(int fieldEid = group.iterator(); fieldEid != 0; fieldEid = group.next()) {
             Position p2 = (Position) world.getComponent(fieldEid, CompType.Position);
+
+            Vector3f displacement = p2.get().subtract(pos.get());
+            float distanceSquared = displacement.lengthSquared();
             
-            float dx = (p2.coords.x - pos.coords.x);
-            float dy = (p2.coords.y - pos.coords.y);
-            float dz = (p2.coords.z - pos.coords.z);
-            
-            float distanceSquared = dx*dx + dy*dy + dz*dz;
             float gravitationalField = getStandardGravitationalParameter(fieldEid) / distanceSquared;
             float distance = (float) Math.sqrt(distanceSquared);
             float multiplier = gravitationalField / distance;
 
-            acc = acc.add(multiplier * dx, multiplier * dy, multiplier * dz);
+            displacement.multLocal(multiplier);
+            acc.addLocal(displacement);
         }
 
         return acc;
@@ -93,12 +89,12 @@ public class GravityManagerSystem extends Processor {
 
     public void writeOrbitalStateVectorToMemory(char[] mem, char ptr, int reference, int ship, boolean ieee754) {
         Position shipPos = (Position) world.getComponent(ship, CompType.Position);
-        Vector3f shipCoord = shipPos.coords;
+        Vector3f shipCoord = shipPos.get();
         Velocity shipVel = (Velocity) world.getComponent(ship, CompType.Velocity);
         Vector3f shipVelVec = shipVel.vector;
 
         Position refPos = (Position) world.getComponent(reference, CompType.Position);
-        Vector3f refCoord = refPos.coords;
+        Vector3f refCoord = refPos.get();
         Velocity refVel = (Velocity) world.getComponent(reference, CompType.Velocity);
         Vector3f refVelVec = refVel.vector;
         

@@ -24,7 +24,7 @@ public class CollisionSystem extends Processor {
             Position posb = (Position) world.getComponent(group.right, CompType.Position);
             
             if(cola.isShip() || colb.isShip()) {
-                float distance = posa.coords.distance(posb.coords);
+                float distance = posa.get().distance(posb.get());
 
                 float range = cola.radius + colb.radius;
 

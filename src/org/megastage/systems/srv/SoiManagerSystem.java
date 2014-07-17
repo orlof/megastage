@@ -7,7 +7,6 @@ import org.megastage.ecs.Processor;
 import org.megastage.ecs.World;
 import org.megastage.server.SoiData;
 import org.megastage.util.Bag;
-import org.megastage.util.Vector3d;
 
 public class SoiManagerSystem extends Processor {
     public static SoiManagerSystem INSTANCE;
@@ -33,7 +32,7 @@ public class SoiManagerSystem extends Processor {
     
     public SoiData getSoi(int shipEid) {
         Position pos = (Position) world.getComponent(shipEid, CompType.Position);
-        Vector3f coord = pos.coords;
+        Vector3f coord = pos.get();
 
         for(SoiData data: soiData) {
             if(data.contains(coord)) {
