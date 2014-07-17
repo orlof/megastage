@@ -2,7 +2,7 @@ package org.megastage.systems.srv;
 
 import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import org.megastage.components.Position;
 import org.megastage.components.srv.CollisionType;
 import org.megastage.components.Explosion;

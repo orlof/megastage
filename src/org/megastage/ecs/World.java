@@ -1,6 +1,6 @@
 package org.megastage.ecs;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,7 +83,7 @@ public class World {
         delta = (gameTime - time) / 1000.0f;
         time = gameTime;
         
-        //Log.info(String.format("Time: %s -> %s", World.INSTANCE.delta, World.INSTANCE.time));
+        // Log.info("Time: %s -> %s", World.INSTANCE.delta, World.INSTANCE.time);
 
         tick();
     }

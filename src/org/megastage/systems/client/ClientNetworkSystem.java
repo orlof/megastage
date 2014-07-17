@@ -3,7 +3,7 @@ package org.megastage.systems.client;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import org.megastage.protocol.Network;
 
 import java.io.IOException;

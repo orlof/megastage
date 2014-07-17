@@ -2,7 +2,7 @@ package org.megastage.systems.srv;
 
 import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import java.util.Arrays;
 import java.util.Comparator;
 import org.megastage.components.dcpu.DCPU;

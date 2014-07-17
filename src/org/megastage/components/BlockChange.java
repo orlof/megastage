@@ -2,7 +2,7 @@ package org.megastage.components;
 
 import com.cubes.Block;
 import com.cubes.BlockTerrainControl;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.effect.ParticleEmitter;
 import org.megastage.client.CubesManager;
 import org.megastage.client.EntityNode;

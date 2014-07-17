@@ -23,7 +23,6 @@ import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 import org.megastage.util.Cube3dMap;
-import org.megastage.util.Vector3d;
 
 
 public class ShipGeometry extends ReplicatedComponent {

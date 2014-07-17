@@ -19,7 +19,7 @@ import com.esotericsoftware.kryo.util.IntMap;
 import com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterTCP;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 
 import static com.esotericsoftware.minlog.Log.*;
 

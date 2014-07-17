@@ -1,6 +1,6 @@
 package org.megastage.client.controls;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.renderer.RenderManager;

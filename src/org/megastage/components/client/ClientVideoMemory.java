@@ -1,6 +1,6 @@
 package org.megastage.components.client;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.math.ColorRGBA;
 import org.megastage.components.transfer.MonitorData;
 import org.megastage.components.dcpu.LEMUtil;

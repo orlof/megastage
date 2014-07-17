@@ -1,6 +1,6 @@
 package org.megastage.systems.srv;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.math.Vector3f;
 import org.megastage.components.srv.CollisionSphere;
 import org.megastage.components.Position;

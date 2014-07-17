@@ -1,6 +1,6 @@
 package org.megastage.ecs;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 
 public abstract class Processor {
     private long interval;

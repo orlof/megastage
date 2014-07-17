@@ -1,6 +1,6 @@
 package org.megastage.client;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.app.state.AppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.renderer.Camera;
@@ -27,12 +27,10 @@ public class ClientGlobals {
     public static Node rootNode;
     public static final Node backgroundNode = new Node("background_node");
     public static final Node globalRotationNode = new Node("global_rotation_node");
-    public static final Node playerParentNode = new Node("player_parent_node");
     public static final Node playerNode = new Node("player_node");
 
     public static GraphicsSettings gfxSettings = GraphicsSettings.JOKE;
 
-    public static final double SCALE = 1;
     public static final UserCommand userCommand = new UserCommand();
     public static Main app;
     public static CommandHandler cmdHandler;

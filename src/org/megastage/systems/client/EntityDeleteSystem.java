@@ -1,6 +1,6 @@
 package org.megastage.systems.client;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.Processor;
 import org.megastage.ecs.World;

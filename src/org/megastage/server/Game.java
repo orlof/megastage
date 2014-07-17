@@ -1,6 +1,6 @@
 package org.megastage.server;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import org.megastage.systems.srv.DCPUSystem;
 import org.megastage.systems.srv.CleanupSystem;
 import org.megastage.systems.srv.NetworkSystem;

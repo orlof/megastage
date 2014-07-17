@@ -1,6 +1,6 @@
 package org.megastage.ecs;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import java.lang.reflect.Field;
 
 public class CompType1 {

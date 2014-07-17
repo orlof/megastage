@@ -1,6 +1,6 @@
 package org.megastage.components.dcpu;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.math.Vector3f;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;

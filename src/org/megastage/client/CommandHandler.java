@@ -2,7 +2,7 @@ package org.megastage.client;
 
 import com.cubes.BlockTerrainControl;
 import com.cubes.Vector3Int;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.InputManager;

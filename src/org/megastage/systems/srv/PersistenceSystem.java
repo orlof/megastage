@@ -4,7 +4,7 @@ import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;

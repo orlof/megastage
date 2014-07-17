@@ -1,7 +1,7 @@
 package org.megastage.components.dcpu;
 
 import org.megastage.components.transfer.ThermalLaserData;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;

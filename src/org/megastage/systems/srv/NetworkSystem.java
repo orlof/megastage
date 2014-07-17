@@ -3,7 +3,7 @@ package org.megastage.systems.srv;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import org.megastage.components.dcpu.VirtualKeyboard;
@@ -43,7 +43,6 @@ import org.megastage.server.TemplateManager;
 import org.megastage.util.Bag;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.ID;
-import static java.lang.String.format;
 
 public class NetworkSystem extends Processor {
     private Server server;
@@ -93,7 +92,7 @@ public class NetworkSystem extends Processor {
         Message[] data = update.toArray(Message.class);
         
         for(Connection c: connections) {
-            Log.info(String.format("sending %d messages", data.length));
+            //Log.info("sending %d messages", data.length);
             c.sendUDP(data);
         }
     }
@@ -216,7 +215,9 @@ public class NetworkSystem extends Processor {
 
         ShipGeometry geom = (ShipGeometry) world.getComponent(bindTo.parent, CompType.ShipGeometry);
 
-        updatePlayerPosition(geom.map, connection.player, cmd);
+        if(cmd.move.lengthSquared() > 0) {
+            updatePlayerPosition(geom.map, connection.player, cmd);
+        }
         updatePlayerRotation(connection.player, cmd);
 
         if(cmd.ship != null) {
@@ -362,13 +363,14 @@ public class NetworkSystem extends Processor {
         Quaternion zRotation = new Quaternion().fromAngleAxis(cmd.ship.roll, zAxis);
 
         Vector3f xAxis = shipRotationQuaternion.multLocal(new Vector3f(1, 0, 0));
-        Quaternion xRotation = new Quaternion().fromAngleAxis(cmd.ship.pitch, zAxis);
+        Quaternion xRotation = new Quaternion().fromAngleAxis(cmd.ship.pitch, xAxis);
 
-        shipRotationQuaternion = yRotation.mult(shipRotationQuaternion).normalizeLocal();
-        shipRotationQuaternion = zRotation.mult(shipRotationQuaternion).normalizeLocal();
-        shipRotationQuaternion = xRotation.mult(shipRotationQuaternion).normalizeLocal();
+        shipRotationQuaternion = yRotation.multLocal(shipRotationQuaternion).normalizeLocal();
+        shipRotationQuaternion = zRotation.multLocal(shipRotationQuaternion).normalizeLocal();
+        shipRotationQuaternion = xRotation.multLocal(shipRotationQuaternion).normalizeLocal();
 
         shipRotation.value.set(shipRotationQuaternion);
+        shipRotation.setDirty(true);
     }
 
     private void changeFloppy(PlayerConnection connection, ChangeFloppy change) {
@@ -452,7 +454,7 @@ public class NetworkSystem extends Processor {
         for (int eid = group.iterator(); eid != 0; eid = group.next()) {
             for(ReplicatedComponent comp = world.compIter(eid, ReplicatedComponent.class); comp != null; comp = world.compNext()) {
                 if(comp.isDirty()) {
-                    Log.info(format("[%d] %s", eid, comp));
+                    // Log.info(format("[%d] %s", eid, comp));
                     comp.setDirty(false);
 
                     Message msg = comp.synchronize(eid);

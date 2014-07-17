@@ -12,6 +12,7 @@ import org.megastage.client.EntityNode;
 import org.megastage.client.JME3Material;
 import org.megastage.client.SpatialManager;
 import org.megastage.client.controls.AxisRotationControl;
+import org.megastage.client.controls.LocalPositionControl;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
@@ -37,7 +38,7 @@ public class CharacterGeometry extends ReplicatedComponent {
         if(eid != ClientGlobals.playerEntity) {
             EntityNode node = SpatialManager.getOrCreateNode(eid);
 
-            node.addControl(new PositionControl(eid));
+            node.addControl(new LocalPositionControl(eid));
             node.addControl(new AxisRotationControl(eid, false, true, false));
 
             initGeometry(node.offset, eid);

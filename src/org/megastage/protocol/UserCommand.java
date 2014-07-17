@@ -1,7 +1,7 @@
 package org.megastage.protocol;
 
 import com.cubes.Vector3Int;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import org.megastage.components.Rotation;

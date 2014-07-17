@@ -1,10 +1,9 @@
 package org.megastage.protocol;
 
 import com.esotericsoftware.kryonet.Connection;
-import java.util.concurrent.Callable;
 import org.megastage.client.ClientGlobals;
 import org.megastage.client.controls.AxisRotationControl;
-import org.megastage.client.controls.PositionControl;
+import org.megastage.client.controls.LocalPositionControl;
 
 public class PlayerIDMessage extends EventMessage {
     private int eid = 0;
@@ -21,7 +20,7 @@ public class PlayerIDMessage extends EventMessage {
         final AxisRotationControl bodyRotationControl = new AxisRotationControl(eid, false, true, false);
         final AxisRotationControl headRotationControl = new AxisRotationControl(eid, true, false, false);
 
-        ClientGlobals.playerNode.addControl(new PositionControl(eid));
+        ClientGlobals.playerNode.addControl(new LocalPositionControl(eid));
         ClientGlobals.playerNode.addControl(bodyRotationControl);
         ClientGlobals.playerNode.getChild(0).addControl(headRotationControl);
     }

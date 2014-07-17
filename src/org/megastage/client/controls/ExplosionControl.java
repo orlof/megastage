@@ -1,6 +1,6 @@
 package org.megastage.client.controls;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.audio.AudioNode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.RenderManager;

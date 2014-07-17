@@ -7,7 +7,7 @@ import com.jme3.scene.shape.Box;
 import org.megastage.client.EntityNode;
 import org.megastage.client.JME3Material;
 import org.megastage.client.SpatialManager;
-import org.megastage.client.controls.PositionControl;
+import org.megastage.client.controls.LocalPositionControl;
 import org.megastage.client.controls.RotationControl;
 import org.megastage.ecs.ReplicatedComponent;
     
@@ -18,7 +18,7 @@ public abstract class ItemGeometryComponent extends ReplicatedComponent {
 
         EntityNode node = SpatialManager.getOrCreateNode(eid);
         
-        node.addControl(new PositionControl(eid));
+        node.addControl(new LocalPositionControl(eid));
         node.addControl(new RotationControl(eid));
 
         initGeometry(node.offset, eid);

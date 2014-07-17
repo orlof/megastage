@@ -1,6 +1,6 @@
 package org.megastage.components.dcpu;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 

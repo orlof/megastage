@@ -1,6 +1,6 @@
 package org.megastage.systems.srv;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.Processor;

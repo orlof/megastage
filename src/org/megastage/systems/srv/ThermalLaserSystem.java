@@ -1,7 +1,7 @@
 package org.megastage.systems.srv;
 
 import org.megastage.ecs.World;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import java.util.Random;
 import org.megastage.components.BlockChange;
 import org.megastage.components.dcpu.VirtualForceField;

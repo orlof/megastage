@@ -6,7 +6,7 @@ import com.jme3.system.AppSettings;
 import com.cubes.*;
 import com.cubes.test.CubesTestAssets;
 import com.cubes.test.blocks.*;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.math.Quaternion;
 import com.jme3.scene.Node;
 import com.jme3.ui.Picture;

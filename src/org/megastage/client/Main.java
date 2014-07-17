@@ -1,7 +1,7 @@
 package org.megastage.client;
 
 import com.cubes.test.CubesTestAssets;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
 import com.jme3.bounding.BoundingSphere;
@@ -27,7 +27,6 @@ import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.style.Styles;
 import org.megastage.client.controls.BackgroundRotationControl;
 import org.megastage.client.controls.GlobalRotationControl;
-import org.megastage.util.LogFormat;
 
 public class Main extends SimpleApplication {
 
@@ -36,7 +35,6 @@ public class Main extends SimpleApplication {
             ClientGlobals.serverHost = args[0];
         }
         
-        Log.setLogger(new LogFormat());
         Log.set(Log.LEVEL_INFO);
 
         AppSettings settings = new AppSettings(true);
@@ -122,8 +120,7 @@ public class Main extends SimpleApplication {
     private void initializeSystemNodes() {
         ClientGlobals.rootNode = rootNode;
 
-        ClientGlobals.playerParentNode.attachChild(ClientGlobals.playerNode);        
-        ClientGlobals.rootNode.attachChild(ClientGlobals.playerParentNode);
+        ClientGlobals.rootNode.attachChild(ClientGlobals.playerNode);
         
         ClientGlobals.globalRotationNode.addControl(new GlobalRotationControl());
         ClientGlobals.rootNode.attachChild(ClientGlobals.globalRotationNode);

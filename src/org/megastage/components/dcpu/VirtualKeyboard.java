@@ -1,6 +1,6 @@
 package org.megastage.components.dcpu;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
@@ -24,7 +24,7 @@ public class VirtualKeyboard extends DCPUHardware {
     public void keyTyped(int key) {
         if (key < 20 || key >= 127) return;
         if (keyBuffer[kwp & 0x3F] == 0) {
-            Log.trace(String.format("write keyBuffer[%d]=%s", kwp, Integer.toHexString(key)));
+            Log.trace("write keyBuffer[%d]=%s", kwp, Integer.toHexString(key));
             keyBuffer[kwp++ & 0x3F] = (char) key;
             doInterrupt = true;
         }

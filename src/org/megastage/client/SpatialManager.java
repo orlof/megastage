@@ -1,10 +1,11 @@
 package org.megastage.client;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import org.megastage.client.controls.ImposterPositionControl;
 import org.megastage.client.controls.PositionControl;
+import org.megastage.client.controls.RotationControl;
 import org.megastage.components.client.NodeComponent;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
@@ -55,20 +56,22 @@ public class SpatialManager {
     private static void leaveShip() {
         int ship = ClientGlobals.playerParentEntity;
         
-        if(ship != 0) {
+        if(ship != 0 && ship != ClientGlobals.playerEntity) {
             Log.info(ID.get(ship));
 
-            Node shipNode = getOrCreateNode(ship);
+            // ship node
+            EntityNode shipNode = getOrCreateNode(ship);
             ClientGlobals.globalRotationNode.attachChild(shipNode);
-            ClientGlobals.playerParentEntity = 0;
-            
+            shipNode.getControl(RotationControl.class).setEnabled(true);
+
+            ClientGlobals.playerParentEntity = ClientGlobals.playerEntity;
+            ClientGlobals.rootNode.attachChild(ClientGlobals.playerNode);
+
 //            Rotation rot = (Rotation) World.INSTANCE.getComponent(ship, CompType.Rotation);
 //            rot.setDirty(true);
 //
 //            Position pos = (Position) World.INSTANCE.getComponent(ship, CompType.Position);
 //            pos.setDirty(true);
-//            
-//            ClientGlobals.playerParentNode.attachChild(ClientGlobals.playerNode);
         }
     }
 
@@ -78,10 +81,8 @@ public class SpatialManager {
         ClientGlobals.playerParentEntity = shipEid;
 
         EntityNode shipNode = getOrCreateNode(shipEid);
-        ClientGlobals.playerParentNode.attachChild(shipNode);
+        ClientGlobals.rootNode.attachChild(shipNode);
         shipNode.offset.attachChild(ClientGlobals.playerNode);
-        //attach(shipNode, ClientGlobals.playerNode, true);
-        ClientGlobals.playerNode.setLocalTranslation(0, 0, 0);
     }
 
     public static void imposter(int eid, boolean gfxVisible) {

@@ -2,7 +2,7 @@ package org.megastage.systems.srv;
 
 import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.math.Vector3f;
 import org.megastage.components.*;
 import org.megastage.components.srv.Acceleration;
@@ -21,7 +21,7 @@ public class ShipMovementSystem extends Processor {
         Position position = (Position) world.getComponent(eid, CompType.Position);
 
         if(Log.TRACE) {
-            Log.info(String.format("[%d] %s / %s / %s", eid, position, velocity, acceleration));
+            Log.info("[%d] %s / %s / %s", eid, position, velocity, acceleration);
         }
         
         position.add(velocity.vector.mult(world.delta / 2.0f));
