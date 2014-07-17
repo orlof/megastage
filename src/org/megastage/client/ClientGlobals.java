@@ -23,6 +23,7 @@ public class ClientGlobals {
     public static int playerParentEntity;
     
     public static long timeDiff;
+    public static long syncTime;
 
     public static Node rootNode;
     public static final Node backgroundNode = new Node("background_node");

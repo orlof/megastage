@@ -88,12 +88,14 @@ public class NetworkSystem extends Processor {
 
         processDeletedEntities(update);
         processSynchronizedEntities(update);        
-        
-        Message[] data = update.toArray(Message.class);
-        
-        for(Connection c: connections) {
-            //Log.info("sending %d messages", data.length);
-            c.sendUDP(data);
+
+        if(update.size() > 1) {
+            Message[] data = update.toArray(Message.class);
+
+            for(Connection c: connections) {
+                //Log.info("sending %d messages", data.length);
+                c.sendUDP(data);
+            }
         }
     }
 

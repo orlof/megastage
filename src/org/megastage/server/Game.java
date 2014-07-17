@@ -10,7 +10,7 @@ import org.megastage.systems.srv.EntityInitializeSystem;
 
 public class Game {
     World world;
-    private static long TICK_SPEED = 500;
+    private static long TICK_SPEED = 50;
 
     public Game(Element root) throws Exception {
         world = new World();

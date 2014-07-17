@@ -46,9 +46,7 @@ public class MainMenuState extends BaseAppState {
 
         Label title = menu.addChild(new Label("", new ElementId(LemurStyles.MENU_TITLE_ID), "retro"));
 
-        IconComponent titleImage = new IconComponent( "Interface/logo.png", 
-                                                      new Vector2f(1, 0.6f), 
-                                                      5, 5, 0, false );
+        IconComponent titleImage = new IconComponent("Interface/logo.png", new Vector2f(1.5f, 1.0f), 5, 5, 0, false);
         title.setBackground(titleImage);
          
         Button start = menu.addChild(new Button("Play", "retro"));
@@ -127,7 +125,7 @@ public class MainMenuState extends BaseAppState {
             storeOptions();
             stopMusic();
             setEnabled(false);
-            //getApplication().getInputManager().setCursorVisible(false);
+            getApplication().getInputManager().setCursorVisible(false);
             ClientGlobals.setAppStates(ECSState.class);
         }
     }
