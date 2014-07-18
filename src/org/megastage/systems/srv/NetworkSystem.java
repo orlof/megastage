@@ -381,14 +381,17 @@ public class NetworkSystem extends Processor {
 
     private void build(PlayerConnection connection, Build build, Cube3dMap map, BlockChanges changes) {
         if(build.x < 0 || build.y < 0 || build.z < 0) {
+            Log.info("Trying to build to negative coordinates");
             return;
         }
 
         if(map.get(build.x, build.y, build.z) != 0) {
+            Log.info("Trying to build in non-empty block");
             return;
         }
     
         if(!isBlockDistanceBetween(connection.player, build.x, build.y, build.z, 1.1f, 3.0f)) {
+            Log.info("Trying to build too near or far");
             return;
         }
 
@@ -462,6 +465,9 @@ public class NetworkSystem extends Processor {
     private boolean isBlockDistanceBetween(int eid, int x, int y, int z, float min, float max) {
         Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
         Vector3f buildPosition = new Vector3f(x + 0.5f, y + 0.5f, z + 0.5f);
+        
+        Log.info("Builder position: " + pos.toString());
+        Log.info("Build position: " + buildPosition.toString());
         
         float distance = pos.get().distance(buildPosition);
         

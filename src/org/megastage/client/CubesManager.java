@@ -53,17 +53,17 @@ public class CubesManager {
         return null;
     }
 
-    public static Vector3Int getCurrentPointedBlockLocation(Node terrainNode, boolean getNeighborLocation){
-        CollisionResults results = ClientGlobals.app.getRayCastingResults(terrainNode);
-        if(results.size() > 0) {
-            Vector3f collisionContactPoint = results.getClosestCollision().getContactPoint();
-            collisionContactPoint.subtractLocal(terrainNode.getLocalTranslation());
-            BlockTerrainControl ctrl = terrainNode.getControl(BlockTerrainControl.class);
-            return BlockNavigator.getPointedBlockLocation(ctrl, collisionContactPoint, getNeighborLocation);
-        }
-        return null;
-    }
-
+//    public static Vector3Int getCurrentPointedBlockLocation(Node terrainNode, boolean getNeighborLocation){
+//        CollisionResults results = ClientGlobals.app.getRayCastingResults(terrainNode);
+//        if(results.size() > 0) {
+//            Vector3f collisionContactPoint = results.getClosestCollision().getContactPoint();
+//            collisionContactPoint.subtractLocal(terrainNode.getLocalTranslation());
+//            BlockTerrainControl ctrl = terrainNode.getControl(BlockTerrainControl.class);
+//            return BlockNavigator.getPointedBlockLocation(ctrl, collisionContactPoint, getNeighborLocation);
+//        }
+//        return null;
+//    }
+//
     public class Floor extends Block {}
     public class Combi extends Block {}
     public class Wall extends Block {}

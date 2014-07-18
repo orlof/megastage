@@ -1,5 +1,7 @@
 package org.megastage.client;
 
+import com.cubes.BlockNavigator;
+import com.cubes.BlockTerrainControl;
 import com.cubes.Vector3Int;
 import org.megastage.util.Log;
 import com.jme3.collision.CollisionResult;
@@ -12,6 +14,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import org.megastage.components.Rotation;
 import org.megastage.ecs.CompType;
@@ -404,28 +407,37 @@ public class CommandHandler implements AnalogListener, ActionListener {
     };
 
     private void pickItem(boolean right) {
-        Log.mark();
         CollisionResults results = getNodesInFrontOfCamera(); 
  
         for(int i=0; i < results.size(); i++) {
             CollisionResult closest = results.getCollision(i);
-            Log.info(closest.getGeometry().getName());
+            Log.info("%d: %s", i, closest.getGeometry().getName());
 
             if(isForceShield(closest)) {
                 // pick goes through force shield
                 continue;
             }
             
-            EntityNode target = getUsableEntityNodeAncestor(closest.getGeometry());
+            EntityNode target = getEntityNodeAncestor(closest.getGeometry());
             
             if(target == null) {
                 Log.info("Action: None");
                 return;
             }
+            Log.info(target.getName());
+            
+            if(target.eid == ClientGlobals.playerEntity) {
+                continue;
+            }
+            
+            if(!target.isUsable()) {
+                return;
+            }
 
             if(target.isShip()) {
                 if(target.isPlayerBase()) {
-                    Vector3Int loc = CubesManager.getCurrentPointedBlockLocation(target.offset, !right);
+                    Vector3Int loc = getCurrentPointedBlockLocation(target.offset, closest, !right);
+                    Log.info("target: " + loc.toString());
                     if(loc != null) {
                         if(right) {
                             Log.info("Action: Remove Block");
@@ -465,7 +477,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
         return closest.getGeometry().getName().equals("forceshield");
     }
 
-    private EntityNode getUsableEntityNodeAncestor(Spatial spatial) {
+    private EntityNode getEntityNodeAncestor(Spatial spatial) {
         while(true) {
             spatial = spatial.getParent();
 
@@ -476,10 +488,15 @@ public class CommandHandler implements AnalogListener, ActionListener {
             if(spatial instanceof EntityNode) {
                 EntityNode target = (EntityNode) spatial;
                 
-                if(target.isUsable()) {
-                    return target;
-                }
+                return target;
             }
         }
+    }
+
+    private Vector3Int getCurrentPointedBlockLocation(Node node, CollisionResult closest, boolean b) {
+        Vector3f collisionContactPoint = closest.getContactPoint();
+        collisionContactPoint.subtractLocal(node.getLocalTranslation());
+        BlockTerrainControl ctrl = node.getControl(BlockTerrainControl.class);
+        return BlockNavigator.getPointedBlockLocation(ctrl, collisionContactPoint, b);
     }
 }
