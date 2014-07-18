@@ -2,6 +2,8 @@ package org.megastage.client;
 
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.util.ID;
 
 public class EntityNode extends Node {
@@ -18,6 +20,18 @@ public class EntityNode extends Node {
     
     public void setOffset(Vector3f val) {
         offset.setLocalTranslation(val);
+    }
+
+    public boolean isUsable() {
+        return World.INSTANCE.hasComponent(eid, CompType.UsableFlag);
+    }
+
+    public boolean isShip() {
+        return World.INSTANCE.hasComponent(eid, CompType.ShipGeometry);
+    }
+
+    public boolean isPlayerBase() {
+        return eid == ClientGlobals.playerParentEntity;
     }
 
 }

@@ -100,11 +100,6 @@ public class NetworkSystem extends Processor {
     }
 
     private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
-        BindTo bindTo = (BindTo) world.getComponent(connection.player, CompType.BindTo);
-        if(bindTo != null) {
-            if(bindTo.parent != 0) world.setComponent(bindTo.parent, CompType.BindTo, new DeleteFlag());
-        }
-        
         world.setComponent(connection.player, CompType.DeleteFlag, new DeleteFlag());
         connection.close();
         
@@ -165,26 +160,16 @@ public class NetworkSystem extends Processor {
     }
 
     private int probe(float pos, float step) {
-        float target = pos + step;
-        if(step < 0) {
-            target -= 0.300;
-        } else if(step > 0) {
-            target += 0.300;
-        }
+        float target = pos + step + Math.signum(step) * 0.3f;
+        if(target < 0.0f) target -= 1.0f;
+        
+        int start = (int) pos;
+        int end = (int) target;
+        
+        if(end < start - 1) end = start - 1;
+        if(end > start + 1) end = start + 1;
 
-        if(target < 0) {
-            target -= 1;
-        }
-
-        return (int) target;
-    }
-    
-    private int block(float pos) {
-        if(pos < 0) {
-            pos -= 1;
-        }
-
-        return (int) pos;
+        return end;
     }
     
     private boolean blocked(Cube3dMap map, int x, int y, int z) {
@@ -201,7 +186,7 @@ public class NetworkSystem extends Processor {
             result |= 2;
         }
         if(cx != px && cz != pz && blocked(map, px, cy, pz)) {
-            result |= 4;
+            result |= 3;
         }
         return result;
     }
@@ -323,9 +308,9 @@ public class NetworkSystem extends Processor {
         Position pos = (Position) world.getComponent(player, CompType.Position);
         
         Vector3f coord = pos.get();
-        int cx = block(coord.x);
-        int cy = block(coord.y);
-        int cz = block(coord.z);
+        int cx = (int) coord.x;
+        int cy = (int) coord.y;
+        int cz = (int) coord.z;
         
         int xprobe = probe(coord.x, cmd.move.x);
         int yprobe = probe(coord.y, cmd.move.y);
@@ -352,7 +337,7 @@ public class NetworkSystem extends Processor {
 
         Vector3f vel = shipRotationQuaternion.multLocal(new Vector3f(cmd.ship.left, cmd.ship.up, cmd.ship.forward));
 
-        vel.multLocal(10e3f);
+        vel.multLocal(10e4f);
 
         Position shipPos = (Position) world.getComponent(ship, CompType.Position);
         shipPos.add(vel);
@@ -402,6 +387,10 @@ public class NetworkSystem extends Processor {
         if(map.get(build.x, build.y, build.z) != 0) {
             return;
         }
+    
+        if(!isBlockDistanceBetween(connection.player, build.x, build.y, build.z, 1.1f, 3.0f)) {
+            return;
+        }
 
         map.set(build.x, build.y, build.z, '#');
         changes.changes.add(new BlockChange(build.x, build.y, build.z, '#', BlockChange.BUILD));
@@ -413,6 +402,10 @@ public class NetworkSystem extends Processor {
         }
 
         if(map.get(unbuild.x, unbuild.y, unbuild.z) != '#') {
+            return;
+        }
+
+        if(!isBlockDistanceBetween(connection.player, unbuild.x, unbuild.y, unbuild.z, 1.1f, 3.0f)) {
             return;
         }
 
@@ -464,6 +457,15 @@ public class NetworkSystem extends Processor {
                 }
             }
         }
+    }
+
+    private boolean isBlockDistanceBetween(int eid, int x, int y, int z, float min, float max) {
+        Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
+        Vector3f buildPosition = new Vector3f(x + 0.5f, y + 0.5f, z + 0.5f);
+        
+        float distance = pos.get().distance(buildPosition);
+        
+        return distance > min && distance < max;
     }
 
     private class ServerNetworkListener extends Listener {

@@ -24,6 +24,8 @@ public class BindTo extends ReplicatedComponent {
     
     @Override
     public void receive(int eid) {
+        super.receive(eid);
+
         if(ClientGlobals.playerEntity == eid) {
             SpatialManager.changeShip(parent);
         } else {

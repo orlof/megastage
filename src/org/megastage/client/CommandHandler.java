@@ -1,6 +1,5 @@
 package org.megastage.client;
 
-import com.cubes.BlockTerrainControl;
 import com.cubes.Vector3Int;
 import org.megastage.util.Log;
 import com.jme3.collision.CollisionResult;
@@ -16,7 +15,6 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import org.megastage.components.Rotation;
-import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.protocol.CharacterMode;
@@ -407,55 +405,77 @@ public class CommandHandler implements AnalogListener, ActionListener {
     };
 
     private void pickItem(boolean right) {
-        CollisionResults results = new CollisionResults();
-        Ray ray = new Ray(ClientGlobals.cam.getLocation(), ClientGlobals.cam.getDirection());
-        ClientGlobals.rootNode.collideWith(ray, results);
+        CollisionResults results = getNodesInFrontOfCamera(); 
+ 
         for(int i=0; i < results.size(); i++) {
             CollisionResult closest = results.getCollision(i);
-            if(!closest.getGeometry().getName().equals("forceshield")) {
-                Node target = closest.getGeometry().getParent();
 
-                int eid = 0;
-                while(true) {
-                    if(target == ClientGlobals.rootNode) {
-                        return;
-                    }
-
-                    eid = SpatialManager.getUsableEntity(target, true);
-                    //Log.info("Pick entity: " + ID.get(entity));
-                    if(eid != 0) break;
-                    target = target.getParent();
-                }
-
-                Object geom = World.INSTANCE.getComponent(eid, CompType.GeometryComponent);
-                if(geom != null && geom instanceof ShipGeometry) {
-                    if(eid == ClientGlobals.playerParentEntity) {
-                        Node offset = (Node) target.getChild("offset");
-                        Vector3Int loc = CubesManager.getCurrentPointedBlockLocation(offset, !right);
-                        if(loc != null) {
-                            BlockTerrainControl ctrl = offset.getControl(BlockTerrainControl.class);
-                            if(!right) {
-                                ClientGlobals.userCommand.build(loc);
-                                //ctrl.setBlock(loc, CubesManager.Combi.class);
-                            } else {
-                                ClientGlobals.userCommand.unbuild(loc);
-                                //ctrl.removeBlock(loc);
-                            }
-                        }
-                    } else {
-                        // TELEPORT
-                        ClientGlobals.userCommand.teleport(eid);
-                        Log.info("TELEPORT");
-                    }
-                } else {
-                    ClientGlobals.userCommand.pickItem(eid);
-                }
+            if(isForceShield(closest)) {
+                // pick goes through force shield
+                continue;
+            }
+            
+            EntityNode target = getUsableEntityNodeAncestor(closest.getGeometry());
+            
+            if(target == null) {
+                Log.info("Action: None");
                 return;
             }
+
+            if(target.isShip()) {
+                if(target.isPlayerBase()) {
+                    Vector3Int loc = CubesManager.getCurrentPointedBlockLocation(target.offset, !right);
+                    if(loc != null) {
+                        if(right) {
+                            Log.info("Action: Remove Block");
+                            ClientGlobals.userCommand.unbuild(loc);
+                        } else {
+                            Log.info("Action: Insert Block");
+                            ClientGlobals.userCommand.build(loc);
+                        }
+                    }
+                } else {
+                    Log.info("Action: Teleport");
+                    ClientGlobals.userCommand.teleport(target.eid);
+                }
+            } else {
+                Log.info("Action: Pick Item");
+                ClientGlobals.userCommand.pickItem(target.eid);
+            }
+            
         }
     }
     
     private void unpickItem() {
         ClientGlobals.userCommand.unpickItem();
+    }
+
+    private CollisionResults getNodesInFrontOfCamera() {
+        CollisionResults results = new CollisionResults();
+        Ray ray = new Ray(ClientGlobals.cam.getLocation(), ClientGlobals.cam.getDirection());
+        ClientGlobals.rootNode.collideWith(ray, results);
+        return results;
+    }
+
+    private boolean isForceShield(CollisionResult closest) {
+        return closest.getGeometry().getName().equals("forceshield");
+    }
+
+    private EntityNode getUsableEntityNodeAncestor(Spatial spatial) {
+        while(true) {
+            spatial = spatial.getParent();
+
+            if(spatial == ClientGlobals.rootNode) {
+                return null;
+            }
+
+            if(spatial instanceof EntityNode) {
+                EntityNode target = (EntityNode) spatial;
+                
+                if(target.isUsable()) {
+                    return target;
+                }
+            }
+        }
     }
 }

@@ -40,7 +40,7 @@ public class PositionControl extends AbstractControl {
 
         Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Position);
         if(origoPos == null) {
-            Log.warn("no position component for " + eid);
+            Log.warn("no position component for " + ClientGlobals.playerParentEntity);
             return;
         }
 

@@ -18,9 +18,7 @@ public class Rotation extends ReplicatedComponent {
         float y = (float) Math.toRadians(getFloatValue(element, "y", 0.0f));
         float z = (float) Math.toRadians(getFloatValue(element, "z", 0.0f));
 
-        rotate(Vector3f.UNIT_Y, y);
-        rotate(Vector3f.UNIT_Z, x);
-        rotate(Vector3f.UNIT_X, z);
+        value = new Quaternion().fromAngles(x, y, z);
         
         return null;
     }
@@ -34,17 +32,5 @@ public class Rotation extends ReplicatedComponent {
         }
 
         World.INSTANCE.setComponent(eid, CompType.Rotation, this);
-    }
-    
-    
-    public void rotate(Vector3f axis, float radians) {
-        if(radians == 0.0) {
-            return;
-        } 
-        
-        value.multLocal(axis);
-        Quaternion rotation = new Quaternion().fromAngleAxis(radians, axis);
-        
-        value = rotation.multLocal(value);
     }
 }

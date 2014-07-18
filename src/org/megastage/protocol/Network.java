@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import org.megastage.client.ClientGlobals;
 import org.megastage.components.BlockChange;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.components.Mass;
@@ -179,6 +180,7 @@ public class Network {
             // position predictor processor can be integrated into position control
             // perhaps control should always copy position from component
             // remember flappitaulu, you must use server time
+            ClientGlobals.syncTime = World.INSTANCE.time;
         }
 
         @Override

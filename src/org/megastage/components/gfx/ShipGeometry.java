@@ -18,6 +18,7 @@ import org.megastage.client.SpatialManager;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RotationControl;
 import org.megastage.components.Mass;
+import org.megastage.components.srv.BlockChanges;
 import org.megastage.components.srv.CollisionType;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.ReplicatedComponent;
@@ -33,9 +34,11 @@ public class ShipGeometry extends ReplicatedComponent {
 
         createMapFromXML(element);
         
-        BaseComponent[] extraComponents = new BaseComponent[2];
-        extraComponents[0] = Mass.create(map.getMass());
-        extraComponents[1] = CollisionType.create(CollisionType.SHIP, map.getCollisionRadius());
+        BaseComponent[] extraComponents = new BaseComponent[] {
+            Mass.create(map.getMass()),
+            CollisionType.create(CollisionType.SHIP, map.getCollisionRadius()),
+            new BlockChanges(),
+        };
         
         return extraComponents;
     }
