@@ -168,6 +168,40 @@
             <map z="15">               </map>
         </component>
         <!--component type="Mass" mass="1e6"/-->
+        <entity name="DCPU">
+            <component type="Position"/>
+            <component type="Rotation"/>
+            <component type="srv.SynchronizeFlag"/>
+            <component type="gfx.VoidGeometry"/>
+            <component type="gfx.BindTo"/>
+            <component type="dcpu.DCPU" bootrom="media/bootrom.bin"/>
+            <entity name="Floppy">
+                <component type="Position" x="7" y="1" z="2"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualFloppyDrive" media="data"/>
+                <component type="gfx.FloppyDriveGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="UsableFlag"/>
+                <component type="srv.SynchronizeFlag"/>
+            </entity>
+            <entity name="LEM">
+                <component type="Position" x="6" y="1" z="3"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualMonitor"/>
+                <component type="gfx.MonitorGeometry" width="3" height="2"/>
+                <component type="gfx.BindTo"/>
+                <component type="UsableFlag"/>
+                <component type="srv.SynchronizeFlag"/>
+            </entity>
+            <entity name="Generic Keyboard">
+                <component type="dcpu.VirtualKeyboard"/>
+                <component type="gfx.BindTo"/>
+            </entity>
+            <entity name="Clock">
+                <component type="dcpu.VirtualClock"/>
+                <component type="gfx.BindTo"/>
+            </entity>
+        </entity>
     </entity-template>
 
 </root>

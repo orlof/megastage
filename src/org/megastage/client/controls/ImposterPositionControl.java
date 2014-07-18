@@ -25,7 +25,7 @@ public class ImposterPositionControl extends AbstractControl {
         
         Vector3f coord = pos.get();
 
-        Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Position);
+        Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.baseEntity, CompType.Position);
         assert origoPos != null;
 
         Vector3f origo = origoPos.get();

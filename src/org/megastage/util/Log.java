@@ -199,8 +199,31 @@ public class Log {
 
     private static class Logger {
         private SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss.SSS");
+        private Entry last = new Entry();
+        
+        private static class Entry {
+            int level;
+            String category;
+            String message;
+            Throwable ex;
+
+            public Entry() {
+            }
+
+            public Entry(int level, String category, String message, Throwable ex) {
+                this.level = level;
+                this.category = category;
+                this.message = message;
+                this.ex = ex;
+            }
+        }
 
         public void log(int level, String category, String message, Throwable ex) {
+//            Entry entry = new Entry(level, category, message, ex);
+//            if(last.equals(entry)) {
+//                return;
+//            }
+            
             StackTraceElement caller = Thread.currentThread().getStackTrace()[3];
 
             StringBuilder builder = new StringBuilder(256);

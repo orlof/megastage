@@ -21,6 +21,10 @@ public class LocalPositionControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
+        if(eid == 0) {
+            Log.warn("", new Exception());
+        }
+        
         Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
         if(pos == null) {
             Log.warn("no position component for " + eid);

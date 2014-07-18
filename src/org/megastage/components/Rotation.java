@@ -1,7 +1,6 @@
 package org.megastage.components;
 
 import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import org.megastage.ecs.BaseComponent;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;

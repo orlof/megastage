@@ -15,11 +15,11 @@ public class GlobalRotationControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
-        if(ClientGlobals.playerParentEntity == 0) {
+        if(ClientGlobals.baseEntity == 0) {
             return;
         }
 
-        Rotation rot = (Rotation) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Rotation);
+        Rotation rot = (Rotation) World.INSTANCE.getComponent(ClientGlobals.baseEntity, CompType.Rotation);
         assert rot != null;
 
         spatial.setLocalRotation(rot.value.inverse());

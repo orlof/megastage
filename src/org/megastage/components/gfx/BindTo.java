@@ -26,12 +26,12 @@ public class BindTo extends ReplicatedComponent {
     public void receive(int eid) {
         super.receive(eid);
 
+        EntityNode parentNode = SpatialManager.getOrCreateNode(parent);
+        EntityNode childNode = SpatialManager.getOrCreateNode(eid);
+        parentNode.offset.attachChild(childNode);
+
         if(ClientGlobals.playerEntity == eid) {
-            SpatialManager.changeShip(parent);
-        } else {
-            EntityNode parentNode = SpatialManager.getOrCreateNode(parent);
-            EntityNode childNode = SpatialManager.getOrCreateNode(eid);
-            parentNode.offset.attachChild(childNode);
+            ClientGlobals.setBase(parent);
         }
     }
 }

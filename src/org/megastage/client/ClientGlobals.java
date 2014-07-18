@@ -5,10 +5,13 @@ import com.jme3.app.state.AppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
 import java.util.HashMap;
+import org.megastage.client.controls.RotationControl;
 import org.megastage.protocol.UserCommand;
 import org.megastage.systems.client.ClientNetworkSystem;
+import org.megastage.util.ID;
 
 /**
  * MegaStage
@@ -20,7 +23,7 @@ public class ClientGlobals {
     public static ClientNetworkSystem network;
     
     public static int playerEntity;
-    public static int playerParentEntity;
+    public static int baseEntity;
     
     public static long timeDiff;
     public static long syncTime;
@@ -47,7 +50,9 @@ public class ClientGlobals {
     static {
         appStates.put(ECSState.class, new ECSState());
         appStates.put(MainMenuState.class, new MainMenuState());
-        appStates.put(DCPUMenuState.class, new DCPUMenuState()); 
+        appStates.put(DCPUMenuState.class, new DCPUMenuState());
+        
+        playerNode.setCullHint(Spatial.CullHint.Always);
     }
     
     public static void setAppStates(Class... enabledAppStates) {
@@ -75,5 +80,42 @@ public class ClientGlobals {
         return false;
     }
     
+    public static void setBase(int eid) {
+        Log.info(ID.get(eid));
+
+        unsetBase();
+        
+        EntityNode shipNode = SpatialManager.getOrCreateNode(eid);
+        ClientGlobals.rootNode.attachChild(shipNode);
+
+        ClientGlobals.baseEntity = eid;
+    }
+
+    private static void unsetBase() {
+        if(ClientGlobals.baseEntity > 0) {
+            EntityNode shipNode = SpatialManager.getOrCreateNode(ClientGlobals.baseEntity);
+            ClientGlobals.globalRotationNode.attachChild(shipNode);
+        
+            ClientGlobals.baseEntity = 0;
+        }
+    }
+
+    public static void setPlayer(int eid) {
+        Log.info(ID.get(eid));
+
+        unsetPlayer();
+        
+        EntityNode node = SpatialManager.getOrCreateNode(eid);
+        ClientGlobals.playerNode.attachChild(node);
+        ClientGlobals.playerEntity = eid;
+    }
+
+    private static void unsetPlayer() {
+        if(ClientGlobals.playerEntity > 0) {
+            EntityNode node = SpatialManager.getOrCreateNode(ClientGlobals.playerEntity);
+            ClientGlobals.playerNode.getParent().attachChild(node);
+            ClientGlobals.playerEntity = 0;
+        }
+    }
 }
 

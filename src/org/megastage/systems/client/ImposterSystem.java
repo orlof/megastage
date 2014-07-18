@@ -18,7 +18,7 @@ public class ImposterSystem extends Processor {
     @Override
     protected boolean checkProcessing() {
         if(super.checkProcessing()) {
-            if(ClientGlobals.playerParentEntity != 0 && world.hasComponent(ClientGlobals.playerParentEntity, CompType.Position)) {
+            if(ClientGlobals.baseEntity != 0 && world.hasComponent(ClientGlobals.baseEntity, CompType.Position)) {
                 return true;
             }
         }
@@ -29,7 +29,7 @@ public class ImposterSystem extends Processor {
     
     @Override
     protected void begin() {
-        origo = ((Position) world.getComponent(ClientGlobals.playerParentEntity, CompType.Position)).get();
+        origo = ((Position) world.getComponent(ClientGlobals.baseEntity, CompType.Position)).get();
     }
 
     @Override

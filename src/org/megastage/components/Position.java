@@ -17,9 +17,9 @@ public class Position extends ReplicatedComponent {
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
         coords = new Vector3f(
-                getFloatValue(element, "x", 0f),
-                getFloatValue(element, "y", 0f),
-                getFloatValue(element, "z", 0f));
+                getFloatValue(element, "x", 0.0f),
+                getFloatValue(element, "y", 0.0f),
+                getFloatValue(element, "z", 0.0f));
         
         return null;
     }

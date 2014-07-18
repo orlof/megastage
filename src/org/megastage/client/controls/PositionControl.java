@@ -26,7 +26,7 @@ public class PositionControl extends AbstractControl {
     protected void controlUpdate(float tpf) {
         // Log.info("%s in %s", spatial.getName(), spatial.getParent().getName());
 
-        if(eid == ClientGlobals.playerParentEntity) {
+        if(eid == ClientGlobals.baseEntity) {
             // position player's ship
             spatial.setLocalTranslation(Vector3f.ZERO);
             return;
@@ -38,9 +38,9 @@ public class PositionControl extends AbstractControl {
             return;
         }
 
-        Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.playerParentEntity, CompType.Position);
+        Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.baseEntity, CompType.Position);
         if(origoPos == null) {
-            Log.warn("no position component for " + ClientGlobals.playerParentEntity);
+            Log.warn(eid + " no position component for " + ClientGlobals.baseEntity);
             return;
         }
 

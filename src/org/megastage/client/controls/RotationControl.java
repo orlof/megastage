@@ -23,7 +23,7 @@ public class RotationControl extends AbstractControl {
             return;
         }
 
-        if(ClientGlobals.playerParentEntity == eid) {
+        if(ClientGlobals.baseEntity == eid) {
             spatial.setLocalRotation(Quaternion.IDENTITY);            
         } else if (rot.isDirty()) {
             spatial.setLocalRotation(rot.value);

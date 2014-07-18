@@ -7,13 +7,11 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
-import org.megastage.client.ClientGlobals;
 import org.megastage.client.EntityNode;
 import org.megastage.client.JME3Material;
 import org.megastage.client.SpatialManager;
 import org.megastage.client.controls.AxisRotationControl;
 import org.megastage.client.controls.LocalPositionControl;
-import org.megastage.client.controls.PositionControl;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 
@@ -35,14 +33,12 @@ public class CharacterGeometry extends ReplicatedComponent {
     public void receive(int eid) {
         super.receive(eid);
 
-        if(eid != ClientGlobals.playerEntity) {
-            EntityNode node = SpatialManager.getOrCreateNode(eid);
+        EntityNode node = SpatialManager.getOrCreateNode(eid);
 
-            node.addControl(new LocalPositionControl(eid));
-            node.addControl(new AxisRotationControl(eid, false, true, false));
+        node.addControl(new LocalPositionControl(eid));
+        node.addControl(new AxisRotationControl(eid, false, true, false));
 
-            initGeometry(node.offset, eid);
-        }
+        initGeometry(node.offset, eid);
     }
 
     private void initGeometry(Node node, int eid) {

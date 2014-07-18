@@ -31,7 +31,7 @@ public class EntityNode extends Node {
     }
 
     public boolean isPlayerBase() {
-        return eid == ClientGlobals.playerParentEntity;
+        return eid == ClientGlobals.baseEntity;
     }
 
 }
