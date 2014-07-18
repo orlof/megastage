@@ -34,13 +34,13 @@ public class PositionControl extends AbstractControl {
             
         Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
         if(pos == null) {
-            Log.warn("no position component for " + eid);
+            Log.info("No Position for " + eid);
             return;
         }
 
         Position origoPos = (Position) World.INSTANCE.getComponent(ClientGlobals.baseEntity, CompType.Position);
         if(origoPos == null) {
-            Log.warn(eid + " no position component for " + ClientGlobals.baseEntity);
+            Log.info("No origo [%s] Position for [%s]", ClientGlobals.baseEntity, eid);
             return;
         }
 

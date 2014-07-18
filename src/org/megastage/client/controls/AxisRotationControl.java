@@ -15,17 +15,15 @@ public class AxisRotationControl extends AbstractControl {
     private final int eid;
     
     private final float[] angles = new float[3];
-    private final boolean pitch;
-    private final boolean yaw;
-    private final boolean roll;
+    private final boolean x;
+    private final boolean y;
+    private final boolean z;
     
-    private Quaternion curr = Quaternion.IDENTITY;
-    
-    public AxisRotationControl(int eid, boolean pitch, boolean yaw, boolean roll) {
+    public AxisRotationControl(int eid, boolean x, boolean y, boolean z) {
         this.eid = eid;
-        this.pitch = pitch;
-        this.yaw = yaw;
-        this.roll = roll;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     @Override
@@ -36,24 +34,19 @@ public class AxisRotationControl extends AbstractControl {
             return;
         }
 
-        if(!curr.equals(rot.value)) {
-            // rotation changed
-            curr = new Quaternion(rot.value);
-
-            rot.value.toAngles(angles);
+        rot.value.toAngles(angles);
             
-            if(!pitch) angles[0] = 0;
-            if(!yaw) angles[1] = 0;
-            if(!roll) angles[2] = 0;
+        if(!x) angles[0] = 0;
+        if(!y) angles[1] = 0;
+        if(!z) angles[2] = 0;
             
-            spatial.setLocalRotation(new Quaternion().fromAngles(angles));
+        spatial.setLocalRotation(new Quaternion().fromAngles(angles));
 
-            if(Log.TRACE) {
-                float[] eulerAngles = spatial.getLocalRotation().toAngles(null);
-                Log.info(ID.get(eid) + "Local(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
-                spatial.getWorldRotation().toAngles(eulerAngles);
-                Log.info(ID.get(eid) + "World(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
-            }
+        if(Log.TRACE) {
+            float[] eulerAngles = spatial.getLocalRotation().toAngles(null);
+            Log.info(ID.get(eid) + "Local(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
+            spatial.getWorldRotation().toAngles(eulerAngles);
+            Log.info(ID.get(eid) + "World(yaw="+(FastMath.RAD_TO_DEG * eulerAngles[0])+", roll="+(FastMath.RAD_TO_DEG * eulerAngles[1])+", pitch="+(FastMath.RAD_TO_DEG * eulerAngles[2])+")");
         }
     }
 

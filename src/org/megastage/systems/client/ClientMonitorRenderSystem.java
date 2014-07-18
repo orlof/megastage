@@ -14,6 +14,7 @@ public class ClientMonitorRenderSystem extends Processor {
         super(world, interval, CompType.ClientVideoMemory, CompType.ClientRaster);
     }
 
+    @Override
     protected void process(int eid) {
         ClientVideoMemory clientVideoMemory = (ClientVideoMemory) world.getComponent(eid, CompType.ClientVideoMemory);
         

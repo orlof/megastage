@@ -163,6 +163,18 @@ public class Log {
         }
     }
 
+    static public void info(String message) {
+        if (INFO) {
+            logger.log(LEVEL_INFO, null, message, null);
+        }
+    }
+
+    static public void mark() {
+        if (INFO) {
+            logger.log(LEVEL_INFO, null, "<==", null);
+        }
+    }
+
     static public void debug(String message, Throwable ex) {
         if (DEBUG) {
             logger.log(LEVEL_DEBUG, null, message, ex);

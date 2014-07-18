@@ -1,5 +1,6 @@
 package org.megastage.client.controls;
 
+import com.jme3.math.Quaternion;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
@@ -16,11 +17,15 @@ public class BackgroundRotationControl extends AbstractControl {
     @Override
     protected void controlUpdate(float tpf) {
         if(ClientGlobals.baseEntity == 0) {
+            spatial.setLocalRotation(Quaternion.IDENTITY);
             return;
         }
 
         Rotation rot = (Rotation) World.INSTANCE.getComponent(ClientGlobals.baseEntity, CompType.Rotation);
-        assert rot != null;
+        if(rot == null) {
+            spatial.setLocalRotation(Quaternion.IDENTITY);
+            return;
+        }
 
         spatial.setLocalRotation(rot.value);
     }

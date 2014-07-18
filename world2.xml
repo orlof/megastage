@@ -174,7 +174,7 @@
             <component type="srv.SynchronizeFlag"/>
             <component type="gfx.VoidGeometry"/>
             <component type="gfx.BindTo"/>
-            <component type="dcpu.DCPU" bootrom="media/bootrom.bin"/>
+            <component type="dcpu.DCPU" bootrom="media/admiral.bin"/>
             <entity name="Floppy">
                 <component type="Position" x="7" y="1" z="2"/>
                 <component type="Rotation" x="0" y="0" z="0"/>

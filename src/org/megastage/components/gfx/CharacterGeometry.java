@@ -6,6 +6,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import org.jdom2.Element;
+import org.megastage.client.ClientGlobals;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.client.EntityNode;
 import org.megastage.client.JME3Material;
@@ -53,13 +54,21 @@ public class CharacterGeometry extends ReplicatedComponent {
     }
 
     private Spatial createHead(int eid) {
-        Geometry head = new Geometry("head", new Box(0.25f, 0.25f, 0.25f));
+        Node head = new Node("head");
         head.setLocalTranslation(0, 1.0f, 0);
-        JME3Material.setLightingMaterial(head, new ColorRGBA(red, green, blue, alpha));
+
+        Geometry geom = new Geometry("head", new Box(0.25f, 0.25f, 0.25f));
+        JME3Material.setLightingMaterial(geom, new ColorRGBA(red, green, blue, alpha));
 
         AxisRotationControl headRotationControl = new AxisRotationControl(eid, true, false, false);
         head.addControl(headRotationControl);
+        
+        head.attachChild(geom);
 
+        if(eid == ClientGlobals.playerEntity) {
+            head.attachChild(ClientGlobals.camNode);
+        }
+        
         return head;
     }
 }

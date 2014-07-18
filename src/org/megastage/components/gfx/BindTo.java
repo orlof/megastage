@@ -30,7 +30,7 @@ public class BindTo extends ReplicatedComponent {
         EntityNode childNode = SpatialManager.getOrCreateNode(eid);
         parentNode.offset.attachChild(childNode);
 
-        if(ClientGlobals.playerEntity == eid) {
+        if(eid == ClientGlobals.playerEntity) {
             ClientGlobals.setBase(parent);
         }
     }

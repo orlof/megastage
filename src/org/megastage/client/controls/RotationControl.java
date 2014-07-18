@@ -18,16 +18,18 @@ public class RotationControl extends AbstractControl {
 
     @Override
     protected void controlUpdate(float tpf) {
+        if(eid == ClientGlobals.baseEntity) {
+            spatial.setLocalRotation(Quaternion.IDENTITY);
+            return;
+        }
+        
         Rotation rot = (Rotation) World.INSTANCE.getComponent(eid, CompType.Rotation);
         if(rot==null) {
+            spatial.setLocalRotation(Quaternion.IDENTITY);
             return;
         }
 
-        if(ClientGlobals.baseEntity == eid) {
-            spatial.setLocalRotation(Quaternion.IDENTITY);            
-        } else if (rot.isDirty()) {
-            spatial.setLocalRotation(rot.value);
-        }
+        spatial.setLocalRotation(rot.value);
     }
 
     @Override

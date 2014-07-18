@@ -221,6 +221,7 @@ public class World {
         if(comp == null) {
             try {
                 comp = population[eid][cid] = type.newInstance();
+                updateEntityInAllGroups(eid);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

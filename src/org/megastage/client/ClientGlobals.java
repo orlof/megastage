@@ -4,21 +4,15 @@ import org.megastage.util.Log;
 import com.jme3.app.state.AppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.renderer.Camera;
+import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
 import java.util.HashMap;
-import org.megastage.client.controls.RotationControl;
 import org.megastage.protocol.UserCommand;
 import org.megastage.systems.client.ClientNetworkSystem;
 import org.megastage.util.ID;
 
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:50
- */
 public class ClientGlobals {
     public static ClientNetworkSystem network;
     
@@ -29,9 +23,9 @@ public class ClientGlobals {
     public static long syncTime;
 
     public static Node rootNode;
+    public static Node playerNode;
     public static final Node backgroundNode = new Node("background_node");
     public static final Node globalRotationNode = new Node("global_rotation_node");
-    public static final Node playerNode = new Node("player_node");
 
     public static GraphicsSettings gfxSettings = GraphicsSettings.JOKE;
 
@@ -39,7 +33,6 @@ public class ClientGlobals {
     public static Main app;
     public static CommandHandler cmdHandler;
     public static String serverHost = "localhost";
-    public static Camera cam;
     public static Picture crosshair;
     public static String player;
     public static String[] bootroms;
@@ -47,12 +40,13 @@ public class ClientGlobals {
 
     public static final HashMap<Class<?>, AppState> appStates = new HashMap<>(); 
 
+    public static Camera cam;
+    public static CameraNode camNode;
+
     static {
         appStates.put(ECSState.class, new ECSState());
         appStates.put(MainMenuState.class, new MainMenuState());
         appStates.put(DCPUMenuState.class, new DCPUMenuState());
-        
-        playerNode.setCullHint(Spatial.CullHint.Always);
     }
     
     public static void setAppStates(Class... enabledAppStates) {
@@ -106,14 +100,19 @@ public class ClientGlobals {
         unsetPlayer();
         
         EntityNode node = SpatialManager.getOrCreateNode(eid);
-        ClientGlobals.playerNode.attachChild(node);
+        node.setCullHint(Spatial.CullHint.Always);
+        Node head = (Node) node.offset.getChild("head");
+        if(head != null) {
+            head.attachChild(ClientGlobals.camNode);
+        }
         ClientGlobals.playerEntity = eid;
     }
 
     private static void unsetPlayer() {
         if(ClientGlobals.playerEntity > 0) {
             EntityNode node = SpatialManager.getOrCreateNode(ClientGlobals.playerEntity);
-            ClientGlobals.playerNode.getParent().attachChild(node);
+            node.setCullHint(Spatial.CullHint.Inherit);
+            ClientGlobals.camNode.removeFromParent();
             ClientGlobals.playerEntity = 0;
         }
     }

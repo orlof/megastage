@@ -12,11 +12,11 @@ import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 
 public class Position extends ReplicatedComponent {
-    private Vector3f coords;
+    private Vector3f vector;
     
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
-        coords = new Vector3f(
+        vector = new Vector3f(
                 getFloatValue(element, "x", 0.0f),
                 getFloatValue(element, "y", 0.0f),
                 getFloatValue(element, "z", 0.0f));
@@ -25,15 +25,15 @@ public class Position extends ReplicatedComponent {
     }
     
     public Vector3f get() {
-        return coords;
+        return vector;
     }
     
     public Vector3f getCopy() {
-        return coords.clone();
+        return vector.clone();
     }
     
-    public void set(Vector3f vector) {
-        coords.set(vector);
+    public void set(Vector3f vec) {
+        vector.set(vec);
         setDirty(true);
     }
             
@@ -42,13 +42,13 @@ public class Position extends ReplicatedComponent {
 //        setDirty(true);
 //    }
 //
-    public void add(Vector3f v) {
-        coords.addLocal(v);
+    public void add(Vector3f vec) {
+        vector.addLocal(vec);
         setDirty(true);
     }
 
     public Vector3f getGlobalCoordinates(int eid) {
-        Vector3f coord = new Vector3f(coords);
+        Vector3f coord = new Vector3f(vector);
         
         BindTo bindTo = (BindTo) World.INSTANCE.getComponent(eid, CompType.BindTo);
         while(bindTo != null) {
@@ -62,7 +62,7 @@ public class Position extends ReplicatedComponent {
                 shipRot.value.multLocal(coord);
 
                 Position shipPos = (Position) World.INSTANCE.getComponent(bindTo.parent, CompType.Position);
-                coord = coord.add(shipPos.coords);
+                coord = coord.add(shipPos.vector);
 
                 return coord;
             }
@@ -83,7 +83,7 @@ public class Position extends ReplicatedComponent {
         rot.value.multLocal(coord);
 
         Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
-        coord.addLocal(pos.coords);
+        coord.addLocal(pos.vector);
 
         return coord;
     }

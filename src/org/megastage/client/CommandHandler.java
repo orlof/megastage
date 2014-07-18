@@ -12,7 +12,6 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import org.megastage.components.Rotation;
 import org.megastage.ecs.CompType;
@@ -405,10 +404,12 @@ public class CommandHandler implements AnalogListener, ActionListener {
     };
 
     private void pickItem(boolean right) {
+        Log.mark();
         CollisionResults results = getNodesInFrontOfCamera(); 
  
         for(int i=0; i < results.size(); i++) {
             CollisionResult closest = results.getCollision(i);
+            Log.info(closest.getGeometry().getName());
 
             if(isForceShield(closest)) {
                 // pick goes through force shield
@@ -429,20 +430,23 @@ public class CommandHandler implements AnalogListener, ActionListener {
                         if(right) {
                             Log.info("Action: Remove Block");
                             ClientGlobals.userCommand.unbuild(loc);
+                            return;
                         } else {
                             Log.info("Action: Insert Block");
                             ClientGlobals.userCommand.build(loc);
+                            return;
                         }
                     }
                 } else {
                     Log.info("Action: Teleport");
                     ClientGlobals.userCommand.teleport(target.eid);
+                    return;
                 }
             } else {
                 Log.info("Action: Pick Item");
                 ClientGlobals.userCommand.pickItem(target.eid);
+                return;
             }
-            
         }
     }
     

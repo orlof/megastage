@@ -120,8 +120,6 @@ public class Main extends SimpleApplication {
     private void initializeSystemNodes() {
         ClientGlobals.rootNode = rootNode;
 
-        ClientGlobals.rootNode.attachChild(ClientGlobals.playerNode);
-        
         ClientGlobals.globalRotationNode.addControl(new GlobalRotationControl());
         ClientGlobals.rootNode.attachChild(ClientGlobals.globalRotationNode);
     }
@@ -156,10 +154,9 @@ public class Main extends SimpleApplication {
         float aspect = (float) cam.getWidth() / cam.getHeight();
         cam.setFrustumPerspective(45f, aspect, 0.3f, 40000f);
 
-        CameraNode camNode = new CameraNode("main_camera", cam);
-        camNode.setControlDir(ControlDirection.SpatialToCamera);
-        ClientGlobals.playerNode.attachChild(camNode);
-        camNode.setLocalTranslation(0, 1.0f, -0.3f);
+        ClientGlobals.camNode = new CameraNode("main_camera", cam);
+        ClientGlobals.camNode.setControlDir(ControlDirection.SpatialToCamera);
+        ClientGlobals.camNode.setLocalTranslation(0, 0.0f, -0.3f);
     }
 
     private void initializeCubes() {
