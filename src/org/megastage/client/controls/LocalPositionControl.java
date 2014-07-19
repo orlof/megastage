@@ -12,7 +12,7 @@ import org.megastage.ecs.World;
 
 public class LocalPositionControl extends AbstractControl {
     private final int eid;
-    private double stime, etime;
+    private double interpolationTime, synchTime, nextSyncTime, interpolationStartTime;
     private Vector3f spos, epos;
 
     public LocalPositionControl(int eid) {
@@ -27,17 +27,29 @@ public class LocalPositionControl extends AbstractControl {
             return;
         }
 
-        if(stime < ClientGlobals.syncTime) {
-            stime = ClientGlobals.syncTime;
-            etime = stime + 60;
+        if(synchTime < ClientGlobals.syncTime) {
+            synchTime = ClientGlobals.syncTime;
+            nextSyncTime = synchTime + 60;
             spos = spatial.getLocalTranslation().clone();
             epos = pos.getCopy();
+            
+            if(interpolationTime == 0) {
+                interpolationStartTime = ClientGlobals.syncTime;
+            } else {
+                interpolationStartTime = interpolationTime;
+            }
+        }
+
+        interpolationTime = World.INSTANCE.time;
+        
+        if(World.INSTANCE.time > nextSyncTime) {
+            spatial.setLocalTranslation(epos);
+            return;
         }
 
         // interpolate
         Vector3f cur = spatial.getLocalTranslation();
-        float amount = (float) ((World.INSTANCE.time - stime) / (etime - stime));
-        if(amount > 1.0f) amount = 1.0f; 
+        float amount = (float) ((interpolationTime - interpolationStartTime) / (nextSyncTime - interpolationStartTime));
         cur.interpolate(spos, epos, amount);
 
         spatial.setLocalTranslation(cur);

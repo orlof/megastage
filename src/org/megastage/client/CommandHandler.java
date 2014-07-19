@@ -148,45 +148,31 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
     @Override
     public void onAction(String name, boolean value, float tpf) {
-        switch (name) {
-            case "WALK_InvertY":
-                // Toggle on the up.
-                if (!value) {
+        if (!value) {
+            switch (name) {
+                case "WALK_InvertY":
                     invertY = !invertY;
-                }
-                break;
-            case "ITEM_Pick":
-                // Toggle on the up.
-                if (!value) {
-                    //initDCPUMode();
+                    break;
+                case "ITEM_Pick":
                     pickItem(false);
-                }
-                break;
-            case "ITEM_RightPick":
-                // Toggle on the up.
-                if (!value) {
-                    //initDCPUMode();
+                    break;
+                case "ITEM_RightPick":
                     pickItem(true);
-                }
-                break;
-            case "DCPU_Exit":
-                // Toggle on the up.
-                if (!value) {
+                    break;
+                case "DCPU_Exit":
                     unpickItem();
-                }
-                break;
-            case "MENU_Exit":
-                // Toggle on the up.
-                if (!value) {
+                    break;
+                case "MENU_Exit":
                     unpickItem();
-                }
-                break;
-            case "GAME_Exit":
-                // Toggle on the up.
-                if (!value) {
+                    break;
+                case "GAME_TogglePointer":
+                    InputManager inputManager = ClientGlobals.app.getInputManager(); 
+                    inputManager.setCursorVisible(!inputManager.isCursorVisible());
+                    break;
+                case "GAME_Exit":
                     ClientGlobals.app.stop();
-                }
-                break;
+                    break;
+            }
         }
     }
     protected float rotationSpeed = 1f;
@@ -308,6 +294,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
         inputManager.addMapping("ITEM_Pick", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping("ITEM_RightPick", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
+        inputManager.addMapping("GAME_TogglePointer", new KeyTrigger((KeyInput.KEY_F10)));
 
         inputManager.addListener(this, walkMappings);
 
@@ -404,6 +391,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
         "ITEM_Pick",
         "ITEM_RightPick",
         "GAME_Exit",
+        "GAME_TogglePointer",
     };
 
     private void pickItem(boolean right) {

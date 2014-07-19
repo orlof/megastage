@@ -33,6 +33,7 @@ public class MonitorGeometry extends ItemGeometryComponent {
 
     @Override
     protected void initGeometry(Node node, int eid) {
+        node.setLocalTranslation(-0.5f, -0.5f, 0.0f);
         node.attachChild(createBox());
         node.attachChild(createPanel(eid));
     }
@@ -51,7 +52,7 @@ public class MonitorGeometry extends ItemGeometryComponent {
 
         Geometry geom = new Geometry("LEM panel", new Quad(width-0.2f, height-0.2f, true));
         geom.setMaterial(mat);
-        geom.setLocalTranslation(-0.5f+0.1f, -0.5f+0.1f, 0f);
+        geom.setLocalTranslation(0.0f, 0.0f, 0.5f);
 
         ClientRaster rasterComponent = World.INSTANCE.getOrCreateComponent(eid, CompType.ClientRaster, ClientRaster.class);
         rasterComponent.raster = raster;
@@ -60,9 +61,9 @@ public class MonitorGeometry extends ItemGeometryComponent {
     }
     
     private Spatial createBox() {
-        Geometry geom = new Geometry("LEM box", new Box(width/2.0f, height/2.0f, 0.1f));
+        Geometry geom = new Geometry("LEM box", new Box(width/2.0f, height/2.0f, 0.45f));
         JME3Material.setLightingMaterial(geom, ColorRGBA.Gray);
-        geom.setLocalTranslation(-0.5f + width/2.0f, -0.5f + height/2.0f, -0.3f);
+        geom.setLocalTranslation(width / 2.0f, height / 2.0f, 0.0f);
         return geom;
     }
 }

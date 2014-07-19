@@ -176,7 +176,7 @@
             <component type="gfx.BindTo"/>
             <component type="dcpu.DCPU" bootrom="media/admiral.bin"/>
             <entity name="Floppy">
-                <component type="Position" x="7" y="1" z="2"/>
+                <component type="Position" x="7.5" y="1.5" z="2.5"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="dcpu.VirtualFloppyDrive" media="data"/>
                 <component type="gfx.FloppyDriveGeometry"/>
@@ -185,7 +185,7 @@
                 <component type="srv.SynchronizeFlag"/>
             </entity>
             <entity name="LEM">
-                <component type="Position" x="6" y="1" z="3"/>
+                <component type="Position" x="6.5" y="1.5" z="3.5"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="dcpu.VirtualMonitor"/>
                 <component type="gfx.MonitorGeometry" width="3" height="2"/>
