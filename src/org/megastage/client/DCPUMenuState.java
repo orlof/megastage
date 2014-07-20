@@ -1,6 +1,6 @@
 package org.megastage.client;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
@@ -28,6 +28,7 @@ public class DCPUMenuState extends BaseAppState {
     private AudioNode music;
 
     public DCPUMenuState() {
+        setEnabled(false);
     }
 
     @Override

@@ -1,19 +1,15 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.protocol;
 
-import com.artemis.Entity;
 import com.cubes.Vector3Int;
-import com.esotericsoftware.minlog.Log;
-import org.megastage.client.ClientGlobals;
+import org.megastage.util.Log;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import org.megastage.components.Rotation;
 import org.megastage.util.ID;
 
 public class UserCommand {
-    public double dx, dy, dz;
-    public double qx, qy, qz, qw;
+    public Vector3f move = new Vector3f();
+    public Quaternion rot = new Quaternion();
     public transient int count;
 
     public Keyboard keyboard = new Keyboard();
@@ -30,7 +26,7 @@ public class UserCommand {
     public UserCommand() {}
 
     public void reset() {
-        dx = dy = dz = 0.0;
+        move.zero();
         keyboard.keyEventPtr = count = 0;
 
         ship = null;
@@ -46,10 +42,8 @@ public class UserCommand {
     public String toString() {
         StringBuilder sb = new StringBuilder(100);
         sb.append("UserCommand(");
-        sb.append("dx=").append(dx);
-        sb.append(", dy=").append(dy);
-        sb.append(", dz=").append(dz);
-        sb.append(", rotation(").append(qx).append(", ").append(qy).append(", ").append(qz).append(", ").append(qw).append(")");
+        sb.append("move=[").append(move.toString()).append("]");
+        sb.append(", rot=[").append(rot.toString()).append("]");
         sb.append(", count=").append(count);
         sb.append(", keyboard=").append(keyboard);
         sb.append(", ship=").append(ship);
@@ -61,18 +55,13 @@ public class UserCommand {
         return sb.toString();
     }
 
-    public void move(double dx, double dy, double dz) {
-        this.dx += dx;
-        this.dy += dy;
-        this.dz += dz;
+    public void move(float dx, float dy, float dz) {
+        move.addLocal(dx, dy, dz);
         count++;
     }
     
     public void look(Rotation rot) {
-        qx = rot.x;
-        qy = rot.y;
-        qz = rot.z;
-        qw = rot.w;
+        this.rot.set(rot.get());
         count++;
     }
 
@@ -103,10 +92,10 @@ public class UserCommand {
         count++;
     }
     
-    public void pickItem(Entity entity) {
-        Log.info("Pick " + ID.get(entity));
+    public void pickItem(int eid) {
+        Log.info("Pick " + ID.get(eid));
         pick = new Pick();
-        pick.eid = ClientGlobals.artemis.toServerID(entity.id);
+        pick.eid = eid;
         count++;
     }
 
@@ -147,9 +136,9 @@ public class UserCommand {
         count++;
     }
 
-    public void teleport(Entity entity) {
+    public void teleport(int eid) {
         teleport = new Teleport();
-        teleport.eid = ClientGlobals.artemis.toServerID(entity.id);
+        teleport.eid = eid;
         count++;
     }
 
@@ -170,7 +159,7 @@ public class UserCommand {
     public static interface ExtendedCommand {}
     
     public static class MoveShip implements ExtendedCommand {
-        public double forward, left, up, pitch, roll, yaw;
+        public float forward, left, up, pitch, roll, yaw;
     }
 
     public static class Pick implements ExtendedCommand {

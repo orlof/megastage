@@ -1,18 +1,12 @@
 package org.megastage.components.dcpu;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.components.transfer.VirtualFloppyDriveData;
+import org.megastage.ecs.ToStringComponent;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
+import org.megastage.server.FloppyManager;
 
 /**
  * Experimental, untested implementation of the MF35D Floppy Drive
@@ -46,11 +40,8 @@ public class VirtualFloppyDrive extends DCPUHardware {
     public static final int SECTORS_PER_TRACK = 18;
     public static final int WORDS_PER_SECTOR = 512;
     public static final int MAX_SECTOR = 1439;
-//	private static final int SEEK_NANOSECONDS_PER_TRACK = 2400000;
     private static final int SEEK_CYCLES_PER_TRACK = 240;
-//	private static final int READ_NANOSECONDS_PER_SECTOR = 16677524;
     private static final int READ_CYCLES_PER_SECTOR = 1668;
-//	private static final int WRITE_NANOSECONDS_PER_SECTOR = 16677524;
     private static final int WRITE_CYCLES_PER_SECTOR = 1668;
     
     private char state = STATE_NO_MEDIA;
@@ -60,43 +51,22 @@ public class VirtualFloppyDrive extends DCPUHardware {
     private int track;
     
     private FloppyDisk floppy;
-    private FloppyOperation operation = new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
-    private HashMap<String, char[]> bootroms = new HashMap<>();
-    private HashMap<String, FloppyDisk> floppies = new HashMap<>();
+    private FloppyOperation operation = new FloppyOperation(FloppyOperationType.NONE, 0, 0, Long.MAX_VALUE);
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        type = TYPE_FLOPPY;
-        revision = 0x000b;
-        manufactorer = MANUFACTORER_MACKAPAR;
-
-        super.init(world, parent, element);
-        
-        File folder = new File("media");
-        for(File f: folder.listFiles()) {
-            if(f.isFile()) {
-                if(f.getName().endsWith(".bin")) {
-                    bootroms.put(f.getName(), load(f, 65536));
-                } else if(f.getName().endsWith(".d16")) {
-                    FloppyDisk fd = new FloppyDisk();
-                    fd.load(f);
-                    floppies.put(f.getName(), fd);
-                }
-            }
-        }
-
-        insert("empty.d16");
-        
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        super.init(world, parentEid, element);
+        setInfo(TYPE_FLOPPY, 0x000b, MANUFACTORER_MACKAPAR);
         return null;
     }
 
     @Override
-    public Message replicate(Entity entity) {
-        dirty = false;
-        return VirtualFloppyDriveData.create(bootroms, floppies).always(entity);
+    public Message synchronize(int eid) {
+        return VirtualFloppyDriveData.create().synchronize(eid);
     }
     
-    public void interrupt() {
+    @Override
+    public void interrupt(DCPU dcpu) {
         int a = dcpu.registers[0];
         if (a == 0) {
             dcpu.registers[1] = state;
@@ -113,53 +83,53 @@ public class VirtualFloppyDrive extends DCPUHardware {
         } else if (a == 2) {
             int sector = dcpu.registers[3];
             if (sector <= MAX_SECTOR && (state == STATE_READY || state == STATE_READY_WP)) {
-                operation = new FloppyOperation(FloppyOperation.READ, sector, dcpu.registers[4],
+                operation = new FloppyOperation(FloppyOperationType.READ, sector, dcpu.registers[4],
                         dcpu.cycles + READ_CYCLES_PER_SECTOR + SEEK_CYCLES_PER_TRACK
                         * Math.abs(track - (sector / SECTORS_PER_TRACK)));
                 dcpu.registers[1] = 1;
-                setState(STATE_BUSY);
+                setState(dcpu, STATE_BUSY);
             } else {
                 dcpu.registers[1] = 0;
                 if (state == STATE_BUSY) {
-                    setError(ERROR_BUSY);
+                    setError(dcpu, ERROR_BUSY);
                 } else if (state == STATE_NO_MEDIA) {
-                    setError(ERROR_NO_MEDIA);
+                    setError(dcpu, ERROR_NO_MEDIA);
                 } else if (sector > MAX_SECTOR) {
-                    setError(ERROR_BAD_SECTOR);
+                    setError(dcpu, ERROR_BAD_SECTOR);
                 }
             }
         } else if (a == 3) {
             int sector = dcpu.registers[3];
             if (sector <= MAX_SECTOR && state == STATE_READY) {
-                operation = new FloppyOperation(FloppyOperation.WRITE, sector, dcpu.registers[4],
+                operation = new FloppyOperation(FloppyOperationType.WRITE, sector, dcpu.registers[4],
                         dcpu.cycles + WRITE_CYCLES_PER_SECTOR + SEEK_CYCLES_PER_TRACK
                         * Math.abs(track - (sector / SECTORS_PER_TRACK)));
                 dcpu.registers[1] = 1;
-                setState(STATE_BUSY);
+                setState(dcpu, STATE_BUSY);
             } else {
                 dcpu.registers[1] = 0;
                 if (state == STATE_BUSY) {
-                    setError(ERROR_BUSY);
+                    setError(dcpu, ERROR_BUSY);
                 } else if (state == STATE_NO_MEDIA) {
-                    setError(ERROR_NO_MEDIA);
+                    setError(dcpu, ERROR_NO_MEDIA);
                 } else if (state == STATE_READY_WP) {
-                    setError(ERROR_PROTECTED);
+                    setError(dcpu, ERROR_PROTECTED);
                 } else if (sector > MAX_SECTOR) {
-                    setError(ERROR_BAD_SECTOR);
+                    setError(dcpu, ERROR_BAD_SECTOR);
                 }
             }
         }
     }
 
-    private void setState(char state) {
-        setState(state, error);
+    private void setState(DCPU dcpu, char state) {
+        setState(dcpu, state, error);
     }
 
-    private void setError(char error) {
-        setState(state, error);
+    private void setError(DCPU dcpu, char error) {
+        setState(dcpu, state, error);
     }
 
-    private void setState(char state, char error) {
+    private void setState(DCPU dcpu, char state, char error) {
         if (this.state != state || this.error != error) {
             this.state = state;
             this.error = error;
@@ -170,109 +140,76 @@ public class VirtualFloppyDrive extends DCPUHardware {
     }
 
     @Override
-    public void tick60hz() {
+    public void tick60hz(DCPU dcpu) {
         //Log.info(operation.finish + " <= " + dcpu.cycles);
         if (operation.finish <= dcpu.cycles) {
             switch (operation.type) {
-                case FloppyOperation.READ:
+                case READ:
                     for (int i = 0; i < 512; i++) {
                         if (operation.memory + i <= 65535) { //TODO
                             dcpu.ram[operation.memory + i] = floppy.data[operation.sector * WORDS_PER_SECTOR + i];
                         }
                     }
                     track = operation.sector / SECTORS_PER_TRACK;
-                    operation = new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
-                    setState(floppy.isWriteProtected() ? STATE_READY_WP : STATE_READY, ERROR_NONE);
+                    operation = new FloppyOperation(FloppyOperationType.NONE, 0, 0, Long.MAX_VALUE);
+                    setState(dcpu, floppy.isWriteProtected() ? STATE_READY_WP : STATE_READY, ERROR_NONE);
                     break;
-                case FloppyOperation.WRITE:
+                case WRITE:
                     for (int i = 0; i < 512; i++) {
                         floppy.data[operation.sector * WORDS_PER_SECTOR + i] = dcpu.ram[operation.memory + i];
                     }
                     track = operation.sector / SECTORS_PER_TRACK;
-                    operation = new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
-                    setState(STATE_READY, ERROR_NONE);
+                    operation = new FloppyOperation(FloppyOperationType.NONE, 0, 0, Long.MAX_VALUE);
+                    setState(dcpu, STATE_READY, ERROR_NONE);
                     break;
-                case FloppyOperation.NONE:
+                case NONE:
                     //new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
                     break;
             }
         }
     }
 
-    public void insert(String title) {
-        this.floppy = floppies.get(title);
+    public void insert(DCPU dcpu, String title) {
+        this.floppy = FloppyManager.floppies.get(title);
         if (floppy.isWriteProtected()) {
-            setState(STATE_READY_WP);
+            setState(dcpu, STATE_READY_WP);
         } else {
-            setState(STATE_READY);
+            setState(dcpu, STATE_READY);
         }
-        floppy.inserted(this);
     }
 
-    public FloppyDisk eject() {
+    public FloppyDisk eject(DCPU dcpu) {
         FloppyDisk ejected = floppy;
         floppy = null;
+        
         if (state == STATE_BUSY) {
-            operation = new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
-            setState(STATE_NO_MEDIA, ERROR_EJECT);
+            operation = new FloppyOperation(FloppyOperationType.NONE, 0, 0, Long.MAX_VALUE);
+            setState(dcpu, STATE_NO_MEDIA, ERROR_EJECT);
         } else {
-            setState(STATE_NO_MEDIA);
+            setState(dcpu, STATE_NO_MEDIA);
         }
-        ejected.ejected();
         return ejected;
-    }
-
-    public void reset(String title) {
-        dcpu.reset(bootroms.get(title));
-    }
-
-    private class FloppyOperation {
-
-        private static final int NONE = 0;
-        private static final int READ = 1;
-        private static final int WRITE = 2;
-        private int type;
-        private int sector;
-        private int memory;
-        //private long cycles;
-        private long finish;
-
-        public FloppyOperation(int type, int sector, int memory, long cycles) {
-            this.type = type;
-            this.sector = sector;
-            this.memory = memory;
-            //this.cycles = cycles;
-            this.finish = cycles;
-        }
     }
 
     public FloppyDisk getDisk() {
         return floppy;
     }
+}
 
-    public void powerOff() {
-        this.state = floppy == null ? STATE_NO_MEDIA : floppy.isWriteProtected() ? STATE_READY_WP : STATE_READY;
-        this.error = ERROR_NONE;
-        this.interruptsEnabled = false;
-        this.message = 0;
-        this.track = 0;
-        this.operation = new FloppyOperation(FloppyOperation.NONE, 0, 0, Long.MAX_VALUE);
+enum FloppyOperationType {
+    NONE, READ, WRITE;
+}
+
+class FloppyOperation extends ToStringComponent {
+    FloppyOperationType type;
+    int sector;
+    int memory;
+    long finish;
+
+    public FloppyOperation(FloppyOperationType type, int sector, int memory, long cycles) {
+        this.type = type;
+        this.sector = sector;
+        this.memory = memory;
+        this.finish = cycles;
     }
-    
-    public char[] load(File file, int len) {
-        char[] data = new char[len];
-        try {
-            DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
-            int i = 0;
-            for (; i < data.length; i++) {
-                data[i] = dis.readChar();
-            }
-            dis.close();
-        } catch (ArrayIndexOutOfBoundsException e) {
-        } catch (IOException e) {
-        }
-        return data;
-    }
-
-
 }

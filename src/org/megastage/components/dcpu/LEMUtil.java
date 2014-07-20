@@ -4,13 +4,6 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created with IntelliJ IDEA.
- * User: contko3
- * Date: 10/2/13
- * Time: 2:30 PM
- * To change this template use File | Settings | File Templates.
- */
 public class LEMUtil {
     public static char[] defaultVideo = new char[384];
     public static char[] defaultFont = defaultFont();

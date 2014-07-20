@@ -1,54 +1,45 @@
 package org.megastage.client.controls;
 
-import com.artemis.Entity;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.audio.AudioNode;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.client.SoundManager;
 import org.megastage.components.transfer.GyroscopeData;
-import org.megastage.util.Mapper;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
-/**
- *
- * @author Orlof
- */
 public class GyroscopeControl extends AbstractControl {
-    private final Entity entity;
-    private GyroscopeData data;
+    private final int eid;
     
-    private char power = 0;
+    private int signedValue = 0;
     private float angularSpeed = 0;
 
     private AudioNode an;
     
-    public GyroscopeControl(Entity entity) {
-        this.entity = entity;
+    public GyroscopeControl(int eid) {
+        this.eid = eid;
         this.an = SoundManager.get(SoundManager.GYROSCOPE).clone();
         an.setLooping(true);
     }
 
     @Override
     protected void controlUpdate(float tpf) {
-        if(data == null) {
-            data = Mapper.GYROSCOPE_DATA.get(entity);
-            if(data == null) {
-                return;
-            }
-        }
+        GyroscopeData data = (GyroscopeData) World.INSTANCE.getComponent(eid, CompType.GyroscopeData);
+        assert data != null;
 
-        if(power != data.power) {
-            if(power == 0) {
+        if(signedValue != data.signedValue) {
+            if(signedValue == 0) {
                 an.play();
             }
 
-            power = data.power;
+            signedValue = data.signedValue;
             angularSpeed = 5.0f * data.getAngularSpeed();
 
             an.setVolume(Math.abs(angularSpeed) * 2);
             
-            if(power == 0) {
+            if(signedValue == 0) {
                 an.pause();
             }
             

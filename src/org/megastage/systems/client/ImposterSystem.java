@@ -1,61 +1,48 @@
 package org.megastage.systems.client;
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
-import com.esotericsoftware.minlog.Log;
+import com.jme3.math.Vector3f;
 import org.megastage.client.ClientGlobals;
+import org.megastage.client.SpatialManager;
 import org.megastage.components.Position;
 import org.megastage.components.gfx.ImposterGeometry;
-import org.megastage.util.ID;
-import org.megastage.util.Time;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.Processor;
+import org.megastage.ecs.World;
 import org.megastage.util.Vector3d;
 
-public class ImposterSystem extends EntityProcessingSystem {
-    ComponentMapper<Position> POSITION;
-    ComponentMapper<ImposterGeometry> IMPOSTER_GEOMETRY;
-
-    public ImposterSystem(long interval) {
-        super(Aspect.getAspectForAll(ImposterGeometry.class, Position.class));
-        this.interval = interval;
+public class ImposterSystem extends Processor {
+    public ImposterSystem(World world, long interval) {
+        super(world, interval, CompType.ImposterGeometry, CompType.Position);
     }
 
-    @Override
-    public void initialize() {
-        
-        IMPOSTER_GEOMETRY = world.getMapper(ImposterGeometry.class);
-        POSITION = world.getMapper(Position.class);
-    }
-
-private long interval;
-    private long acc;
-    
     @Override
     protected boolean checkProcessing() {
-        if(ClientGlobals.shipEntity != null && POSITION.has(ClientGlobals.shipEntity) && Time.value >= acc) {
-            acc = Time.value + interval;
-            return true;
+        if(super.checkProcessing()) {
+            if(ClientGlobals.baseEntity != 0 && world.hasComponent(ClientGlobals.baseEntity, CompType.Position)) {
+                return true;
+            }
         }
         return false;
     }
 
-    private Vector3d origo;
+    private Vector3f origo;
     
     @Override
     protected void begin() {
-        origo = POSITION.get(ClientGlobals.shipEntity).getVector3d();
+        origo = ((Position) world.getComponent(ClientGlobals.baseEntity, CompType.Position)).get();
     }
 
     @Override
-    protected void process(Entity e) {
-        Vector3d coord = POSITION.get(e).getVector3d();
-        double cutoff = IMPOSTER_GEOMETRY.get(e).cutoff;
+    protected void process(int eid) {
+        Position pos = (Position) world.getComponent(eid, CompType.Position);
+        Vector3f coord = pos.get();
+
+        ImposterGeometry imp = (ImposterGeometry) world.getComponent(eid, CompType.ImposterGeometry);
+        double cutoff = imp.cutoff;
 
         double d = origo.distance(coord);
         boolean visible = d < cutoff;
         
-        ClientGlobals.spatialManager.imposter(e, visible);
+        SpatialManager.imposter(eid, visible);
     }
-	
 }

@@ -1,48 +1,28 @@
 package org.megastage.systems.client;
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
 import com.jme3.math.Quaternion;
 import org.megastage.components.FixedRotation;
 import org.megastage.components.Rotation;
-import org.megastage.util.Time;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.Processor;
+import org.megastage.ecs.World;
 
-/**
- * Created with IntelliJ IDEA.
- * User: contko3
- * Date: 8/19/13
- * Time: 12:09 PM
- * To change this template use File | Settings | File Templates.
- */
-public class ClientFixedRotationSystem extends EntityProcessingSystem {
-    ComponentMapper<Rotation> ROTATION;
-    ComponentMapper<FixedRotation> FIXED_ROTATION;
+public class ClientFixedRotationSystem extends Processor {
 
-    public ClientFixedRotationSystem() {
-        super(Aspect.getAspectForAll(Rotation.class, FixedRotation.class));
+    public ClientFixedRotationSystem(World world, long interval) {
+        super(world, interval, CompType.Rotation, CompType.FixedRotation);
     }
 
     @Override
-    public void initialize() {
-        
-        ROTATION = world.getMapper(Rotation.class);
-        FIXED_ROTATION = world.getMapper(FixedRotation.class);
-    }
-
-    protected void process(Entity entity) {
-        FixedRotation fr = FIXED_ROTATION.get(entity);
+    protected void process(int eid) {
+        FixedRotation fr = (FixedRotation) world.getComponent(eid, CompType.FixedRotation);
         
         Quaternion rotation = new Quaternion().fromAngles(
-                (float) fr.getX(Time.value), 
-                (float) fr.getY(Time.value), 
-                (float) fr.getZ(Time.value)).normalizeLocal();
+                (float) fr.getX(world.time), 
+                (float) fr.getY(world.time), 
+                (float) fr.getZ(world.time)).normalizeLocal();
 
-        Rotation r = ROTATION.get(entity);
-        r.x = rotation.getX();
-        r.y = rotation.getY();
-        r.z = rotation.getZ();
-        r.w = rotation.getW();
+        Rotation r = (Rotation) world.getComponent(eid, CompType.Rotation);
+        r.set(rotation);
     }
 }

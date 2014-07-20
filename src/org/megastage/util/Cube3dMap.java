@@ -1,40 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.util;
 
-import com.artemis.Entity;
-import com.badlogic.gdx.utils.Array;
 import com.cubes.Vector3Int;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
 import com.jme3.math.Vector3f;
-import java.util.LinkedList;
-import org.megastage.client.ClientGlobals;
-import org.megastage.components.BaseComponent;
-import org.megastage.protocol.Message;
+import org.megastage.ecs.ToStringComponent;
 
-
-/**
- *
- * @author Orlof
- */
-public class Cube3dMap {
+public class Cube3dMap extends ToStringComponent {
     private final static transient int INITIAL_CAPACITY = 16;
 
     public char[][][] data;
     public int xsize, ysize, zsize;
-    public int xtotal, ytotal, ztotal;
+    public int xsum, ysum, zsum;
     public int count;
     public int version = 0;
     
-    public transient LinkedList<BlockChange> pending;
-    
-    public void trackChanges() {
-        pending = new LinkedList<>();
-    }
-
     public char get(Vector3Int block) {
         return get(block.getX(), block.getY(), block.getZ());
     }
@@ -54,7 +32,7 @@ public class Cube3dMap {
         return ydata[z];
     }
 
-    public void set(int x, int y, int z, char value, char event) {
+    public void set(int x, int y, int z, char value) {
         char old = get(x, y, z);
         
         if(value == old) {
@@ -62,19 +40,19 @@ public class Cube3dMap {
         }
         
         if(value != 0) {
-            if(x > xsize) xsize = x;
-            if(y > ysize) ysize = y;
-            if(z > zsize) zsize = z;
+            if(x >= xsize) xsize = x+1;
+            if(y >= ysize) ysize = y+1;
+            if(z >= zsize) zsize = z+1;
 
-            xtotal += x;
-            ytotal += y;
-            ztotal += z;
+            xsum += x;
+            ysum += y;
+            zsum += z;
 
             count++;
         } else {
-            xtotal -= x;
-            ytotal -= y;
-            ztotal -= z;
+            xsum -= x;
+            ysum -= y;
+            zsum -= z;
             
             count--;
         }
@@ -104,30 +82,22 @@ public class Cube3dMap {
         }
 
         data[x][y][z] = value;
-        if(pending != null) pending.add(new BlockChange(x, y, z, value, event));
         version++;
     }
 
     public Vector3f getCenter() {
+        return new Vector3f(xsize / 2.0f, ysize / 2.0f, zsize / 2.0f);
+    }
+    
+    public Vector3f getCenterOfMass() {
         return new Vector3f(
-                getCenter(xtotal),
-                getCenter(ytotal),
-                getCenter(ztotal));
+                getCenter(xsum),
+                getCenter(ysum),
+                getCenter(zsum));
     }
     
-    private float getCenter(float total) {
-        return total / count + 0.5f;
-    }
-
-    public Vector3d getCenter3d() {
-        return new Vector3d(
-                getCenter3d(xtotal),
-                getCenter3d(ytotal),
-                getCenter3d(ztotal));
-    }
-    
-    private double getCenter3d(double total) {
-        return total / count + 0.5f;
+    private float getCenter(float sum) {
+        return sum / count + 0.5f;
     }
 
     private int getNewCapacity(char[][][] arr, int index) {
@@ -153,29 +123,29 @@ public class Cube3dMap {
         return capacity;
     }
 
-    public double getCollisionRadius() {
+    public float getCollisionRadius() {
         return getCenter().length();
     }
 
-    public double getMass() {
-        return 1000.0 * count;
+    public float getMass() {
+        return 1000.0f * count;
     }
 
-    public double getInertia(Vector3d axis) {
+    public float getInertia(Vector3f axis) {
         // I = mr2
-        double xc = getCenter(xtotal);
-        double yc = getCenter(ytotal);
-        double zc = getCenter(ztotal);
+        float xc = getCenter(xsum);
+        float yc = getCenter(ysum);
+        float zc = getCenter(zsum);
         
-        double inertia = 0;
-        for(int x=0; x <= xsize; x++) {
-            for(int y=0; y <= ysize; y++) {
-                for(int z=0; z <= zsize; z++) {
+        float inertia = 0;
+        for(int x=0; x < xsize; x++) {
+            for(int y=0; y < ysize; y++) {
+                for(int z=0; z < zsize; z++) {
                     if(get(x, y, z) == '#') {
                         // mass = 1000kg
                         
-                        Vector3d point = new Vector3d(x - xc, y - yc, z - zc);
-                        double distance = axis.distanceToPoint(point);
+                        Vector3f point = new Vector3f(x - xc, y - yc, z - zc);
+                        float distance = MathUtil.distancePointToLine(point, axis);
 
                         inertia += 1000.0 * distance * distance;
                     }
@@ -186,37 +156,4 @@ public class Cube3dMap {
         return inertia;
     }
     
-    public static class BlockChange extends BaseComponent {
-        public static final transient char UNBUILD = 0;
-        public static final transient char BREAK = 1;
-        public static final transient char BUILD = 2;
-        
-        public int x, y, z;
-        public char type;
-        public char event;
-
-        public BlockChange() {}
-        
-        private BlockChange(int x, int y, int z, char value, char event) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.type = value;
-            this.event = event;
-        }
-
-        @Override
-        public void receive(Connection pc, Entity entity) {
-            Log.info(ID.get(entity) + toString());
-            ClientGlobals.spatialManager.updateShipBlock(entity, this);
-        }
-
-        @Override
-        public String toString() {
-            return "BlockChange{" + "x=" + x + ", y=" + y + ", z=" + z + ", type=" + (int) type + ", event=" + (int) event + '}';
-        }
-
-        
-    }
 }
-

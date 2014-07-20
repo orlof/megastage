@@ -1,39 +1,34 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Aspect;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
+import com.jme3.math.Vector3f;
+import org.megastage.ecs.World;
+import org.megastage.ecs.Processor;
 import org.megastage.components.Mass;
 import org.megastage.components.Rotation;
 import org.megastage.components.dcpu.VirtualEngine;
-import org.megastage.util.Mapper;
-import org.megastage.util.Quaternion;
-import org.megastage.util.Vector3d;
+import org.megastage.components.srv.Acceleration;
+import org.megastage.ecs.CompType;
+import org.megastage.util.Log;
 
-public class EngineAccelerationSystem extends EntityProcessingSystem {
-    public EngineAccelerationSystem() {
-        super(Aspect.getAspectForAll(VirtualEngine.class));
+public class EngineAccelerationSystem extends Processor {
+    public EngineAccelerationSystem(World world, long interval) {
+        super(world, interval, CompType.VirtualEngine);
     }
 
     @Override
-    protected void process(Entity entity) {
-        VirtualEngine engine = Mapper.VIRTUAL_ENGINE.get(entity);
+    protected void process(int eid) {
+        VirtualEngine engine = (VirtualEngine) world.getComponent(eid, CompType.VirtualEngine);
 
         if(engine.isActive()) {
-            Mass mass = Mapper.MASS.get(engine.ship);
-            if(mass == null) return;
-
-            double shipMass = mass.mass;
-            Vector3d acc = engine.getAcceleration(shipMass);
+            Mass mass = (Mass) world.getComponent(engine.shipEID, CompType.Mass);
+            Vector3f acc = engine.getForce().divideLocal(mass.value);
             
             // rotate acceleration into global coordinate system
-            Rotation rotation = Mapper.ROTATION.get(engine.ship);
-            if(rotation != null) {
-                Quaternion shipRot = rotation.getQuaternion4d();
-                acc = acc.multiply(shipRot);
-            }
+            Rotation rotation = (Rotation) world.getComponent(engine.shipEID, CompType.Rotation);
+            rotation.rotateLocal(acc);
 
-            Mapper.ACCELERATION.get(engine.ship).add(acc);
+            Acceleration acceleration = (Acceleration) world.getComponent(engine.shipEID, CompType.Acceleration);
+            acceleration.jerk(acc);
         }
     }
 }

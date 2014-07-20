@@ -1,36 +1,27 @@
 package org.megastage.components.srv;
 
-import com.artemis.Entity;
-import com.artemis.World;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
+import org.megastage.ecs.World;
 
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:58
- */
 public class CollisionType extends BaseComponent {
     public static final int SHIP = 0;
     public static final int CELESTIAL = 1;
     
     public int item;
-    public double radius;
+    public float radius;
 
-    public CollisionType() {
-        this(SHIP, 0);
-    }
-    
-    public CollisionType(int type, double radius) {
-        this.item = type;
-        this.radius = radius;
+    public static CollisionType create(int type, float radius) {
+        CollisionType ct = new CollisionType();
+        ct.item = type;
+        ct.radius = radius;
+        return ct;
     }
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        radius = getDoubleValue(element, "radius", 0);
+    public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
+        radius = getFloatValue(element, "radius", 0.0f);
         
         String itemName = getStringValue(element, "item", "SHIP");
 

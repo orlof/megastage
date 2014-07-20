@@ -1,23 +1,22 @@
 package org.megastage.components.gfx;
+    
+import com.jme3.math.ColorRGBA;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
+import org.megastage.client.JME3Material;
 
-import com.artemis.Entity;
-import com.esotericsoftware.kryonet.Connection;
-import org.megastage.client.ClientGlobals;
-import org.megastage.components.BaseComponent;
-import org.megastage.protocol.Message;
-    
-/**
- *
- * @author Orlof
- */
-public class FloppyDriveGeometry extends BaseComponent {
+public class FloppyDriveGeometry extends ItemGeometryComponent {
+
     @Override
-    public void receive(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.setupFloppyDrive(entity, this);
+    protected void initGeometry(Node node, int eid) {
+        node.attachChild(createBlackBox());
     }
-    
-    @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+
+    private Spatial createBlackBox() {
+        Geometry box = new Geometry("dcpu", new Box(0.5f, 0.5f, 0.5f));
+        JME3Material.setUnshadedMaterial(box, ColorRGBA.Black);
+        return box;
     }
 }

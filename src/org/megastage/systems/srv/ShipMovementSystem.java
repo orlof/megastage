@@ -1,47 +1,32 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.ecs.World;
+import org.megastage.ecs.Processor;
+import org.megastage.util.Log;
 import org.megastage.components.*;
 import org.megastage.components.srv.Acceleration;
 import org.megastage.components.Velocity;
-import org.megastage.util.Vector3d;
+import org.megastage.ecs.CompType;
 
-public class ShipMovementSystem extends EntityProcessingSystem {
-    ComponentMapper<Position> POSITION;
-    ComponentMapper<Velocity> VELOCITY;
-    ComponentMapper<Acceleration> ACCELERATION;
-
-    public ShipMovementSystem() {
-        super(Aspect.getAspectForAll(Position.class, Velocity.class, Acceleration.class));
+public class ShipMovementSystem extends Processor {
+    public ShipMovementSystem(World world, long interval) {
+        super(world, interval, CompType.Position, CompType.Velocity, CompType.Acceleration);
     }
 
     @Override
-    public void initialize() {
-        POSITION = world.getMapper(Position.class);
-        VELOCITY = world.getMapper(Velocity.class);
-        ACCELERATION = world.getMapper(Acceleration.class);
-    }
-
-    @Override
-    protected void process(Entity entity) {
-        Velocity velocity = VELOCITY.get(entity);
-        Acceleration acceleration = ACCELERATION.get(entity);
-        Position position = POSITION.get(entity);
+    protected void process(int eid) {
+        Velocity velocity = (Velocity) world.getComponent(eid, CompType.Velocity);
+        Acceleration acceleration = (Acceleration) world.getComponent(eid, CompType.Acceleration);
+        Position position = (Position) world.getComponent(eid, CompType.Position);
 
         if(Log.TRACE) {
-            Log.info(entity.toString() + acceleration.toString());
-            Log.info(entity.toString() + velocity.toString());
-            Log.info(entity.toString() + position.toString());
+            Log.info("[%d] %s / %s / %s", eid, position, velocity, acceleration);
         }
         
-        position.move(velocity, world.getDelta() / 2.0f);
-        velocity.accelerate(acceleration, world.getDelta());
-        position.move(velocity, world.getDelta() / 2.0f);
-
-        acceleration.set(Vector3d.ZERO);
+        position.move(velocity.getDisplacement(world.delta / 2.0f));
+        velocity.accelerate(acceleration.getDeltaV(world.delta));
+        position.move(velocity.getDisplacement(world.delta / 2.0f));
+        
+        acceleration.zero();
     }
 }

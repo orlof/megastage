@@ -1,20 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.components.client;
 
-import com.artemis.Component;
 import com.jme3.texture.image.ImageRaster;
+import org.megastage.ecs.BaseComponent;
 
-/**
- *
- * @author Orlof
- */
-public class ClientRaster implements Component {
+public class ClientRaster extends BaseComponent {
     public ImageRaster raster;
-
-    @Override
-    public void reset() {
-    }
 }

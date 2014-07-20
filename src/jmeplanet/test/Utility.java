@@ -38,8 +38,10 @@ import com.jme3.scene.shape.Sphere;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 import com.jme3.texture.TextureCubeMap;
+import jmeplanet.FractalDataSource;
 import jmeplanet.HeightDataSource;
 import jmeplanet.Planet;
+import org.megastage.client.ClientGlobals;
 
 /**
  * Utility
@@ -102,7 +104,11 @@ public class Utility {
         return sky;
     }
     
-    public static Planet createEarthLikePlanet(AssetManager assetManager, float radius, Material oceanMaterial, HeightDataSource dataSource) {
+    public static Planet createEarthLikePlanet(float radius) {
+        AssetManager assetManager = ClientGlobals.app.getAssetManager();
+        FractalDataSource dataSource = new FractalDataSource(4);
+        dataSource.setHeightScale(radius / 100f);
+
         float heightScale = dataSource.getHeightScale();
         
         // Prepare planet material
@@ -138,9 +144,7 @@ public class Utility {
         Planet planet = new Planet("Planet", radius, planetMaterial, dataSource);
         
         // create ocean
-        if (oceanMaterial == null) {
-            oceanMaterial = assetManager.loadMaterial("Materials/Ocean.j3m");
-        }
+        Material oceanMaterial = assetManager.loadMaterial("Materials/Ocean.j3m");
         planet.createOcean(oceanMaterial);
         
         // create atmosphere
@@ -156,14 +160,14 @@ public class Utility {
         return planet;
     }
     
-    public static Planet createWaterPlanet(AssetManager assetManager, float radius, Material oceanMaterial) {
+    public static Planet createWaterPlanet(float radius) {
+        AssetManager assetManager = ClientGlobals.app.getAssetManager();
+
         // create planet
         Planet planet = new Planet("Planet", radius);
         
         // create ocean
-        if (oceanMaterial == null) {
-            oceanMaterial = assetManager.loadMaterial("Materials/Ocean.j3m");
-        }
+        Material oceanMaterial = assetManager.loadMaterial("Materials/Ocean.j3m");
         planet.createOcean(oceanMaterial);
         
         // create atmosphere
@@ -179,8 +183,12 @@ public class Utility {
         return planet;
     }
     
-    public static Planet createMoonLikePlanet(AssetManager assetManager, float radius, HeightDataSource dataSource) {
+    public static Planet createMoonLikePlanet(float radius) {
+        AssetManager assetManager = ClientGlobals.app.getAssetManager();
         
+        FractalDataSource dataSource = new FractalDataSource(4);
+        dataSource.setHeightScale(radius / 20f);
+
         float heightScale = dataSource.getHeightScale();
         
         // Prepare planet material

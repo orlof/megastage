@@ -1,30 +1,33 @@
 package org.megastage.components.gfx;
-
-import com.artemis.Entity;
-import com.artemis.World;
-import com.esotericsoftware.kryonet.Connection;
-import org.jdom2.Element;
-import org.megastage.client.ClientGlobals;
-import org.megastage.components.BaseComponent;
-import org.megastage.protocol.Message;
     
-/**
- *
- * @author Orlof
- */
-public class BatteryGeometry extends BaseComponent {
-    @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
-        return null;
-    }
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Cylinder;
+import org.megastage.client.JME3Material;
+import org.megastage.client.JME3Electricity;
+
+public class BatteryGeometry extends ItemGeometryComponent {
 
     @Override
-    public void receive(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.setupBattery(entity, this);
+    protected void initGeometry(Node node, int eid) {
+        node.attachChild(createBase());
+        node.attachChild(createChamber());
     }
-    
-    @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+
+    private Spatial createChamber() {
+        Node node = new Node("chamber");
+
+        Geometry cylinder = new Geometry("Battery core", new Cylinder(6, 6, 0.45f, 0.9f, true));
+        node.attachChild(cylinder);
+        node.setLocalTranslation(0, 0.1f, 0);
+        node.setLocalRotation(new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0));
+        node.setMaterial(JME3Material.getLightingMaterial(ColorRGBA.Yellow));
+        
+        JME3Electricity.ELECTRICITY3_LINE1.electrify(node);
+        
+        return node;
     }
 }

@@ -4,7 +4,7 @@
  */
 package org.megastage.client;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import com.jme3.audio.AudioNode;
 import com.jme3.audio.AudioSource;
 import com.jme3.input.RawInputListener;

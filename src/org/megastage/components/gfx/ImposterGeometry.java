@@ -1,30 +1,30 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.components.gfx;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import com.esotericsoftware.kryonet.Connection;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
+import com.jme3.scene.Node;
+import com.jme3.scene.VertexBuffer;
+import com.jme3.util.BufferUtils;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.client.ClientGlobals;
-import org.megastage.protocol.Message;
+import org.megastage.client.JME3Material;
+import static org.megastage.client.SpatialManager.getOrCreateNode;
+import org.megastage.client.controls.ImposterPositionControl;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.World;
 
-
-    
-/**
- *
- * @author Orlof
- */
-public class ImposterGeometry extends BaseComponent {
+public class ImposterGeometry extends ReplicatedComponent {
     public float radius;
     public double cutoff;
     public float red, green, blue, alpha;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
         radius = getFloatValue(element, "radius", 20.0f);
         cutoff = getDoubleValue(element, "cutoff", 500000.0);
         red = getFloatValue(element, "red", 1.0f); 
@@ -36,33 +36,39 @@ public class ImposterGeometry extends BaseComponent {
     }
 
     @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+    public void receive(int eid) {
+        assert !World.INSTANCE.hasComponent(eid, CompType.ImposterGeometry);
+        setupImposter(eid, this);
     }
-    
-    @Override
-    public void receive(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.setupImposter(entity, this);
-        super.receive(pc, entity);
+
+    private Geometry createImposter(float size, ColorRGBA color) {
+        Mesh q = new Mesh();
+
+        Vector3f [] vertices = new Vector3f[] { new Vector3f(0,0,0) };
+        q.setBuffer(VertexBuffer.Type.Position, 3, BufferUtils.createFloatBuffer(vertices));
+
+        q.setMode(Mesh.Mode.Points);
+        q.setPointSize(size);
+        q.updateBound();
+        q.setStatic();
+
+        Material mat = JME3Material.getUnshadedMaterial(color);
+        
+        Geometry geom = new Geometry("imposter", q);
+        geom.setMaterial(mat);
+
+        return geom;
     }
-    
-    @Override
-    public void delete(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.deleteEntity(entity);
-        entity.deleteFromWorld();
+
+    public void setupImposter(final int eid, final ImposterGeometry data) {
+        ColorRGBA colorRGBA = new ColorRGBA(data.red, data.green, data.blue, data.alpha);
+
+        final Geometry imposter = createImposter(data.radius, colorRGBA);
+        final Node node = getOrCreateNode(eid);
+        
+        node.addControl(new ImposterPositionControl(eid));
+        node.attachChild(imposter);
     }
-    
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ImposterGeometry(");
-        sb.append("radius=").append(radius);
-        sb.append("cutoff=").append(cutoff);
-        sb.append(", red=").append(red);
-        sb.append(", green=").append(green);
-        sb.append(", blue=").append(blue);
-        sb.append(", alpha=").append(alpha);
-        sb.append(")");
-        return sb.toString();
-    }
+
+
 }

@@ -1,10 +1,8 @@
 package org.megastage.components.dcpu;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
+import org.megastage.ecs.World;
 
 public class VirtualBattery extends DCPUHardware implements PowerSupply, PowerConsumer {
     
@@ -15,13 +13,10 @@ public class VirtualBattery extends DCPUHardware implements PowerSupply, PowerCo
     public double energy;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        type = TYPE_BATTERY;
-        revision = 0xac1d;
-        manufactorer = MANUFACTORER_URI_OASIS;
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        super.init(world, parentEid, element);
+        setInfo(TYPE_BATTERY, 0xac1d, MANUFACTORER_URI_OASIS);
 
-        super.init(world, parent, element);
-        
         capacity = getIntegerValue(element, "capacity", 5000);
         energy = getDoubleValue(element, "energy", 0);
         input = getIntegerValue(element, "input", 500);
@@ -31,10 +26,10 @@ public class VirtualBattery extends DCPUHardware implements PowerSupply, PowerCo
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt(DCPU dcpu) {
         switch(dcpu.registers[0]) {
             case 0:
-                getEnergy();
+                getEnergy(dcpu);
                 break;
             case 1:
                 setInput(dcpu.registers[1]);
@@ -45,7 +40,7 @@ public class VirtualBattery extends DCPUHardware implements PowerSupply, PowerCo
         }
     }
 
-    private boolean getEnergy() {
+    private boolean getEnergy(DCPU dcpu) {
         dcpu.registers[1] = (char) energy;
         return true;
     }
@@ -73,7 +68,7 @@ public class VirtualBattery extends DCPUHardware implements PowerSupply, PowerCo
     }
 
     @Override
-    public double consume(double available, double delta) {
+    public double consume(int ship, double available, double delta) {
         double intake = delta * input;
         if(intake > available) {
             setInput((char) 0);

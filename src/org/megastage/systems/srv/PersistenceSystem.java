@@ -1,63 +1,38 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Aspect;
-import com.artemis.Component;
-import com.artemis.Entity;
-import com.artemis.systems.EntitySystem;
-import com.badlogic.gdx.utils.Array;
+import org.megastage.ecs.World;
+import org.megastage.ecs.Processor;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import org.megastage.components.PersistenceFlag;
+import org.megastage.ecs.CompType;
 import org.megastage.protocol.Network;
-import org.megastage.util.Time;
 
-public class PersistenceSystem extends EntitySystem {
-    private long interval;
-    private long wakeup;
-    
-    private double delta;
-
+public class PersistenceSystem extends Processor {
     Kryo kryo;    
     Output output;
     
     File stateFile = new File("gamestate.dat");
     
     byte[] buf = new byte[1024*1024];
-    Array<Component> comps = new Array<>(50);
     
-    public PersistenceSystem() {
-        super(Aspect.getAspectForAll(PersistenceFlag.class));
-    }
+    public PersistenceSystem(World world, long interval) {
+        super(world, interval, CompType.PersistenceFlag);
 
-    public PersistenceSystem(Aspect aspect, long interval) {
-        super(Aspect.getAspectForAll(PersistenceFlag.class));
-        this.interval = interval;
-        
         kryo = new Kryo();
-        Network.registerSpecials(kryo);
+        Network.register(kryo);
     }
 
     @Override
-    protected boolean checkProcessing() {
-        if(Time.value >= wakeup) {
-            delta = (Time.value + interval - wakeup) / 1000.0;
-            wakeup = Time.value + interval;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    protected void processEntities(Array<Entity> entities) {
+    protected void process() {
         output = new Output(buf);
         
-        for (int i = 0, s = entities.size; s > i; i++) {
-            process(entities.get(i));
+        for(int eid = group.iterator(); eid != 0; eid = group.next()) {
+            write(eid);
         }
 
         output.writeInt(0);
@@ -67,10 +42,6 @@ public class PersistenceSystem extends EntitySystem {
         writeState(stateFile, buf, output.total());
     }
 
-    protected void process(Entity e) {
-        write(e);
-    }
-    
     private File writeState(File file, byte[] buf, int length) {
         BufferedOutputStream out = null;
         try {
@@ -91,14 +62,11 @@ public class PersistenceSystem extends EntitySystem {
         return file;
     }
     
-    private void write(Entity e) {
-        output.writeInt(e.id);
+    private void write(int eid) {
+        output.writeInt(eid);
         
-        e.getComponents(comps);
-        output.writeInt(comps.size);
-
-        for(Component c: comps) {
-            kryo.writeClassAndObject(output, c);
+        for(Object comp: world.population[eid]) {
+            kryo.writeClassAndObject(output, comp);
         }
     }
 }

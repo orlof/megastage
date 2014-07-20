@@ -1,15 +1,16 @@
 package org.megastage.util;
 
-import com.artemis.Entity;
-import org.megastage.components.srv.Identifier;
+import org.megastage.components.Identifier;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
 public class ID {
-    public static String get(Entity e) {
-        if(e == null) return "null ";
-        Identifier id = Mapper.IDENTIFIER.get(e);
+    public static String get(int eid) {
+        Identifier id = (Identifier) World.INSTANCE.getComponent(eid, CompType.Identifier);
         if(id==null) {
-            return e.toString();
+            return "[" + eid + "]";
         }
-        return id.name + " " + e.toString() + " ";
+
+        return id.toString() + "[" + eid + "]";
     }
 }

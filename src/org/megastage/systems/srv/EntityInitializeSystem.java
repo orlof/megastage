@@ -1,51 +1,28 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Aspect;
-import com.artemis.Component;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
-import com.badlogic.gdx.utils.Array;
-import org.megastage.components.BaseComponent;
-import org.megastage.components.srv.InitializeFlag;
-import org.megastage.components.srv.ReplicateFlag;
-import org.megastage.protocol.Message;
-import org.megastage.util.ServerGlobals;
-import org.megastage.util.Time;
+import org.megastage.util.Log;
+import org.megastage.ecs.BaseComponent;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.Processor;
+import org.megastage.ecs.World;
+import org.megastage.util.ID;
 
-public class EntityInitializeSystem extends EntityProcessingSystem {
-    private long interval;
-    private long acc;
-    
-    public EntityInitializeSystem(long interval) {
-        super(Aspect.getAspectForAll(InitializeFlag.class));
-        this.interval = interval;
+public class EntityInitializeSystem extends Processor {
+    public EntityInitializeSystem(World world, long interval) {
+        super(world, interval,  CompType.InitializeFlag);
     }
 
     @Override
-    public boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
-                return true;
-        }
-        return false;
+    protected void process(int eid) {
+        Log.info(ID.get(eid));
+        
+        world.removeComponent(eid, CompType.InitializeFlag);
+        initializeComponents(eid);
     }
 
-    @Override
-    protected void process(Entity entity) {
-        entity.removeComponent(InitializeFlag.class);
-        entity.changedInWorld();
-
-        initializeComponents(entity);
-    }
-
-    private Array<Component> _components = new Array<>(20);
-
-    private void initializeComponents(Entity entity) {
-        _components.clear();
-        entity.getComponents(_components);
-
-        for(Component comp: _components) {
-            ((BaseComponent) comp).initialize(world, entity);
+    private void initializeComponents(int eid) {
+        for(BaseComponent c = world.compIter(eid); c != null; c = world.compNext()) {
+            c.initialize(eid);
         }
     }
 }

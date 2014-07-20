@@ -1,10 +1,9 @@
 package org.megastage.client;
 
-import com.artemis.Entity;
+import com.cubes.BlockNavigator;
 import com.cubes.BlockTerrainControl;
 import com.cubes.Vector3Int;
-import com.esotericsoftware.minlog.Log;
-import com.jme3.app.state.AppStateManager;
+import org.megastage.util.Log;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.InputManager;
@@ -17,106 +16,12 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import java.util.concurrent.Callable;
 import org.megastage.components.Rotation;
-import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.protocol.CharacterMode;
-import org.megastage.util.ID;
-import org.megastage.util.Mapper;
 
 public class CommandHandler implements AnalogListener, ActionListener {
-
-    private static String[] dcpuMappings = new String[]{
-        "WALK_LookLeft",
-        "WALK_LookRight",
-        "WALK_LookUp",
-        "WALK_LookDown",
-        "DCPU_Exit",
-    };
-
-    private static String[] menuMappings = new String[]{
-        "MENU_Exit",
-    };
-
-    private static String[] walkMappings = new String[]{
-        "WALK_LookLeft",
-        "WALK_LookRight",
-        "WALK_LookUp",
-        "WALK_LookDown",
-        "WALK_MoveForward",
-        "WALK_MoveBackward",
-        "WALK_MoveLeft",
-        "WALK_MoveRight",
-        "SHIP_MoveForward",
-        "SHIP_MoveBackward",
-        "SHIP_MoveUp",
-        "SHIP_MoveDown",
-        "SHIP_MoveLeft",
-        "SHIP_MoveRight",
-        "SHIP_PitchUp",
-        "SHIP_PitchDown",
-        "SHIP_RollCW",
-        "SHIP_RollCCW",
-        "SHIP_YawLeft",
-        "SHIP_YawRight",
-        "WALK_InvertY",
-        "ITEM_Pick",
-        "ITEM_RightPick",
-        "GAME_Exit",
-    };
-
-    private void pickItem(boolean right) {
-        CollisionResults results = new CollisionResults();
-        Ray ray = new Ray(ClientGlobals.cam.getLocation(), ClientGlobals.cam.getDirection());
-        ClientGlobals.rootNode.collideWith(ray, results);
-        for(int i=0; i < results.size(); i++) {
-            CollisionResult closest = results.getCollision(i);
-            if(!closest.getGeometry().getName().equals("forceshield")) {
-                Node target = closest.getGeometry().getParent();
-
-                Entity entity = null;
-                while(true) {
-                    if(target == ClientGlobals.rootNode) {
-                        return;
-                    }
-
-                    entity = ClientGlobals.spatialManager.getUsableEntity(target, true);
-                    //Log.info("Pick entity: " + ID.get(entity));
-                    if(entity != null) break;
-                    target = target.getParent();
-                }
-
-                ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(entity);
-                if(geom != null) {
-                    if(entity == ClientGlobals.shipEntity) {
-                        Node offset = (Node) target.getChild("offset");
-                        Vector3Int loc = CubesManager.getCurrentPointedBlockLocation(offset, !right);
-                        if(loc != null) {
-                            BlockTerrainControl ctrl = offset.getControl(BlockTerrainControl.class);
-                            if(!right) {
-                                ClientGlobals.userCommand.build(loc);
-                                //ctrl.setBlock(loc, CubesManager.Combi.class);
-                            } else {
-                                ClientGlobals.userCommand.unbuild(loc);
-                                //ctrl.removeBlock(loc);
-                            }
-                        }
-                    } else {
-                        // TELEPORT
-                        ClientGlobals.userCommand.teleport(entity);
-                        Log.info("TELEPORT");
-                    }
-                } else {
-                    ClientGlobals.userCommand.pickItem(entity);
-                }
-                return;
-            }
-        }
-    }
-    
-    private void unpickItem() {
-        ClientGlobals.userCommand.unpickItem();
-    }
 
     public int mode = CharacterMode.NONE;
     private InputManager inputManager;
@@ -173,7 +78,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     
     @Override
     public void onAnalog(String name, float value, float tpf) {
-        if (ClientGlobals.playerEntity == null) {
+        if (ClientGlobals.playerEntity == 0) {
             return;
         }
 
@@ -243,45 +148,31 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
     @Override
     public void onAction(String name, boolean value, float tpf) {
-        switch (name) {
-            case "WALK_InvertY":
-                // Toggle on the up.
-                if (!value) {
+        if (!value) {
+            switch (name) {
+                case "WALK_InvertY":
                     invertY = !invertY;
-                }
-                break;
-            case "ITEM_Pick":
-                // Toggle on the up.
-                if (!value) {
-                    //initDCPUMode();
+                    break;
+                case "ITEM_Pick":
                     pickItem(false);
-                }
-                break;
-            case "ITEM_RightPick":
-                // Toggle on the up.
-                if (!value) {
-                    //initDCPUMode();
+                    break;
+                case "ITEM_RightPick":
                     pickItem(true);
-                }
-                break;
-            case "DCPU_Exit":
-                // Toggle on the up.
-                if (!value) {
+                    break;
+                case "DCPU_Exit":
                     unpickItem();
-                }
-                break;
-            case "MENU_Exit":
-                // Toggle on the up.
-                if (!value) {
+                    break;
+                case "MENU_Exit":
                     unpickItem();
-                }
-                break;
-            case "GAME_Exit":
-                // Toggle on the up.
-                if (!value) {
+                    break;
+                case "GAME_TogglePointer":
+                    InputManager inputManager = ClientGlobals.app.getInputManager(); 
+                    inputManager.setCursorVisible(!inputManager.isCursorVisible());
+                    break;
+                case "GAME_Exit":
                     ClientGlobals.app.stop();
-                }
-                break;
+                    break;
+            }
         }
     }
     protected float rotationSpeed = 1f;
@@ -306,63 +197,51 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     protected void lookUp(float value) {
-        Rotation rot = Mapper.ROTATION.get(ClientGlobals.playerEntity);
+        Rotation rot = (Rotation) World.INSTANCE.getComponent(ClientGlobals.playerEntity, CompType.Rotation);
         if (rot == null) {
             return;
         }
 
-        Quaternion q = rot.getQuaternion3f();
-
-        float[] eulerAngles = q.toAngles(null);
+        float[] eulerAngles = rot.toAngles(null);
         eulerAngles[0] = FastMath.clamp(eulerAngles[0] + value, -0.9f * FastMath.HALF_PI, 0.9f * FastMath.HALF_PI);
-        eulerAngles[2] = 0f;
 
-        q.fromAngles(eulerAngles).normalizeLocal();
-
-        rot.set(q);
+        rot.fromAngles(eulerAngles);
 
         ClientGlobals.userCommand.look(rot);
     }
 
     protected void lookLeft(float value) {
-        Rotation rot = Mapper.ROTATION.get(ClientGlobals.playerEntity);
+        Rotation rot = (Rotation) World.INSTANCE.getComponent(ClientGlobals.playerEntity, CompType.Rotation);
         if (rot == null) {
             return;
         }
 
-        Quaternion q = rot.getQuaternion3f();
-        float[] eulerAngles = q.toAngles(null);
+        float[] eulerAngles = rot.toAngles(null);
         eulerAngles[1] = (eulerAngles[1] + value) % FastMath.TWO_PI;
-        eulerAngles[2] = 0f;
 
-        q.fromAngles(eulerAngles).normalizeLocal();
-        rot.set(q);
+        rot.fromAngles(eulerAngles);
 
         ClientGlobals.userCommand.look(rot);
     }
 
     protected void move(float value, boolean sideways) {
-        Rotation playerRotation = Mapper.ROTATION.get(ClientGlobals.playerEntity);
-        if (playerRotation == null) {
+        Rotation rot = (Rotation) World.INSTANCE.getComponent(ClientGlobals.playerEntity, CompType.Rotation);
+        if (rot == null) {
             return;
         }
 
-        Quaternion playerQuaternion = new Quaternion(
-                (float) playerRotation.x, (float) playerRotation.y,
-                (float) playerRotation.z, (float) playerRotation.w);
-
-        float[] eulerAngles = playerQuaternion.toAngles(null);
+        float[] eulerAngles = rot.toAngles(null);
         eulerAngles[0] = 0f;
         if (sideways) {
             eulerAngles[1] += FastMath.HALF_PI;
         }
         eulerAngles[2] = 0f;
-        playerQuaternion.fromAngles(eulerAngles).normalizeLocal();
+        Quaternion direction = new Quaternion().fromAngles(eulerAngles);
 
-        Vector3f playerMovement = new Vector3f(0, 0, value * walkSpeed);
-        playerQuaternion.multLocal(playerMovement);
+        Vector3f move = new Vector3f(0, 0, value * walkSpeed);
+        direction.multLocal(move);
 
-        ClientGlobals.userCommand.move(playerMovement.x, playerMovement.y, playerMovement.z);
+        ClientGlobals.userCommand.move(move.x, move.y, move.z);
     }
 
     private void moveShip(float x, float y, float z) {
@@ -413,13 +292,11 @@ public class CommandHandler implements AnalogListener, ActionListener {
         inputManager.addMapping("ITEM_Pick", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         inputManager.addMapping("ITEM_RightPick", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         inputManager.addMapping("GAME_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
+        inputManager.addMapping("GAME_TogglePointer", new KeyTrigger((KeyInput.KEY_F10)));
 
         inputManager.addListener(this, walkMappings);
 
-        ClientGlobals.app.enqueue(new Callable() { @Override public Object call() throws Exception {
-            ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Inherit);
-            return null;
-        }});
+        ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Inherit);
     }
 
     private void exitWalkMode() {
@@ -428,10 +305,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
         mode = CharacterMode.NONE;
         inputManager.clearMappings();
 
-        ClientGlobals.app.enqueue(new Callable() { @Override public Object call() throws Exception {
-            ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Always);
-            return null;
-        }});
+        ClientGlobals.crosshair.setCullHint(Spatial.CullHint.Always);
     }
 
     public void initDCPUMode() {
@@ -467,8 +341,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
         inputManager.addMapping("MENU_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
         inputManager.addListener(this, menuMappings);
         
-        ClientGlobals.app.getStateManager().attach(ClientGlobals.dcpuMenuState);
-        ClientGlobals.dcpuMenuState.setEnabled(true);
+        ClientGlobals.setAppStates(DCPUMenuState.class, ECSState.class);
     }
 
     private void exitMenuMode() {
@@ -476,7 +349,140 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
         mode = CharacterMode.NONE;
         inputManager.clearMappings();
-        ClientGlobals.dcpuMenuState.setEnabled(false);
-        // ClientGlobals.app.getStateManager().detach(ClientGlobals.dcpuMenuState);
+        ClientGlobals.setAppStates(ECSState.class);
+    }
+    
+    private static String[] dcpuMappings = new String[]{
+        "WALK_LookLeft",
+        "WALK_LookRight",
+        "WALK_LookUp",
+        "WALK_LookDown",
+        "DCPU_Exit",
+    };
+
+    private static String[] menuMappings = new String[]{
+        "MENU_Exit",
+    };
+
+    private static String[] walkMappings = new String[]{
+        "WALK_LookLeft",
+        "WALK_LookRight",
+        "WALK_LookUp",
+        "WALK_LookDown",
+        "WALK_MoveForward",
+        "WALK_MoveBackward",
+        "WALK_MoveLeft",
+        "WALK_MoveRight",
+        "SHIP_MoveForward",
+        "SHIP_MoveBackward",
+        "SHIP_MoveUp",
+        "SHIP_MoveDown",
+        "SHIP_MoveLeft",
+        "SHIP_MoveRight",
+        "SHIP_PitchUp",
+        "SHIP_PitchDown",
+        "SHIP_RollCW",
+        "SHIP_RollCCW",
+        "SHIP_YawLeft",
+        "SHIP_YawRight",
+        "WALK_InvertY",
+        "ITEM_Pick",
+        "ITEM_RightPick",
+        "GAME_Exit",
+        "GAME_TogglePointer",
+    };
+
+    private void pickItem(boolean right) {
+        CollisionResults results = getNodesInFrontOfCamera(); 
+ 
+        for(int i=0; i < results.size(); i++) {
+            CollisionResult closest = results.getCollision(i);
+            Log.info("%d: %s", i, closest.getGeometry().getName());
+
+            if(isForceShield(closest)) {
+                // pick goes through force shield
+                continue;
+            }
+            
+            EntityNode target = getEntityNodeAncestor(closest.getGeometry());
+            
+            if(target == null) {
+                Log.info("Action: None");
+                return;
+            }
+            Log.info(target.getName());
+            
+            if(target.eid == ClientGlobals.playerEntity) {
+                continue;
+            }
+            
+            if(!target.isUsable()) {
+                return;
+            }
+
+            if(target.isShip()) {
+                if(target.isPlayerBase()) {
+                    Vector3Int loc = getCurrentPointedBlockLocation(target.offset, closest, !right);
+                    Log.info("target: " + loc.toString());
+                    if(loc != null) {
+                        if(right) {
+                            Log.info("Action: Remove Block");
+                            ClientGlobals.userCommand.unbuild(loc);
+                            return;
+                        } else {
+                            Log.info("Action: Insert Block");
+                            ClientGlobals.userCommand.build(loc);
+                            return;
+                        }
+                    }
+                } else {
+                    Log.info("Action: Teleport");
+                    ClientGlobals.userCommand.teleport(target.eid);
+                    return;
+                }
+            } else {
+                Log.info("Action: Pick Item");
+                ClientGlobals.userCommand.pickItem(target.eid);
+                return;
+            }
+        }
+    }
+    
+    private void unpickItem() {
+        ClientGlobals.userCommand.unpickItem();
+    }
+
+    private CollisionResults getNodesInFrontOfCamera() {
+        CollisionResults results = new CollisionResults();
+        Ray ray = new Ray(ClientGlobals.cam.getLocation(), ClientGlobals.cam.getDirection());
+        ClientGlobals.rootNode.collideWith(ray, results);
+        return results;
+    }
+
+    private boolean isForceShield(CollisionResult closest) {
+        return closest.getGeometry().getName().equals("forceshield");
+    }
+
+    private EntityNode getEntityNodeAncestor(Spatial spatial) {
+        while(true) {
+            spatial = spatial.getParent();
+
+            if(spatial == ClientGlobals.rootNode) {
+                return null;
+            }
+
+            if(spatial instanceof EntityNode) {
+                EntityNode target = (EntityNode) spatial;
+                
+                return target;
+            }
+        }
+    }
+
+    private Vector3Int getCurrentPointedBlockLocation(Node node, CollisionResult closest, boolean b) {
+        Vector3f collisionContactPoint = closest.getContactPoint();
+        collisionContactPoint.subtractLocal(node.getLocalTranslation());
+        BlockTerrainControl ctrl = node.getControl(BlockTerrainControl.class);
+        return BlockNavigator.getPointedBlockLocation(ctrl, collisionContactPoint, b);
     }
 }

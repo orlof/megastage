@@ -1,76 +1,44 @@
 package org.megastage.server;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import com.artemis.managers.GroupManager;
-import com.artemis.managers.TagManager;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
-import org.megastage.components.srv.Identifier;
+import org.megastage.ecs.BaseComponent;
+import org.megastage.components.Identifier;
 import org.megastage.components.srv.InitializeFlag;
-import org.megastage.components.srv.ReplicateFlag;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
-
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:01
- */
 public class EntityFactory {
-    public static Entity create(World world, Element element, Entity parent) {
-        Entity entity = world.createEntity();
+    public static int create(World world, Element element, int parentEid) throws Exception {
+        int eid = world.createEntity();
         
         Identifier id = new Identifier();
         id.name = element.getAttributeValue("name");
-        entity.addComponent(id);
+        world.setComponent(eid, CompType.Identifier, id);
 
-        Log.info(entity.toString());
+        Log.info(id.toString() + "[" + eid + "]");
 
-        try {
-            for(Element e: element.getChildren("component")) {
-                Class clazz = Class.forName("org.megastage.components." + e.getAttributeValue("type"));
-                BaseComponent comp = (BaseComponent) clazz.newInstance();
+        for(Element e: element.getChildren("component")) {
+            Class clazz = Class.forName("org.megastage.components." + e.getAttributeValue("type"));
+            BaseComponent comp = (BaseComponent) clazz.newInstance();
+            BaseComponent[] additionalComponents = comp.init(world, parentEid, e);
 
-                BaseComponent[] additionalComponents = comp.init(world, parent, e);
-                entity.addComponent(comp);
-                Log.info(" Component: " + comp.toString());
+            Log.info(" Component: " + comp.toString());
+            world.setComponent(eid, CompType.cid(comp.getClass().getSimpleName()), comp);
 
-                if(additionalComponents != null) {
-                    for(BaseComponent c: additionalComponents) {
-                        entity.addComponent(c);
-                        Log.info(" Component: " + c.toString());
-                    }
+            if(additionalComponents != null) {
+                for(BaseComponent c: additionalComponents) {
+                    Log.info(" Component: " + c.toString());
+                    world.setComponent(eid, CompType.cid(c.getClass().getSimpleName()), c);
                 }
             }
-            entity.addComponent(new InitializeFlag());
-
-            for(Element e: element.getChildren("group")) {
-                String groupName = e.getAttributeValue("name");
-
-                world.getManager(GroupManager.class).add(entity, groupName);
-                if(groupName.equals("replicate")) {
-                    entity.addComponent(new ReplicateFlag());
-                }
-            }
-
-            for(Element e: element.getChildren("tag")) {
-                String tagName = e.getAttributeValue("name");
-                world.getManager(TagManager.class).register(tagName, entity);
-            }
-
-            entity.addToWorld();
-
-            for(Element e: element.getChildren("entity")) {
-                create(world, e, entity);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(0);
         }
-        
-        return entity;
+        world.setComponent(eid, CompType.InitializeFlag, new InitializeFlag());
+
+        for(Element e: element.getChildren("entity")) {
+            create(world, e, eid);
+        }
+
+        return eid;
     }
 }
