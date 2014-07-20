@@ -27,7 +27,7 @@ public class BackgroundRotationControl extends AbstractControl {
             return;
         }
 
-        spatial.setLocalRotation(rot.value);
+        spatial.setLocalRotation(rot.get());
     }
 
     @Override

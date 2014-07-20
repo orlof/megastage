@@ -1,6 +1,7 @@
 package org.megastage.components;
 
 import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import org.megastage.ecs.BaseComponent;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
@@ -9,7 +10,7 @@ import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 
 public class Rotation extends ReplicatedComponent {
-    public Quaternion value = Quaternion.IDENTITY;
+    private Quaternion value = new Quaternion();
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
@@ -31,5 +32,36 @@ public class Rotation extends ReplicatedComponent {
         }
 
         World.INSTANCE.setComponent(eid, CompType.Rotation, this);
+    }
+
+    public float[] toAngles(float[] angles) {
+        return value.toAngles(angles);
+    }
+
+    public void fromAngles(float[] eulerAngles) {
+        value.fromAngles(eulerAngles);
+        setDirty(true);
+    }
+
+    public Quaternion get() {
+        return value;
+    }
+
+    public Vector3f rotateLocal(Vector3f vec) {
+        return value.multLocal(vec);
+    }
+
+    public void set(Quaternion rotation) {
+        value.set(rotation);
+        setDirty(true);
+    }
+
+    public Vector3f rotate(Vector3f vec) {
+        return value.mult(vec);
+    }
+
+    public void add(Quaternion rot) {
+        value = rot.multLocal(value).normalizeLocal();
+        setDirty(true);
     }
 }

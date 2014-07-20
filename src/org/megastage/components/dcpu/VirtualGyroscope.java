@@ -2,7 +2,6 @@ package org.megastage.components.dcpu;
 
 import org.megastage.util.Log;
 import com.jme3.math.Vector3f;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.components.gfx.ShipGeometry;
@@ -11,7 +10,6 @@ import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
-import org.megastage.util.Vector3d;
 
 public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     public static transient final char STATUS_OFF = 0;
@@ -19,13 +17,11 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     public static transient final char STATUS_NO_POWER = 2;
 
     public Vector3f axis;
-
     public float maxTorque;
-    public float curTorque = 0;
-
-    public char   power = 0;
-
-    public int    mapVersion;
+    public char torque = 0;
+    public char gyroscopeId;
+    
+    public int mapVersion;
     public float inertia;
 
     @Override
@@ -34,11 +30,12 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
         setInfo(TYPE_GYRO, 0xabcd, MANUFACTORER_GENERAL_DRIVES);
 
         axis = new Vector3f(
-                getIntegerValue(element, "x", 0) & 0xf,
-                getIntegerValue(element, "y", 0) & 0xf,
-                getIntegerValue(element, "z", 1) & 0xf);
+                getFloatValue(element, "x", 0.0f),
+                getFloatValue(element, "y", 0.0f),
+                getFloatValue(element, "z", 1.0f));
         
-        maxTorque = getFloatValue(element, "torque", 100.0f);
+        maxTorque = getFloatValue(element, "max_torque", 100.0f);
+        gyroscopeId = (char) getIntegerValue(element, "gyroscope_id", 0);
         
         return null;
     }
@@ -48,42 +45,37 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
         char a = dcpu.registers[0];
 
         if (a == 0) {
-
-            setTorque(shipEID, dcpu.registers[1]);
+            setTorque(dcpu.registers[1]);
         } else if (a == 1) {
-            if(power == 0) {
+            if(torque == 0) {
                 dcpu.registers[1] = STATUS_OFF;
             } else {
                 dcpu.registers[1] = STATUS_ON;
             }
-            
-            dcpu.registers[2] = power;
+            dcpu.registers[2] = torque;
         } else if (a == 2) {
-            int x = (int) Math.round(axis.x);
-            int y = (int) Math.round(axis.y);
-            int z = (int) Math.round(axis.z);
-            char dir = (char) (((x & 0xf) << 8) | ((y & 0xf) << 4) | (z & 0xf));
-            dcpu.registers[1] = dir;
+            dcpu.registers[1] = gyroscopeId;
         }
     }
 
-    public void setTorque(int ship, char torque) {
+    public void setTorque(char torque) {
         if(torque == 0x8000) {
-            World.INSTANCE.setComponent(ship, CompType.Explosion, new Explosion());
+            World.INSTANCE.setComponent(shipEID, CompType.Explosion, new Explosion());
             return;
         } 
 
-        if(power != torque) {
-            power = torque;
-
-            float tmp = torque < 0x8000 ? torque: torque - 65536;
-            curTorque = maxTorque * tmp / 0x7fff;
+        if(this.torque != torque) {
+            this.torque = torque;
             dirty = true;
         }
     }
     
-    public double getPowerLevel() {
-        return Math.abs(curTorque / 200.0);
+    private float getTorquePower() {
+        return maxTorque * getSignedTorque() / 0x7fff;
+    }
+    
+    private int getSignedTorque() {
+        return torque < 0x8000 ? torque: torque - 65536;
     }
     
     public float getRotation(ShipGeometry geom) {
@@ -94,12 +86,12 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
             inertia = geom.getInertia(axis);
         }
         
-        return curTorque / inertia;
+        return getTorquePower() / inertia;
     }
     
     @Override
     public Message synchronize(int eid) {
-        return GyroscopeData.create(power).synchronize(eid);
+        return GyroscopeData.create(torque).synchronize(eid);
     }
     
     @Override
@@ -107,10 +99,14 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
         double intake = delta * getPowerLevel();
         if(intake > available) {
             Log.info("Not enough power: " + intake + "/" + available);
-            setTorque(ship, (char) 0);
+            setTorque((char) 0);
             intake = 0;
         }
 
         return intake;
+    }
+
+    public double getPowerLevel() {
+        return Math.abs(getSignedTorque() / 200.0f);
     }
 }

@@ -138,7 +138,7 @@ public class VirtualRadar extends DCPUHardware {
 
         // target mass
         Mass targetMass = (Mass) World.INSTANCE.getComponent(target, CompType.Mass);
-        int mass = (int) targetMass.mass;
+        int mass = (int) targetMass.value;
         //Log.info("MASS: " + mass);
 
         mem[ptr++] = (char) ((mass >> 16) & 0xffff);

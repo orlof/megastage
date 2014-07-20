@@ -27,7 +27,7 @@ public class GlobalRotationControl extends AbstractControl {
             return;
         }
 
-        spatial.setLocalRotation(rot.value.inverse());
+        spatial.setLocalRotation(rot.get().inverse());
     }
 
     @Override

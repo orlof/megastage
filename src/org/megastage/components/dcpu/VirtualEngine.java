@@ -7,24 +7,26 @@ import org.megastage.ecs.BaseComponent;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
-import org.megastage.util.Vector3d;
 
 public class VirtualEngine extends DCPUHardware implements PowerConsumer {
-    public int x, y, z;
+    public Vector3f vector;
     public float maxForce;
 
     public char power = 0;
+    public char engineId = 0;
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
         super.init(world, parentEid, element);
         setInfo(TYPE_ENGINE, 0xad3c, MANUFACTORER_GENERAL_DRIVES);
 
-        x = getIntegerValue(element, "x", 0);
-        y = getIntegerValue(element, "y", 0);
-        z = getIntegerValue(element, "z", -1);
+        vector = new Vector3f(
+                getFloatValue(element, "x", 0),
+                getFloatValue(element, "y", 0),
+                getFloatValue(element, "z", 0)).normalizeLocal();
         
-        maxForce = getFloatValue(element, "max_power", 10000.0f);
+        maxForce = getFloatValue(element, "max_force", 10000.0f);
+        engineId = (char) getIntegerValue(element, "engine_id", 0);
         
         return null;
     }
@@ -36,12 +38,9 @@ public class VirtualEngine extends DCPUHardware implements PowerConsumer {
         if (a == 0) {
             setPower(dcpu.registers[1]);
         } else if (a == 1) {
-            
             dcpu.registers[1] = power;
         } else if (a == 2) {
-            
-            char dir = (char) (((x & 0xf) << 8) | ((y & 0xf) << 4) | (z & 0xf));
-            dcpu.registers[1] = dir;
+            dcpu.registers[1] = engineId;
         }
     }
 
@@ -56,18 +55,12 @@ public class VirtualEngine extends DCPUHardware implements PowerConsumer {
         return power / 65535.0f;
     }
 
-    public Vector3f getAcceleration(float shipMass) {
-        float m = maxForce * getPowerLevel() / shipMass;
-        return new Vector3f(m * x, m * y, m * z);
+    public Vector3f getForce() {
+        return vector.mult(maxForce * getPowerLevel());
     }
 
     public boolean isActive() {
         return power != 0;
-    }
-
-    public Vector3d getForceVector() {
-        double mult = maxForce * getPowerLevel();
-        return new Vector3d(x * mult, y * mult, z * mult);
     }
 
     @Override

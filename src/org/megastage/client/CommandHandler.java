@@ -202,11 +202,10 @@ public class CommandHandler implements AnalogListener, ActionListener {
             return;
         }
 
-        float[] eulerAngles = rot.value.toAngles(null);
+        float[] eulerAngles = rot.toAngles(null);
         eulerAngles[0] = FastMath.clamp(eulerAngles[0] + value, -0.9f * FastMath.HALF_PI, 0.9f * FastMath.HALF_PI);
-        eulerAngles[2] = 0f;
 
-        rot.value.fromAngles(eulerAngles);
+        rot.fromAngles(eulerAngles);
 
         ClientGlobals.userCommand.look(rot);
     }
@@ -217,11 +216,10 @@ public class CommandHandler implements AnalogListener, ActionListener {
             return;
         }
 
-        float[] eulerAngles = rot.value.toAngles(null);
+        float[] eulerAngles = rot.toAngles(null);
         eulerAngles[1] = (eulerAngles[1] + value) % FastMath.TWO_PI;
-        eulerAngles[2] = 0f;
 
-        rot.value.fromAngles(eulerAngles);
+        rot.fromAngles(eulerAngles);
 
         ClientGlobals.userCommand.look(rot);
     }
@@ -232,7 +230,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
             return;
         }
 
-        float[] eulerAngles = rot.value.toAngles(null);
+        float[] eulerAngles = rot.toAngles(null);
         eulerAngles[0] = 0f;
         if (sideways) {
             eulerAngles[1] += FastMath.HALF_PI;

@@ -1,6 +1,5 @@
 package org.megastage.components.dcpu;
 
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
@@ -10,6 +9,7 @@ import org.megastage.ecs.CompType;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
+import org.megastage.util.Log;
 
 public abstract class DCPUHardware extends ReplicatedComponent implements Comparable<DCPUHardware> {
     public static transient final int TYPE_LEM = 0x7349F615;
@@ -114,7 +114,7 @@ public abstract class DCPUHardware extends ReplicatedComponent implements Compar
         
         Vector3f delta = targetPos.get().subtract(shipPos.get());
 
-        shipRot.value.multLocal(delta);
+        shipRot.rotateLocal(delta);
 
         double pitch = Math.atan2(delta.y, Math.sqrt(delta.x*delta.x + delta.z*delta.z));
         double yaw = Math.atan2(delta.x, -delta.z);

@@ -5,8 +5,7 @@ import java.util.Date;
 
 /**
  * A low overhead, lightweight logging system.
- *
- * @author Nathan Sweet <misc@n4te.com>
+ * Based on Nathan Sweet's minlog.
  */
 public class Log {
 
@@ -108,101 +107,112 @@ public class Log {
     }
     static private Logger logger = new Logger();
 
-    static public void error(String message, Throwable ex) {
+    static public void error(Throwable ex, String message, Object... args) {
         if (ERROR) {
-            logger.log(LEVEL_ERROR, null, message, ex);
+            message = String.format(message, args);
+            logger.log(LEVEL_INFO, message, ex);
         }
     }
 
-    static public void error(String category, String message, Throwable ex) {
+    static public void error(Throwable ex, String message) {
         if (ERROR) {
-            logger.log(LEVEL_ERROR, category, message, ex);
+            logger.log(LEVEL_ERROR, message, ex);
+        }
+    }
+
+    static public void error(Throwable ex) {
+        if (ERROR) {
+            logger.log(LEVEL_ERROR, null, ex);
+        }
+    }
+
+    static public void error(String message, Object... args) {
+        if (ERROR) {
+            message = String.format(message, args);
+            logger.log(LEVEL_ERROR, message, null);
         }
     }
 
     static public void error(String message) {
         if (ERROR) {
-            logger.log(LEVEL_ERROR, null, message, null);
+            logger.log(LEVEL_ERROR, message, null);
         }
     }
 
-    static public void error(String category, String message) {
-        if (ERROR) {
-            logger.log(LEVEL_ERROR, category, message, null);
-        }
-    }
-
-    static public void warn(String message, Throwable ex) {
+    static public void warn(Throwable ex, String message, Object... args) {
         if (WARN) {
-            logger.log(LEVEL_WARN, null, message, ex);
+            message = String.format(message, args);
+            logger.log(LEVEL_WARN, message, ex);
         }
     }
 
-    static public void warn(String category, String message, Throwable ex) {
+    static public void warn(Throwable ex, String message) {
         if (WARN) {
-            logger.log(LEVEL_WARN, category, message, ex);
+            logger.log(LEVEL_WARN, message, ex);
+        }
+    }
+
+    static public void warn(Throwable ex) {
+        if (WARN) {
+            logger.log(LEVEL_WARN, null, ex);
+        }
+    }
+
+    static public void warn(String message, Object... args) {
+        if (WARN) {
+            message = String.format(message, args);
+            logger.log(LEVEL_WARN, message, null);
         }
     }
 
     static public void warn(String message) {
         if (WARN) {
-            logger.log(LEVEL_WARN, null, message, null);
+            logger.log(LEVEL_WARN, message, null);
         }
     }
 
-    static public void warn(String category, String message) {
-        if (WARN) {
-            logger.log(LEVEL_WARN, category, message, null);
+    static public void info(String message) {
+        if (INFO) {
+            logger.log(LEVEL_INFO, message, null);
         }
     }
 
     static public void info(String message, Object... args) {
         if (INFO) {
             message = String.format(message, args);
-            logger.log(LEVEL_INFO, null, message, null);
-        }
-    }
-
-    static public void info(String message) {
-        if (INFO) {
-            logger.log(LEVEL_INFO, null, message, null);
+            logger.log(LEVEL_INFO, message, null);
         }
     }
 
     static public void mark() {
         if (INFO) {
-            logger.log(LEVEL_INFO, null, "<==", null);
+            logger.log(LEVEL_INFO, "<==", null);
         }
     }
 
-    static public void debug(String message, Throwable ex) {
+    static public void debug(String message, Object... args) {
         if (DEBUG) {
-            logger.log(LEVEL_DEBUG, null, message, ex);
-        }
-    }
-
-    static public void debug(String category, String message, Throwable ex) {
-        if (DEBUG) {
-            logger.log(LEVEL_DEBUG, category, message, ex);
+            message = String.format(message, args);
+            logger.log(LEVEL_DEBUG, message, null);
         }
     }
 
     static public void debug(String message) {
         if (DEBUG) {
-            logger.log(LEVEL_DEBUG, null, message, null);
-        }
-    }
-
-    static public void debug(String category, String message) {
-        if (DEBUG) {
-            logger.log(LEVEL_DEBUG, category, message, null);
+            logger.log(LEVEL_DEBUG, message, null);
         }
     }
 
     static public void trace(String message, Object... args) {
         if (TRACE) {
             message = String.format(message, args);
-            logger.log(LEVEL_TRACE, null, message, null);
+            logger.log(LEVEL_TRACE, message, null);
+        }
+    }
+
+    static public void trace(String message) {
+        if (TRACE) {
+            logger.log(LEVEL_TRACE, message, null);
         }
     }
 
@@ -211,31 +221,8 @@ public class Log {
 
     private static class Logger {
         private SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss.SSS");
-        private Entry last = new Entry();
         
-        private static class Entry {
-            int level;
-            String category;
-            String message;
-            Throwable ex;
-
-            public Entry() {
-            }
-
-            public Entry(int level, String category, String message, Throwable ex) {
-                this.level = level;
-                this.category = category;
-                this.message = message;
-                this.ex = ex;
-            }
-        }
-
-        public void log(int level, String category, String message, Throwable ex) {
-//            Entry entry = new Entry(level, category, message, ex);
-//            if(last.equals(entry)) {
-//                return;
-//            }
-            
+        public void log(int level, String message, Throwable ex) {
             StackTraceElement caller = Thread.currentThread().getStackTrace()[3];
 
             StringBuilder builder = new StringBuilder(256);
@@ -248,8 +235,11 @@ public class Log {
             className = className.substring(className.lastIndexOf(".") + 1);
 
             builder.append(className).append(".").append(caller.getMethodName());
-            builder.append("] ");
-            builder.append(message);
+            builder.append("]");
+            if(message != null) {
+                builder.append(' ');
+                builder.append(message);
+            }
 
             System.out.println(builder);
         }

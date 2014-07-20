@@ -26,7 +26,7 @@ public class Orbit extends ReplicatedComponent {
     @Override
     public void initialize(int eid) {
         Mass mass = (Mass) World.INSTANCE.getComponent(center, CompType.Mass);
-        angularSpeed = getAngularSpeed(mass.mass);        
+        angularSpeed = getAngularSpeed(mass.value);        
     }
     
     public float getAngularSpeed(float centerMass) {

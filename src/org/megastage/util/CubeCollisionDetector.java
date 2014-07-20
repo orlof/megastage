@@ -26,14 +26,14 @@ public class CubeCollisionDetector {
         // calculate coordinates for center of block
         // center of mass is not equal to center of block!
         Vector3f coord = new Vector3f(8,8,8).subtractLocal(geom.map.getCenterOfMass());
-        rot.value.multLocal(coord).addLocal(target.coord);
+        rot.rotateLocal(coord).addLocal(target.coord);
                 
         Bag<Block> candidates = new Bag<>(1);
         final Block block = new Block(coord, new Vector3Int(0, 0, 0));
         //Log.info(block.toString());
         candidates.add(block);
         
-        candidates = iteration(attackVector, geom.map, candidates, 16, getCoordOffsets(16, rot.value));
+        candidates = iteration(attackVector, geom.map, candidates, 16, getCoordOffsets(16, rot.get()));
 
         if(candidates.size == 0) {
             //Log.info(TargetManager.NO_HIT.toString());

@@ -9,6 +9,11 @@ public class BlockChanges extends ReplicatedComponent {
     public LinkedList<BlockChange> changes = new LinkedList<>();
 
     @Override
+    public boolean isReplicable() {
+        return false;
+    }
+    
+    @Override
     public boolean isDirty() {
         return !changes.isEmpty();
     }

@@ -113,7 +113,7 @@ public class VirtualGravitySensor extends DCPUHardware {
     private void writeFieldDataToMemory(int ship, char[] mem, char ptr, int field) {
         // target mass
         Mass mass = (Mass) World.INSTANCE.getComponent(field, CompType.Mass);
-        float sgp = (float) (mass.mass * Globals.G);
+        float sgp = (float) (mass.value * Globals.G);
         ptr = writeFloatToMemory(mem, ptr, sgp);
         ptr = writePitchAndYawToMemory(mem, ptr, ship, field);
     }

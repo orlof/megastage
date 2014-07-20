@@ -32,7 +32,7 @@ public class OrbitalMovementSystem extends Processor {
         Position position = (Position) world.getComponent(eid, CompType.Position);
         Velocity velocity = (Velocity) world.getComponent(eid, CompType.Velocity);
 
-        velocity.vector.set(localSum).subtractLocal(position.get());
+        velocity.set(localSum.subtract(position.get()));
         position.set(localSum);
     }
 

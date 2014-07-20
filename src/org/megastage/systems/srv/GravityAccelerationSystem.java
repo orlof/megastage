@@ -15,6 +15,6 @@ public class GravityAccelerationSystem extends Processor {
     protected void process(int eid) {
         Vector3f gravityField = GravityManagerSystem.INSTANCE.getGravitationalAcceleration(eid);
         Acceleration acceleration = (Acceleration) world.getComponent(eid, CompType.Acceleration);
-        acceleration.vector.addLocal(gravityField);
+        acceleration.jerk(gravityField);
     }
 }

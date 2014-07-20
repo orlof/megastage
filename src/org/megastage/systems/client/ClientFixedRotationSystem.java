@@ -23,6 +23,6 @@ public class ClientFixedRotationSystem extends Processor {
                 (float) fr.getZ(world.time)).normalizeLocal();
 
         Rotation r = (Rotation) world.getComponent(eid, CompType.Rotation);
-        r.value.set(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
+        r.set(rotation);
     }
 }

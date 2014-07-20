@@ -10,6 +10,7 @@ import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
+import org.megastage.util.Log;
 
 public class Position extends ReplicatedComponent {
     private Vector3f vector;
@@ -33,20 +34,12 @@ public class Position extends ReplicatedComponent {
     }
     
     public void set(Vector3f vec) {
-        vector.set(vec);
-        setDirty(true);
+        if(!vector.equals(vec)) {
+            vector.set(vec);
+            setDirty(true);
+        }
     }
             
-//    public void add(float x, float y, float z) {
-//        coords.addLocal(x, y, z);
-//        setDirty(true);
-//    }
-//
-    public void add(Vector3f vec) {
-        vector.addLocal(vec);
-        setDirty(true);
-    }
-
     public Vector3f getGlobalCoordinates(int eid) {
         Vector3f coord = new Vector3f(vector);
         
@@ -59,7 +52,7 @@ public class Position extends ReplicatedComponent {
                 coord = coord.subtractLocal(sg.map.getCenterOfMass());
 
                 Rotation shipRot = (Rotation) World.INSTANCE.getComponent(bindTo.parent, CompType.Rotation);
-                shipRot.value.multLocal(coord);
+                shipRot.rotateLocal(coord);
 
                 Position shipPos = (Position) World.INSTANCE.getComponent(bindTo.parent, CompType.Position);
                 coord = coord.add(shipPos.vector);
@@ -80,12 +73,19 @@ public class Position extends ReplicatedComponent {
         coord.subtractLocal(sg.map.getCenterOfMass());
 
         Rotation rot = (Rotation) World.INSTANCE.getComponent(eid, CompType.Rotation);
-        rot.value.multLocal(coord);
+        rot.rotateLocal(coord);
 
         Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
         coord.addLocal(pos.vector);
 
         return coord;
+    }
+
+    public void move(Vector3f displacement) {
+        if(displacement.lengthSquared() > 0.0f) {
+            vector.addLocal(displacement);
+            setDirty(true);
+        }
     }
 
 }

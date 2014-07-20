@@ -29,7 +29,7 @@ public class RotationControl extends AbstractControl {
             return;
         }
 
-        spatial.setLocalRotation(rot.value);
+        spatial.setLocalRotation(rot.get());
     }
 
     @Override

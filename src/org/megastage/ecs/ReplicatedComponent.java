@@ -14,6 +14,10 @@ public abstract class ReplicatedComponent extends BaseComponent {
         this.dirty = dirty;
     }
     
+    public boolean isReplicable() {
+        return true;
+    }
+    
     public Message synchronize(int eid) {
         return new Network.ComponentMessage(eid, this);
     }

@@ -8,10 +8,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Cylinder;
 import org.megastage.client.ClientGlobals;
 import org.megastage.client.JME3Material;
-import static org.megastage.client.SpatialManager.getOrCreateNode;
 import org.megastage.client.controls.EngineControl;
-import org.megastage.client.controls.PositionControl;
-import org.megastage.client.controls.RotationControl;
 
 public class EngineGeometry extends ItemGeometryComponent {
 
@@ -22,7 +19,7 @@ public class EngineGeometry extends ItemGeometryComponent {
     }
 
     private Spatial createEngine() {
-        Geometry geom = new Geometry("", new Cylinder(16, 16, 0.5f, 1, true));
+        Geometry geom = new Geometry("", new Cylinder(16, 16, 0.5f, 1.0f, true));
         JME3Material.setLightingMaterial(geom, ColorRGBA.Gray);
         return geom;
     }

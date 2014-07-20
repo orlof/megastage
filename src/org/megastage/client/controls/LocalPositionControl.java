@@ -13,7 +13,7 @@ import org.megastage.ecs.World;
 public class LocalPositionControl extends AbstractControl {
     private final int eid;
     private double interpolationTime, synchTime, nextSyncTime, interpolationStartTime;
-    private Vector3f spos, epos;
+    private Vector3f spos = Vector3f.ZERO, epos = Vector3f.ZERO;
 
     public LocalPositionControl(int eid) {
         this.eid = eid; 

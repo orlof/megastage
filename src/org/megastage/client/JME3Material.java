@@ -2,6 +2,7 @@ package org.megastage.client;
 
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.texture.Texture;
 
@@ -59,8 +60,8 @@ public class JME3Material {
         return mat;
     }
     
-    public static void setTexturedMaterial(Spatial spatial, ColorRGBA color, String filename) {
-        spatial.setMaterial(getTexturedMaterial(color, filename));
+    public static void setTexturedMaterial(Geometry geom, ColorRGBA color, String filename) {
+        geom.setMaterial(getTexturedMaterial(color, filename));
     }
 
     public static Texture getTexture(String name) {

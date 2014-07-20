@@ -10,7 +10,6 @@ import org.megastage.ecs.World;
 import org.megastage.server.GravityField;
 import org.megastage.util.Bag;
 import org.megastage.util.Globals;
-import org.megastage.util.Vector3d;
 
 public class GravityManagerSystem extends Processor {
     public static GravityManagerSystem INSTANCE;
@@ -84,19 +83,19 @@ public class GravityManagerSystem extends Processor {
 
     public float getStandardGravitationalParameter(int eid) {
         Mass mass = (Mass) world.getComponent(eid, CompType.Mass);
-        return mass.mass * Globals.G;
+        return mass.value * Globals.G;
     }
 
     public void writeOrbitalStateVectorToMemory(char[] mem, char ptr, int reference, int ship, boolean ieee754) {
         Position shipPos = (Position) world.getComponent(ship, CompType.Position);
         Vector3f shipCoord = shipPos.get();
         Velocity shipVel = (Velocity) world.getComponent(ship, CompType.Velocity);
-        Vector3f shipVelVec = shipVel.vector;
+        Vector3f shipVelVec = shipVel.get();
 
         Position refPos = (Position) world.getComponent(reference, CompType.Position);
         Vector3f refCoord = refPos.get();
         Velocity refVel = (Velocity) world.getComponent(reference, CompType.Velocity);
-        Vector3f refVelVec = refVel.vector;
+        Vector3f refVelVec = refVel.get();
         
         Vector3f coord = shipCoord.subtract(refCoord);
         Vector3f veloc = shipVelVec.subtract(refVelVec);

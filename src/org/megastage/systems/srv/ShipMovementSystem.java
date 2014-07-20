@@ -3,7 +3,6 @@ package org.megastage.systems.srv;
 import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
 import org.megastage.util.Log;
-import com.jme3.math.Vector3f;
 import org.megastage.components.*;
 import org.megastage.components.srv.Acceleration;
 import org.megastage.components.Velocity;
@@ -24,10 +23,10 @@ public class ShipMovementSystem extends Processor {
             Log.info("[%d] %s / %s / %s", eid, position, velocity, acceleration);
         }
         
-        position.add(velocity.vector.mult(world.delta / 2.0f));
-        velocity.vector.addLocal(acceleration.vector.mult(world.delta));
-        position.add(velocity.vector.mult(world.delta / 2.0f));
+        position.move(velocity.getDisplacement(world.delta / 2.0f));
+        velocity.accelerate(acceleration.getDeltaV(world.delta));
+        position.move(velocity.getDisplacement(world.delta / 2.0f));
         
-        acceleration.vector = Vector3f.ZERO;
+        acceleration.zero();
     }
 }

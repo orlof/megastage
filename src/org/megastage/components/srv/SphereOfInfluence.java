@@ -35,7 +35,7 @@ public class SphereOfInfluence extends BaseComponent {
                 priority++;
             }
 
-            radius = calculateSOI(orbit.distance, mass.mass, centerMass.mass);
+            radius = calculateSOI(orbit.distance, mass.value, centerMass.value);
         }
     }
 

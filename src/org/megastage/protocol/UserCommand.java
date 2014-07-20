@@ -9,7 +9,7 @@ import org.megastage.util.ID;
 
 public class UserCommand {
     public Vector3f move = new Vector3f();
-    public Quaternion rot;
+    public Quaternion rot = new Quaternion();
     public transient int count;
 
     public Keyboard keyboard = new Keyboard();
@@ -61,7 +61,7 @@ public class UserCommand {
     }
     
     public void look(Rotation rot) {
-        this.rot = new Quaternion(rot.value);
+        this.rot.set(rot.get());
         count++;
     }
 

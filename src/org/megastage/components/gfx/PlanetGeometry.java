@@ -71,7 +71,7 @@ public class PlanetGeometry extends CelestialGeometryComponent {
             Geometry geom = createSphere(radius);
 
             ColorRGBA col = (ColorRGBA) ColorRGBA.class.getDeclaredField(this.color).get(null);
-            JME3Material.setTexturedMaterial(geom, col, "Textures/rock.jpg");
+            JME3Material.setTexturedMaterial(geom, col, "rock.jpg");
             
             return geom;
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {

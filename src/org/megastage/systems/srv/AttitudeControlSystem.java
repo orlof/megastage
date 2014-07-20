@@ -17,7 +17,7 @@ public class AttitudeControlSystem extends Processor {
     @Override
     protected void process(int eid) {
         VirtualGyroscope gyro = (VirtualGyroscope) world.getComponent(eid, CompType.VirtualGyroscope);
-        if(gyro.power == 0) return;
+        if(gyro.torque == 0) return;
 
         ShipGeometry geom = (ShipGeometry) world.getComponent(gyro.shipEID, CompType.ShipGeometry);
         if(geom == null) return;
@@ -25,13 +25,10 @@ public class AttitudeControlSystem extends Processor {
         float angle = gyro.getRotation(geom) * world.delta;
         
         Rotation rotation = (Rotation) world.getComponent(gyro.shipEID, CompType.Rotation);
-        Quaternion shipRotation = rotation.value;
 
-        Vector3f axis = shipRotation.mult(gyro.axis);
+        Vector3f axis = rotation.rotate(gyro.axis);
 
         Quaternion gyroRotation = new Quaternion().fromAngleAxis(angle, axis);
-        shipRotation = gyroRotation.mult(shipRotation).normalizeLocal();
-        
-        rotation.value = shipRotation;
+        rotation.add(gyroRotation);
     }
 }

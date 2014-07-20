@@ -33,7 +33,7 @@ public class TargetManagerSystem extends Processor {
         Rotation shipRot = (Rotation) world.getComponent(ship, CompType.Rotation);
         Rotation wpnRot = (Rotation) world.getComponent(vtlEntity, CompType.Rotation);
         
-        Vector3f attackVector = shipRot.value.multLocal(wpnRot.value.multLocal(new Vector3f(0.0f, 0.0f, -1.0f)));
+        Vector3f attackVector = shipRot.rotateLocal(wpnRot.rotateLocal(new Vector3f(0.0f, 0.0f, -1.0f)));
         
         //Log.info(attackVector.toString());
         //Vector3d attackVector = shipVector.multiply(weaponAngle);

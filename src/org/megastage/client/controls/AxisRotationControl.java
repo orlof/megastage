@@ -34,7 +34,7 @@ public class AxisRotationControl extends AbstractControl {
             return;
         }
 
-        rot.value.toAngles(angles);
+        rot.toAngles(angles);
             
         if(!x) angles[0] = 0;
         if(!y) angles[1] = 0;

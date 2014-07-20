@@ -1,5 +1,6 @@
 package org.megastage.components.gfx;
     
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -32,7 +33,7 @@ public class GyroscopeGeometry extends ItemGeometryComponent {
     private Spatial createWheel(int eid) {
         Geometry wheel = new Geometry("wheel", new Cylinder(5, 5, 0.35f, 0.35f, 0.45f, true, false));
         wheel.setLocalRotation(new Quaternion().fromAngles(angleX, angleY, angleZ));
-        JME3Material.setBasicMaterial(wheel, "rock09.jpg");
+        JME3Material.setTexturedMaterial(wheel, ColorRGBA.Gray, "rock09.jpg");
 
         wheel.addControl(new GyroscopeControl(eid));
         

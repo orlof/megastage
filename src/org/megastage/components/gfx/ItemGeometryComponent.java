@@ -1,5 +1,6 @@
 package org.megastage.components.gfx;
 
+import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -31,9 +32,9 @@ public abstract class ItemGeometryComponent extends ReplicatedComponent {
     }
 
     protected Spatial createBase() {
-        Geometry node = new Geometry("base", new Box(0.5F, 0.05F, 0.5F));
-        JME3Material.setBasicMaterial(node, "rock09.jpg");
-        node.setLocalTranslation(0, -0.45F, 0);
-        return node;
+        Geometry geom = new Geometry("base", new Box(0.5F, 0.05F, 0.5F));
+        JME3Material.setTexturedMaterial(geom, ColorRGBA.Gray, "rock09.jpg");
+        geom.setLocalTranslation(0, -0.45F, 0);
+        return geom;
     }
 }

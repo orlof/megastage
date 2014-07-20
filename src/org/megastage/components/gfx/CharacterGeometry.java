@@ -1,10 +1,23 @@
 package org.megastage.components.gfx;
 
+import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Quad;
+import com.jme3.texture.Image;
+import com.jme3.texture.Texture;
+import com.jme3.texture.Texture2D;
+import com.jme3.texture.image.ImageRaster;
+import com.jme3.texture.plugins.AWTLoader;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
 import org.megastage.ecs.BaseComponent;
@@ -15,6 +28,7 @@ import org.megastage.client.controls.AxisRotationControl;
 import org.megastage.client.controls.LocalPositionControl;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
+import org.megastage.util.Picture;
 
 
 public class CharacterGeometry extends ReplicatedComponent {
@@ -64,11 +78,39 @@ public class CharacterGeometry extends ReplicatedComponent {
         head.addControl(headRotationControl);
         
         head.attachChild(geom);
+        
+        head.attachChild(createFace());
 
         if(eid == ClientGlobals.playerEntity) {
             head.attachChild(ClientGlobals.camNode);
         }
         
         return head;
+    }
+
+    private Spatial createFace() {
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(new File("assets/Textures/smiley.png"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        Image img2 = new AWTLoader().load(img, true);
+        
+        Texture2D tex = new Texture2D(img2);
+        tex.setMagFilter(Texture.MagFilter.Nearest);
+        tex.setMinFilter(Texture.MinFilter.Trilinear);
+
+        Material mat = JME3Material.getBasicMaterial("Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setTexture("ColorMap", tex);
+
+        Quad quad = new Quad(0.5f, 0.5f);
+
+        Geometry geom = new Geometry("face");
+        geom.setMesh(quad);
+        geom.setMaterial(mat);
+        geom.setLocalTranslation(0.0f, 0.0f, 0.3f);
+        return geom;
     }
 }

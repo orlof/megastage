@@ -149,9 +149,11 @@ public class NetworkSystem extends Processor {
         Bag<Message> list = new Bag<>(20);
 
         for(ReplicatedComponent comp = world.compIter(eid, ReplicatedComponent.class); comp != null; comp=world.compNext()) {
-            Log.info(comp.toString());
-            Message msg = comp.synchronize(eid);
-            list.add(msg);
+            if(comp.isReplicable()) {
+                Log.info(comp.toString());
+                Message msg = comp.synchronize(eid);
+                list.add(msg);
+            }
         }
 
         if(list.size() > 0) {
@@ -323,24 +325,24 @@ public class NetworkSystem extends Processor {
         if((collision & 2) != 0) {
             cmd.move.setZ(0.0f);
         }
-        pos.add(cmd.move);
+        pos.move(cmd.move);
     }
 
     private void updatePlayerRotation(int player, UserCommand cmd) {
         Rotation rot = (Rotation) world.getComponent(player, CompType.Rotation);
-        rot.value = cmd.rot;
+        rot.set(cmd.rot);
     }
 
     private void updateShip(int ship, UserCommand cmd) {
         Rotation shipRotation = (Rotation) world.getComponent(ship, CompType.Rotation);
-        Quaternion shipRotationQuaternion = shipRotation.value;
+        Quaternion shipRotationQuaternion = shipRotation.get();
 
-        Vector3f vel = shipRotationQuaternion.multLocal(new Vector3f(cmd.ship.left, cmd.ship.up, cmd.ship.forward));
+        Vector3f vel = shipRotation.rotateLocal(new Vector3f(cmd.ship.left, cmd.ship.up, cmd.ship.forward));
 
-        vel.multLocal(10e4f);
+        vel.multLocal(4.0f);
 
         Position shipPos = (Position) world.getComponent(ship, CompType.Position);
-        shipPos.add(vel);
+        shipPos.move(vel);
 
         // rotate rotation axis by fixedEntity rotation
         Vector3f yAxis = shipRotationQuaternion.multLocal(new Vector3f(0, 1, 0));
@@ -356,7 +358,7 @@ public class NetworkSystem extends Processor {
         shipRotationQuaternion = zRotation.multLocal(shipRotationQuaternion).normalizeLocal();
         shipRotationQuaternion = xRotation.multLocal(shipRotationQuaternion).normalizeLocal();
 
-        shipRotation.value.set(shipRotationQuaternion);
+        shipRotation.set(shipRotationQuaternion);
         shipRotation.setDirty(true);
     }
 
