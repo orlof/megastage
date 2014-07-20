@@ -24,6 +24,7 @@ import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 import org.megastage.util.Cube3dMap;
+import org.megastage.util.Log;
 
 
 public class ShipGeometry extends ReplicatedComponent {
@@ -53,6 +54,7 @@ public class ShipGeometry extends ReplicatedComponent {
 
         initGeometry(node.offset, eid);
         node.setOffset(map.getCenterOfMass());
+        Log.info(map.getCenterOfMass().toString());
 
         ClientGlobals.globalRotationNode.attachChild(node);
     }

@@ -18,7 +18,8 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
 
     public Vector3f axis;
     public float maxTorque;
-    public char torque = 0;
+
+    public char value = 0;
     public char gyroscopeId;
     
     public int mapVersion;
@@ -45,53 +46,54 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
         char a = dcpu.registers[0];
 
         if (a == 0) {
-            setTorque(dcpu.registers[1]);
+            setValue(dcpu.registers[1]);
         } else if (a == 1) {
-            if(torque == 0) {
+            if(value == 0) {
                 dcpu.registers[1] = STATUS_OFF;
             } else {
                 dcpu.registers[1] = STATUS_ON;
             }
-            dcpu.registers[2] = torque;
+            dcpu.registers[2] = value;
         } else if (a == 2) {
             dcpu.registers[1] = gyroscopeId;
         }
     }
 
-    public void setTorque(char torque) {
-        if(torque == 0x8000) {
+    public void setValue(char value) {
+        if(value == 0x8000) {
             World.INSTANCE.setComponent(shipEID, CompType.Explosion, new Explosion());
             return;
         } 
 
-        if(this.torque != torque) {
-            this.torque = torque;
+        if(this.value != value) {
+            this.value = value;
             dirty = true;
         }
     }
     
-    private float getTorquePower() {
-        return maxTorque * getSignedTorque() / 0x7fff;
+    private float getTorque() {
+        return maxTorque * getSignedValue() / 0x7fff;
     }
     
-    private int getSignedTorque() {
-        return torque < 0x8000 ? torque: torque - 65536;
+    private int getSignedValue() {
+        return value < 0x8000 ? value: value - 65536;
     }
     
-    public float getRotation(ShipGeometry geom) {
+    public float getAngularSpeed(ShipGeometry geom) {
         if(mapVersion < geom.map.version) {
             //TODO this is huge perf problem, inertia change should be 
             //     calculated only for changed block
+            // TODO allow only three possible axis
             mapVersion = geom.map.version;
             inertia = geom.getInertia(axis);
         }
         
-        return getTorquePower() / inertia;
+        return getTorque() / inertia;
     }
     
     @Override
     public Message synchronize(int eid) {
-        return GyroscopeData.create(torque).synchronize(eid);
+        return GyroscopeData.create(getSignedValue()).synchronize(eid);
     }
     
     @Override
@@ -99,7 +101,7 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
         double intake = delta * getPowerLevel();
         if(intake > available) {
             Log.info("Not enough power: " + intake + "/" + available);
-            setTorque((char) 0);
+            setValue((char) 0);
             intake = 0;
         }
 
@@ -107,6 +109,6 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     }
 
     public double getPowerLevel() {
-        return Math.abs(getSignedTorque() / 200.0f);
+        return Math.abs(getSignedValue() / 200.0f);
     }
 }

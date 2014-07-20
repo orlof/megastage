@@ -32,7 +32,7 @@ public abstract class ItemGeometryComponent extends ReplicatedComponent {
     }
 
     protected Spatial createBase() {
-        Geometry geom = new Geometry("base", new Box(0.5F, 0.05F, 0.5F));
+        Geometry geom = new Geometry("base", new Box(0.5f, 0.05f, 0.5f));
         JME3Material.setTexturedMaterial(geom, ColorRGBA.Gray, "rock09.jpg");
         geom.setLocalTranslation(0, -0.45F, 0);
         return geom;

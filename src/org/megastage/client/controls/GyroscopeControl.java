@@ -13,7 +13,7 @@ import org.megastage.ecs.World;
 public class GyroscopeControl extends AbstractControl {
     private final int eid;
     
-    private char power = 0;
+    private int signedValue = 0;
     private float angularSpeed = 0;
 
     private AudioNode an;
@@ -29,17 +29,17 @@ public class GyroscopeControl extends AbstractControl {
         GyroscopeData data = (GyroscopeData) World.INSTANCE.getComponent(eid, CompType.GyroscopeData);
         assert data != null;
 
-        if(power != data.power) {
-            if(power == 0) {
+        if(signedValue != data.signedValue) {
+            if(signedValue == 0) {
                 an.play();
             }
 
-            power = data.power;
+            signedValue = data.signedValue;
             angularSpeed = 5.0f * data.getAngularSpeed();
 
             an.setVolume(Math.abs(angularSpeed) * 2);
             
-            if(power == 0) {
+            if(signedValue == 0) {
                 an.pause();
             }
             

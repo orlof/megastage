@@ -19,7 +19,7 @@ public class EntityNode extends Node {
     }
     
     public void setOffset(Vector3f val) {
-        offset.setLocalTranslation(val);
+        offset.setLocalTranslation(val.negateLocal());
     }
 
     public boolean isUsable() {

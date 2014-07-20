@@ -11,15 +11,16 @@ import org.megastage.client.JME3Material;
 import org.megastage.client.controls.GyroscopeControl;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
+import org.megastage.util.Log;
 
 public class GyroscopeGeometry extends ItemGeometryComponent {
-    public float angleX, angleY, angleZ;
+    private float x, y, z;
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
-        angleX = (float) Math.toRadians(getDoubleValue(element, "angle_x", 0.0));
-        angleY = (float) Math.toRadians(getDoubleValue(element, "angle_y", 0.0));
-        angleZ = (float) Math.toRadians(getDoubleValue(element, "angle_z", 0.0));
+        x = (float) Math.toRadians(getFloatValue(element, "x", 0.0f));
+        y = (float) Math.toRadians(getFloatValue(element, "y", 0.0f));
+        z = (float) Math.toRadians(getFloatValue(element, "z", 0.0f));
         
         return null;
     }
@@ -31,8 +32,9 @@ public class GyroscopeGeometry extends ItemGeometryComponent {
     }
     
     private Spatial createWheel(int eid) {
+        Log.mark();
         Geometry wheel = new Geometry("wheel", new Cylinder(5, 5, 0.35f, 0.35f, 0.45f, true, false));
-        wheel.setLocalRotation(new Quaternion().fromAngles(angleX, angleY, angleZ));
+        wheel.setLocalRotation(new Quaternion().fromAngles(x, y, z));
         JME3Material.setTexturedMaterial(wheel, ColorRGBA.Gray, "rock09.jpg");
 
         wheel.addControl(new GyroscopeControl(eid));

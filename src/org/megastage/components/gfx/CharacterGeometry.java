@@ -10,13 +10,10 @@ import com.jme3.scene.shape.Quad;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
-import com.jme3.texture.image.ImageRaster;
 import com.jme3.texture.plugins.AWTLoader;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
@@ -28,7 +25,6 @@ import org.megastage.client.controls.AxisRotationControl;
 import org.megastage.client.controls.LocalPositionControl;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
-import org.megastage.util.Picture;
 
 
 public class CharacterGeometry extends ReplicatedComponent {
@@ -110,7 +106,7 @@ public class CharacterGeometry extends ReplicatedComponent {
         Geometry geom = new Geometry("face");
         geom.setMesh(quad);
         geom.setMaterial(mat);
-        geom.setLocalTranslation(0.0f, 0.0f, 0.3f);
+        geom.setLocalTranslation(-0.25f, -0.25f, 0.3f);
         return geom;
     }
 }

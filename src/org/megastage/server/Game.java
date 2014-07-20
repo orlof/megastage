@@ -6,6 +6,7 @@ import org.megastage.systems.srv.CleanupSystem;
 import org.megastage.systems.srv.NetworkSystem;
 import org.jdom2.Element;
 import org.megastage.ecs.World;
+import org.megastage.systems.srv.AttitudeControlSystem;
 import org.megastage.systems.srv.EngineAccelerationSystem;
 import org.megastage.systems.srv.EntityInitializeSystem;
 import org.megastage.systems.srv.ShipMovementSystem;
@@ -26,7 +27,7 @@ public class Game {
 //        world.addProcessor(new OrbitalMovementSystem(world, 0));
 
           world.addProcessor(new EngineAccelerationSystem(world, 0));
-//        world.addProcessor(new AttitudeControlSystem(world, 0));
+          world.addProcessor(new AttitudeControlSystem(world, 0));
         //world.addProcessor(new GravityAccelerationSystem(world, ));
 
           world.addProcessor(new ShipMovementSystem(world, 0));

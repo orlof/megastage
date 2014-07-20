@@ -17,12 +17,12 @@ public class AttitudeControlSystem extends Processor {
     @Override
     protected void process(int eid) {
         VirtualGyroscope gyro = (VirtualGyroscope) world.getComponent(eid, CompType.VirtualGyroscope);
-        if(gyro.torque == 0) return;
+        if(gyro.value == 0) return;
 
         ShipGeometry geom = (ShipGeometry) world.getComponent(gyro.shipEID, CompType.ShipGeometry);
         if(geom == null) return;
         
-        float angle = gyro.getRotation(geom) * world.delta;
+        float angle = gyro.getAngularSpeed(geom) * world.delta;
         
         Rotation rotation = (Rotation) world.getComponent(gyro.shipEID, CompType.Rotation);
 
