@@ -17,6 +17,16 @@ public class VirtualPPS extends DCPUHardware {
     }
 
     @Override
+    public boolean isDirty() {
+        return false;
+    }
+    
+    @Override
+    public boolean isReplicable() {
+        return false;
+    }
+
+    @Override
     public void interrupt(DCPU dcpu) {
         Log.info("" + (int) dcpu.registers[0]);
         switch(dcpu.registers[0]) {

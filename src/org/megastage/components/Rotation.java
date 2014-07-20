@@ -52,8 +52,10 @@ public class Rotation extends ReplicatedComponent {
     }
 
     public void set(Quaternion rotation) {
-        value.set(rotation);
-        setDirty(true);
+        if(!value.equals(rotation)) {
+            value.set(rotation);
+            setDirty(true);
+        }
     }
 
     public Vector3f rotate(Vector3f vec) {

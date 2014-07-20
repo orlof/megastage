@@ -22,5 +22,4 @@ public class PPSGeometry extends ItemGeometryComponent {
 
         return spinner;
     }
-
 }

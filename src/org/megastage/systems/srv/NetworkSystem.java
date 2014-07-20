@@ -197,8 +197,6 @@ public class NetworkSystem extends Processor {
         // TODO check player mode
         if(connection.player == 0) return;
         
-        if(cmd.build != null || cmd.unbuild != null) Log.info(cmd.toString());
-        
         BindTo bindTo = (BindTo) world.getComponent(connection.player, CompType.BindTo);
         if(bindTo.parent == 0) return;
 
@@ -345,6 +343,8 @@ public class NetworkSystem extends Processor {
         shipPos.move(vel);
 
         // rotate rotation axis by fixedEntity rotation
+        // this code is crazy - does it even work?
+        // luckily this is only for debugging
         Vector3f yAxis = shipRotationQuaternion.multLocal(new Vector3f(0, 1, 0));
         Quaternion yRotation = new Quaternion().fromAngleAxis(cmd.ship.yaw, yAxis);
 
@@ -456,7 +456,6 @@ public class NetworkSystem extends Processor {
                 if(comp.isDirty()) {
                     // Log.info(format("[%d] %s", eid, comp));
                     comp.setDirty(false);
-
                     Message msg = comp.synchronize(eid);
                     update.add(msg);
                 }

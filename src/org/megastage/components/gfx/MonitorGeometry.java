@@ -52,7 +52,7 @@ public class MonitorGeometry extends ItemGeometryComponent {
 
         Geometry geom = new Geometry("LEM panel", new Quad(width-0.2f, height-0.2f, true));
         geom.setMaterial(mat);
-        geom.setLocalTranslation(0.0f, 0.0f, 0.5f);
+        geom.setLocalTranslation(0.1f, 0.1f, 0.5f);
 
         ClientRaster rasterComponent = World.INSTANCE.getOrCreateComponent(eid, CompType.ClientRaster, ClientRaster.class);
         rasterComponent.raster = raster;
