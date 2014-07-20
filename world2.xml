@@ -238,6 +238,125 @@
         </entity>
     </entity>
 
+    <entity name="Cylon Raider">
+        <component type="srv.SynchronizeFlag"/>
+        <component type="Position" x="-50" y="0" z="10000"/>
+        <component type="Rotation"/>
+        <!--component type="srv.AffectedByGravityFlag"/-->
+        <component type="Velocity"/>
+        <component type="srv.Acceleration"/>
+        <component type="srv.SpawnPoint"  x="6.5" y="1.5" z="2.5"/>
+        <!--component type="srv.RadarEcho" echo="0"/-->
+        <component type="UsableFlag"/>
+        <component type="gfx.ShipGeometry">
+          <map y="0" x="0123456789012345"/>
+            <map z="00">     ###     </map>
+            <map z="01">   #######   </map>
+            <map z="02"> ########### </map>
+            <map z="03">#############</map>
+            <map z="04"># ######### #</map>
+          <map y="1" x="012345678901234"/>
+            <map z="00">      C      </map>
+            <map z="01">             </map>
+            <map z="02">             </map>
+            <map z="03">             </map>
+            <map z="04">#  E GGG E  #</map>
+          <map y="2" x="012345678901234"/>
+            <map z="00">      L      </map>
+            <map z="01">             </map>
+            <map z="02">             </map>
+            <map z="03">             </map>
+            <map z="04">P           R</map>
+        </component>
+        <!--component type="Mass" mass="1e6"/-->
+        <entity name="DCPU">
+            <component type="Position"/>
+            <component type="Rotation"/>
+            <component type="srv.SynchronizeFlag"/>
+            <component type="gfx.VoidGeometry"/>
+            <component type="gfx.BindTo"/>
+            <component type="dcpu.DCPU" bootrom="media/bootrom.bin"/>
+            <entity name="Floppy">
+                <component type="Position" x="6.5" y="1.5" z="0.5"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualFloppyDrive" media="data"/>
+                <component type="gfx.FloppyDriveGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="UsableFlag"/>
+                <component type="srv.SynchronizeFlag"/>
+            </entity>
+            <entity name="LEM">
+                <component type="Position" x="6.5" y="2.5" z="0.5"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="dcpu.VirtualMonitor"/>
+                <component type="gfx.MonitorGeometry" width="1" height="1"/>
+                <component type="gfx.BindTo"/>
+                <component type="UsableFlag"/>
+                <component type="srv.SynchronizeFlag"/>
+            </entity>
+            <entity name="Generic Keyboard">
+                <component type="dcpu.VirtualKeyboard"/>
+                <component type="gfx.BindTo"/>
+            </entity>
+            <entity name="Clock">
+                <component type="dcpu.VirtualClock"/>
+                <component type="gfx.BindTo"/>
+            </entity>
+            <entity name="Engine">
+                <!-- engine vector specifies the direction of ship acceleration.
+                     relative to ship's starting orientation (heading +z) -->
+                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_force="10000" engine_id="2"/>
+                <component type="Position" x="3.5" y="1.5" z="4.5"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="gfx.EngineGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="srv.SynchronizeFlag"/>
+            </entity>
+            <entity name="Engine">
+                <!-- engine vector specifies the direction of ship acceleration.
+                     relative to ship's starting orientation (heading +z) -->
+                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_force="10000" engine_id="1"/>
+                <component type="Position" x="9.5" y="1.5" z="4.5"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="gfx.EngineGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="srv.SynchronizeFlag"/>
+            </entity>
+            <entity name="Gyroscope-X">
+                <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" max_torque="600000" gyroscope_id="256"/>
+                <component type="gfx.GyroscopeGeometry" x="0" y="-90" z="0"/>
+                <component type="gfx.BindTo"/>
+                <component type="Position" x="5.5" y="1.5" z="4.5"/>
+                <component type="Rotation"/>
+                <component type="srv.SynchronizeFlag"/>
+            </entity>
+            <entity name="Gyroscope-Y">
+                <component type="dcpu.VirtualGyroscope" x="0" y="1" z="0" max_torque="2000000" gyroscope_id="16"/>
+                <component type="gfx.GyroscopeGeometry" x="90" y="0" z="0"/>
+                <component type="gfx.BindTo"/>
+                <component type="Position" x="6.5" y="1.5" z="4.5"/>
+                <component type="srv.SynchronizeFlag"/>
+                <component type="Rotation"/>
+            </entity>
+            <entity name="Gyroscope-Z">
+                <component type="dcpu.VirtualGyroscope" x="0" y="0" z="1" max_torque="1600000" gyroscope_id="1"/>
+                <component type="gfx.GyroscopeGeometry" x="0" y="180" z="0"/>
+                <component type="gfx.BindTo"/>
+                <component type="Position" x="7.5" y="1.5" z="4.5"/>
+                <component type="srv.SynchronizeFlag"/>
+                <component type="Rotation"/>
+            </entity>
+            <entity name="PPS">
+                <component type="dcpu.VirtualPPS"/>
+                <component type="gfx.PPSGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="Position" x="0.5" y="2.5" z="4.5"/>
+                <component type="Rotation"/>
+                <component type="srv.SynchronizeFlag"/>
+            </entity>
+        </entity>
+    </entity>
+
     <entity-template name="Player">
         <component type="Mode"/>
         <component type="Position" x="0" y="0" z="0"/>
