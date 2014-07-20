@@ -305,7 +305,7 @@
             <entity name="Engine">
                 <!-- engine vector specifies the direction of ship acceleration.
                      relative to ship's starting orientation (heading +z) -->
-                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_force="10000" engine_id="2"/>
+                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_force="20000" engine_id="2"/>
                 <component type="Position" x="3.5" y="1.5" z="4.5"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="gfx.EngineGeometry"/>
@@ -315,7 +315,7 @@
             <entity name="Engine">
                 <!-- engine vector specifies the direction of ship acceleration.
                      relative to ship's starting orientation (heading +z) -->
-                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_force="10000" engine_id="1"/>
+                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_force="20000" engine_id="1"/>
                 <component type="Position" x="9.5" y="1.5" z="4.5"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="gfx.EngineGeometry"/>
@@ -323,7 +323,7 @@
                 <component type="srv.SynchronizeFlag"/>
             </entity>
             <entity name="Gyroscope-X">
-                <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" max_torque="600000" gyroscope_id="256"/>
+                <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" max_torque="300000" gyroscope_id="256"/>
                 <component type="gfx.GyroscopeGeometry" x="0" y="-90" z="0"/>
                 <component type="gfx.BindTo"/>
                 <component type="Position" x="5.5" y="1.5" z="4.5"/>
@@ -331,7 +331,7 @@
                 <component type="srv.SynchronizeFlag"/>
             </entity>
             <entity name="Gyroscope-Y">
-                <component type="dcpu.VirtualGyroscope" x="0" y="1" z="0" max_torque="2000000" gyroscope_id="16"/>
+                <component type="dcpu.VirtualGyroscope" x="0" y="1" z="0" max_torque="1000000" gyroscope_id="16"/>
                 <component type="gfx.GyroscopeGeometry" x="90" y="0" z="0"/>
                 <component type="gfx.BindTo"/>
                 <component type="Position" x="6.5" y="1.5" z="4.5"/>
@@ -339,7 +339,7 @@
                 <component type="Rotation"/>
             </entity>
             <entity name="Gyroscope-Z">
-                <component type="dcpu.VirtualGyroscope" x="0" y="0" z="1" max_torque="1600000" gyroscope_id="1"/>
+                <component type="dcpu.VirtualGyroscope" x="0" y="0" z="1" max_torque="800000" gyroscope_id="1"/>
                 <component type="gfx.GyroscopeGeometry" x="0" y="180" z="0"/>
                 <component type="gfx.BindTo"/>
                 <component type="Position" x="7.5" y="1.5" z="4.5"/>

@@ -37,7 +37,7 @@ Interrupt behavior:
     2: GET_ENGINE_ID
        ENGINE_ID is unique identifier for every installed engine within
        a ship. See ship's reference manual to deduct acceleration vector 
-       from ENGINE_ID.
+       for non-standard engine installations.
 
        ENGINE_ID is set to B register.
 
@@ -53,11 +53,12 @@ Interrupt behavior:
 ----! ENGINE CODES !------------------------------------------------------------
     '--------------'
   
-0x1000 - 0x1fff Forward acceleration
-0x9000 - 0x9fff Backward acceleration
-0x2000 - 0x2fff Left acceleration
-0xa000 - 0xafff Right acceleration
-0x4000 - 0x4fff Up acceleration
-0xc000 - 0xcfff Down acceleration
+0x0000 - 0x0fff Forward acceleration
+0x8000 - 0x8fff Backward acceleration
+0x1000 - 0x1fff Left acceleration
+0x9000 - 0x9fff Right acceleration
+0x2000 - 0x2fff Up acceleration
+0xa000 - 0xafff Down acceleration
 
-0x0000 - 0x0fff Non-standard orientation
+0x4000 - 0x4fff Non-standard orientation
+0xc000 - 0xcfff Non-standard orientation
