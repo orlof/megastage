@@ -27,16 +27,18 @@ import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.style.Styles;
 import org.megastage.client.controls.BackgroundRotationControl;
 import org.megastage.client.controls.GlobalRotationControl;
+import org.megastage.util.CmdLineParser;
 
 public class Main extends SimpleApplication {
 
     public static void main(String[] args) {
-        if(args.length > 0) {
-            ClientGlobals.serverHost = args[0];
-        }
+        CmdLineParser cmd = new CmdLineParser(args);
+        ClientGlobals.serverHost = cmd.getString("-server", "srv.megastage.org");
+        ClientGlobals.player = cmd.getString("-nick", "");
         
-        Log.set(Log.LEVEL_INFO);
-
+        Log.set(cmd.getInteger("-log-level", Log.LEVEL_INFO));
+        ClientGlobals.gfxSettings = GraphicsSettings.valueOf(cmd.getString("-gfx", "HIGH"));
+        
         AppSettings settings = new AppSettings(true);
         settings.setSettingsDialogImage("org/megastage/flash.jpg");
         settings.setTitle("Megastage");

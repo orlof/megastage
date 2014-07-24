@@ -7,12 +7,16 @@ import org.jdom2.input.SAXBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import org.megastage.util.CmdLineParser;
 
 public class Main {
     public static void main(String args[]) throws Exception {
         Log.set(Log.LEVEL_INFO);
         
-        Element root = readConfig(args[0]);
+        CmdLineParser cmd = new CmdLineParser(args);
+        ServerGlobals.autoexit = cmd.isDefined("-autoexit");
+        
+        Element root = readConfig(cmd.getString("-config", "world.xml"));
         Game game = new Game(root);
 
         game.loopForever();

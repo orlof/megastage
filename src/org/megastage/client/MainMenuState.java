@@ -75,9 +75,9 @@ public class MainMenuState extends BaseAppState {
         network = new Container(new SpringGridLayout(Axis.Y, Axis.X, FillMode.Even, FillMode.Last), 
                                 new ElementId(LemurStyles.SUBMENU_ID), "retro");
         network.addChild(new Label("Player:", new ElementId(LemurStyles.EDIT_LABEL_ID), "retro"));
-        userField = network.addChild(new TextField(settings.get("player", "Random" + Math.round(Math.random() * 100)), "retro"), 1);
+        userField = network.addChild(new TextField(settings.get("player", ClientGlobals.player), "retro"), 1);
         network.addChild(new Label("Server:", new ElementId(LemurStyles.EDIT_LABEL_ID), "retro"));
-        hostField = network.addChild(new TextField(settings.get("server", "localhost"), "retro"), 1);
+        hostField = network.addChild(new TextField(settings.get("server", ClientGlobals.serverHost), "retro"), 1);
     }
 
     @Override

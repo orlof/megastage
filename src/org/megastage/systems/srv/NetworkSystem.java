@@ -39,6 +39,7 @@ import org.megastage.protocol.UserCommand.ChangeBootRom;
 import org.megastage.protocol.UserCommand.ChangeFloppy;
 import org.megastage.protocol.UserCommand.Keyboard;
 import org.megastage.protocol.UserCommand.Unbuild;
+import org.megastage.server.ServerGlobals;
 import org.megastage.server.TemplateManager;
 import org.megastage.util.Bag;
 import org.megastage.util.Cube3dMap;
@@ -103,7 +104,7 @@ public class NetworkSystem extends Processor {
         world.setComponent(connection.player, CompType.DeleteFlag, new DeleteFlag());
         connection.close();
         
-        if(server.getConnections().length == 0) {
+        if(ServerGlobals.autoexit && server.getConnections().length == 0) {
             server.stop();
             System.exit(0);
         }
