@@ -3,7 +3,6 @@ package org.megastage.systems.srv;
 import org.megastage.ecs.World;
 import org.megastage.util.Log;
 import java.util.Random;
-import org.megastage.components.BlockChange;
 import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.components.gfx.ShipGeometry;
@@ -13,7 +12,6 @@ import org.megastage.server.ForceFieldHit;
 import org.megastage.server.Hit;
 import org.megastage.server.NoHit;
 import org.megastage.server.ShipStructureHit;
-import org.megastage.util.Vector3d;
 
 public class ThermalLaserSystem extends Processor {
     Random random = new Random();
@@ -72,6 +70,4 @@ public class ThermalLaserSystem extends Processor {
                 break;
         }
     }
-
-    public static final Vector3d FORWARD_VECTOR = new Vector3d(0,0,-1);
 }

@@ -1,13 +1,11 @@
 package org.megastage.server;
 
-import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.util.ID;
 import org.megastage.util.MathUtil;
-import org.megastage.util.Vector3d;
 
 public class Target implements Comparable<Target> {
     public int eid;

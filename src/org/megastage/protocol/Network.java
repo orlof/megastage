@@ -57,12 +57,11 @@ import org.megastage.protocol.UserCommand.Unbuild;
 import org.megastage.protocol.UserCommand.Unpick;
 import org.megastage.util.Cube3dMap;
 import org.megastage.util.RAM;
-import org.megastage.util.Vector3d;
 
 public class Network {
     public static String networkInterface = "localhost";
 
-    public static int serverPort = 12358;
+    public static int serverPort = 57463;
 
     static public void register(Kryo kryo) {
         for(Class<?> clazz: Network.class.getDeclaredClasses()) {

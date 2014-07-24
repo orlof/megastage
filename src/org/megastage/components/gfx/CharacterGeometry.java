@@ -1,5 +1,7 @@
 package org.megastage.components.gfx;
 
+import com.jme3.asset.AssetKey;
+import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Geometry;
@@ -14,6 +16,7 @@ import com.jme3.texture.plugins.AWTLoader;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import javax.imageio.ImageIO;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
@@ -26,17 +29,17 @@ import org.megastage.client.controls.LocalPositionControl;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 
-
 public class CharacterGeometry extends ReplicatedComponent {
+
     public float red, green, blue, alpha;
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
-        red = getFloatValue(element, "red", 1.0f); 
-        green = getFloatValue(element, "green", 1.0f); 
-        blue = getFloatValue(element, "blue", 1.0f); 
-        alpha = getFloatValue(element, "alpha", 1.0f); 
-        
+        red = getFloatValue(element, "red", 1.0f);
+        green = getFloatValue(element, "green", 1.0f);
+        blue = getFloatValue(element, "blue", 1.0f);
+        alpha = getFloatValue(element, "alpha", 1.0f);
+
         return null;
     }
 
@@ -72,28 +75,23 @@ public class CharacterGeometry extends ReplicatedComponent {
 
         AxisRotationControl headRotationControl = new AxisRotationControl(eid, true, false, false);
         head.addControl(headRotationControl);
-        
+
         head.attachChild(geom);
-        
+
         head.attachChild(createFace());
 
-        if(eid == ClientGlobals.playerEntity) {
+        if (eid == ClientGlobals.playerEntity) {
             head.attachChild(ClientGlobals.camNode);
         }
-        
+
         return head;
     }
 
     private Spatial createFace() {
-        BufferedImage img = null;
-        try {
-            img = ImageIO.read(new File("assets/Textures/smiley.png"));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        BufferedImage img = loadImage("Textures/smiley.png");
 
         Image img2 = new AWTLoader().load(img, true);
-        
+
         Texture2D tex = new Texture2D(img2);
         tex.setMagFilter(Texture.MagFilter.Nearest);
         tex.setMinFilter(Texture.MinFilter.Trilinear);
@@ -108,5 +106,19 @@ public class CharacterGeometry extends ReplicatedComponent {
         geom.setMaterial(mat);
         geom.setLocalTranslation(-0.25f, -0.25f, 0.3f);
         return geom;
+    }
+
+    public static InputStream loadFile(String filepath) {
+        return ClientGlobals.app.getAssetManager().locateAsset(new AssetKey(filepath)).openStream();
+    }
+
+    public static BufferedImage loadImage(String url) {
+        try {
+            BufferedImage img = ImageIO.read(loadFile(url));
+            return img;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            throw new IllegalArgumentException("Cant find file " + url);
+        }
     }
 }

@@ -8,7 +8,6 @@ import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.Processor;
 import org.megastage.ecs.World;
-import org.megastage.util.Vector3d;
 
 public class ImposterSystem extends Processor {
     public ImposterSystem(World world, long interval) {

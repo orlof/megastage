@@ -14,7 +14,6 @@ import org.megastage.systems.srv.GravityManagerSystem;
 import org.megastage.systems.srv.RadarManagerSystem;
 import org.megastage.systems.srv.SoiManagerSystem;
 import org.megastage.util.Bag;
-import org.megastage.util.Vector3d;
 
 public class VirtualRadar extends DCPUHardware {
     public int target = 0;

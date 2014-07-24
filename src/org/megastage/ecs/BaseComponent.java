@@ -1,9 +1,9 @@
 package org.megastage.ecs;
 
+import com.jme3.math.Vector3f;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.util.Vector3d;
 
 public abstract class BaseComponent extends ToStringComponent {
 
@@ -106,17 +106,17 @@ public abstract class BaseComponent extends ToStringComponent {
         return defaultValue;
     }
 
-    protected static Vector3d getVector3d(Element config, String attrName, Vector3d defaultValue) {
+    protected static Vector3f getVector3f(Element config, String attrName, Vector3f defaultValue) {
         Attribute attr = config.getAttribute(attrName);
 
         if(attr != null) {
             String val = attr.getValue();
             String[] vec = val.split(",");
             
-            return new Vector3d(
-                    Double.parseDouble(vec[0]), 
-                    Double.parseDouble(vec[1]), 
-                    Double.parseDouble(vec[2]));
+            return new Vector3f(
+                    Float.parseFloat(vec[0]), 
+                    Float.parseFloat(vec[1]), 
+                    Float.parseFloat(vec[2]));
         }
 
         return defaultValue;

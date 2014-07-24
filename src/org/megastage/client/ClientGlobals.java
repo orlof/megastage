@@ -27,7 +27,7 @@ public class ClientGlobals {
     public static final Node backgroundNode = new Node("background_node");
     public static final Node globalRotationNode = new Node("global_rotation_node");
 
-    public static GraphicsSettings gfxSettings = GraphicsSettings.JOKE;
+    public static GraphicsSettings gfxSettings = GraphicsSettings.NO_PLANETS;
 
     public static final UserCommand userCommand = new UserCommand();
     public static Main app;

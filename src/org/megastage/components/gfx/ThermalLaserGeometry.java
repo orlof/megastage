@@ -3,6 +3,7 @@ package org.megastage.components.gfx;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -10,22 +11,18 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Cylinder;
 import org.jdom2.Element;
 import org.megastage.client.JME3Material;
-import static org.megastage.client.SpatialManager.getOrCreateNode;
-import org.megastage.client.controls.PositionControl;
-import org.megastage.client.controls.RotationControl;
 import org.megastage.client.controls.ThermalLaserControl;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
-import org.megastage.util.Vector3d;
     
 public class ThermalLaserGeometry extends ItemGeometryComponent {
     public float length;
-    public Vector3d attackVector;
+    public Vector3f attackVector;
     
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
         length = getFloatValue(element, "length", 3.0f);
-        attackVector = getVector3d(element, "attack_vector", new Vector3d(0,0,-1));
+        attackVector = getVector3f(element, "attack_vector", new Vector3f(0.0f, 0.0f, -1.0f)); 
         return null;
     }
 
