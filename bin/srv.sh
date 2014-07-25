@@ -1,1 +1,1 @@
-java -ea -classpath build/classes:lib/jme3/jME3-core.jar:lib/cubes/Cubes.jar:lib/asm-4.0.jar:lib/jdom-2.0.5.jar:lib/jsonbeans-0.5.jar:lib/kryo-2.20.jar:lib/objenesis-1.2.jar:lib/reflectasm-1.07.jar:lib/minlog-1.2.jar org.megastage.server.Main world.xml autoexit
+java -ea -classpath build/classes:lib/jme3/jME3-core.jar:lib/cubes/Cubes.jar:lib/asm-4.0.jar:lib/jdom-2.0.5.jar:lib/jsonbeans-0.5.jar:lib/kryo-2.20.jar:lib/objenesis-1.2.jar:lib/reflectasm-1.07.jar:lib/minlog-1.2.jar org.megastage.server.Main world.xml -autoexit -config world.xml
