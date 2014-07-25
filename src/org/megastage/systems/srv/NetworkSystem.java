@@ -128,7 +128,7 @@ public class NetworkSystem extends Processor {
             Position pos = (Position) world.getComponent(connection.player, CompType.Position);
             pos.set(sp.vector);
             
-            Log.info(sp.toString());
+            Log.debug(sp.toString());
             
             connection.sendTCP(new PlayerIDMessage(connection.player));
         } catch (Exception ex) {
@@ -141,7 +141,7 @@ public class NetworkSystem extends Processor {
 
     private void replicateEntitiesToNewConnection(PlayerConnection connection) {
         for(int eid = group.iterator(); eid != 0; eid = group.next()) {
-            Log.info(ID.get(eid));
+            Log.debug(ID.get(eid));
             replicateComponents(connection, eid);
         }        
     }
@@ -151,7 +151,7 @@ public class NetworkSystem extends Processor {
 
         for(ReplicatedComponent comp = world.compIter(eid, ReplicatedComponent.class); comp != null; comp=world.compNext()) {
             if(comp.isReplicable()) {
-                Log.info(comp.toString());
+                Log.debug(comp.toString());
                 Message msg = comp.synchronize(eid);
                 list.add(msg);
             }
@@ -384,17 +384,17 @@ public class NetworkSystem extends Processor {
 
     private void build(PlayerConnection connection, Build build, Cube3dMap map, BlockChanges changes) {
         if(build.x < 0 || build.y < 0 || build.z < 0) {
-            Log.info("Trying to build to negative coordinates");
+            Log.warn("Trying to build to negative coordinates");
             return;
         }
 
         if(map.get(build.x, build.y, build.z) != 0) {
-            Log.info("Trying to build in non-empty block");
+            Log.warn("Trying to build in non-empty block");
             return;
         }
     
         if(!isBlockDistanceBetween(connection.player, build.x, build.y, build.z, 1.1f, 3.0f)) {
-            Log.info("Trying to build too near or far");
+            Log.warn("Trying to build too near or far");
             return;
         }
 
@@ -421,7 +421,7 @@ public class NetworkSystem extends Processor {
 
     private void teleport(PlayerConnection connection, UserCommand.Teleport teleport) {
         // bind player to ship
-        Log.info("");
+        Log.mark();
         BindTo bind = (BindTo) world.getComponent(connection.player, CompType.BindTo);
         bind.setParent(teleport.eid);
 
@@ -468,8 +468,8 @@ public class NetworkSystem extends Processor {
         Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
         Vector3f buildPosition = new Vector3f(x + 0.5f, y + 0.5f, z + 0.5f);
         
-        Log.info("Builder position: " + pos.toString());
-        Log.info("Build position: " + buildPosition.toString());
+        Log.debug("Builder position: " + pos.toString());
+        Log.debug("Build position: " + buildPosition.toString());
         
         float distance = pos.get().distance(buildPosition);
         

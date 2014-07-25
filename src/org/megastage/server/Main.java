@@ -11,12 +11,12 @@ import org.megastage.util.CmdLineParser;
 
 public class Main {
     public static void main(String args[]) throws Exception {
-        Log.set(Log.LEVEL_INFO);
-        
         CmdLineParser cmd = new CmdLineParser(args);
-        ServerGlobals.autoexit = cmd.isDefined("-autoexit");
+        Log.set(cmd.getInteger("--log-level", Log.LEVEL_INFO));
         
-        Element root = readConfig(cmd.getString("-config", "world.xml"));
+        ServerGlobals.autoexit = cmd.isDefined("--auto-exit");
+        
+        Element root = readConfig(cmd.getString("--config", "world.xml"));
         Game game = new Game(root);
 
         game.loopForever();

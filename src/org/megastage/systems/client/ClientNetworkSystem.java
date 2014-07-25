@@ -93,7 +93,7 @@ public class ClientNetworkSystem extends Processor {
     
     public void handlePacket(final Connection pc, final Object o) {
         if(o instanceof Message) {
-            Log.info(o.toString());
+            Log.debug(o.toString());
             Message msg = (Message) o;
             msg.receive(pc);
         } else {

@@ -261,7 +261,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     public void initWalkMode() {
-        Log.info("");
+        Log.mark();
 
         mode = CharacterMode.WALK;
 
@@ -300,7 +300,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     private void exitWalkMode() {
-        Log.info("");
+        Log.mark();
 
         mode = CharacterMode.NONE;
         inputManager.clearMappings();
@@ -309,7 +309,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     public void initDCPUMode() {
-        Log.info("");
+        Log.mark();
 
         mode = CharacterMode.DCPU;
 
@@ -325,7 +325,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     private void exitDCPUMode() {
-        Log.info("");
+        Log.mark();
 
         mode = CharacterMode.NONE;
 
@@ -335,7 +335,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     public void initMenuMode() {
-        Log.info("");
+        Log.mark();
         
         mode = CharacterMode.MENU;
         inputManager.addMapping("MENU_Exit", new KeyTrigger((KeyInput.KEY_ESCAPE)));
@@ -345,7 +345,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     private void exitMenuMode() {
-        Log.info("");
+        Log.mark();
 
         mode = CharacterMode.NONE;
         inputManager.clearMappings();
@@ -397,7 +397,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
  
         for(int i=0; i < results.size(); i++) {
             CollisionResult closest = results.getCollision(i);
-            Log.info("%d: %s", i, closest.getGeometry().getName());
+            Log.debug("%d: %s", i, closest.getGeometry().getName());
 
             if(isForceShield(closest)) {
                 // pick goes through force shield
@@ -410,7 +410,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
                 Log.info("Action: None");
                 return;
             }
-            Log.info(target.getName());
+            Log.debug(target.getName());
             
             if(target.eid == ClientGlobals.playerEntity) {
                 continue;

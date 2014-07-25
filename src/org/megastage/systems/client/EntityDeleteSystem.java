@@ -13,7 +13,7 @@ public class EntityDeleteSystem extends Processor {
 
     @Override
     protected void process(int eid) {
-        Log.info(ID.get(eid));
+        Log.debug(ID.get(eid));
         world.deleteEntity(eid);
     }
 }

@@ -14,7 +14,7 @@ public class EntityInitializeSystem extends Processor {
 
     @Override
     protected void process(int eid) {
-        Log.info(ID.get(eid));
+        Log.debug(ID.get(eid));
         
         world.removeComponent(eid, CompType.InitializeFlag);
         initializeComponents(eid);

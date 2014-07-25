@@ -54,7 +54,7 @@ public class ShipGeometry extends ReplicatedComponent {
 
         initGeometry(node.offset, eid);
         node.setOffset(map.getCenterOfMass());
-        Log.info(map.getCenterOfMass().toString());
+        Log.debug(map.getCenterOfMass().toString());
 
         ClientGlobals.globalRotationNode.attachChild(node);
     }

@@ -56,7 +56,7 @@ public class CollisionTester extends SimpleApplication{
                 }
             }
         }
-        Log.info("Block count: " + c);
+        Log.debug("Block count: " + c);
 
         ship = new Node();
         rootNode.attachChild(ship);

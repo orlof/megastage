@@ -28,7 +28,6 @@ public class VirtualPPS extends DCPUHardware {
 
     @Override
     public void interrupt(DCPU dcpu) {
-        Log.info("" + (int) dcpu.registers[0]);
         switch(dcpu.registers[0]) {
             case 0:
                 if(getSectorNumber(dcpu)) {
@@ -73,7 +72,7 @@ public class VirtualPPS extends DCPUHardware {
     }
 
     private boolean getSectorNumber(DCPU dcpu) {
-        Log.info("");
+        Log.mark();
         dcpu.registers[1] = 0x0000;
         return true;
     }

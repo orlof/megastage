@@ -33,7 +33,7 @@ public class DCPUMenuState extends BaseAppState {
 
     @Override
     protected void initialize( Application app ) {
-        Log.info("");
+        Log.mark();
         settings = new XMLSettings(".megastage", "user_options.xml");
 
         menu = new Container(new SpringGridLayout(), new ElementId(LemurStyles.MENU_ID), "retro");
@@ -90,7 +90,7 @@ public class DCPUMenuState extends BaseAppState {
 
     @Override
     protected void disable() {
-        Log.info("");
+        Log.mark();
         ClientGlobals.app.enqueue(new Callable() { @Override public Object call() throws Exception {
             menu.removeFromParent();
             getApplication().getInputManager().setCursorVisible(false);
@@ -110,7 +110,7 @@ public class DCPUMenuState extends BaseAppState {
     private class ResumeCommand implements Command<Button> {
         @Override
         public void execute( Button source ) {
-            Log.info("");
+            Log.mark();
             ClientGlobals.userCommand.unpickItem();
         }
     }
