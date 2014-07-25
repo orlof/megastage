@@ -32,7 +32,6 @@ public class GyroscopeGeometry extends ItemGeometryComponent {
     }
     
     private Spatial createWheel(int eid) {
-        Log.mark();
         Geometry wheel = new Geometry("wheel", new Cylinder(5, 5, 0.35f, 0.35f, 0.45f, true, false));
         wheel.setLocalRotation(new Quaternion().fromAngles(x, y, z));
         JME3Material.setTexturedMaterial(wheel, ColorRGBA.Gray, "rock09.jpg");

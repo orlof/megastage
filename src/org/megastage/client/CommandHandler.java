@@ -28,6 +28,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     private DCPURawInputListener dcpuListener = new DCPURawInputListener();
 
     public void registerWithInput(InputManager inputManager) {
+        Log.mark();
         this.inputManager = inputManager;
 
         //inputManager.setCursorVisible(false);
@@ -35,6 +36,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     }
 
     public void unregisterInput() {
+        Log.mark();
 
         if (inputManager == null) {
             return;
@@ -78,6 +80,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
     
     @Override
     public void onAnalog(String name, float value, float tpf) {
+        Log.info(name);
         if (ClientGlobals.playerEntity == 0) {
             return;
         }
@@ -148,6 +151,7 @@ public class CommandHandler implements AnalogListener, ActionListener {
 
     @Override
     public void onAction(String name, boolean value, float tpf) {
+        Log.info(name);
         if (!value) {
             switch (name) {
                 case "WALK_InvertY":
