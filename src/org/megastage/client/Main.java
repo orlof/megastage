@@ -33,12 +33,12 @@ public class Main extends SimpleApplication {
 
     public static void main(String[] args) {
         CmdLineParser cmd = new CmdLineParser(args);
-        Log.set(cmd.getInteger("-log-level", Log.LEVEL_INFO));
+        Log.set(cmd.getInteger("--log-level", Log.LEVEL_INFO));
 
-        ClientGlobals.serverHost = cmd.getString("-server", "srv.megastage.org");
-        ClientGlobals.player = cmd.getString("-nick", "");
+        ClientGlobals.serverHost = cmd.getString("--server", "srv.megastage.org");
+        ClientGlobals.player = cmd.getString("--player", "");
         
-        ClientGlobals.gfxSettings = GraphicsSettings.valueOf(cmd.getString("-gfx", "HIGH"));
+        ClientGlobals.gfxSettings = GraphicsSettings.valueOf(cmd.getString("--gfx", "HIGH"));
         
         AppSettings settings = new AppSettings(true);
         settings.setSettingsDialogImage("org/megastage/flash.jpg");

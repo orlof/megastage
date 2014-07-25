@@ -269,18 +269,17 @@ public class World {
 
     public <E> E compIter(int eid, Class<E> clazz) {
         compIterEID = eid;
-        compIterPos = 1;
+        compIterPos = 0;
         compIterType = clazz;
         return (E) compNext();
     }
     
     public <E> E compNext() {
-        while(compIterPos < componentCapacity) {
+        while((++compIterPos) < componentCapacity) {
             Object comp = population[compIterEID][compIterPos];
             if(comp != null && compIterType.isInstance(comp) && CompType.parent[compIterPos] == 0) {
-                return (E) population[compIterEID][compIterPos++];
+                return (E) population[compIterEID][compIterPos];
             }
-            compIterPos++;
         }
 
         return null;
