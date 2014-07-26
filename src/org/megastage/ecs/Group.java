@@ -1,8 +1,5 @@
 package org.megastage.ecs;
 
-import org.megastage.util.Log;
-import org.megastage.util.ID;
-
 public class Group {
 
     private World world;
@@ -32,14 +29,13 @@ public class Group {
             prev[i] = -1;
         }
 
-        Log.info(name);
         for (int eid = world.eidIter(); eid != 0; eid = world.eidNext()) {
             update(eid);
         }
     }
 
-    public boolean contains(int eid) {
-        return prev[eid] != -1;
+    public final boolean contains(int eid) {
+        return prev[eid] >= 0;
     }
 
     public final void update(int eid) {
@@ -72,7 +68,6 @@ public class Group {
 
     public final void add(int eid) {
         if (!contains(eid)) {
-            Log.trace(toString() + " " + ID.get(eid));
             next[eid] = 0;
             prev[eid] = prev[0];
             next[prev[0]] = eid;
@@ -82,8 +77,7 @@ public class Group {
     }
 
     public final void remove(int eid) {
-        if (contains(eid)) {
-            Log.trace(toString() + " " + ID.get(eid));
+        if(prev[eid] != -1) {
             next[prev[eid]] = next[eid];
             prev[next[eid]] = prev[eid];
             prev[eid] = -1;

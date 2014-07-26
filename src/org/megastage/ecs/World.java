@@ -210,8 +210,10 @@ public class World {
     }
 
     public BaseComponent getComponent(int eid, int cid) {
-        ensureEntity(eid);
-        return population[eid][cid];
+        if(hasEntity(eid)) {
+            return population[eid][cid];
+        }
+        return null;
     }
 
     public <T extends BaseComponent> T getOrCreateComponent(int eid, int cid, Class<T> type) {

@@ -9,6 +9,9 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
 import java.util.HashMap;
+import org.megastage.components.Mode;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.protocol.UserCommand;
 import org.megastage.systems.client.ClientNetworkSystem;
 import org.megastage.util.ID;
@@ -106,6 +109,11 @@ public class ClientGlobals {
             head.attachChild(ClientGlobals.camNode);
         }
         ClientGlobals.playerEntity = eid;
+        
+        Mode mode = (Mode) World.INSTANCE.getComponent(eid, CompType.Mode);
+        if(mode != null) {
+            ClientGlobals.cmdHandler.changeMode(mode.value);
+        }
     }
 
     private static void unsetPlayer() {

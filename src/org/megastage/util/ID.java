@@ -6,11 +6,14 @@ import org.megastage.ecs.World;
 
 public class ID {
     public static String get(int eid) {
-        Identifier id = (Identifier) World.INSTANCE.getComponent(eid, CompType.Identifier);
-        if(id==null) {
-            return "[" + eid + "]";
-        }
+        StringBuilder sb = new StringBuilder(100);
+        sb.append("[").append(eid).append("]");
 
-        return id.toString() + "[" + eid + "]";
+        Identifier id = (Identifier) World.INSTANCE.getComponent(eid, CompType.Identifier);
+        if(id != null) {
+            sb.append(id.toString());
+        }
+        
+        return sb.toString();
     }
 }

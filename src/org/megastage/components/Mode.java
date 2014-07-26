@@ -14,6 +14,8 @@ public class Mode extends ReplicatedComponent {
 
     @Override
     public void receive(int eid) {
+        super.receive(eid);
+        
         if(ClientGlobals.playerEntity == eid) {
             ClientGlobals.cmdHandler.changeMode(value);
         }
