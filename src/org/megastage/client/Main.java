@@ -77,14 +77,13 @@ public class Main extends SimpleApplication {
     
     @Override
     public void simpleInitApp() {
+        ClientGlobals.inputManager = inputManager;
+        
         SoundManager.init(assetManager);
         ExplosionNode.initialize(assetManager);
 
         setPauseOnLostFocus(false);
         
-        ClientGlobals.cmdHandler = new CommandHandler();
-        ClientGlobals.cmdHandler.registerWithInput(inputManager);
-
         initializeSystemNodes();
         initializeBackground();
         initializeCamera();

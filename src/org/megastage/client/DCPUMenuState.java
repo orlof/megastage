@@ -67,25 +67,15 @@ public class DCPUMenuState extends BaseAppState {
 
     @Override
     protected void enable() {
-        ClientGlobals.app.enqueue(new Callable() { @Override public Object call() throws Exception {
-            Main main = (Main)getApplication();
-            main.getGuiNode().attachChild(menu);
-            main.getInputManager().setCursorVisible(true);
-            return null;
-        }});
-        
+        Main main = (Main)getApplication();
+        main.getGuiNode().attachChild(menu);
+        main.getInputManager().setCursorVisible(true);
    }
 
     @Override
     protected void disable() {
-        Log.mark();
-        ClientGlobals.app.enqueue(new Callable() { @Override public Object call() throws Exception {
-            menu.removeFromParent();
-            getApplication().getInputManager().setCursorVisible(false);
-            return null;
-        }});
-
-        //getApplication().getStateManager().detach(this);
+        menu.removeFromParent();
+        getApplication().getInputManager().setCursorVisible(false);
     }
 
     private class Highlight implements Command<Button> {

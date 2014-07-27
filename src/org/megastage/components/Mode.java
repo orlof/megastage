@@ -5,11 +5,13 @@ import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.protocol.CharacterMode;
 
 public class Mode extends ReplicatedComponent {
-    public int value = CharacterMode.WALK; 
+    public CharacterMode value = CharacterMode.WALK; 
 
-    public void setMode(int mode) {
-        this.value = mode;
-        dirty = true;
+    public void setMode(CharacterMode newValue) {
+        if(value != newValue) {
+            value = newValue;
+            dirty = true;
+        }
     }
 
     @Override
@@ -17,7 +19,7 @@ public class Mode extends ReplicatedComponent {
         super.receive(eid);
         
         if(ClientGlobals.playerEntity == eid) {
-            ClientGlobals.cmdHandler.changeMode(value);
+            CharacterMode.change(value);
         }
     }
 }

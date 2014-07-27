@@ -83,6 +83,7 @@ public class Network {
             ChangeFloppy.class,
             ChangeBootRom.class,
             CharacterGeometry.class,
+            CharacterMode.class,
             CollisionSphere.class,
             ComponentMessage.class,
             Cube3dMap.class,

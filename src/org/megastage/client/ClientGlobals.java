@@ -4,6 +4,7 @@ import org.megastage.util.Log;
 import com.jme3.app.state.AppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetKey;
+import com.jme3.input.InputManager;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
@@ -17,12 +18,14 @@ import javax.imageio.ImageIO;
 import org.megastage.components.Mode;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
+import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.UserCommand;
 import org.megastage.systems.client.ClientNetworkSystem;
 import org.megastage.util.ID;
 
 public class ClientGlobals {
     public static ClientNetworkSystem network;
+    public static CharacterMode mode = CharacterMode.NONE;
     
     public static int playerEntity;
     public static int baseEntity;
@@ -39,7 +42,8 @@ public class ClientGlobals {
 
     public static final UserCommand userCommand = new UserCommand();
     public static Main app;
-    public static CommandHandler cmdHandler;
+    public static InputManager inputManager;
+    public static InputHandler inputHandler = new InputHandler();
     public static String serverHost = "localhost";
     public static Picture crosshair;
     public static String player;
@@ -117,7 +121,7 @@ public class ClientGlobals {
         
         Mode mode = (Mode) World.INSTANCE.getComponent(eid, CompType.Mode);
         if(mode != null) {
-            ClientGlobals.cmdHandler.changeMode(mode.value);
+            CharacterMode.change(mode.value);
         }
     }
 
