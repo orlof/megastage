@@ -2,12 +2,9 @@ package org.megastage.client;
 
 import org.megastage.util.Log;
 import com.jme3.app.Application;
-import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
-import com.jme3.audio.AudioSource;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
-import com.jme3.scene.Spatial;
 import com.simsilica.lemur.Button;
 import com.simsilica.lemur.Command;
 import com.simsilica.lemur.Container;
@@ -21,11 +18,7 @@ import org.megastage.util.XMLSettings;
 
 public class DCPUMenuState extends BaseAppState {
 
-    private XMLSettings settings;
-    
     private Container menu;
-
-    private AudioNode music;
 
     public DCPUMenuState() {
         setEnabled(false);
@@ -33,9 +26,6 @@ public class DCPUMenuState extends BaseAppState {
 
     @Override
     protected void initialize( Application app ) {
-        Log.mark();
-        settings = new XMLSettings(".megastage", "user_options.xml");
-
         menu = new Container(new SpringGridLayout(), new ElementId(LemurStyles.MENU_ID), "retro");
 
         Label title1 = menu.addChild(new Label("Change Boot-ROM", new ElementId(LemurStyles.MENU_TITLE_ID), "retro"));
@@ -69,8 +59,6 @@ public class DCPUMenuState extends BaseAppState {
                                  cam.getHeight() * 0.5f + pref.y * 0.5f * menuScale + bias,
                                  10);
         menu.setLocalScale(menuScale);
-        
-        //getApplication().getInputManager().setCursorVisible(true);
     }
 
     @Override

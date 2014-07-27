@@ -28,16 +28,10 @@ public class CommandHandler implements AnalogListener, ActionListener {
     private DCPURawInputListener dcpuListener = new DCPURawInputListener();
 
     public void registerWithInput(InputManager inputManager) {
-        Log.mark();
         this.inputManager = inputManager;
-
-        //inputManager.setCursorVisible(false);
-        //initWalkMode();
     }
 
     public void unregisterInput() {
-        Log.mark();
-
         if (inputManager == null) {
             return;
         }

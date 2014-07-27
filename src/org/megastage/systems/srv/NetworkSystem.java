@@ -10,8 +10,6 @@ import org.megastage.components.dcpu.VirtualKeyboard;
 import org.megastage.protocol.Network;
 import org.megastage.protocol.PlayerConnection;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.megastage.components.BlockChange;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Position;
@@ -22,6 +20,7 @@ import org.megastage.components.gfx.BindTo;
 import org.megastage.components.Mode;
 import org.megastage.components.dcpu.DCPU;
 import org.megastage.components.dcpu.VirtualFloppyDrive;
+import org.megastage.components.gfx.CharacterGeometry;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.srv.BlockChanges;
 import org.megastage.ecs.CompType;
@@ -48,10 +47,12 @@ import org.megastage.util.ID;
 public class NetworkSystem extends Processor {
     private Server server;
     private Group deleted;
+    private Group characters;
     
     public NetworkSystem(World world, long interval) {
         super(world, interval, CompType.SynchronizeFlag);
         deleted = world.createGroup(CompType.DeleteFlag);
+        characters = world.createGroup(CompType.CharacterGeometry);
     }
 
     @Override
@@ -101,7 +102,9 @@ public class NetworkSystem extends Processor {
     }
 
     private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
-        world.setComponent(connection.player, CompType.DeleteFlag, new DeleteFlag());
+        CharacterGeometry cg = (CharacterGeometry) World.INSTANCE.getComponent(connection.player, CompType.CharacterGeometry);
+        cg.isFree = true;
+        //world.setComponent(connection.player, CompType.DeleteFlag, new DeleteFlag());
         connection.close();
         
         if(ServerGlobals.autoexit && server.getConnections().length == 0) {
@@ -110,33 +113,55 @@ public class NetworkSystem extends Processor {
         }
     }
 
-    private void initNewPlayer(PlayerConnection connection) {
-        try {
-            // create ship
-            int ship = TemplateManager.create(world, "Apollo 13");
-            
-            // create character
-            connection.player = TemplateManager.create(world, "Player");
-
-            // bind player to ship
-            BindTo bind = new BindTo();
-            bind.parent = ship;
-            world.setComponent(connection.player, CompType.BindTo, bind);
-            
-            SpawnPoint sp = (SpawnPoint) world.getComponent(ship, CompType.SpawnPoint);
-            
-            Position pos = (Position) world.getComponent(connection.player, CompType.Position);
-            pos.set(sp.vector);
-            
-            Log.debug(sp.toString());
-            
-            connection.sendTCP(new PlayerIDMessage(connection.player));
-        } catch (Exception ex) {
-            Logger.getLogger(NetworkSystem.class.getName()).log(Level.SEVERE, null, ex);
+    private void initConnection(PlayerConnection connection) {
+        Log.info(connection.nick);
+        for(int eid = characters.iterator(); eid > 0; eid = characters.next()) {
+            CharacterGeometry cg = (CharacterGeometry) World.INSTANCE.getComponent(eid, CompType.CharacterGeometry);
+            Log.info(cg.toString());
+            if(cg.isFree && cg.name.equalsIgnoreCase(connection.nick)) {
+                selectCharacter(connection, eid);
+                return;
+            }
         }
+
+        int eid = createNewCharacter(connection);
+        selectCharacter(connection, eid);
+    }
+    
+    private void selectCharacter(PlayerConnection connection, int eid) {
+        connection.player = eid;
+
+        CharacterGeometry cg = (CharacterGeometry) world.getComponent(connection.player, CompType.CharacterGeometry);
+        cg.isFree = false;
+
+        connection.sendTCP(new PlayerIDMessage(eid));
+    }
+
+    private int createNewCharacter(PlayerConnection connection) {
+        // create ship
+        int ship = TemplateManager.create(world, "Apollo 13");
+
+        // create character
+        int eid = TemplateManager.create(world, "Player");
+
+        // bind player to ship
+        BindTo bind = new BindTo();
+        bind.parent = ship;
+        world.setComponent(eid, CompType.BindTo, bind);
+
+        SpawnPoint sp = (SpawnPoint) world.getComponent(ship, CompType.SpawnPoint);
+
+        Position pos = (Position) world.getComponent(eid, CompType.Position);
+        pos.set(sp.vector);
+
+        CharacterGeometry cg = (CharacterGeometry) world.getComponent(eid, CompType.CharacterGeometry);
+        cg.name = connection.nick;
+        
+        return eid;
     }
     
     private void handleLoginMessage(PlayerConnection connection, Network.Login packet) throws Exception {
+        connection.nick = packet.name;
     }
 
     private void replicateEntitiesToNewConnection(PlayerConnection connection) {
@@ -148,6 +173,7 @@ public class NetworkSystem extends Processor {
     
     private void replicateComponents(PlayerConnection connection, int eid) {
         Bag<Message> list = new Bag<>(20);
+        list.add(new TimestampMessage());
 
         for(ReplicatedComponent comp = world.compIter(eid, ReplicatedComponent.class); comp != null; comp=world.compNext()) {
             if(comp.isReplicable()) {
@@ -437,7 +463,7 @@ public class NetworkSystem extends Processor {
             if(!pc.isInitialized) {
                 pc.isInitialized = true;
                 replicateEntitiesToNewConnection(pc);
-                initNewPlayer(pc);
+                initConnection(pc);
             }
         }
     }

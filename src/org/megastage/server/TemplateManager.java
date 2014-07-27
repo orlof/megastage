@@ -20,11 +20,12 @@ public class TemplateManager {
         templates.put(name, elem);
     }
 
-    public static int create(World world, String name) throws Exception {
+    public static int create(World world, String name) {
         Element element = templates.get(name);
         if(element == null) {
             throw new RuntimeException("No template: " + name + " in " + templates.toString());
         }
+        
         return EntityFactory.create(world, element, 0);
     }    
 }

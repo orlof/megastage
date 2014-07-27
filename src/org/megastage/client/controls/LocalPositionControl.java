@@ -53,6 +53,9 @@ public class LocalPositionControl extends AbstractControl {
         cur.interpolate(spos, epos, amount);
 
         spatial.setLocalTranslation(cur);
+        //if(World.INSTANCE.hasComponent(eid, CompType.CharacterGeometry)) {
+        //    Log.info("[%d] %s", eid, cur);
+        //}
     }
     
     @Override

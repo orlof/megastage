@@ -6,4 +6,5 @@ public class PlayerConnection extends Connection {
     public int player;
     public int item;
     public boolean isInitialized;
+    public String nick;
 }

@@ -1,4 +1,3 @@
-echo 'Fanfare for Space Kevin MacLeod (incompetech.com)'
-echo 'All This Kevin MacLeod (incompetech.com)'
-java -jar Megastage.jar --server localhost --player Developer --log-level 2 --gfx JOKE
+java -ea -classpath build/classes:lib/jme3/jME3-core.jar:lib/jme3-libraries/jME3-desktop.jar:lib/jme3-libraries/jME3-plugins.jar:lib/jme3-libraries/jME3-effects.jar:lib/jme3-libraries/jME3-networking.jar:lib/jme3-libraries/jME3-jogg.jar:lib/jme3-libraries/j-ogg-oggd.jar:lib/jme3-libraries/j-ogg-vorbisd.jar:lib/jME3-terrain.jar:lib/jME3-lwjgl.jar:lib/jME3-lwjgl-natives.jar:lib/jinput.jar:lib/lwjgl.jar:lib/jME3-jbullet.jar:lib/jbullet.jar:lib/vecmath.jar:lib/stack-alloc.jar:lib/jME3-niftygui.jar:lib/nifty.jar:lib/nifty-default-controls.jar:lib/nifty-style-black.jar:lib/eventbus.jar:lib/xmlpull-xpp3.jar:lib/asm-4.0.jar:lib/jdom-2.0.5.jar:lib/kryo-2.20.jar:lib/jsonbeans-0.5.jar:lib/objenesis-1.2.jar:lib/reflectasm-1.07.jar:lib/Cubes.jar:lib/cubes-assets.jar:lib/ShaderBlow.jar:lib/Lemur.jar:lib/guava-12.0.jar:lib/slf4j-api-1.7.5.jar:lib/slf4j-simple-1.7.5.jar:lib/minlog-1.2.jar org.megastage.client.Main --server srv.megastage.org --player Unknown --log-level 2 --gfx LOW
+
 

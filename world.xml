@@ -323,7 +323,7 @@
                 <component type="srv.SynchronizeFlag"/>
             </entity>
             <entity name="Gyroscope-X">
-                <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" max_torque="300000" gyroscope_id="256"/>
+                <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" max_torque="100000" gyroscope_id="256"/>
                 <component type="gfx.GyroscopeGeometry" x="0" y="-90" z="0"/>
                 <component type="gfx.BindTo"/>
                 <component type="Position" x="5.5" y="1.5" z="4.5"/>
@@ -331,7 +331,7 @@
                 <component type="srv.SynchronizeFlag"/>
             </entity>
             <entity name="Gyroscope-Y">
-                <component type="dcpu.VirtualGyroscope" x="0" y="1" z="0" max_torque="1000000" gyroscope_id="16"/>
+                <component type="dcpu.VirtualGyroscope" x="0" y="1" z="0" max_torque="100000" gyroscope_id="16"/>
                 <component type="gfx.GyroscopeGeometry" x="90" y="0" z="0"/>
                 <component type="gfx.BindTo"/>
                 <component type="Position" x="6.5" y="1.5" z="4.5"/>
@@ -339,7 +339,7 @@
                 <component type="Rotation"/>
             </entity>
             <entity name="Gyroscope-Z">
-                <component type="dcpu.VirtualGyroscope" x="0" y="0" z="1" max_torque="800000" gyroscope_id="1"/>
+                <component type="dcpu.VirtualGyroscope" x="0" y="0" z="1" max_torque="100000" gyroscope_id="1"/>
                 <component type="gfx.GyroscopeGeometry" x="0" y="180" z="0"/>
                 <component type="gfx.BindTo"/>
                 <component type="Position" x="7.5" y="1.5" z="4.5"/>
@@ -354,6 +354,14 @@
                 <component type="Rotation"/>
                 <component type="srv.SynchronizeFlag"/>
             </entity>
+        </entity>
+        <entity name="Centurion">
+            <component type="Mode"/>
+            <component type="gfx.BindTo"/>
+            <component type="Position" x="6.5" y="1.5" z="2.5"/>
+            <component type="Rotation" x="0" y="180" z="0"/>
+            <component type="gfx.CharacterGeometry" name="Centurion"/>
+            <component type="srv.SynchronizeFlag"/>
         </entity>
     </entity>
 

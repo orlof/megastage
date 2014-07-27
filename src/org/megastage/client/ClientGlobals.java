@@ -3,12 +3,17 @@ package org.megastage.client;
 import org.megastage.util.Log;
 import com.jme3.app.state.AppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.asset.AssetKey;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
+import javax.imageio.ImageIO;
 import org.megastage.components.Mode;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
@@ -42,7 +47,7 @@ public class ClientGlobals {
     public static String[] floppies;
 
     public static final HashMap<Class<?>, AppState> appStates = new HashMap<>(); 
-
+ 
     public static Camera cam;
     public static CameraNode camNode;
 
@@ -57,11 +62,11 @@ public class ClientGlobals {
         for(AppState appState: appStates.values()) {
             
             if(isInstance(appState, enabledAppStates)) {
-                Log.info(appState.getClass().getSimpleName() + " active");
+                Log.debug(appState.getClass().getSimpleName() + " is now active");
                 mgr.attach(appState);
                 appState.setEnabled(true);
             } else {
-                Log.info(appState.getClass().getSimpleName() + " passive");
+                Log.debug(appState.getClass().getSimpleName() + " is now passive");
                 mgr.detach(appState);
                 appState.setEnabled(false);
             }
@@ -122,6 +127,31 @@ public class ClientGlobals {
             node.setCullHint(Spatial.CullHint.Inherit);
             ClientGlobals.camNode.removeFromParent();
             ClientGlobals.playerEntity = 0;
+        }
+    }
+    
+    public static InputStream loadFile(String filepath) {
+        return ClientGlobals.app.getAssetManager().locateAsset(new AssetKey(filepath)).openStream();
+    }
+
+    public static BufferedImage loadImage(String url) {
+        try {
+            InputStream stream = loadFile(url);
+            BufferedImage img = ImageIO.read(stream);
+            return img;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            throw new IllegalArgumentException("Cant find file " + url);
+        }
+    }
+
+    public static BufferedImage loadImageAsResource(String url) {
+        try {
+            InputStream stream = ClientGlobals.class.getResourceAsStream(url);
+            return ImageIO.read( stream );
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            throw new IllegalArgumentException("Cant find file " + url);
         }
     }
 }

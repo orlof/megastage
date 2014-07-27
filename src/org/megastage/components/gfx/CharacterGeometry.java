@@ -1,23 +1,20 @@
 package org.megastage.components.gfx;
 
-import com.jme3.asset.AssetKey;
-import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.BillboardControl;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Quad;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
 import com.jme3.texture.plugins.AWTLoader;
+import com.simsilica.lemur.Label;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.imageio.ImageIO;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
 import org.megastage.ecs.BaseComponent;
@@ -28,10 +25,13 @@ import org.megastage.client.controls.AxisRotationControl;
 import org.megastage.client.controls.LocalPositionControl;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
+import org.megastage.util.Log;
 
 public class CharacterGeometry extends ReplicatedComponent {
 
     public float red, green, blue, alpha;
+    public String name;
+    public boolean isFree = true;
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
@@ -40,6 +40,8 @@ public class CharacterGeometry extends ReplicatedComponent {
         blue = getFloatValue(element, "blue", 1.0f);
         alpha = getFloatValue(element, "alpha", 1.0f);
 
+        name = getStringValue(element, "name", "JonDoe");
+        
         return null;
     }
 
@@ -55,9 +57,16 @@ public class CharacterGeometry extends ReplicatedComponent {
         initGeometry(node.offset, eid);
     }
 
+    @Override
+    public void delete(int eid) {
+        EntityNode node = SpatialManager.getOrCreateNode(eid);
+        node.removeFromParent();
+    }
+
     private void initGeometry(Node node, int eid) {
         node.attachChild(createBody(eid));
         node.attachChild(createHead(eid));
+        node.attachChild(createNameTag(eid));
     }
 
     private Spatial createBody(int eid) {
@@ -88,7 +97,7 @@ public class CharacterGeometry extends ReplicatedComponent {
     }
 
     private Spatial createFace() {
-        BufferedImage img = loadImage("Textures/smiley.png");
+        BufferedImage img = ClientGlobals.loadImage("Textures/smiley.png");
 
         Image img2 = new AWTLoader().load(img, true);
 
@@ -108,17 +117,25 @@ public class CharacterGeometry extends ReplicatedComponent {
         return geom;
     }
 
-    public static InputStream loadFile(String filepath) {
-        return ClientGlobals.app.getAssetManager().locateAsset(new AssetKey(filepath)).openStream();
-    }
+    private Spatial createNameTag(int eid) {
+        Node node = new Node();
+        node.setLocalTranslation(0.0f, 2.0f, 0.0f);
 
-    public static BufferedImage loadImage(String url) {
-        try {
-            BufferedImage img = ImageIO.read(loadFile(url));
-            return img;
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            throw new IllegalArgumentException("Cant find file " + url);
-        }
+        Label tag = new Label(name, "retro");
+        tag.setFontSize(0.3f);
+
+        Vector3f pref = tag.getPreferredSize();
+
+        float scale = pref.x;
+        if(pref.y > scale) scale = pref.y;
+        if(pref.z > scale) scale = pref.z;
+
+        tag.scale(1.0f / scale);
+        tag.setLocalTranslation(-(pref.x / scale) * 0.5f, -(pref.y / scale) * 0.5f, 0.0f);
+        
+        node.addControl(new BillboardControl());
+        node.attachChild(tag);
+        
+        return node;
     }
 }
