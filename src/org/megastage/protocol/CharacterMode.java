@@ -1,6 +1,7 @@
 package org.megastage.protocol;
 
 import com.jme3.renderer.Camera;
+import com.simsilica.lemur.GuiGlobals;
 import com.simsilica.lemur.TextField;
 import com.simsilica.lemur.component.TextEntryComponent;
 import org.megastage.client.ClientGlobals;
@@ -66,6 +67,8 @@ public enum CharacterMode {
         }
     },
     TEXT {
+        private TextField textField;
+
         @Override
         public void enter() {
             ClientGlobals.mode = TEXT;
@@ -74,9 +77,8 @@ public enum CharacterMode {
             //InputController.enableMouseLook();
             InputController.commit();
            
-            //TextEntryComponent tec = new TextEntryComponent(null);
-            TextField textField = new TextField("", "retro");
-            textField.setFontSize(0.3f);
+            textField = new TextField("", "retro");
+            textField.setFontSize(10f);
             
             Main main = ClientGlobals.app;
             
@@ -84,8 +86,15 @@ public enum CharacterMode {
             textField.setPreferredWidth(cam.getWidth() * 0.8f);
             textField.setLocalTranslation(cam.getWidth() * 0.1f, 20.0f, 0.0f);
             
-            main.getInputManager().setCursorVisible(true);
             main.getGuiNode().attachChild(textField);
+            
+            GuiGlobals.getInstance().requestFocus(textField);
+        }
+
+        @Override
+        public void exit() {
+            super.exit();
+            textField.removeFromParent();
         }
     };
     
