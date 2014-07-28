@@ -43,6 +43,7 @@ public class CompType {
     public static final int SphereOfInfluence = 42;
     public static final int ThermalLaserData = 43;
     public static final int Velocity = 44;
+    public static final int CmdText = 45;
     
     public static final int DCPU = 50;
     

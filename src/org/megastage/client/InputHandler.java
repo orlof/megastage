@@ -17,8 +17,6 @@ import com.jme3.scene.Spatial;
 import org.megastage.components.Rotation;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
-import org.megastage.protocol.CharacterMode;
-import org.megastage.protocol.CharacterMode;
 import org.megastage.util.Log;
 
 public class InputHandler implements AnalogListener, ActionListener {
@@ -137,18 +135,18 @@ public class InputHandler implements AnalogListener, ActionListener {
 
     public void textEnter() {
         Log.mark();
-        CharacterMode.change(CharacterMode.TEXT);
+        ClientMode.change(ClientMode.TEXT);
     }
     
     public void textExit() {
         Log.mark();
-        CharacterMode.change(CharacterMode.WALK);
+        ClientMode.change(ClientMode.WALK);
         // TODO action
     }
     
     public void textCancel() {
         Log.mark();
-        CharacterMode.change(CharacterMode.WALK);
+        ClientMode.change(ClientMode.WALK);
     }
     
     public void setWalkSpeed(float walkSpeed) {

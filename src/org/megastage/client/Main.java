@@ -24,6 +24,7 @@ import com.jme3.texture.Image;
 import com.jme3.texture.TextureCubeMap;
 import com.jme3.ui.Picture;
 import com.simsilica.lemur.GuiGlobals;
+import com.simsilica.lemur.TextField;
 import com.simsilica.lemur.style.Styles;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -99,7 +100,7 @@ public class Main extends SimpleApplication {
         GuiGlobals.initialize(this);
         Styles styles = GuiGlobals.getInstance().getStyles();
         LemurStyles.initializeStyles(styles);
-
+        
         ClientGlobals.setAppStates(MainMenuState.class);
     }
 

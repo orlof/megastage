@@ -2,12 +2,12 @@ package org.megastage.components;
 
 import org.megastage.client.ClientGlobals;
 import org.megastage.ecs.ReplicatedComponent;
-import org.megastage.protocol.CharacterMode;
+import org.megastage.client.ClientMode;
 
 public class Mode extends ReplicatedComponent {
-    public CharacterMode value = CharacterMode.WALK; 
+    public ClientMode value = ClientMode.WALK; 
 
-    public void setMode(CharacterMode newValue) {
+    public void setMode(ClientMode newValue) {
         if(value != newValue) {
             value = newValue;
             dirty = true;
@@ -19,7 +19,7 @@ public class Mode extends ReplicatedComponent {
         super.receive(eid);
         
         if(ClientGlobals.playerEntity == eid) {
-            CharacterMode.change(value);
+            ClientMode.change(value);
         }
     }
 }

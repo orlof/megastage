@@ -10,6 +10,10 @@ import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.ui.Picture;
+import com.simsilica.lemur.GuiGlobals;
+import com.simsilica.lemur.Label;
+import com.simsilica.lemur.TextField;
+import com.simsilica.lemur.focus.FocusManagerState;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,14 +22,13 @@ import javax.imageio.ImageIO;
 import org.megastage.components.Mode;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
-import org.megastage.protocol.CharacterMode;
 import org.megastage.protocol.UserCommand;
 import org.megastage.systems.client.ClientNetworkSystem;
 import org.megastage.util.ID;
 
 public class ClientGlobals {
     public static ClientNetworkSystem network;
-    public static CharacterMode mode = CharacterMode.NONE;
+    public static ClientMode mode = ClientMode.NONE;
     
     public static int playerEntity;
     public static int baseEntity;
@@ -49,6 +52,9 @@ public class ClientGlobals {
     public static String player;
     public static String[] bootroms;
     public static String[] floppies;
+
+    public static Label[] chatLabel = new Label[4];
+    public static TextField cmdTextField;
 
     public static final HashMap<Class<?>, AppState> appStates = new HashMap<>(); 
  
@@ -121,7 +127,7 @@ public class ClientGlobals {
         
         Mode mode = (Mode) World.INSTANCE.getComponent(eid, CompType.Mode);
         if(mode != null) {
-            CharacterMode.change(mode.value);
+            ClientMode.change(mode.value);
         }
     }
 
@@ -156,6 +162,21 @@ public class ClientGlobals {
         } catch (IOException ex) {
             ex.printStackTrace();
             throw new IllegalArgumentException("Cant find file " + url);
+        }
+    }
+
+    public static void setCmdTextFieldEnabled(boolean enabled) {
+        if(enabled) {
+            GuiGlobals.getInstance().requestFocus(cmdTextField);
+        } else {
+            FocusManagerState fms = ClientGlobals.app.getStateManager().getState(FocusManagerState.class);
+            fms.setFocus(rootNode);
+            
+            String text = cmdTextField.getText();
+            if(!text.isEmpty()) {
+                cmdTextField.setText("");
+                ClientGlobals.userCommand.cmdText(text);
+            }
         }
     }
 }

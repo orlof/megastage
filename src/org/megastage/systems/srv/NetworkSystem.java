@@ -11,6 +11,7 @@ import org.megastage.protocol.Network;
 import org.megastage.protocol.PlayerConnection;
 import java.io.IOException;
 import org.megastage.components.BlockChange;
+import org.megastage.components.CmdText;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
@@ -28,7 +29,7 @@ import org.megastage.ecs.Group;
 import org.megastage.ecs.Processor;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
-import org.megastage.protocol.CharacterMode;
+import org.megastage.client.ClientMode;
 import org.megastage.protocol.Message;
 import org.megastage.protocol.Network.TimestampMessage;
 import org.megastage.protocol.PlayerIDMessage;
@@ -260,6 +261,10 @@ public class NetworkSystem extends Processor {
             teleport(connection, cmd.teleport);
         }
         
+        if(cmd.cmdText != null) {
+            cmdText(connection, cmd.cmdText);
+        }
+        
         if(cmd.floppy != null) {
             changeFloppy(connection, cmd.floppy);
         }
@@ -292,7 +297,7 @@ public class NetworkSystem extends Processor {
     private void unpickItem(PlayerConnection connection, UserCommand cmd) {
         connection.item = -1;
         Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
-        mode.setMode(CharacterMode.WALK);
+        mode.setMode(ClientMode.WALK);
     }
     
     private void pickItem(PlayerConnection connection, UserCommand cmd) {
@@ -315,7 +320,7 @@ public class NetworkSystem extends Processor {
                 if(kbd != null) {
                     connection.item = dcpu.hardware[i];
                     Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
-                    mode.setMode(CharacterMode.DCPU);
+                    mode.setMode(ClientMode.DCPU);
                     return;
                 }
             }
@@ -326,7 +331,7 @@ public class NetworkSystem extends Processor {
         if(fd != null) {
             connection.item = target;
             Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
-            mode.setMode(CharacterMode.MENU);
+            mode.setMode(ClientMode.MENU);
             return;
         }
     }
@@ -500,6 +505,11 @@ public class NetworkSystem extends Processor {
         float distance = pos.get().distance(buildPosition);
         
         return distance > min && distance < max;
+    }
+
+    private void cmdText(PlayerConnection connection, String cmdText) {
+        Log.info(cmdText);
+        World.INSTANCE.setComponent(connection.player, CompType.CmdText, CmdText.create(cmdText));
     }
 
     private class ServerNetworkListener extends Listener {

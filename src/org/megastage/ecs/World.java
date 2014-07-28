@@ -38,6 +38,7 @@ public class World {
     }
 
     public World(int entityCapacity, int componentCapacity) {
+        // I know, this should be moved to initialize() ...
         INSTANCE = this;
         
         capacity = entityCapacity;

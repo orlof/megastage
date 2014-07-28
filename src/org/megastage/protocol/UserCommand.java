@@ -12,6 +12,7 @@ public class UserCommand {
     public Quaternion rot = new Quaternion();
     public transient int count;
 
+    public String cmdText;
     public Keyboard keyboard = new Keyboard();
 
     public MoveShip ship;
@@ -29,6 +30,7 @@ public class UserCommand {
         move.zero();
         keyboard.keyEventPtr = count = 0;
 
+        cmdText = null;
         ship = null;
         pick = null;
         unpick = null;
@@ -45,6 +47,7 @@ public class UserCommand {
         sb.append("move=[").append(move.toString()).append("]");
         sb.append(", rot=[").append(rot.toString()).append("]");
         sb.append(", count=").append(count);
+        sb.append(", cmdText=").append(cmdText);
         sb.append(", keyboard=").append(keyboard);
         sb.append(", ship=").append(ship);
         sb.append(", pick=").append(pick);
@@ -62,6 +65,11 @@ public class UserCommand {
     
     public void look(Rotation rot) {
         this.rot.set(rot.get());
+        count++;
+    }
+    
+    public void cmdText(String text) {
+        this.cmdText = text;
         count++;
     }
 

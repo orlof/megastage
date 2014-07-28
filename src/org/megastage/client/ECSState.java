@@ -3,6 +3,12 @@ package org.megastage.client;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
+import com.simsilica.lemur.Container;
+import com.simsilica.lemur.Label;
+import com.simsilica.lemur.TextField;
+import com.simsilica.lemur.component.BoxLayout;
 import org.megastage.ecs.World;
 import org.megastage.systems.client.ClientMonitorRenderSystem;
 import org.megastage.systems.client.ClientNetworkSystem;
@@ -17,6 +23,22 @@ public class ECSState extends AbstractAppState {
     
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
+        Container menu = new Container(new BoxLayout(), "retro");
+
+        for(int i=0; i < ClientGlobals.chatLabel.length; i++) {
+            ClientGlobals.chatLabel[i] = menu.addChild(new Label("", "retro"));
+            ClientGlobals.chatLabel[i].setFontSize(10.0f);
+        }
+        
+        ClientGlobals.cmdTextField = menu.addChild(new TextField("", "retro"));
+        ClientGlobals.cmdTextField.setFontSize(10f);
+        ClientGlobals.cmdTextField.setPreferredWidth(ClientGlobals.cam.getWidth() * 0.90f);
+        
+        Camera cam = app.getCamera();
+        Vector3f pref = menu.getPreferredSize();
+        menu.setLocalTranslation(cam.getWidth() * 0.5f - pref.x * 0.5f, pref.y, 10);
+        ClientGlobals.app.getGuiNode().attachChild(menu);
+        
         world = new World();
 
         //world.addProcessor(new ImposterSystem(world, 1000));

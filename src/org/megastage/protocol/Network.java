@@ -1,11 +1,13 @@
 package org.megastage.protocol;
 
+import org.megastage.client.ClientMode;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import org.megastage.client.ClientGlobals;
 import org.megastage.components.BlockChange;
+import org.megastage.components.CmdText;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.components.Mass;
 import org.megastage.components.transfer.MonitorData;
@@ -83,7 +85,8 @@ public class Network {
             ChangeFloppy.class,
             ChangeBootRom.class,
             CharacterGeometry.class,
-            CharacterMode.class,
+            ClientMode.class,
+            CmdText.class,
             CollisionSphere.class,
             ComponentMessage.class,
             Cube3dMap.class,

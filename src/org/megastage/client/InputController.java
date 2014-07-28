@@ -63,7 +63,7 @@ public class InputController {
     }
     
     public static void enableTextCommand() {
-        map("TEXT_Enter", new KeyTrigger(KeyInput.KEY_TAB));
+        map("TEXT_Enter", new KeyTrigger(KeyInput.KEY_RETURN));
     }
     
     public static void enableGameExit() {
