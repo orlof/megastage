@@ -115,24 +115,25 @@ public class NetworkSystem extends Processor {
     }
 
     private void initConnection(PlayerConnection connection) {
-        Log.info(connection.nick);
-        for(int eid = characters.iterator(); eid > 0; eid = characters.next()) {
+        int eid = 0;
+        for(eid = characters.iterator(); eid > 0; eid = characters.next()) {
             CharacterGeometry cg = (CharacterGeometry) World.INSTANCE.getComponent(eid, CompType.CharacterGeometry);
-            Log.info(cg.toString());
             if(cg.isFree && cg.name.equalsIgnoreCase(connection.nick)) {
-                selectCharacter(connection, eid);
-                return;
+                break;
             }
         }
 
-        int eid = createNewCharacter(connection);
+        if(eid == 0) {
+            eid = createNewCharacter(connection);
+        }
+        
         selectCharacter(connection, eid);
     }
     
     private void selectCharacter(PlayerConnection connection, int eid) {
         connection.player = eid;
 
-        CharacterGeometry cg = (CharacterGeometry) world.getComponent(connection.player, CompType.CharacterGeometry);
+        CharacterGeometry cg = (CharacterGeometry) world.getComponent(eid, CompType.CharacterGeometry);
         cg.isFree = false;
 
         connection.sendTCP(new PlayerIDMessage(eid));
