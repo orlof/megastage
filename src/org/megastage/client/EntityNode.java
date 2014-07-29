@@ -14,6 +14,19 @@ public class EntityNode extends Node {
         super(ID.get(eid));
         this.eid = eid;
         
+        attachOffset();
+    }
+    
+    public void reset() {
+        while(getNumControls() > 0) {
+            removeControl(getControl(0));
+        }
+        
+        detachAllChildren();
+        attachOffset();
+    }
+    
+    private void attachOffset() {
         offset = new Node("[" + eid + "] offset");
         attachChild(offset);
     }

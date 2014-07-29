@@ -19,6 +19,18 @@ public class SpatialManager {
         return comp.node;
     }
     
+    public static EntityNode getOrCreateCleanNode(int eid) {
+        NodeComponent comp = (NodeComponent) World.INSTANCE.getOrCreateComponent(eid, CompType.NodeComponent, NodeComponent.class);
+ 
+        if(comp.node == null) {
+            comp.node = new EntityNode(eid);
+        } else {
+            comp.node.reset();
+        }
+        
+        return comp.node;
+    }
+    
     
     
     // NOT VERIFIED

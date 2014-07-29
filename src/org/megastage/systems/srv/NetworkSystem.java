@@ -103,7 +103,9 @@ public class NetworkSystem extends Processor {
     }
 
     private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
-        CharacterGeometry cg = (CharacterGeometry) World.INSTANCE.getComponent(connection.player, CompType.CharacterGeometry);
+        world.setComponent(connection.player, CompType.CmdText, CmdText.create("left"));
+
+        CharacterGeometry cg = (CharacterGeometry) world.getComponent(connection.player, CompType.CharacterGeometry);
         cg.isFree = true;
         //world.setComponent(connection.player, CompType.DeleteFlag, new DeleteFlag());
         connection.close();
@@ -135,6 +137,8 @@ public class NetworkSystem extends Processor {
 
         CharacterGeometry cg = (CharacterGeometry) world.getComponent(eid, CompType.CharacterGeometry);
         cg.isFree = false;
+
+        world.setComponent(connection.player, CompType.CmdText, CmdText.create("joined"));
 
         connection.sendTCP(new PlayerIDMessage(eid));
     }

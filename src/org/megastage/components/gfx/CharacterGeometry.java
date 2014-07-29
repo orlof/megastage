@@ -49,7 +49,7 @@ public class CharacterGeometry extends ReplicatedComponent {
     public void receive(int eid) {
         super.receive(eid);
 
-        EntityNode node = SpatialManager.getOrCreateNode(eid);
+        EntityNode node = SpatialManager.getOrCreateCleanNode(eid);
 
         node.addControl(new LocalPositionControl(eid));
         node.addControl(new AxisRotationControl(eid, false, true, false));

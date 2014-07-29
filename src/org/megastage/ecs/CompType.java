@@ -43,7 +43,6 @@ public class CompType {
     public static final int SphereOfInfluence = 42;
     public static final int ThermalLaserData = 43;
     public static final int Velocity = 44;
-    public static final int CmdText = 45;
     
     public static final int DCPU = 50;
     
@@ -116,6 +115,7 @@ public class CompType {
     static { parent[86] = 70; }
 
     public static final int BlockChanges = 90;
+    public static final int CmdText = 91;
 
     public static transient final String[] map = new String[100];
 
