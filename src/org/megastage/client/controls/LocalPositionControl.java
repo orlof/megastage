@@ -12,8 +12,8 @@ import org.megastage.ecs.World;
 
 public class LocalPositionControl extends AbstractControl {
     private final int eid;
-    private double interpolationTime, synchTime, nextSyncTime, interpolationStartTime;
-    private Vector3f spos = Vector3f.ZERO, epos = Vector3f.ZERO;
+
+    private long etime = 0;
 
     public LocalPositionControl(int eid) {
         this.eid = eid; 
@@ -23,39 +23,27 @@ public class LocalPositionControl extends AbstractControl {
     protected void controlUpdate(float tpf) {
         Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
         if(pos == null) {
-            Log.warn("no position component for " + eid);
+            Log.warn("Position for [%d] is missing", eid);
             return;
         }
 
-        if(synchTime < ClientGlobals.syncTime) {
-            synchTime = ClientGlobals.syncTime;
-            nextSyncTime = synchTime + 60;
-            spos = spatial.getLocalTranslation().clone();
-            epos = pos.getCopy();
-            
-            if(interpolationTime == 0) {
-                interpolationStartTime = ClientGlobals.syncTime;
-            } else {
-                interpolationStartTime = interpolationTime;
-            }
+        long ctime = World.INSTANCE.time;
+
+        if(pos.isDirty()) {
+            pos.setDirty(false);
+            etime = ctime + 50;
         }
 
-        interpolationTime = World.INSTANCE.time;
+        if(ctime > etime) {
+            spatial.setLocalTranslation(pos.get());
+            return;
+        }
         
-        if(World.INSTANCE.time > nextSyncTime) {
-            spatial.setLocalTranslation(epos);
-            return;
-        }
-
         // interpolate
-        Vector3f cur = spatial.getLocalTranslation();
-        float amount = (float) ((interpolationTime - interpolationStartTime) / (nextSyncTime - interpolationStartTime));
-        cur.interpolate(spos, epos, amount);
-
-        spatial.setLocalTranslation(cur);
-        //if(World.INSTANCE.hasComponent(eid, CompType.CharacterGeometry)) {
-        //    Log.info("[%d] %s", eid, cur);
-        //}
+        float timeLeft = ((float) etime - ctime) / 1000.0f;
+        float amount = tpf / (timeLeft + tpf);
+        Vector3f current = spatial.getLocalTranslation().clone();
+        spatial.setLocalTranslation(current.interpolate(pos.get(), amount));
     }
     
     @Override

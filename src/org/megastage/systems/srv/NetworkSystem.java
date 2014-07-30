@@ -147,6 +147,10 @@ public class NetworkSystem extends Processor {
         // create ship
         int ship = TemplateManager.create(world, "Apollo 13");
 
+        Position shipPos = (Position) world.getComponent(ship, CompType.Position);
+        shipPos.move(ServerGlobals.shipStartVec);
+        ServerGlobals.advanceShipStartVec();
+
         // create character
         int eid = TemplateManager.create(world, "Player");
 
