@@ -11,6 +11,8 @@ import org.megastage.ecs.World;
 
 public class GlobalRotationControl extends AbstractControl {
     
+    private long etime = 0;
+
     public GlobalRotationControl() {
     }
 
@@ -26,8 +28,26 @@ public class GlobalRotationControl extends AbstractControl {
             spatial.setLocalRotation(Quaternion.IDENTITY);
             return;
         }
+        
+        long ctime = World.INSTANCE.time;
 
-        spatial.setLocalRotation(rot.get().inverse());
+        if(rot.isDirty()) {
+            rot.setDirty(false);
+            etime = ctime + 50;
+        }
+
+        if(ctime > etime) {
+            spatial.setLocalRotation(rot.get().inverse());
+            return;
+        }
+        
+        // interpolate
+        float timeLeft = ((float) etime - ctime) / 1000.0f;
+        float amount = tpf / (timeLeft + tpf);
+
+        Quaternion current = spatial.getLocalRotation().clone();
+        current.slerp(rot.get().inverse(), amount);
+        spatial.setLocalRotation(current);
     }
 
     @Override
