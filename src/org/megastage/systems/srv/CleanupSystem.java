@@ -14,7 +14,7 @@ public class CleanupSystem extends Processor {
     @Override
     protected void process(int eid) {
         BindTo bindTo = (BindTo) world.getComponent(eid, CompType.BindTo);
-        if(bindTo.parent == 0) {
+        if(!world.hasEntity(bindTo.parent)) {
             world.setComponent(eid, CompType.DeleteFlag, new DeleteFlag());
         }
     }

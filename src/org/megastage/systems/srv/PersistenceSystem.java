@@ -4,24 +4,19 @@ import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
-import org.megastage.util.Log;
-import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import org.megastage.ecs.CompType;
 import org.megastage.protocol.Network;
+import org.megastage.util.Log;
 
 public class PersistenceSystem extends Processor {
     Kryo kryo;    
-    Output output;
     
     File stateFile = new File("gamestate.dat");
     
-    byte[] buf = new byte[1024*1024];
-    
     public PersistenceSystem(World world, long interval) {
-        super(world, interval, CompType.PersistenceFlag);
+        super(world, interval);
 
         kryo = new Kryo();
         Network.register(kryo);
@@ -29,44 +24,17 @@ public class PersistenceSystem extends Processor {
 
     @Override
     protected void process() {
-        output = new Output(buf);
-        
-        for(int eid = group.iterator(); eid != 0; eid = group.next()) {
-            write(eid);
-        }
-
-        output.writeInt(0);
-        output.flush();
-        output.close();
-        
-        writeState(stateFile, buf, output.total());
-    }
-
-    private File writeState(File file, byte[] buf, int length) {
-        BufferedOutputStream out = null;
+        long stime = System.nanoTime();
         try {
-            out = new BufferedOutputStream(new FileOutputStream(file), length);
-            out.write(buf, 0, length);
-        } catch(IOException ex) {
-            Log.error("Cannot store state. ", ex);
-            return null;
-        } finally {
-            if(out != null) {
-                try {
-                    out.flush();
-                    out.close();
-                } catch (IOException ex) {}
-            }
-        }
+            Output output = new Output(new FileOutputStream(stateFile));
 
-        return file;
-    }
-    
-    private void write(int eid) {
-        output.writeInt(eid);
-        
-        for(Object comp: world.population[eid]) {
-            kryo.writeClassAndObject(output, comp);
+            kryo.writeClassAndObject(output, world.population);
+
+            output.close();
+        } catch (FileNotFoundException ex) {
+            Log.error(ex);
         }
+        long etime = System.nanoTime();
+        Log.info("Persistence delay %d", (etime - stime));
     }
 }

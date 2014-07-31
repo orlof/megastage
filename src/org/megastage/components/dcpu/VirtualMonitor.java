@@ -58,6 +58,10 @@ public class VirtualMonitor extends DCPUHardware {
     @Override
     public boolean isDirty() {
         DCPU dcpu = (DCPU) World.INSTANCE.getComponent(dcpuEID, CompType.DCPU);
+        if(dcpu == null) {
+            // only happens while waiting CleanupSystem
+            return false;
+        }
 
         dirty |= data.videoAddr == 0 ?
                 data.video.update(LEMUtil.defaultVideo):

@@ -130,6 +130,7 @@ public class World {
             throw new RuntimeException("No space for new entity");
         }
 
+        // use free list head
         return createEntity(next[1]);
     }
     
@@ -168,7 +169,7 @@ public class World {
             bc.delete(eid);
         }
 
-        // remove all the references
+        // clean all references
         for(BaseComponent bc = compIter(eid); bc != null; bc = compNext()) {
             population[eid][compIterPos] = null;
             population[eid][CompType.parent[compIterPos]] = null;
@@ -179,7 +180,7 @@ public class World {
         next[prev[eid]] = next[eid];
         free[eid] = true;
         
-        // add eid to free list
+        // append to free list
         next[eid] = 1;
         prev[eid] = prev[1];
         next[prev[1]] = eid;

@@ -11,6 +11,7 @@ import org.megastage.systems.srv.CollisionSystem;
 import org.megastage.systems.srv.EngineAccelerationSystem;
 import org.megastage.systems.srv.EntityInitializeSystem;
 import org.megastage.systems.srv.ExplosionSystem;
+import org.megastage.systems.srv.PersistenceSystem;
 import org.megastage.systems.srv.ShipMovementSystem;
 
 public class Game {
@@ -23,6 +24,7 @@ public class Game {
         world.addProcessor(new EntityInitializeSystem(world, 0));
         world.addProcessor(new CleanupSystem(world, 0));
         world.addProcessor(new NetworkSystem(world, 0));
+        world.addProcessor(new PersistenceSystem(world, 60000));
 
 //        world.addProcessor(new PowerControllerSystem(world, 1000));
         
