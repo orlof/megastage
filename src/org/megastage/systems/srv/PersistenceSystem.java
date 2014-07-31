@@ -11,9 +11,13 @@ import org.megastage.protocol.Network;
 import org.megastage.util.Log;
 
 public class PersistenceSystem extends Processor {
-    Kryo kryo;    
+    Kryo kryo;
+    int runCount;
     
-    File stateFile = new File("gamestate.dat");
+    public static final File[] files = new File[] {
+        new File("gamestate.001"),
+        new File("gamestate.002"),
+    };
     
     public PersistenceSystem(World world, long interval) {
         super(world, interval);
@@ -24,11 +28,13 @@ public class PersistenceSystem extends Processor {
 
     @Override
     protected void process() {
+        File file = files[(runCount++) % files.length];
+
         long stime = System.nanoTime();
         try {
-            Output output = new Output(new FileOutputStream(stateFile));
+            Output output = new Output(new FileOutputStream(file));
 
-            kryo.writeClassAndObject(output, world.population);
+            kryo.writeClassAndObject(output, world);
 
             output.close();
         } catch (FileNotFoundException ex) {

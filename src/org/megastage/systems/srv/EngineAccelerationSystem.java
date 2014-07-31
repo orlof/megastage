@@ -18,6 +18,10 @@ public class EngineAccelerationSystem extends Processor {
     @Override
     protected void process(int eid) {
         VirtualEngine engine = (VirtualEngine) world.getComponent(eid, CompType.VirtualEngine);
+        if(!world.hasEntity(engine.shipEID)) {
+            // should only happen during CleanupSystem selay
+            return;
+        }
 
         if(engine.isActive()) {
             Mass mass = (Mass) world.getComponent(engine.shipEID, CompType.Mass);

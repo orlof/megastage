@@ -5,27 +5,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class World {
-    public static World INSTANCE;
+    public transient static World INSTANCE;
 
     // stores components for each entity
-    public int capacity;
-    public int componentCapacity;
+    public transient int capacity;
+    public transient int componentCapacity;
     public int size;
     public BaseComponent[][] population;
 
     // manages int ids
-    protected int[] next, prev;
-    protected boolean[] free;
+    public int[] next, prev;
+    public boolean[] free;
 
     // manage groups (start using Bag if lot of changes)
-    private Group[] groups = new Group[100];
-    private int groupsSize = 0;
+    private transient Group[] groups = new Group[100];
+    private transient int groupsSize = 0;
 
     // manage systems (start using Bag if lot of changes)
-    private Processor[] processors = new Processor[100];
-    private Map<Class<? extends Processor>, Processor> processorsMap = new HashMap<>();
-;
-    private int processorsSize = 0;
+    private transient Processor[] processors = new Processor[100];
+    private transient Map<Class<? extends Processor>, Processor> processorsMap = new HashMap<>();
+    
+    private transient int processorsSize = 0;
     
     // time management
     public long tickCount = 0;
@@ -260,9 +260,15 @@ public class World {
             groups[i].update(eid);
         }
     }
+    
+    public void updateAll() {
+        for(int eid=eidIter(); eid > 0; eid=eidNext()) {
+            updateEntityInAllGroups(eid);
+        }
+    }
 
     // Here is the single thread iterator
-    private int eidIterPos;
+    private transient int eidIterPos;
 
     public int eidIter() {
         return eidIterPos = next[0];
@@ -272,9 +278,9 @@ public class World {
         return eidIterPos = next[eidIterPos];
     }
 
-    private int compIterEID = 0;
-    private int compIterPos = 0;
-    private Class compIterType;
+    private transient int compIterEID = 0;
+    private transient int compIterPos = 0;
+    private transient Class compIterType;
 
     public BaseComponent compIter(int eid) {
         return compIter(eid, BaseComponent.class);

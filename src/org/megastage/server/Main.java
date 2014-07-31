@@ -19,6 +19,10 @@ public class Main {
         Element root = readConfig(cmd.getString("--config", "world.xml"));
         Game game = new Game(root);
 
+        if(!game.loadSavedWorld()) {
+            game.initializeNewWorld(root);
+        }
+
         game.loopForever();
     }
 

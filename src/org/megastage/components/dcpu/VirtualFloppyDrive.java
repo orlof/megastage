@@ -206,6 +206,8 @@ class FloppyOperation extends ToStringComponent {
     int memory;
     long finish;
 
+    public FloppyOperation() {}
+    
     public FloppyOperation(FloppyOperationType type, int sector, int memory, long cycles) {
         this.type = type;
         this.sector = sector;

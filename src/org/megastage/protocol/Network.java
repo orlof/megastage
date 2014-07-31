@@ -134,6 +134,7 @@ public class Network {
             Velocity.class,
             VirtualFloppyDriveData.class,
             VoidGeometry.class,
+            World.class,
         };
 
         for(Class clazz: register) {
