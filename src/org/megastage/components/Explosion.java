@@ -20,7 +20,7 @@ public class Explosion extends ReplicatedComponent {
             explosionNode.addControl(new ExplosionControl(eid));
 
             EntityNode node = SpatialManager.getOrCreateNode(eid);
-            node.offset.attachChild(explosionNode);
+            node.attachChild(explosionNode);
         }
 
         World.INSTANCE.setComponent(eid, this);

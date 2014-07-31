@@ -23,7 +23,9 @@ public class ExplosionSystem extends Processor {
                 case 1: // particles
                 case 2: // particles, ligth
                 case 3: // particles
+                    break;
                 case 4: // remove ship spatial
+                    world.removeComponent(eid, CompType.CollisionType);
                 case 5: // kill particles
                 case 6: // kill particles, remove light, remove ship node
                     //ServerGlobals.addUDPEvent(new ExplosionEvent(e, explosion.state));

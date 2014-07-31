@@ -7,8 +7,10 @@ import org.megastage.systems.srv.NetworkSystem;
 import org.jdom2.Element;
 import org.megastage.ecs.World;
 import org.megastage.systems.srv.AttitudeControlSystem;
+import org.megastage.systems.srv.CollisionSystem;
 import org.megastage.systems.srv.EngineAccelerationSystem;
 import org.megastage.systems.srv.EntityInitializeSystem;
+import org.megastage.systems.srv.ExplosionSystem;
 import org.megastage.systems.srv.ShipMovementSystem;
 
 public class Game {
@@ -31,8 +33,8 @@ public class Game {
         //world.addProcessor(new GravityAccelerationSystem(world, ));
 
           world.addProcessor(new ShipMovementSystem(world, 0));
-//        world.addProcessor(new CollisionSystem(world, 200));
-//        world.addProcessor(new ExplosionSystem(world, 201));
+          world.addProcessor(new CollisionSystem(world, 0));
+          world.addProcessor(new ExplosionSystem(world, 0));
         
 //        world.addProcessor(new GravityManagerSystem(world, 5000));
 //        world.addProcessor(new RadarManagerSystem(world, 1000));
