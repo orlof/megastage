@@ -15,6 +15,7 @@ import org.jdom2.Element;
 import org.megastage.components.gfx.CharacterGeometry;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.KryoWorld;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Network;
 import org.megastage.systems.srv.AttitudeControlSystem;
@@ -30,7 +31,7 @@ public class Game {
     private static long TICK_SPEED = 50;
 
     public Game(Element root) throws Exception {
-        world = new World();
+        world = new KryoWorld();
 
         world.addProcessor(new EntityInitializeSystem(world, 0));
         world.addProcessor(new CleanupSystem(world, 0));
@@ -71,45 +72,6 @@ public class Game {
         }
     }
     
-    public boolean loadSavedWorld() {
-        File latest = null;
-        for(File file: PersistenceSystem.files) {
-            if(file.exists() && (latest == null || file.lastModified() > latest.lastModified())) {
-                latest = file;
-            }
-        }
-        
-        if(latest != null) {
-            try {
-                Kryo kryo = new Kryo();
-                Network.register(kryo);
-                
-                try (Input input = new Input(new FileInputStream(latest))) {
-                    World tmp = (World) kryo.readClassAndObject(input);
-                    world.size = tmp.size;
-                    world.population = tmp.population;
-                    world.next = tmp.next;
-                    world.prev = tmp.prev;
-                    world.free = tmp.free;
-                }
-                world.updateAll();
-                
-                for(int i=0; i < world.population.length; i++) {
-                    if(world.population[i][CompType.CharacterGeometry] != null) {
-                        ((CharacterGeometry) (world.population[i][CompType.CharacterGeometry])).isFree = true;
-                    }
-                }
-                
-                return true;
-            } catch (FileNotFoundException ex) {
-                Log.error(ex);
-                return false;
-            }
-        }
-        
-        return false;
-    }
-
     public void loopForever() throws InterruptedException {
         while (true) {
             long time = System.currentTimeMillis();
@@ -121,5 +83,19 @@ public class Game {
                 Thread.sleep(TICK_SPEED-time);
             }
         }
+    }
+
+    public boolean loadSavedWorld() {
+        if(((KryoWorld) world).load()) {
+            for(int eid=world.eidIter(); eid > 0; eid = world.eidNext()) {
+                if(world.hasComponent(eid, CompType.CharacterGeometry)) {
+                    CharacterGeometry cg = (CharacterGeometry) world.getComponent(eid, CompType.CharacterGeometry);
+                    cg.isFree = true;
+                }
+            }
+
+            return true;
+        }
+        return false;
     }
 }

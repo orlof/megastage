@@ -7,6 +7,7 @@ import com.esotericsoftware.kryo.io.Output;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import org.megastage.ecs.KryoWorld;
 import org.megastage.protocol.Network;
 import org.megastage.util.Log;
 
@@ -28,19 +29,6 @@ public class PersistenceSystem extends Processor {
 
     @Override
     protected void process() {
-        File file = files[(runCount++) % files.length];
-
-        long stime = System.nanoTime();
-        try {
-            Output output = new Output(new FileOutputStream(file));
-
-            kryo.writeClassAndObject(output, world);
-
-            output.close();
-        } catch (FileNotFoundException ex) {
-            Log.error(ex);
-        }
-        long etime = System.nanoTime();
-        Log.info("Persistence delay %d", (etime - stime));
+        ((KryoWorld) world).save();
     }
 }

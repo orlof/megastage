@@ -3,29 +3,31 @@ package org.megastage.ecs;
 import org.megastage.util.Log;
 import java.util.HashMap;
 import java.util.Map;
+import org.megastage.util.Bag;
 
 public class World {
-    public transient static World INSTANCE;
+    public static World INSTANCE;
 
     // stores components for each entity
-    public transient int capacity;
-    public transient int componentCapacity;
-    public int size;
-    public BaseComponent[][] population;
+    protected int size;
+    protected int capacity;
+    protected int componentCapacity;
+    protected BaseComponent[][] population;
 
     // manages int ids
-    public int[] next, prev;
-    public boolean[] free;
+    protected int[] next, prev;
+    protected boolean[] free;
 
     // manage groups (start using Bag if lot of changes)
-    private transient Group[] groups = new Group[100];
-    private transient int groupsSize = 0;
+    // protected transient Group[] groups = new Group[100];
+    // protected transient int groupsSize = 0;
+    private Bag<Group> groups = new Bag<>(100);
 
     // manage systems (start using Bag if lot of changes)
-    private transient Processor[] processors = new Processor[100];
-    private transient Map<Class<? extends Processor>, Processor> processorsMap = new HashMap<>();
+    private Processor[] processors = new Processor[100];
+    private int processorsSize = 0;
+    private Map<Class<? extends Processor>, Processor> processorsMap = new HashMap<>();
     
-    private transient int processorsSize = 0;
     
     // time management
     public long tickCount = 0;
@@ -118,11 +120,7 @@ public class World {
     }
 
     public Group createGroup(int... cid) {
-        if (groupsSize == groups.length) {
-            throw new RuntimeException("No space for new group");
-        }
-        
-        return groups[groupsSize++] = new Group(this, cid);
+        return groups.add(new Group(this, cid));
     }
 
     public int createEntity() {
@@ -256,8 +254,8 @@ public class World {
     }
 
     private void updateEntityInAllGroups(int eid) {
-        for (int i = 0; i < groupsSize; i++) {
-            groups[i].update(eid);
+        for(Group group: groups) {
+            group.update(eid);
         }
     }
     

@@ -252,13 +252,15 @@ public class Bag<E> implements Iterable<E> {
      *
      * @param e element to be added to this list
      */
-    public void add(E e) {
+    public E add(E e) {
         // is size greater than capacity increase capacity
         if (size == data.length) {
             grow();
         }
 
         data[size++] = e;
+        
+        return e;
     }
 
     /**
