@@ -2,31 +2,50 @@ Megastage
 =========
 <i>"We still stare at the Heavens while we should walk among the Stars" -- Uriel Uriel</i>
 
-BACKGROUND
+Megastage is a 3d space opera with DCPU, block building, resource gathering, item crafting, ship combat and FPS.
+
+Development is still in very early phase.
+
+www.megastage.org
 
 
 
-LINUX INSTALLATION
+DEVELOPMENT INFORMATION
 
-You must have recent enough java installed. i.e. 
+We value
+ - idea over content
+ - playability over graphics
+ - game over simulation
 
-    Java(TM) SE Runtime Environment (build 1.7.0_25-b15)
+Development environment:
+ - LG E300 laptop
+   - Intel(R) Pentium(R) Dual  CPU  T2390  @ 1.86GHz
+   - Radeon Xpress 1250
+   - 3GB
+   - Lubuntu 12.04
 
-Download distribution package megastage.zip by following the link below. 
+CI, test server, web server:
+ - EC2 micro instance
 
-    https://github.com/orlof/megastage/releases
+Repository organization:
+ - "master" branch is the latest alpha release (this can be days or months behind the development)
+ - "release/vx.yy" branches are the corresping alpha releases (latest release = master)
+ - "develop" latest and greatest branch that contains all the merged feature branches
+ - "feature/xyz" feature branches that may be totally broken
 
-Unpack the megastage.zip distribution package by typing:
+Every release will contain Windows installation package and .zip file for other platforms (linux).
 
-    unzip -d megastage megastage.zip
+TEAM:
+ - Megastage
+   - Orlof
+ - Graphics
+   - ?
+ - Audio
+   - ?
+ - Web
+   - Orlof
+ - Web graphics
+   - StillNoNumber
+ - Ship Control System
+   - Gryptix
 
-Go to the installation directory:
-
-    cd megastage
-
-Start megastage by typing:
-
-    ./client.sh (linux)
-
-Development server is available in:
-    
