@@ -6,6 +6,7 @@ megastage.jar
 *.war
 *.ear
 *~
+gamestate.*
 .idea/
 
 /build/

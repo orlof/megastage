@@ -24,7 +24,7 @@ Development is still in very early phase.
 <h6>Development environment</h6>
  - LG E300 laptop
    - Intel(R) Pentium(R) Dual  CPU  T2390  @ 1.86GHz
-   - Radeon Xpress 1250
+   - Radeon Xpress 1250, 1280x800
    - 3GB
    - Lubuntu 12.04
 

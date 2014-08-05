@@ -41,7 +41,7 @@ public enum JME3Electricity {
                 Geometry childGeometry = (Geometry) child;
                 electricity.setMesh(childGeometry.getMesh());
 
-                electricity.setMaterial(material);
+                electricity.setMaterial(getMaterial());
 
                 node.attachChild(electricity);
             }

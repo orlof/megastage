@@ -369,6 +369,15 @@
                 <component type="Rotation"/>
                 <component type="srv.SynchronizeFlag"/>
             </entity>
+            <entity name="ForceField">
+                <component type="dcpu.VirtualForceField" min_radius="5" max_radius="30" energy_density="50" energy_evaporation="0.005" energy="0" power="1000"/>
+                <component type="gfx.ForceFieldGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="Position" x="5.5" y="1.5" z="8.5"/>
+                <component type="Rotation"/>
+                <component type="srv.CollisionSphere" radius="0"/>
+                <component type="srv.SynchronizeFlag"/>
+            </entity>
         </entity>
     </entity>
 
@@ -737,6 +746,15 @@
                 <component type="gfx.BindTo"/>
                 <component type="Position" x="14.5" y="1.5" z="4.5"/>
                 <component type="Rotation"/>
+                <component type="srv.SynchronizeFlag"/>
+            </entity>
+            <entity name="ForceField">
+                <component type="dcpu.VirtualForceField" min_radius="5" max_radius="30" energy_density="50" energy_evaporation="0.005" energy="0" power="1000"/>
+                <component type="gfx.ForceFieldGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="Position" x="7.5" y="2.5" z="2.5"/>
+                <component type="Rotation"/>
+                <component type="srv.CollisionSphere" radius="0"/>
                 <component type="srv.SynchronizeFlag"/>
             </entity>
         </entity>

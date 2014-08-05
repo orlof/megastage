@@ -17,15 +17,15 @@ public class ForceFieldGeometry extends ItemGeometryComponent {
     @Override
     protected void initGeometry(Node node, int eid) {
         node.attachChild(createBase());
-        node.attachChild(createDome());
+        node.attachChild(createModel());
         node.attachChild(createShield(eid));
     }
      
-    private Spatial createDome() {
-        Node node = new Node("dome");
+    private Spatial createModel() {
+        Node node = new Node("model");
 
-        Geometry cylinder = new Geometry("item", new Sphere(12, 12, 0.45f));
-        node.attachChild(cylinder);
+        Geometry sphere = new Geometry("item", new Sphere(12, 12, 0.45f));
+        node.attachChild(sphere);
         node.setLocalTranslation(0, 0.05f, 0);
 
         JME3Material.setLightingMaterial(node, ColorRGBA.Black);
@@ -52,7 +52,7 @@ public class ForceFieldGeometry extends ItemGeometryComponent {
         forceFieldControl.setVisibility(0.1f); // Set shield visibility.
  
         // Set a texture to the shield
-        forceFieldControl.setTexture(JME3Material.getTexture("Textures/fs_texture.png"));
+        forceFieldControl.setTexture(JME3Material.getTexture("fs_texture.png"));
         
         return geom;
     }
