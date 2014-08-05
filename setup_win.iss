@@ -2,10 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Megastage"
-#define MyAppVersion "0.52"
+#define MyAppVersion "0.60"
 #define MyAppPublisher "Orlof"
-#define MyAppURL "http://github.com/orlof"
-#define MyAppExeName "full.bat"
+#define MyAppURL "http://www.megastage.org/"
+#define MyAppExeName "megastage.bat"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -33,7 +33,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "C:\Program Files (x86)\Java\jre7\*"; DestDir: "{app}\jre7"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\My Dropbox\megastage\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
