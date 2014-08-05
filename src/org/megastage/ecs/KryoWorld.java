@@ -8,7 +8,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
-import org.megastage.components.gfx.CharacterGeometry;
 import org.megastage.protocol.Network;
 import org.megastage.util.Log;
 
@@ -39,6 +38,7 @@ public class KryoWorld extends World {
             try {
                 try (Input input = new Input(new FileInputStream(latest))) {
                     time = kryo.readObject(input, long.class);
+                    tickCount = kryo.readObject(input, long.class);
                     size = kryo.readObject(input, int.class);
                     population = kryo.readObject(input, BaseComponent[][].class);
                     next = kryo.readObject(input, int[].class);
@@ -67,6 +67,7 @@ public class KryoWorld extends World {
         try {
             try (Output output = new Output(new FileOutputStream(file))) {
                 kryo.writeObject(output, time);
+                kryo.writeObject(output, tickCount);
                 kryo.writeObject(output, size);
                 kryo.writeObject(output, population);
                 kryo.writeObject(output, next);
@@ -77,8 +78,8 @@ public class KryoWorld extends World {
             Log.error(ex);
         }
         long etime = System.nanoTime();
-        Log.info("Persistence delay %d", (etime - stime));
-    }
+        Log.info("Persistence delay %d ms", ((etime - stime) / 1000000));
+    } 
 
     private File getLatestFile(File[] files) {
         File latest = null;

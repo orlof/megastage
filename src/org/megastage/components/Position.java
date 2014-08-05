@@ -39,6 +39,14 @@ public class Position extends ReplicatedComponent {
             setDirty(true);
         }
     }
+    
+    public float distance(Position other) {
+        return vector.distance(other.vector);
+    }
+            
+    public float distanceSquared(Position other) {
+        return vector.distanceSquared(other.vector);
+    }
             
     public Vector3f getGlobalCoordinates(int eid) {
         Vector3f coord = new Vector3f(vector);

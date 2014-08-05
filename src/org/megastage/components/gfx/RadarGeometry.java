@@ -19,10 +19,13 @@ public class RadarGeometry extends ItemGeometryComponent {
     }
     
     private Spatial createAntenna(int eid) {
-        Node spinner = new Node("Antenna");
+        Node spinnerRotator = new Node("SpinnerRotator");
+        spinnerRotator.addControl(new LookAtControl(eid));
         
+        Node spinner = new Node("Antenna");
         Quaternion t = new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0);
         spinner.setLocalRotation(t);
+        spinnerRotator.attachChild(spinner);
         
         Geometry inside = new Geometry("inside", new Dome(Vector3f.ZERO, 12, 12, 0.38f, true));
         JME3Material.setLightingMaterial(inside, new ColorRGBA(0.4f, 0.4f, 0.4f, 1.0f));
@@ -32,7 +35,6 @@ public class RadarGeometry extends ItemGeometryComponent {
         JME3Material.setLightingMaterial(outside, new ColorRGBA(0.8f, 0.8f, 0.8f, 1.0f));
         spinner.attachChild(outside);
         
-        spinner.addControl(new LookAtControl(eid));
-        return spinner;
+        return spinnerRotator;
     }
 }

@@ -6,9 +6,8 @@ import org.megastage.components.Mass;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.server.GravityField;
-import org.megastage.server.SoiData;
 import org.megastage.systems.srv.GravityManagerSystem;
-import org.megastage.systems.srv.SoiManagerSystem;
+import org.megastage.server.SoiManager;
 import org.megastage.util.Bag;
 import org.megastage.util.Globals;
 
@@ -89,12 +88,8 @@ public class VirtualGravitySensor extends DCPUHardware {
     }
 
     private boolean getSOISignature(int ship, DCPU dcpu) {
-        SoiData soi = SoiManagerSystem.INSTANCE.getSoi(ship);
-        if(soi != null) {
-            dcpu.registers[1] = (char) (soi.eid & 0xffff);
-        } else {
-            dcpu.registers[1] = 0;            
-        }
+        int soi = SoiManager.getSoi(ship);
+        dcpu.registers[1] = (char) (soi & 0xffff);
         return true;
     }
 

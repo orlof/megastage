@@ -1,23 +1,14 @@
 package org.megastage.server;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.megastage.util.Log;
 import org.megastage.systems.srv.DCPUSystem;
 import org.megastage.systems.srv.CleanupSystem;
 import org.megastage.systems.srv.NetworkSystem;
 import org.jdom2.Element;
 import org.megastage.components.gfx.CharacterGeometry;
-import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.KryoWorld;
 import org.megastage.ecs.World;
-import org.megastage.protocol.Network;
 import org.megastage.systems.srv.AttitudeControlSystem;
 import org.megastage.systems.srv.CollisionSystem;
 import org.megastage.systems.srv.EngineAccelerationSystem;
@@ -25,6 +16,7 @@ import org.megastage.systems.srv.EntityInitializeSystem;
 import org.megastage.systems.srv.ExplosionSystem;
 import org.megastage.systems.srv.PersistenceSystem;
 import org.megastage.systems.srv.ShipMovementSystem;
+import org.megastage.systems.srv.TargetManagerSystem;
 
 public class Game {
     World world;
@@ -50,9 +42,7 @@ public class Game {
           world.addProcessor(new ExplosionSystem(world, 0));
         
 //        world.addProcessor(new GravityManagerSystem(world, 5000));
-//        world.addProcessor(new RadarManagerSystem(world, 1000));
-//        world.addProcessor(new SoiManagerSystem(world, 10000));
-//        world.addProcessor(new TargetManagerSystem(world, 0));
+        world.addProcessor(new TargetManagerSystem(world, 0));
         
 //        world.addProcessor(new ForceFieldSystem(world, 1000));
 //        world.addProcessor(new ThermalLaserSystem(world, 0));
@@ -60,6 +50,9 @@ public class Game {
         world.addProcessor(new DCPUSystem(world, 0));
 
         world.initialize();
+        
+        RadarManager.initialize();
+        SoiManager.initialize();
         
         for(Element element: root.getChildren("entity-template")) {
             TemplateManager.addTemplate(element);

@@ -209,6 +209,15 @@ public class UserCommand {
         public char[] keyEvents = new char[24];
         public int keyEventPtr = 0;
 
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i < keyEventPtr; ) {
+                sb.append(keyEvents[i++]);
+                sb.append((int) (keyEvents[i++]));
+            }
+            return sb.toString();
+        }
+        
         private void keyPressed(char keyChar) {
             if(keyEventPtr > keyEvents.length) {
                 Log.info("Keybuffer overflow");

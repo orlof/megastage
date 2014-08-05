@@ -4,6 +4,7 @@ import org.megastage.util.Log;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
+import org.megastage.util.ID;
 
 public class VirtualKeyboard extends DCPUHardware {
     private char[] keyBuffer = new char[64];
@@ -24,7 +25,6 @@ public class VirtualKeyboard extends DCPUHardware {
     public void keyTyped(int key) {
         if (key < 20 || key >= 127) return;
         if (keyBuffer[kwp & 0x3F] == 0) {
-            Log.trace("write keyBuffer[%d]=%s", kwp, Integer.toHexString(key));
             keyBuffer[kwp++ & 0x3F] = (char) key;
             doInterrupt = true;
         }
@@ -49,6 +49,7 @@ public class VirtualKeyboard extends DCPUHardware {
 
     @Override
     public void interrupt(DCPU dcpu) {
+        //Log.info("%s", dcpu);
         int a = dcpu.registers[0];
         if (a == 0) {
             for (int i = 0; i < keyBuffer.length; i++) {
@@ -74,6 +75,7 @@ public class VirtualKeyboard extends DCPUHardware {
 
     @Override
     public void tick60hz(DCPU dcpu) {
+        //Log.info("%s", dcpu);
         if (doInterrupt) {
             if (interruptMessage != 0) dcpu.interrupt(interruptMessage);
             doInterrupt = false;

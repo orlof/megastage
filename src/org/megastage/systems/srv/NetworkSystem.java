@@ -285,19 +285,28 @@ public class NetworkSystem extends Processor {
         Keyboard keys = cmd.keyboard;
         
         if(keys.keyEventPtr > 0 && connection.item >= 0) {
+            Log.info(keys.toString());
+            
+            Log.info("Connection item: %d %s", connection.item, ID.get(connection.item));
+        
             VirtualKeyboard kbd = (VirtualKeyboard) world.getComponent(connection.item, CompType.VirtualKeyboard);
-
-            for(int i=0; i < keys.keyEventPtr; /*NOP*/ ) {
-                switch(keys.keyEvents[i++]) {
-                    case 'T':
-                        kbd.keyTyped(keys.keyEvents[i++]);
-                        break;
-                    case 'P':
-                        kbd.keyPressed(keys.keyEvents[i++]);
-                        break;
-                    case 'R':
-                        kbd.keyReleased(keys.keyEvents[i++]);
-                        break;
+            if(kbd == null) {
+                Log.warn("No virtual keyboard to handle typing");
+            } else {
+                for(int i=0; i < keys.keyEventPtr; /*NOP*/ ) {
+                    switch(keys.keyEvents[i++]) {
+                        case 'T':
+                            kbd.keyTyped(keys.keyEvents[i++]);
+                            break;
+                        case 'P':
+                            kbd.keyPressed(keys.keyEvents[i++]);
+                            break;
+                        case 'R':
+                            kbd.keyReleased(keys.keyEvents[i++]);
+                            break;
+                        default:
+                            assert false;
+                    }
                 }
             }
         }

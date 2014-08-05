@@ -491,7 +491,6 @@ public class DCPUSystem extends Processor {
     }
 
     private void tick60hz(DCPU dcpu, int eid) {
-        Log.trace(ID.get(eid));
         DCPUHardware hw = (DCPUHardware) world.getComponent(eid, CompType.DCPUHardware);
         hw.tick60hz(dcpu);
     }

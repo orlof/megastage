@@ -7,10 +7,10 @@ import org.megastage.components.Mass;
 import org.megastage.components.Orbit;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
+import org.megastage.util.Log;
 
 public class SphereOfInfluence extends BaseComponent {
-    public double radius;
-    public int priority = 0;
+    public float radius;
     
     public SphereOfInfluence() {
         super();
@@ -18,7 +18,6 @@ public class SphereOfInfluence extends BaseComponent {
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
-        radius = getDoubleValue(element, "radius", 0.0);
         return null;
     }
 
@@ -26,21 +25,17 @@ public class SphereOfInfluence extends BaseComponent {
     public void initialize(int eid) {
         Orbit orbit = (Orbit) World.INSTANCE.getComponent(eid, CompType.Orbit);
         if(orbit == null) {
-            priority = -1;
+            Log.warn("Cannot calculate SOI for [%d]", eid);
         } else {
             Mass mass = (Mass) World.INSTANCE.getComponent(eid, CompType.Mass);
             Mass centerMass = (Mass) World.INSTANCE.getComponent(orbit.center, CompType.Mass);
-
-            if(World.INSTANCE.hasComponent(orbit.center, CompType.Orbit)) {
-                priority++;
-            }
 
             radius = calculateSOI(orbit.distance, mass.value, centerMass.value);
         }
     }
 
-    public static double calculateSOI(double orbitalDistance, double mass, double centerMass) {
-        return orbitalDistance * Math.pow(mass / centerMass, 0.4);
+    public static float calculateSOI(float orbitalDistance, float mass, float centerMass) {
+        return (float) (orbitalDistance * Math.pow(mass / centerMass, 0.4f));
     }
     
     public static double calculateHillSphere(double orbitalDistance, double mass, double centerMass) {
@@ -48,7 +43,7 @@ public class SphereOfInfluence extends BaseComponent {
     }
     
     public static void main(String[] args) throws Exception {
-        System.out.println(SphereOfInfluence.calculateSOI(1.5e11, 6e24, 2e30));
+        System.out.println(SphereOfInfluence.calculateSOI(1.5e11f, 6e24f, 2e30f));
         System.out.println(SphereOfInfluence.calculateHillSphere(1.5e11, 6e24, 2e30));
     }
 }

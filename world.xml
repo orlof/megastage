@@ -18,8 +18,8 @@
         <!--component type="srv.AffectedByGravityFlag"/-->
         <component type="Velocity"/>
         <component type="srv.Acceleration"/>
-        <component type="srv.SpawnPoint"  x="7.5" y="1.5" z="6.5"/>
-        <!--component type="srv.RadarEcho" echo="0"/-->
+        <component type="srv.SpawnPoint"  x="7.5" y="1.5" z="7.5"/>
+        <component type="srv.RadarEcho" echo="0"/>
         <component type="UsableFlag"/>
         <component type="gfx.ShipGeometry">
           <map y="0" x="0123456789012345"/>
@@ -301,10 +301,10 @@
                 <component type="srv.SynchronizeFlag"/>
             </entity>
             <entity name="LEM">
-                <component type="Position" x="6.5" y="1.5" z="3.5"/>
+                <component type="Position" x="5.5" y="1.5" z="0.5"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="dcpu.VirtualMonitor"/>
-                <component type="gfx.MonitorGeometry" width="3" height="2"/>
+                <component type="gfx.MonitorGeometry" width="5" height="3"/>
                 <component type="gfx.BindTo"/>
                 <component type="UsableFlag"/>
                 <component type="srv.SynchronizeFlag"/>
@@ -321,7 +321,17 @@
                 <!-- engine vector specifies the direction of ship acceleration.
                      relative to ship's starting orientation (heading +z) -->
                 <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_force="10000" engine_id="0"/>
-                <component type="Position" x="7.5" y="7.5" z="6.5"/>
+                <component type="Position" x="6.5" y="1.5" z="15.5"/>
+                <component type="Rotation" x="0" y="0" z="0"/>
+                <component type="gfx.EngineGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="srv.SynchronizeFlag"/>
+            </entity>
+            <entity name="Engine">
+                <!-- engine vector specifies the direction of ship acceleration.
+                     relative to ship's starting orientation (heading +z) -->
+                <component type="dcpu.VirtualEngine" x="0" y="0" z="-1" max_force="10000" engine_id="1"/>
+                <component type="Position" x="8.5" y="1.5" z="15.5"/>
                 <component type="Rotation" x="0" y="0" z="0"/>
                 <component type="gfx.EngineGeometry"/>
                 <component type="gfx.BindTo"/>
@@ -331,7 +341,7 @@
                 <component type="dcpu.VirtualGyroscope" x="1" y="0" z="0" max_torque="600000" gyroscope_id="256"/>
                 <component type="gfx.GyroscopeGeometry" x="0" y="-90" z="0"/>
                 <component type="gfx.BindTo"/>
-                <component type="Position" x="6.5" y="1.5" z="13.5"/>
+                <component type="Position" x="6.5" y="1.5" z="7.5"/>
                 <component type="Rotation"/>
                 <component type="srv.SynchronizeFlag"/>
             </entity>
@@ -339,7 +349,7 @@
                 <component type="dcpu.VirtualGyroscope" x="0" y="1" z="0" max_torque="2000000" gyroscope_id="16"/>
                 <component type="gfx.GyroscopeGeometry" x="90" y="0" z="0"/>
                 <component type="gfx.BindTo"/>
-                <component type="Position" x="7.5" y="1.5" z="13.5"/>
+                <component type="Position" x="7.5" y="1.5" z="7.5"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation"/>
             </entity>
@@ -347,7 +357,7 @@
                 <component type="dcpu.VirtualGyroscope" x="0" y="0" z="1" max_torque="1600000" gyroscope_id="1"/>
                 <component type="gfx.GyroscopeGeometry" x="0" y="180" z="0"/>
                 <component type="gfx.BindTo"/>
-                <component type="Position" x="8.5" y="1.5" z="13.5"/>
+                <component type="Position" x="8.5" y="1.5" z="7.5"/>
                 <component type="srv.SynchronizeFlag"/>
                 <component type="Rotation"/>
             </entity>
@@ -355,7 +365,7 @@
                 <component type="dcpu.VirtualPPS"/>
                 <component type="gfx.PPSGeometry"/>
                 <component type="gfx.BindTo"/>
-                <component type="Position" x="0.5" y="1.5" z="4.5"/>
+                <component type="Position" x="4.5" y="1.5" z="0.5"/>
                 <component type="Rotation"/>
                 <component type="srv.SynchronizeFlag"/>
             </entity>
@@ -370,7 +380,7 @@
         <component type="Velocity"/>
         <component type="srv.Acceleration"/>
         <component type="srv.SpawnPoint"  x="6.5" y="1.5" z="2.5"/>
-        <!--component type="srv.RadarEcho" echo="0"/-->
+        <component type="srv.RadarEcho" echo="0"/>
         <component type="UsableFlag"/>
         <component type="gfx.ShipGeometry">
           <map y="0" x="0123456789012345"/>
@@ -505,7 +515,7 @@
         <component type="Velocity"/>
         <component type="srv.Acceleration"/>
         <component type="srv.SpawnPoint"  x="7.5" y="1.5" z="6.5"/>
-        <!--component type="srv.RadarEcho" echo="0"/-->
+        <component type="srv.RadarEcho" echo="0"/>
         <component type="UsableFlag"/>
         <component type="gfx.ShipGeometry">
           <map y="0" x="012345678901234"/>
@@ -718,6 +728,14 @@
                 <component type="gfx.PPSGeometry"/>
                 <component type="gfx.BindTo"/>
                 <component type="Position" x="0.5" y="1.5" z="4.5"/>
+                <component type="Rotation"/>
+                <component type="srv.SynchronizeFlag"/>
+            </entity>
+            <entity name="Radar">
+                <component type="dcpu.VirtualRadar"/>
+                <component type="gfx.RadarGeometry"/>
+                <component type="gfx.BindTo"/>
+                <component type="Position" x="14.5" y="1.5" z="4.5"/>
                 <component type="Rotation"/>
                 <component type="srv.SynchronizeFlag"/>
             </entity>

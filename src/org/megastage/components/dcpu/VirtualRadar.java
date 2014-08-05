@@ -9,10 +9,9 @@ import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 import org.megastage.server.RadarSignal;
-import org.megastage.server.SoiData;
 import org.megastage.systems.srv.GravityManagerSystem;
-import org.megastage.systems.srv.RadarManagerSystem;
-import org.megastage.systems.srv.SoiManagerSystem;
+import org.megastage.server.RadarManager;
+import org.megastage.server.SoiManager;
 import org.megastage.util.Bag;
 
 public class VirtualRadar extends DCPUHardware {
@@ -71,14 +70,14 @@ public class VirtualRadar extends DCPUHardware {
     // INTERRUPT ROUTINES
     
     private boolean storeRadarSignatures(int ship, DCPU dcpu) {
-        Bag<RadarSignal> signals = RadarManagerSystem.INSTANCE.getRadarSignals(ship);
+        Bag<RadarSignal> signals = RadarManager.getRadarSignals(ship);
 
         writeSignalsToMemory(dcpu.ram, dcpu.registers[1], signals);
         return true;
     }
 
     private boolean setTrackingTarget(DCPU dcpu) {
-        int eid = RadarManagerSystem.INSTANCE.findBySignature(dcpu.registers[1]);
+        int eid = RadarManager.findBySignature(dcpu.registers[1]);
         
         setTrackingTarget(eid);
 
@@ -99,13 +98,13 @@ public class VirtualRadar extends DCPUHardware {
             return 0x0001;
         }
 
-        SoiData soi = SoiManagerSystem.INSTANCE.getSoi(ship);
+        int soi = SoiManager.getSoi(ship);
         
-        if(soi == null) {
+        if(soi == 0) {
             return 0x0002;
         }
 
-        GravityManagerSystem.INSTANCE.writeOrbitalStateVectorToMemory(dcpu.ram, dcpu.registers[1], soi.eid, target, false);
+        GravityManagerSystem.INSTANCE.writeOrbitalStateVectorToMemory(dcpu.ram, dcpu.registers[1], soi, target, false);
 
         return 0xFFFF;
     }
