@@ -1,33 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.components.gfx;
 
-import com.artemis.Entity;
-import com.esotericsoftware.kryonet.Connection;
-import org.megastage.components.BaseComponent;
-import org.megastage.client.ClientGlobals;
-import org.megastage.protocol.Message;
+import com.jme3.scene.Node;
 
-
-    
-/**
- *
- * @author Orlof
- */
-public class VoidGeometry extends BaseComponent {
+public class VoidGeometry extends ItemGeometryComponent {
     @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
-    }
-    
-    @Override
-    public void receive(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.setupVoidNode(entity, this);
-    }
-    
-    public String toString() {
-        return "VoidGeometry()";
+    protected void initGeometry(Node node, int eid) {
     }
 }

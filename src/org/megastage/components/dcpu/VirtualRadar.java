@@ -1,75 +1,57 @@
 package org.megastage.components.dcpu;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import com.badlogic.gdx.utils.Array;
-import com.esotericsoftware.minlog.Log;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
+import org.megastage.components.Mass;
+import org.megastage.components.Position;
 import org.megastage.components.transfer.RadarTargetData;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
-import org.megastage.protocol.Network;
-import org.megastage.server.GravityManager;
+import org.megastage.server.RadarSignal;
+import org.megastage.systems.srv.GravityManagerSystem;
 import org.megastage.server.RadarManager;
-import org.megastage.server.RadarManager.RadarSignal;
-import org.megastage.server.SOIManager;
-import org.megastage.server.SOIManager.SOIData;
-import org.megastage.util.ID;
-import org.megastage.util.Mapper;
-import org.megastage.util.Vector3d;
+import org.megastage.server.SoiManager;
+import org.megastage.util.Bag;
 
 public class VirtualRadar extends DCPUHardware {
-    public Entity target = null;
+    public int target = 0;
 
     // COMPONENT
     
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        type = TYPE_RADAR;
-        revision = 0x90;
-        manufactorer = MANUFACTORER_ENDER_INNOVATIONS;
-
-        super.init(world, parent, element);
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        super.init(world, parentEid, element);
+        setInfo(TYPE_RADAR, 0x0090, MANUFACTORER_ENDER_INNOVATIONS);
         
         return null;
     }
 
     @Override
-    public Message replicate(Entity entity) {
-        dirty = false;
-
-        RadarTargetData data = new RadarTargetData();
-        data.target = target != null ? target.id: 0;
-        
-        return data.always(entity);
+    public Message synchronize(int eid) {
+        return RadarTargetData.create(target).synchronize(eid);
     }
     
-    @Override
-    public Message synchronize(Entity entity) {
-        return replicateIfDirty(entity);
-    }
-
     // DCPU
     
     @Override
-    public void interrupt() {
+    public void interrupt(DCPU dcpu) {
         switch(dcpu.registers[0]) {
             case 0:
-                if(storeRadarSignatures()) {
+                if(storeRadarSignatures(shipEID, dcpu)) {
                     dcpu.cycles += 16;
                 } else {
                 }
                 break;
             case 1:
-                if(setTrackingTarget()) {
+                if(setTrackingTarget(dcpu)) {
                     dcpu.registers[2] = 0xffff;
                 } else {
                     dcpu.registers[2] = 0x0000;
                 }
                 break;
             case 2:
-                if(storeTargetData()) {
+                if(storeTargetData(shipEID, dcpu)) {
                     dcpu.registers[2] = 0xffff;
                     dcpu.cycles += 7;
                 } else {
@@ -77,7 +59,7 @@ public class VirtualRadar extends DCPUHardware {
                 }
                 break;
             case 3:
-                dcpu.registers[2] = storeOrbitalStateVector();
+                dcpu.registers[2] = storeOrbitalStateVector(shipEID, dcpu);
                 if(dcpu.registers[2] == 0xffff) {
                     dcpu.cycles += 12;
                 }
@@ -85,90 +67,86 @@ public class VirtualRadar extends DCPUHardware {
         }
     }
 
-    @Override
-    public void tick60hz() {
-    }
-
     // INTERRUPT ROUTINES
     
-    private boolean storeRadarSignatures() {
-        Array<RadarSignal> signals = RadarManager.getRadarSignals(ship);
+    private boolean storeRadarSignatures(int ship, DCPU dcpu) {
+        Bag<RadarSignal> signals = RadarManager.getRadarSignals(ship);
 
         writeSignalsToMemory(dcpu.ram, dcpu.registers[1], signals);
         return true;
     }
 
-    private boolean setTrackingTarget() {
-        Entity entity = RadarManager.findBySignature(dcpu.registers[1]);
+    private boolean setTrackingTarget(DCPU dcpu) {
+        int eid = RadarManager.findBySignature(dcpu.registers[1]);
         
-        setTrackingTarget(entity);
+        setTrackingTarget(eid);
 
-        return entity != null;
+        return eid != 0;
     }
 
-    private boolean storeTargetData() {
-        if(target == null) {
+    private boolean storeTargetData(int ship, DCPU dcpu) {
+        if(target == 0) {
             return false;
         }
 
-        writeTargetDataToMemory(dcpu.ram, dcpu.registers[1], target);
+        writeTargetDataToMemory(dcpu.ram, dcpu.registers[1], ship, target);
         return true;
     }
      
-    private char storeOrbitalStateVector() {
-        if(target == null) {
+    private char storeOrbitalStateVector(int ship, DCPU dcpu) {
+        if(target == 0) {
             return 0x0001;
         }
+
+        int soi = SoiManager.getSoi(ship);
         
-        Vector3d ownCoord = Mapper.POSITION.get(ship).getVector3d();
-        SOIData soi = SOIManager.getSOI(ownCoord);
-        
-        if(soi == null) {
+        if(soi == 0) {
             return 0x0002;
         }
 
-        GravityManager.writeOrbitalStateVectorToMemory(dcpu.ram, dcpu.registers[1], soi.entity, target, false);
+        GravityManagerSystem.INSTANCE.writeOrbitalStateVectorToMemory(dcpu.ram, dcpu.registers[1], soi, target, false);
 
         return 0xFFFF;
     }
 
     // UTILS
     
-    public void writeSignalsToMemory(char[] mem, char ptr, Array<RadarSignal> signals) {
+    public void writeSignalsToMemory(char[] mem, char ptr, Bag<RadarSignal> signals) {
         for(int i = 0; i < 16; i++) {
-            if(i >= signals.size) {
-                dcpu.ram[ptr++] = 0;
+            if(i >= signals.size()) {
+                mem[ptr++] = 0;
             } else {
-                dcpu.ram[ptr++] = (char) signals.get(i).entity.id;
+                mem[ptr++] = (char) signals.get(i).eid;
             }
         }
     }
 
-    public void setTrackingTarget(Entity entity) {
-        if(target != entity) {
-            //Log.info(ID.get(entity));
+    public void setTrackingTarget(int eid) {
+        if(target != eid) {
+            //Log.info(ID.get(eid));
 
-            target = entity;
+            target = eid;
             dirty = true;
         }
     }
 
-    private void writeTargetDataToMemory(char[] mem, char ptr, Entity target) {
+    private void writeTargetDataToMemory(char[] mem, char ptr, int ship, int target) {
         // target type
         mem[ptr++] = 0x0002;
 
         // target mass
-        int mass = (int) Mapper.MASS.get(target).mass;
+        Mass targetMass = (Mass) World.INSTANCE.getComponent(target, CompType.Mass);
+        int mass = (int) targetMass.value;
         //Log.info("MASS: " + mass);
 
         mem[ptr++] = (char) ((mass >> 16) & 0xffff);
         mem[ptr++] = (char) (mass & 0xffff);
 
         // distance (float)
-        Vector3d ownCoord = Mapper.POSITION.get(ship).getVector3d();
-        Vector3d othCoord = Mapper.POSITION.get(target).getVector3d();
+        Position shipPos = (Position) World.INSTANCE.getComponent(ship, CompType.Position);
+        Position targetPos = (Position) World.INSTANCE.getComponent(target, CompType.Position);
         
-        int distance = (int) Math.round(ownCoord.distance(othCoord));
+        int distance = (int) Math.round(shipPos.get().distance(targetPos.get()));
         //Log.info("DISTANCE: " + distance);
         
         mem[ptr++] = (char) ((distance >> 16) & 0xffff);

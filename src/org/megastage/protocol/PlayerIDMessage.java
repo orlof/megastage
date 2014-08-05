@@ -1,36 +1,32 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.protocol;
 
-import com.artemis.Entity;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
 import org.megastage.client.ClientGlobals;
+import org.megastage.components.gfx.BindTo;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
 public class PlayerIDMessage extends EventMessage {
-    private int id = 0;
-    private long ctime = System.currentTimeMillis();
+    private int eid = 0;
 
     public PlayerIDMessage() {}
     public PlayerIDMessage(int id) {
-        this();
-        this.id = id;
+        this.eid = id;
     }
 
     @Override
     public void receive(Connection pc) {
-        long time = System.currentTimeMillis();
-        ClientGlobals.timeDiff = ctime - time;
-        
-        Entity entity = ClientGlobals.artemis.toClientEntity(id);
-        ClientGlobals.playerEntity = entity;
-        ClientGlobals.spatialManager.setupPlayer(entity);
+        ClientGlobals.setPlayer(eid);
+
+        BindTo bindTo = (BindTo) World.INSTANCE.getComponent(eid, CompType.BindTo);
+        if(bindTo != null) {
+            ClientGlobals.setBase(bindTo.parent);
+        }
     }
 
+    @Override
     public String toString() {
-        return "LoginResponse(" + id + ")";
+        return "PlayerIDMessage(" + eid + ")";
     }
 }
 

@@ -1,30 +1,32 @@
 package org.megastage.components.gfx;
-
-import com.artemis.Entity;
-import com.artemis.World;
-import com.esotericsoftware.kryonet.Connection;
-import org.jdom2.Element;
-import org.megastage.client.ClientGlobals;
-import org.megastage.components.BaseComponent;
-import org.megastage.protocol.Message;
     
-/**
- *
- * @author Orlof
- */
-public class PowerPlantGeometry extends BaseComponent {
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Cylinder;
+import org.megastage.client.JME3Electricity;
+import org.megastage.client.JME3Material;
+
+public class PowerPlantGeometry extends ItemGeometryComponent {
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
-        return null;
+    protected void initGeometry(Node node, int eid) {
+        node.attachChild(createBase());
+        node.attachChild(createChamber());
     }
 
-    @Override
-    public void receive(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.setupPowerPlant(entity, this);
-    }
-    
-    @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+    private Spatial createChamber() {
+        final Node node = new Node("chamber");
+
+        Geometry cylinder = new Geometry("Reactor core", new Cylinder(16, 16, 0.45f, 0.9f, true));
+        node.attachChild(cylinder);
+        node.setLocalTranslation(0, 0.1f, 0);
+        node.setLocalRotation(new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0));
+        JME3Material.setLightingMaterial(node, ColorRGBA.White);
+        
+        JME3Electricity.ELECTRICITY1_2.electrify(node);
+        
+        return node;
     }
 }

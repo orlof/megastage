@@ -1,58 +1,36 @@
 package org.megastage.components;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
+import com.jme3.math.Vector3f;
+import org.megastage.ecs.BaseComponent;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.client.ClientGlobals;
-import org.megastage.protocol.Message;
-import org.megastage.protocol.Network.ComponentMessage;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.World;
 import org.megastage.util.Globals;
-import org.megastage.util.Mapper;
-import org.megastage.util.Vector3d;
 
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:58
- */
-public class Orbit extends BaseComponent {
+public class Orbit extends ReplicatedComponent {
     public int center;
-    public double distance;
+    public float distance;
 
-    public double angularSpeed;
+    public float angularSpeed;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        center = parent.id;
-        distance = getDoubleValue(element, "orbital_distance", 0.0);
+    public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
+        center = parentEid;
+        distance = getFloatValue(element, "orbital_distance", 0.0f);
 
         return null;
     }
 
     @Override
-    public void initialize(World world, Entity entity) {
-        double mass = Mapper.MASS.get(world.getEntity(center)).mass;
-        angularSpeed = getAngularSpeed(mass);        
+    public void initialize(int eid) {
+        Mass mass = (Mass) World.INSTANCE.getComponent(center, CompType.Mass);
+        angularSpeed = getAngularSpeed(mass.value);        
     }
     
-    
-    @Override
-    public Message replicate(Entity entity) {
-        return new ComponentMessage(entity, this);
-    }
-
-    @Override
-    public void receive(Connection pc, Entity entity) {
-        center = ClientGlobals.artemis.toClientEntity(center).id;
-        super.receive(pc, entity);
-    }
-
-    public double getAngularSpeed(double centerMass) {
-        return 2.0 * Math.PI / getOrbitalPeriod(centerMass);
+    public float getAngularSpeed(float centerMass) {
+        return (float) (2.0 * Math.PI / getOrbitalPeriod(centerMass));
     }
 
     public double getOrbitalPeriod(double centerMass) {
@@ -67,26 +45,21 @@ public class Orbit extends BaseComponent {
         return Math.sqrt(centerMass * Globals.G / distance);
     }
     
-    public Vector3d getLocalCoordinates(double time) {
-        double angle = angularSpeed * time;
-        return new Vector3d(
-                distance * Math.sin(angle),
-                0.0,
-                distance * Math.cos(angle)
+    public Vector3f getLocalCoordinates(float time) {
+        float angle = angularSpeed * time;
+        return new Vector3f(
+                distance * (float) Math.sin(angle),
+                0.0f,
+                distance * (float) Math.cos(angle)
         );
     }
 
-    public Vector3d getLocalVelocity(double time, double centerMass) {
-        double angle = angularSpeed * time;
-        return new Vector3d(
-                distance * Math.cos(angle),
-                0.0,
-                distance * -Math.sin(angle)
+    public Vector3f getLocalVelocity(float time, float centerMass) {
+        float angle = angularSpeed * time;
+        return new Vector3f(
+                distance * (float) Math.cos(angle),
+                0.0f,
+                distance * (float) -Math.sin(angle)
         );
-    }
-
-    @Override
-    public String toString() {
-        return "Orbit(" + center + ", " + distance + ", " + (2*Math.PI) / angularSpeed + ")";
     }
 }

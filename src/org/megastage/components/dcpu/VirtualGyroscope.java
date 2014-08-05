@@ -1,128 +1,114 @@
 package org.megastage.components.dcpu;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import com.esotericsoftware.minlog.Log;
-import org.jdom2.DataConversionException;
+import org.megastage.util.Log;
+import com.jme3.math.Vector3f;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.Explosion;
 import org.megastage.components.transfer.GyroscopeData;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
-import org.megastage.util.Vector3d;
 
 public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     public static transient final char STATUS_OFF = 0;
     public static transient final char STATUS_ON = 1;
     public static transient final char STATUS_NO_POWER = 2;
 
-    public Vector3d axis;
+    public Vector3f axis;
+    public float maxTorque;
 
-    public double maxTorque;
-    public double curTorque = 0;
-
-    public char   power = 0;
-
-    public int    mapVersion;
-    public double inertia;
+    public char value = 0;
+    public char gyroscopeId;
+    
+    public int mapVersion;
+    public float inertia;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        type = TYPE_GYRO;
-        revision = 0xabcd;
-        manufactorer = MANUFACTORER_GENERAL_DRIVES;
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        super.init(world, parentEid, element);
+        setInfo(TYPE_GYRO, 0xabcd, MANUFACTORER_GENERAL_DRIVES);
 
-        super.init(world, parent, element);
-
-        axis = new Vector3d(
-                getIntegerValue(element, "x", 0) & 0xf,
-                getIntegerValue(element, "y", 0) & 0xf,
-                getIntegerValue(element, "z", 1) & 0xf);
+        axis = new Vector3f(
+                getFloatValue(element, "x", 0.0f),
+                getFloatValue(element, "y", 0.0f),
+                getFloatValue(element, "z", 1.0f));
         
-        maxTorque = getDoubleValue(element, "torque", 100.0);
+        maxTorque = getFloatValue(element, "max_torque", 100.0f);
+        gyroscopeId = (char) getIntegerValue(element, "gyroscope_id", 0);
         
         return null;
     }
 
-    public void interrupt() {
+    @Override
+    public void interrupt(DCPU dcpu) {
         char a = dcpu.registers[0];
 
         if (a == 0) {
-
-            setTorque(dcpu.registers[1]);
+            setValue(dcpu.registers[1]);
         } else if (a == 1) {
-            if(power == 0) {
+            if(value == 0) {
                 dcpu.registers[1] = STATUS_OFF;
             } else {
                 dcpu.registers[1] = STATUS_ON;
             }
-            
-            dcpu.registers[2] = power;
+            dcpu.registers[2] = value;
         } else if (a == 2) {
-            int x = (int) Math.round(axis.x);
-            int y = (int) Math.round(axis.y);
-            int z = (int) Math.round(axis.z);
-            char dir = (char) (((x & 0xf) << 8) | ((y & 0xf) << 4) | (z & 0xf));
-            dcpu.registers[1] = dir;
+            dcpu.registers[1] = gyroscopeId;
         }
     }
 
-    public void setTorque(char torque) {
-        if(torque == 0x8000) {
-            ship.addComponent(new Explosion());
-            ship.changedInWorld();
+    public void setValue(char value) {
+        if(value == 0x8000) {
+            World.INSTANCE.setComponent(shipEID, CompType.Explosion, new Explosion());
             return;
         } 
 
-        if(power != torque) {
-            power = torque;
-
-            double tmp = torque < 0x8000 ? torque: torque - 65536;
-            curTorque = maxTorque * tmp / 0x7fff;
+        if(this.value != value) {
+            this.value = value;
             dirty = true;
         }
     }
     
-    public double getPowerLevel() {
-        return Math.abs(curTorque / 200.0);
+    private float getTorque() {
+        return maxTorque * getSignedValue() / 0x7fff;
     }
     
-    public double getRotation(ShipGeometry geom) {
+    private int getSignedValue() {
+        return value < 0x8000 ? value: value - 65536;
+    }
+    
+    public float getAngularSpeed(ShipGeometry geom) {
         if(mapVersion < geom.map.version) {
             //TODO this is huge perf problem, inertia change should be 
             //     calculated only for changed block
+            // TODO allow only three possible axis
             mapVersion = geom.map.version;
             inertia = geom.getInertia(axis);
         }
         
-        return curTorque / inertia;
+        return getTorque() / inertia;
     }
     
     @Override
-    public Message replicate(Entity entity) {
-        dirty = false;
-
-        GyroscopeData data = new GyroscopeData();
-        data.power = power;
-
-        return data.always(entity);
+    public Message synchronize(int eid) {
+        return GyroscopeData.create(getSignedValue()).synchronize(eid);
     }
     
     @Override
-    public Message synchronize(Entity entity) {
-        return replicateIfDirty(entity);
-    }
-
-    @Override
-    public double consume(double available, double delta) {
+    public double consume(int ship, double available, double delta) {
         double intake = delta * getPowerLevel();
         if(intake > available) {
             Log.info("Not enough power: " + intake + "/" + available);
-            setTorque((char) 0);
+            setValue((char) 0);
             intake = 0;
         }
 
         return intake;
+    }
+
+    public double getPowerLevel() {
+        return Math.abs(getSignedValue() / 200.0f);
     }
 }

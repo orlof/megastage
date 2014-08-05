@@ -1,43 +1,43 @@
 package org.megastage.util;
 
-import com.artemis.Entity;
-import com.badlogic.gdx.utils.Array;
 import com.cubes.Vector3Int;
-import com.esotericsoftware.minlog.Log;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
 import org.megastage.components.gfx.ShipGeometry;
-import org.megastage.server.TargetManager;
-import org.megastage.server.TargetManager.Hit;
-import org.megastage.server.TargetManager.ShipStructureHit;
-import org.megastage.server.TargetManager.Target;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
+import org.megastage.server.Hit;
+import org.megastage.server.NoHit;
+import org.megastage.server.ShipStructureHit;
+import org.megastage.server.Target;
 
 public class CubeCollisionDetector {
 
-    public static TargetManager.Hit hit(Target target, Vector3d attackVector, float attackRange) {
+    public static Hit hit(World world, Target target, Vector3f attackVector, float attackRange) {
         //Log.info("ATTACK " + target.toString() + " " + attackVector.toString() + " " + attackRange);
         long startTime = System.currentTimeMillis();
 
-        Position pos = Mapper.POSITION.get(target.entity);
-        ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(target.entity);
-        Rotation rot = Mapper.ROTATION.get(target.entity);
+        Position pos = (Position) world.getComponent(target.eid, CompType.Position);
+        ShipGeometry geom = (ShipGeometry) world.getComponent(target.eid, CompType.GeometryComponent);
+        Rotation rot = (Rotation) world.getComponent(target.eid, CompType.Rotation);
 
         // calculate coordinates for center of block
         // center of mass is not equal to center of block!
-        Vector3d coord = new Vector3d(8,8,8).sub(geom.map.getCenter3d());
-        coord = coord.multiply(rot.getQuaternion4d());
-        coord = coord.add(target.coord);
+        Vector3f coord = new Vector3f(8,8,8).subtractLocal(geom.map.getCenterOfMass());
+        rot.rotateLocal(coord).addLocal(target.coord);
                 
-        Array<Block> candidates = new Array<>(1);
+        Bag<Block> candidates = new Bag<>(1);
         final Block block = new Block(coord, new Vector3Int(0, 0, 0));
         //Log.info(block.toString());
         candidates.add(block);
         
-        candidates = iteration(attackVector, geom.map, candidates, 16, getCoordOffsets(16, rot.getQuaternion4d()));
+        candidates = iteration(attackVector, geom.map, candidates, 16, getCoordOffsets(16, rot.get()));
 
         if(candidates.size == 0) {
             //Log.info(TargetManager.NO_HIT.toString());
-            return TargetManager.NO_HIT;
+            return new NoHit();
         }
 
         candidates.sort();
@@ -55,12 +55,12 @@ public class CubeCollisionDetector {
         return hit;
     }
 
-    public static Vector3Int getCollision(Vector3d shipCenter, Quaternion shipRot, Cube3dMap map, Vector3d rayPos, Vector3d rayDir) {
+    public static Vector3Int getCollision(Vector3f shipCenter, Quaternion shipRot, Cube3dMap map, Vector3f rayPos, Vector3f rayDir) {
         long startTime = System.currentTimeMillis();
         // calculate ship position relative to laser
-        Vector3d shipLocalPos = shipCenter.sub(rayPos);
+        Vector3f shipLocalPos = shipCenter.subtract(rayPos);
 
-        Array<Block> candidates = new Array<>(1);
+        Bag<Block> candidates = new Bag<>(1);
         candidates.add(new Block(shipLocalPos, new Vector3Int(0, 0, 0)));
         
         candidates = iteration(rayDir, map, candidates, 32, getCoordOffsets(32, shipRot));
@@ -76,14 +76,14 @@ public class CubeCollisionDetector {
         return candidates.first().base;
     }
     
-    private static Array<Block> iteration(Vector3d rayDir, Cube3dMap map, Array<Block> candidates, int chunkSize, Vector3d[] coordOffset) {
+    private static Bag<Block> iteration(Vector3f rayDir, Cube3dMap map, Bag<Block> candidates, int chunkSize, Vector3f[] coordOffset) {
         //Log.info("Chunk size: " + chunkSize + ", block count: " + candidates.size);
         // (d/2)^2 + (d/2)^2 + (d/2)^2 = 3(d/2)^2 = 3(d*d/4)
         chunkSize /= 2;
 
         double radius = Math.sqrt(3 * chunkSize * chunkSize);
         
-        Array<Block> next = new Array<>(8 * candidates.size);
+        Bag<Block> next = new Bag<>(8 * candidates.size);
         
         for(Block block: candidates) {
             // TODO replace chunksize with double type chunksize 0 -> 0.5
@@ -118,53 +118,53 @@ public class CubeCollisionDetector {
         new Vector3Int(0,0,0),
     };
     
-    private static Vector3d[] getCoordOffsets(int chunkSize, Quaternion shipRot) {
-        double step = chunkSize / 4.0;
+    private static Vector3f[] getCoordOffsets(int chunkSize, Quaternion shipRot) {
+        float step = chunkSize / 4.0f;
 
         // calculate unit vectors for target ship
-        Vector3d xstep = new Vector3d(step, 0, 0).multiply(shipRot);
-        Vector3d ystep = new Vector3d(0, step, 0).multiply(shipRot);
-        Vector3d zstep = new Vector3d(0, 0, step).multiply(shipRot);
+        Vector3f xstep = shipRot.multLocal(new Vector3f(step, 0, 0));
+        Vector3f ystep = shipRot.multLocal(new Vector3f(0, step, 0));
+        Vector3f zstep = shipRot.multLocal(new Vector3f(0, 0, step));
 
         // use unit vectors to calculate 8 sub block vectors
-        return new Vector3d[] {
-            xstep.add(ystep).add(zstep),
-            xstep.add(ystep).sub(zstep),
-            xstep.sub(ystep).add(zstep),
-            xstep.sub(ystep).sub(zstep),
-            Vector3d.ZERO.sub(xstep).add(ystep).add(zstep),
-            Vector3d.ZERO.sub(xstep).add(ystep).sub(zstep),
-            Vector3d.ZERO.sub(xstep).sub(ystep).add(zstep),
-            Vector3d.ZERO.sub(xstep).sub(ystep).sub(zstep),
+        return new Vector3f[] {
+            new Vector3f().addLocal(xstep).addLocal(ystep).addLocal(zstep),
+            new Vector3f().addLocal(xstep).addLocal(ystep).subtractLocal(zstep),
+            new Vector3f().addLocal(xstep).subtractLocal(ystep).addLocal(zstep),
+            new Vector3f().addLocal(xstep).subtractLocal(ystep).subtractLocal(zstep),
+            new Vector3f().subtractLocal(xstep).addLocal(ystep).addLocal(zstep),
+            new Vector3f().subtractLocal(xstep).addLocal(ystep).subtractLocal(zstep),
+            new Vector3f().subtractLocal(xstep).subtractLocal(ystep).addLocal(zstep),
+            new Vector3f().subtractLocal(xstep).subtractLocal(ystep).subtractLocal(zstep),
         };
     }
 
-    private static Vector3d[] divBy2Local(Vector3d[] vecs) {
+    private static Vector3f[] divBy2Local(Vector3f[] vecs) {
         for(int i=0; i < vecs.length; i++) {
-            vecs[i] = vecs[i].divide(2.0);
+            vecs[i].divideLocal(2.0f);
         }
         return vecs;
     }
 
     public static class Block implements Comparable<Block> {
-        Vector3d center;
+        Vector3f center;
         Vector3Int base;
         double distance;
         
-        public Block(Vector3d center, Vector3Int base) {
+        public Block(Vector3f center, Vector3Int base) {
             this.center = center;
             this.base = base;
             this.distance = center.lengthSquared();
         }
         
-        public Block createChild(Vector3d coordOffset, Vector3Int blockOffset) {
+        public Block createChild(Vector3f coordOffset, Vector3Int blockOffset) {
             return new Block(
                     center.add(coordOffset),
                     base.add(blockOffset));            
         }
 
-        public boolean check(Vector3d ray, double collisionRadius) {
-            return ray.distanceToPoint(center) < collisionRadius;
+        public boolean check(Vector3f ray, double collisionRadius) {
+            return MathUtil.distancePointToLine(center, ray) < collisionRadius;
             
         }
 
@@ -177,7 +177,5 @@ public class CubeCollisionDetector {
         public String toString() {
             return "Block{" + "center=" + center + ", base=" + base + ", distance=" + distance + '}';
         }
-        
-        
     }
 }

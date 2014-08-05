@@ -44,11 +44,12 @@ Interrupt behavior:
        CMG's current status is set to B register and torque power level to C
        register.
 
-    2: GET_ROTATION_AXIS
-       Gyroscope's rotation axis vector is set to B register. Vector has the
-       format: 0000xxxxyyyyzzzz
+    2: GET_GYROSCOPE_ID
+       GYROSCOPE_ID is unique identifier for every installed gyroscope within
+       a ship. See ship's reference manual to deduct rotation axis from 
+       GYROSCOPE_ID.
 
-       Each of the cartesian components are in two's complement format.
+       GYROSCOPE_ID is set to B register.
 
     .--------------.
 ----! STATUS CODES !------------------------------------------------------------

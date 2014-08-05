@@ -1,44 +1,40 @@
 package org.megastage.components.dcpu;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
+import org.megastage.ecs.World;
 
 public class VirtualPowerController extends DCPUHardware {
     public transient double supply;
     public transient double load;
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        type = TYPE_POWER_CONTROLLER;
-        revision = 0x0100;
-        manufactorer = MANUFACTORER_ENDER_INNOVATIONS;
-
-        super.init(world, parent, element);
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        super.init(world, parentEid, element);
+        setInfo(TYPE_POWER_CONTROLLER, 0x0100, MANUFACTORER_ENDER_INNOVATIONS);
         
         return null;
     }
 
-    public void interrupt() {
+    @Override
+    public void interrupt(DCPU dcpu) {
         switch(dcpu.registers[0]) {
             case 0:
-                pollDevice();
+                pollDevice(dcpu);
                 break;
             case 1:
-                getPowerFlux();
+                getPowerFlux(dcpu);
                 break;
             case 2:
-                setPriority(dcpu.registers[1], dcpu.registers[2]);
+                setPriority(dcpu);
                 break;
             case 3:
-                getPriority(dcpu.registers[1]);
+                getPriority(dcpu);
                 break;
         }
     }
 
-    private void pollDevice() {
+    private void pollDevice(DCPU dcpu) {
         dcpu.registers[1] = (char) (supply > 0.0 ? 1: 0);
         if(supply > load) {
             dcpu.registers[2] = 0x2;
@@ -49,22 +45,26 @@ public class VirtualPowerController extends DCPUHardware {
         }
     }
 
-    private void getPowerFlux() {
+    private void getPowerFlux(DCPU dcpu) {
         dcpu.registers[1] = (char) (((int) (supply + 0.5)) & 0xffff);
         dcpu.registers[2] = (char) (((int) (load + 0.5)) & 0xffff);
     }
 
-    private void setPriority(char b, char c) {
-        if (b < dcpu.hardware.size()) {
-            DCPUHardware hw = dcpu.hardware.get(b);
+    private void setPriority(DCPU dcpu) {
+        char b = dcpu.registers[1];
+        char c = dcpu.registers[2];
+
+        DCPUHardware hw = dcpu.getHardware(b);
+        if(hw != null) {
             hw.priority = c;
         }
     }
 
-    private void getPriority(char b) {
-        if (b < dcpu.hardware.size()) {
-            DCPUHardware hw = dcpu.hardware.get(b);
-            dcpu.registers[1] = (char) (hw.priority & 0xffff);
+    private void getPriority(DCPU dcpu) {
+        char b = dcpu.registers[1];
+        DCPUHardware hw = dcpu.getHardware(b);
+        if(hw != null) {
+            dcpu.registers[1] = hw.priority;
         }
     }
 

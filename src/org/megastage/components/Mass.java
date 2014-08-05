@@ -1,33 +1,24 @@
 package org.megastage.components;
 
-import com.artemis.Entity;
-import com.artemis.World;
+import org.megastage.ecs.BaseComponent;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
+import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.World;
 
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:58
- */
-public class Mass extends BaseComponent {
-    public double mass;
+public class Mass extends ReplicatedComponent {
+    public float value;
 
-    public Mass() {}
-    
-    public Mass(double mass) {
-        this.mass = mass;
+    public static Mass create(float m) {
+        Mass mass = new Mass();
+        mass.value = m;
+        return mass;
     }
 
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        mass = getDoubleValue(element, "kg", 0.0);
+    public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
+        value = getFloatValue(element, "kg", 0.0f);
         
         return null;
-    }
-
-    public String toString() {
-        return "Mass(" + mass + ")";
     }
 }

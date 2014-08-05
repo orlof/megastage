@@ -6,11 +6,11 @@ import com.jme3.system.AppSettings;
 import com.cubes.*;
 import com.cubes.test.CubesTestAssets;
 import com.cubes.test.blocks.*;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
+import com.jme3.math.Quaternion;
 import com.jme3.scene.Node;
 import com.jme3.ui.Picture;
 import java.util.Random;
-import org.megastage.util.Cube3dMap.BlockChange;
  
 public class CollisionTester extends SimpleApplication{
  
@@ -49,14 +49,14 @@ public class CollisionTester extends SimpleApplication{
             for(int y=0; y < BIG; y++) {
                 for(int z=0; z < BIG; z++) {
                     if(rnd.nextInt(10) == 0) {
-                        map.set(x, y, z, '#', BlockChange.BUILD);
+                        map.set(x, y, z, '#');
                         blockTerrain.setBlock(new Vector3Int(x, y, z), Block_Wood.class); 
                         c++;
                     }
                 }
             }
         }
-        Log.info("Block count: " + c);
+        Log.debug("Block count: " + c);
 
         ship = new Node();
         rootNode.attachChild(ship);
@@ -94,13 +94,13 @@ public class CollisionTester extends SimpleApplication{
     public void simpleUpdate(float tpf) {
         //tt+=tpf;
         tt=0;
-        com.jme3.math.Quaternion q = new com.jme3.math.Quaternion().fromAngles(tt/20, tt/15, 0);
+        Quaternion q = new Quaternion().fromAngles(tt/20, tt/15, 0);
         ship.setLocalRotation(q);
 
         Vector3Int collision = CubeCollisionDetector.getCollision(
-                new Vector3d(0,0,0), new Quaternion(q), map, 
-                new Vector3d(cam.getLocation()), 
-                new Vector3d(cam.getDirection()));
+                new Vector3f(0,0,0), new Quaternion(q), map, 
+                new Vector3f(cam.getLocation()), 
+                new Vector3f(cam.getDirection()));
 
         if(collision != prevCollision) {
             if(prevCollision != null) {

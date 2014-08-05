@@ -1,7 +1,5 @@
 package org.megastage.client.controls;
 
-import com.artemis.Entity;
-import com.esotericsoftware.minlog.Log;
 import com.jme3.audio.AudioNode;
 import com.jme3.effect.ParticleEmitter;
 import com.jme3.renderer.RenderManager;
@@ -9,43 +7,29 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.control.AbstractControl;
 import org.megastage.client.SoundManager;
 import org.megastage.components.transfer.EngineData;
-import org.megastage.util.Mapper;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.World;
 
-/**
- *
- * @author Orlof
- */
 public class EngineControl extends AbstractControl {
-    private final Entity entity;
+    private final int eid;
     
     private int power = -1;
     private final AudioNode an;
     
-    private boolean fanfare = true;
-
-    public EngineControl(Entity entity) {
-        this.entity = entity;
+    public EngineControl(int eid) {
+        this.eid = eid;
         this.an = SoundManager.get(SoundManager.SPACE_ENGINE).clone();
         an.setLooping(true);
      }
 
     @Override
     protected void controlUpdate(float tpf) {
-        EngineData data = Mapper.ENGINE_DATA.get(entity);
-        if(data != null && power != data.power) {
+        EngineData data = (EngineData) World.INSTANCE.getComponent(eid, CompType.EngineData);
+        assert data != null;
+        
+        if(power != data.power) {
             ParticleEmitter emitter = (ParticleEmitter) spatial;
 
-            if(power == 0) {
-                if(fanfare) {
-                    fanfare = false;
-                    AudioNode node = SoundManager.get(SoundManager.FANFARE);
-                    node.setPositional(false);
-                    node.setVolume(0.7f);
-                    node.play();
-                }
-                an.play();
-            }
-            
             power = data.power;
 
             an.setVolume(((float) power) / 6553.6f);

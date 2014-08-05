@@ -1,23 +1,40 @@
 package org.megastage.components.gfx;
-
-import com.artemis.Entity;
-import com.esotericsoftware.kryonet.Connection;
-import org.megastage.client.ClientGlobals;
-import org.megastage.components.BaseComponent;
-import org.megastage.protocol.Message;
     
-/**
- *
- * @author Orlof
- */
-public class RadarGeometry extends BaseComponent {
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Dome;
+import org.megastage.client.JME3Material;
+import org.megastage.client.controls.LookAtControl;
+
+public class RadarGeometry extends ItemGeometryComponent {
+
     @Override
-    public void receive(Connection pc, Entity entity) {
-        ClientGlobals.spatialManager.setupRadar(entity, this);
+    protected void initGeometry(Node node, int eid) {
+        node.attachChild(createBase());
+        node.attachChild(createAntenna(eid));
     }
     
-    @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+    private Spatial createAntenna(int eid) {
+        Node spinnerRotator = new Node("SpinnerRotator");
+        spinnerRotator.addControl(new LookAtControl(eid));
+        
+        Node spinner = new Node("Antenna");
+        Quaternion t = new Quaternion().fromAngles((float) (-Math.PI / 2.0), 0, 0);
+        spinner.setLocalRotation(t);
+        spinnerRotator.attachChild(spinner);
+        
+        Geometry inside = new Geometry("inside", new Dome(Vector3f.ZERO, 12, 12, 0.38f, true));
+        JME3Material.setLightingMaterial(inside, new ColorRGBA(0.4f, 0.4f, 0.4f, 1.0f));
+        spinner.attachChild(inside);
+
+        Geometry outside = new Geometry("outside", new Dome(Vector3f.ZERO, 12, 12, 0.39f, false));
+        JME3Material.setLightingMaterial(outside, new ColorRGBA(0.8f, 0.8f, 0.8f, 1.0f));
+        spinner.attachChild(outside);
+        
+        return spinnerRotator;
     }
 }

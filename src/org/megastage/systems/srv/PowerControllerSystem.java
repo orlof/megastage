@@ -1,67 +1,35 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Aspect;
-import com.artemis.Entity;
-import com.artemis.systems.EntitySystem;
-import com.badlogic.gdx.utils.Array;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.ecs.World;
+import org.megastage.ecs.Processor;
+import org.megastage.util.Log;
 import java.util.Arrays;
 import java.util.Comparator;
+import org.megastage.components.dcpu.DCPU;
 import org.megastage.components.dcpu.DCPUHardware;
 import org.megastage.components.dcpu.PowerConsumer;
 import org.megastage.components.dcpu.PowerSupply;
 import org.megastage.components.dcpu.VirtualPowerController;
+import org.megastage.ecs.CompType;
 import org.megastage.util.ID;
-import org.megastage.util.Mapper;
-import org.megastage.util.Time;
 
-public class PowerControllerSystem extends EntitySystem {
-    private long interval;
+public class PowerControllerSystem extends Processor {
 
-    private long wakeup;
-    private double delta;
-
-    public PowerControllerSystem() {
-        super(Aspect.getAspectForAll(VirtualPowerController.class));
-    }
-
-    public PowerControllerSystem(long interval) {
-        this();
-        this.interval = interval;
+    public PowerControllerSystem(World world, long interval) {
+        super(world, interval, CompType.VirtualPowerController);
     }
 
     @Override
-    protected boolean checkProcessing() {
-        if(Time.value >= wakeup) {
-            if(wakeup == 0) {
-                delta = 0;
-            } else {
-                delta = (Time.value + interval - wakeup) / 1000.0;
-            }
-            wakeup = Time.value + interval;
-            return true;
-        }
-        return false;
-    }
+    protected void process(int eid) {
+        VirtualPowerController ctrl = (VirtualPowerController) world.getComponent(eid, CompType.VirtualPowerController);
+        DCPU dcpu = (DCPU) world.getComponent(ctrl.dcpuEID, CompType.DCPU);
 
-    @Override
-    protected void processEntities(Array<Entity> entities) {
-        for (int i = 0, s = entities.size; s > i; i++) {
-            process(entities.get(i));
+        DCPUHardware[] hw = new DCPUHardware[dcpu.hardwareSize];
+        for(int i=0; i < hw.length; i++) {
+            hw[i] = (DCPUHardware) world.getComponent(dcpu.hardware[i], CompType.DCPUHardware);
         }
-    }
-
-    protected void process(Entity entity) {
-        VirtualPowerController ctrl = Mapper.VIRTUAL_POWER_CONTROLLER.get(entity);
-        DCPUHardware[] hw = ctrl.dcpu.hardware.toArray(new DCPUHardware[ctrl.dcpu.hardware.size()]);
-        Arrays.sort(hw, new Comparator<DCPUHardware>() {
-            @Override
-            public int compare(DCPUHardware o1, DCPUHardware o2) {
-                if(o1.priority < o2.priority) return -1;
-                if(o1.priority > o2.priority) return 1;
-                return 0;
-            }
-        });
+        
+        Arrays.sort(hw);
         
         ctrl.supply = 0.0;
         for(DCPUHardware comp: hw) {
@@ -79,11 +47,7 @@ public class PowerControllerSystem extends EntitySystem {
             if(comp instanceof PowerConsumer) {
                 PowerConsumer consumer = (PowerConsumer) comp;
 
-                double consumption = consumer.consume(powerLeft, delta);
-                
-                if(consumption > 0) {
-                    //Log.info(comp.getClass().getSimpleName() + " " + consumption);
-                }
+                double consumption = consumer.consume(ctrl.shipEID, powerLeft, delta);
                 
                 ctrl.load += consumption;
                 powerLeft -= consumption;

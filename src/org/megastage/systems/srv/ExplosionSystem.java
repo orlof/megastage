@@ -1,52 +1,37 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.artemis.Entity;
-import com.artemis.systems.EntityProcessingSystem;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.ecs.World;
+import org.megastage.ecs.Processor;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
-import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.ecs.CompType;
 
-public class ExplosionSystem extends EntityProcessingSystem {
-    private long interval;
-    private long acc;
-
-    public ExplosionSystem(long interval) {
-        super(Aspect.getAspectForAll(Explosion.class));
-        this.interval = interval;
+public class ExplosionSystem extends Processor {
+    public ExplosionSystem(World world, long interval) {
+        super(world, interval, CompType.Explosion);
     }
 
     @Override
-    protected boolean checkProcessing() {
-        if(Time.value >= acc) {
-                acc = Time.value + interval;
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    protected void process(Entity e) {
-        Explosion explosion = Mapper.EXPLOSION.get(e);
+    protected void process(int eid) {
+        Explosion explosion = (Explosion) world.getComponent(eid, CompType.Explosion);
         
         explosion.setState(currentState(explosion));
 
-        if(explosion.dirty) {
+        if(explosion.isDirty()) {
             switch(explosion.state) {
                 case 0: // create spatial
                 case 1: // particles
                 case 2: // particles, ligth
                 case 3: // particles
+                    break;
                 case 4: // remove ship spatial
+                    world.removeComponent(eid, CompType.CollisionType);
                 case 5: // kill particles
                 case 6: // kill particles, remove light, remove ship node
                     //ServerGlobals.addUDPEvent(new ExplosionEvent(e, explosion.state));
                     break;
                 case 7:
-                    e.addComponent(new DeleteFlag());
+                    world.setComponent(eid, CompType.DeleteFlag, new DeleteFlag());
                     break;
             }
         }
@@ -72,7 +57,7 @@ public class ExplosionSystem extends EntityProcessingSystem {
 
     public int currentState(Explosion exp) {
         for(int state = -1; state+1 < delay.length; state++) {
-            if(Time.value < exp.startTime + delay[state+1]) {
+            if(world.time < exp.startTime + delay[state+1]) {
                 return state;
             }
         }

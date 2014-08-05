@@ -1,9 +1,13 @@
 package org.megastage.protocol;
 
-import com.artemis.Entity;
+import org.megastage.client.ClientMode;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.EndPoint;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
+import org.megastage.client.ClientGlobals;
+import org.megastage.components.BlockChange;
+import org.megastage.components.CmdText;
 import org.megastage.components.transfer.EngineData;
 import org.megastage.components.Mass;
 import org.megastage.components.transfer.MonitorData;
@@ -11,7 +15,7 @@ import org.megastage.components.Orbit;
 import org.megastage.components.FixedRotation;
 import org.megastage.components.Position;
 import org.megastage.components.Rotation;
-import org.megastage.components.SpawnPoint;
+import org.megastage.components.srv.SpawnPoint;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.CharacterGeometry;
 import org.megastage.components.gfx.EngineGeometry;
@@ -22,8 +26,8 @@ import org.megastage.components.gfx.PPSGeometry;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.gfx.SunGeometry;
 import org.megastage.components.gfx.VoidGeometry;
-import org.megastage.client.ClientGlobals;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
+import org.megastage.components.srv.CollisionSphere;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Mode;
 import org.megastage.components.UsableFlag;
@@ -36,12 +40,14 @@ import org.megastage.components.gfx.GyroscopeGeometry;
 import org.megastage.components.gfx.PowerPlantGeometry;
 import org.megastage.components.gfx.RadarGeometry;
 import org.megastage.components.gfx.ThermalLaserGeometry;
-import org.megastage.components.srv.Identifier;
+import org.megastage.components.Identifier;
 import org.megastage.components.transfer.ForceFieldData;
 import org.megastage.components.transfer.GyroscopeData;
 import org.megastage.components.transfer.RadarTargetData;
 import org.megastage.components.transfer.ThermalLaserData;
 import org.megastage.components.transfer.VirtualFloppyDriveData;
+import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.World;
 import org.megastage.protocol.UserCommand.Build;
 import org.megastage.protocol.UserCommand.ChangeBootRom;
 import org.megastage.protocol.UserCommand.ChangeFloppy;
@@ -52,102 +58,110 @@ import org.megastage.protocol.UserCommand.Teleport;
 import org.megastage.protocol.UserCommand.Unbuild;
 import org.megastage.protocol.UserCommand.Unpick;
 import org.megastage.util.Cube3dMap;
-import org.megastage.util.Cube3dMap.BlockChange;
 import org.megastage.util.RAM;
-import org.megastage.util.Vector3d;
 
 public class Network {
     public static String networkInterface = "localhost";
 
-    public static int serverPort = 12358;
+    public static int serverPort = 57463;
 
-    static public void register(EndPoint endPoint) {
-        Kryo kryo = endPoint.getKryo();
-
+    static public void register(Kryo kryo) {
         for(Class<?> clazz: Network.class.getDeclaredClasses()) {
             kryo.register(clazz);
         }
 
-        kryo.register(String[].class);
-        kryo.register(char[].class);
-        kryo.register(char[][].class);
-        kryo.register(char[][][].class);
-        kryo.register(Object[].class);
-        kryo.register(BaseComponent.class);
-        kryo.register(BatteryGeometry.class);
-        kryo.register(BindTo.class);
-        kryo.register(BlockChange.class);
-        kryo.register(Build.class);
-        kryo.register(ChangeFloppy.class);
-        kryo.register(ChangeBootRom.class);
-        kryo.register(CharacterGeometry.class);
-        kryo.register(ComponentMessage.class);
-        kryo.register(Cube3dMap.class);
-        kryo.register(FloppyDriveGeometry.class);
-        kryo.register(DeleteFlag.class);
-        kryo.register(EngineData.class);
-        kryo.register(EngineGeometry.class);
-        kryo.register(Explosion.class);
-        kryo.register(FixedRotation.class);
-        kryo.register(ForceFieldData.class);
-        kryo.register(ForceFieldGeometry.class);
-        kryo.register(GyroscopeData.class);
-        kryo.register(GyroscopeGeometry.class);
-        kryo.register(Identifier.class);
-        kryo.register(ImposterGeometry.class);
-        kryo.register(Keyboard.class);
-        kryo.register(Mass.class);
-        kryo.register(Mode.class);
-        kryo.register(MonitorData.class);
-        kryo.register(MonitorGeometry.class);
-        kryo.register(MoveShip.class);
-        kryo.register(Orbit.class);
-        kryo.register(Pick.class);
-        kryo.register(PlanetGeometry.class);
-        kryo.register(PlayerIDMessage.class);
-        kryo.register(Position.class);
-        kryo.register(PowerPlantGeometry.class);
-        kryo.register(PPSGeometry.class);
-        kryo.register(RadarGeometry.class);
-        kryo.register(RadarTargetData.class);
-        kryo.register(RAM.class);
-        kryo.register(Rotation.class);
-        kryo.register(ShipGeometry.class);
-        kryo.register(SpawnPoint.class);
-        kryo.register(SunGeometry.class);
-        kryo.register(Teleport.class);
-        kryo.register(ThermalLaserData.class);
-        kryo.register(ThermalLaserGeometry.class);
-        kryo.register(Unbuild.class);
-        kryo.register(Unpick.class);
-        kryo.register(UsableFlag.class);
-        kryo.register(UserCommand.class);
-        kryo.register(Vector3d.class);
-        kryo.register(Velocity.class);
-        kryo.register(VirtualFloppyDriveData.class);
-        kryo.register(VoidGeometry.class);
+        Class[] register = new Class[] {
+            String[].class,
+            char[].class,
+            char[][].class,
+            char[][][].class,
+            Message[].class,
+            Object[].class,
+            BaseComponent.class,
+            BatteryGeometry.class,
+            BindTo.class,
+            BlockChange.class,
+            Build.class,
+            ChangeFloppy.class,
+            ChangeBootRom.class,
+            CharacterGeometry.class,
+            ClientMode.class,
+            CmdText.class,
+            CollisionSphere.class,
+            ComponentMessage.class,
+            Cube3dMap.class,
+            FloppyDriveGeometry.class,
+            DeleteFlag.class,
+            EngineData.class,
+            EngineGeometry.class,
+            Explosion.class,
+            FixedRotation.class,
+            ForceFieldData.class,
+            ForceFieldGeometry.class,
+            GyroscopeData.class,
+            GyroscopeGeometry.class,
+            Identifier.class,
+            ImposterGeometry.class,
+            Keyboard.class,
+            Mass.class,
+            Mode.class,
+            MonitorData.class,
+            MonitorGeometry.class,
+            MoveShip.class,
+            Orbit.class,
+            Pick.class,
+            PlanetGeometry.class,
+            PlayerIDMessage.class,
+            Position.class,
+            PowerPlantGeometry.class,
+            PPSGeometry.class,
+            Quaternion.class,
+            RadarGeometry.class,
+            RadarTargetData.class,
+            RAM.class,
+            Rotation.class,
+            ShipGeometry.class,
+            SpawnPoint.class,
+            SunGeometry.class,
+            Teleport.class,
+            ThermalLaserData.class,
+            ThermalLaserGeometry.class,
+            Unbuild.class,
+            Unpick.class,
+            UsableFlag.class,
+            UserCommand.class,
+            Vector3f.class,
+            Velocity.class,
+            VirtualFloppyDriveData.class,
+            VoidGeometry.class,
+            World.class,
+        };
+
+        for(Class clazz: register) {
+            kryo.register(clazz);
+        }
     }
 
-    static public class Login extends EventMessage {}
+    static public class Login extends EventMessage {
+        public String name = ClientGlobals.player;
+    }
+    
     static public class Logout extends EventMessage {}
 
     static public class ComponentMessage implements Message {
         public int owner;
-        public BaseComponent component;
+        public ReplicatedComponent component;
 
         public ComponentMessage() { /* required for Kryo */ }
         
-        public ComponentMessage(Entity entity, BaseComponent c) {
-            owner = entity.id;
+        public ComponentMessage(int eid, ReplicatedComponent c) {
+            owner = eid;
             component = c;
         }
 
         @Override
         public void receive(Connection pc) {
-            Entity entity = ClientGlobals.artemis.toClientEntity(owner);
-            owner = entity.id;
-            
-            component.receive(pc, entity);
+            component.receive(owner);
         }
         
         @Override
@@ -155,4 +169,33 @@ public class Network {
             return "ComponentMessage(" + owner + ", " + component.toString() + ")";
         }
     }
+    
+    static public class TimestampMessage implements Message {
+        public long time;
+        
+        public TimestampMessage() {
+            time = World.INSTANCE.time;
+        }
+
+        @Override
+        public void receive(Connection pc) {
+            // TODO
+            // This updates end time to all position predictor components
+            // Position receive updates end position to position predictor components
+            // Position predictor processor updates position components based on position predictor components
+            // position control updates spatial from position component
+            // position predictor processor can be integrated into position control
+            // perhaps control should always copy position from component
+            // remember flappitaulu, you must use server time
+            ClientGlobals.syncTime = World.INSTANCE.time;
+        }
+
+        @Override
+        public String toString() {
+            return "TimestampMessage(time=" + time + ")";
+        }
+        
+        
+    }
+
 }

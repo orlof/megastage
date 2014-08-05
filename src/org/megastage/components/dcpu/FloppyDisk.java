@@ -13,7 +13,6 @@ public class FloppyDisk {
 
     public char[] data = new char[737280];
     private boolean writeProtected;
-    private VirtualFloppyDrive drive;
 
     public void load(File file) {
         try {
@@ -46,17 +45,5 @@ public class FloppyDisk {
 
     public void setWriteProtected(boolean writeProtected) {
         this.writeProtected = writeProtected;
-    }
-
-    public void inserted(VirtualFloppyDrive drive) {
-        this.drive = drive;
-    }
-
-    public void ejected() {
-        this.drive = null;
-    }
-
-    public VirtualFloppyDrive getDriveUsing() {
-        return drive;
     }
 }

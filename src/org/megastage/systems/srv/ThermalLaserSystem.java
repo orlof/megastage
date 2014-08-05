@@ -1,57 +1,56 @@
 package org.megastage.systems.srv;
 
-import com.artemis.Aspect;
-import com.artemis.Entity;
-import com.esotericsoftware.minlog.Log;
+import org.megastage.ecs.World;
+import org.megastage.util.Log;
 import java.util.Random;
 import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.components.gfx.ShipGeometry;
-import org.megastage.server.TargetManager;
-import org.megastage.server.TargetManager.ForceFieldHit;
-import org.megastage.server.TargetManager.Hit;
-import org.megastage.server.TargetManager.ShipStructureHit;
-import org.megastage.util.Cube3dMap.BlockChange;
-import org.megastage.util.Mapper;
-import org.megastage.util.Time;
-import org.megastage.util.Vector3d;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.Processor;
+import org.megastage.server.ForceFieldHit;
+import org.megastage.server.Hit;
+import org.megastage.server.NoHit;
+import org.megastage.server.ShipStructureHit;
 
-public class ThermalLaserSystem extends SystemTemplate {
+public class ThermalLaserSystem extends Processor {
     Random random = new Random();
-    public ThermalLaserSystem() {
-        super(Aspect.getAspectForAll(VirtualThermalLaser.class));
+
+    public ThermalLaserSystem(World world, long interval) {
+        super(world, interval, CompType.VirtualThermalLaser);
     }
 
     @Override
-    protected void process(Entity vtlEntity) {
-        VirtualThermalLaser vtlComponent = Mapper.VIRTUAL_THERMAL_LASER.get(vtlEntity);
+    protected void process(int eid) {
+        VirtualThermalLaser vtlComponent = (VirtualThermalLaser) world.getComponent(eid, CompType.VirtualThermalLaser);
         switch(vtlComponent.status) {
             case VirtualThermalLaser.STATUS_DORMANT:
                 break;
             case VirtualThermalLaser.STATUS_FIRING:
-                if(Time.value < vtlComponent.startTime + vtlComponent.duration) {
+                if(world.time < vtlComponent.startTime + vtlComponent.duration) {
                     // firing
-                    Hit hit = TargetManager.findHit(vtlEntity, vtlComponent);
+                    Hit hit = TargetManagerSystem.INSTANCE.findHit(eid, vtlComponent);
                     
-                    if(hit == TargetManager.NO_HIT) {
+                    if(hit instanceof NoHit) {
                         vtlComponent.setHit(0f);
                         break;
                     } else if(hit instanceof ForceFieldHit) {
                         ForceFieldHit ffhit = (ForceFieldHit) hit;
                         
-                        VirtualForceField forceField = Mapper.VIRTUAL_FORCE_FIELD.get(ffhit.entity);
-                        forceField.damage(ffhit.entity, world.getDelta() * vtlComponent.wattage);
+                        VirtualForceField forceField = (VirtualForceField) world.getComponent(ffhit.eid, CompType.VirtualForceField);
+                        forceField.damage(ffhit.eid, world.delta * vtlComponent.wattage);
 
                         vtlComponent.setHit((float) hit.distance);
+
                     } else if(hit instanceof ShipStructureHit) {
                         ShipStructureHit shit = (ShipStructureHit) hit;
-                        ShipGeometry geom = Mapper.SHIP_GEOMETRY.get(shit.entity);
+                        ShipGeometry geom = (ShipGeometry) world.getComponent(shit.eid, CompType.ShipGeometry);
                         
                         vtlComponent.setHit((float) hit.distance);
 
-                        double shotPower = world.getDelta() * vtlComponent.wattage;
+                        double shotPower = world.delta * vtlComponent.wattage;
                         if(shotPower > 50.0 * random.nextDouble()) {
-                            geom.map.set(shit.block.getX(), shit.block.getY(), shit.block.getZ(), (char) 0, BlockChange.BREAK);
+                            geom.map.set(shit.block.getX(), shit.block.getY(), shit.block.getZ(), (char) 0);
                         }
                         
                     } else {
@@ -60,17 +59,15 @@ public class ThermalLaserSystem extends SystemTemplate {
                     
                 } else {
                     // turn off
-                    vtlComponent.setStatusCooldown();
+                    vtlComponent.setStatusCooldown(world.time);
                 }
                 break;
             case VirtualThermalLaser.STATUS_COOLDOWN:
-                if(Time.value >= vtlComponent.startTime + vtlComponent.duration) {
+                if(world.time >= vtlComponent.startTime + vtlComponent.duration) {
                     vtlComponent.status = VirtualThermalLaser.STATUS_DORMANT;
-                    vtlComponent.dirty = true;
+                    vtlComponent.setDirty(true);
                 }
                 break;
         }
     }
-
-    public static final Vector3d FORWARD_VECTOR = new Vector3d(0,0,-1);
 }

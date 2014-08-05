@@ -1,6 +1,5 @@
 package org.megastage.client;
 
-import com.esotericsoftware.minlog.Log;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioNode;
@@ -8,7 +7,6 @@ import com.jme3.audio.AudioSource;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
-import com.jme3.scene.Spatial;
 import com.simsilica.lemur.Axis;
 import com.simsilica.lemur.Button;
 import com.simsilica.lemur.Command;
@@ -48,24 +46,19 @@ public class MainMenuState extends BaseAppState {
 
         Label title = menu.addChild(new Label("", new ElementId(LemurStyles.MENU_TITLE_ID), "retro"));
 
-        IconComponent titleImage = new IconComponent( "Interface/logo.png", 
-                                                      new Vector2f(1, 0.6f), 
-                                                      5, 5, 0, false );
+        IconComponent titleImage = new IconComponent("Interface/logo.png", new Vector2f(1.5f, 1.0f), 5, 5, 0, false);
         title.setBackground(titleImage);
          
         Button start = menu.addChild(new Button("Play", "retro"));
         start.addClickCommands(new Play());
-        start.addCommands(Button.ButtonAction.HighlightOn, new Highlight());
 
         Button multi = menu.addChild(new Button("Network", "retro"));
         multi.addClickCommands(new OpenNetwork());
-        multi.addCommands(Button.ButtonAction.HighlightOn, new Highlight());
 
         // We'll add exit later in the grid to get some space for the
         // menu panel.
         Button exit = menu.addChild(new Button("Exit", "retro"), 10, 0);
         exit.addClickCommands(new Exit());
-        exit.addCommands(Button.ButtonAction.HighlightOn, new Highlight());
 
         Camera cam = app.getCamera();
         float menuScale = cam.getHeight()/720f;
@@ -79,13 +72,12 @@ public class MainMenuState extends BaseAppState {
 
 
         // Create the dymamic network settings
-        // panel
         network = new Container(new SpringGridLayout(Axis.Y, Axis.X, FillMode.Even, FillMode.Last), 
                                 new ElementId(LemurStyles.SUBMENU_ID), "retro");
         network.addChild(new Label("Player:", new ElementId(LemurStyles.EDIT_LABEL_ID), "retro"));
-        userField = network.addChild(new TextField(settings.get("player", "Random" + Math.round(Math.random() * 100)), "retro"), 1);
+        userField = network.addChild(new TextField(settings.get("player", ClientGlobals.player), "retro"), 1);
         network.addChild(new Label("Server:", new ElementId(LemurStyles.EDIT_LABEL_ID), "retro"));
-        hostField = network.addChild(new TextField(settings.get("server", "localhost"), "retro"), 1);
+        hostField = network.addChild(new TextField(settings.get("server", ClientGlobals.serverHost), "retro"), 1);
     }
 
     @Override
@@ -116,7 +108,7 @@ public class MainMenuState extends BaseAppState {
 
     @Override
     protected void enable() {
-        Main main = (Main)getApplication();
+        Main main = (Main) getApplication();
         main.getGuiNode().attachChild(menu);
         startMusic();
     }
@@ -127,26 +119,20 @@ public class MainMenuState extends BaseAppState {
         stopMusic();
     }
 
-    private class Highlight implements Command<Button> {
-        public void execute( Button source ) {
-//            selectNeutral.playInstance();
-        }
-    }
-
     private class Play implements Command<Button> {
+        @Override
         public void execute( Button source ) {
             storeOptions();
             stopMusic();
             setEnabled(false);
             getApplication().getInputManager().setCursorVisible(false);
-            getStateManager().attach(ClientGlobals.artemis);
+            ClientGlobals.setAppStates(ECSState.class);
         }
     }
 
     private class OpenNetwork implements Command<Button> {
         @Override
         public void execute( Button source ) {
-//            startSound.playInstance();
             networkPanelOpen = !networkPanelOpen;
             if( networkPanelOpen ) {
                 menu.addChild(network, 9, 0);
@@ -163,9 +149,9 @@ public class MainMenuState extends BaseAppState {
     }
     
     private class Exit implements Command<Button> {
+        @Override
         public void execute( Button source ) {
             storeOptions();
-  //          exitSound.playInstance();
             getApplication().stop();
         }
     }

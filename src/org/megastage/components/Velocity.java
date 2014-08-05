@@ -1,52 +1,24 @@
 package org.megastage.components;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import org.jdom2.DataConversionException;
-import org.jdom2.Element;
-import org.megastage.components.srv.Acceleration;
-import org.megastage.protocol.Message;
-import org.megastage.util.Vector3d;
+import com.jme3.math.Vector3f;
+import org.megastage.ecs.ReplicatedComponent;
 
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:58
- */
-public class Velocity extends BaseComponent {
-    public Vector3d vector;
+public class Velocity extends ReplicatedComponent {
+    private Vector3f vector = new Vector3f();
 
-    @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        double x = getDoubleValue(element, "x", 0);
-        double y = getDoubleValue(element, "y", 0);
-        double z = getDoubleValue(element, "z", 0);
-        
-        vector = new Vector3d(x, y, z);
-        
-        return null;
+    public void set(Vector3f vec) {
+        vector.set(vec);
     }
 
-    @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+    public Vector3f get() {
+        return vector;
     }
 
-    public void add(Vector3d v) {
-        vector = vector.add(v);
+    public void accelerate(Vector3f acceleration) {
+        vector.addLocal(acceleration);
     }
-
-    public Vector3d getPositionChange(float time) {
-        double multiplier = 1000.0 * time;
-        return vector.multiply(multiplier);
-    }
-
-    public void accelerate(Acceleration acceleration, float time) {
-        vector = vector.add(acceleration.getVelocityChange(time));
-    }
-
-    public String toString() {
-        return "Velocity(" + vector.toString() + ")";
+    
+    public Vector3f getDisplacement(float dt) {
+        return vector.mult(dt);
     }
 }

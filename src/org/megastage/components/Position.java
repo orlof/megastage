@@ -1,151 +1,99 @@
 package org.megastage.components;
 
-import com.artemis.Entity;
-import com.artemis.World;
+import org.megastage.ecs.BaseComponent;
 import com.cubes.Vector3Int;
-import com.esotericsoftware.kryonet.Connection;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.ShipGeometry;
-import org.megastage.protocol.Message;
-import org.megastage.util.Globals;
-import org.megastage.util.Mapper;
-import org.megastage.util.Quaternion;
-import org.megastage.util.ServerGlobals;
-import org.megastage.util.Vector3d;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.World;
+import org.megastage.util.Log;
 
-public class Position extends BaseComponent {
-    public long x, y, z;
+public class Position extends ReplicatedComponent {
+    private Vector3f vector;
     
-    public Position() {
-        super();
-    }
-
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws DataConversionException {
-        if(hasValue(element, "x")) {
-            x = 1000 * getLongValue(element, "x", 0);
-            y = 1000 * getLongValue(element, "y", 0);
-            z = 1000 * getLongValue(element, "z", 0);
-        } else {
-            x = 1000 * getLongValue(element, "dx", 0) + 500;
-            y = 1000 * getLongValue(element, "dy", 0) + 500;
-            z = 1000 * getLongValue(element, "dz", 0) + 500;
-        }
+    public BaseComponent[] init(World world, int parentEid, Element element) throws DataConversionException {
+        vector = new Vector3f(
+                getFloatValue(element, "x", 0.0f),
+                getFloatValue(element, "y", 0.0f),
+                getFloatValue(element, "z", 0.0f));
         
         return null;
     }
-
-    @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
+    
+    public Vector3f get() {
+        return vector;
     }
-
-    @Override
-    public Message synchronize(Entity entity) {
-        return ifDirty(entity);
+    
+    public Vector3f getCopy() {
+        return vector.clone();
     }
-
-    @Override
-    public void receive(Connection pc, Entity entity) {
-        Position pos = Mapper.POSITION.get(entity);
-        if(pos == null) {
-            super.receive(pc, entity);
-            return;
+    
+    public void set(Vector3f vec) {
+        if(!vector.equals(vec)) {
+            vector.set(vec);
+            setDirty(true);
         }
-        pos.set(this);
-        pos.dirty = true;
     }
     
-    public void add(Vector3d vector) {
-        set(x + Math.round(vector.x), 
-                y + Math.round(vector.y),
-                z + Math.round(vector.z));
+    public float distance(Position other) {
+        return vector.distance(other.vector);
     }
-
-    public void move(Velocity velocity, float time) {
-        add(velocity.getPositionChange(time));
+            
+    public float distanceSquared(Position other) {
+        return vector.distanceSquared(other.vector);
     }
-    
-    public Vector3d getGlobalCoordinates(Entity entity) {
-        Vector3d coord = getVector3d();
+            
+    public Vector3f getGlobalCoordinates(int eid) {
+        Vector3f coord = new Vector3f(vector);
         
-        BindTo bindTo = Mapper.BIND_TO.get(entity);
+        BindTo bindTo = (BindTo) World.INSTANCE.getComponent(eid, CompType.BindTo);
         while(bindTo != null) {
-            entity = ServerGlobals.world.getEntity(bindTo.parent);
-            if(entity == null) return null;
-
-            ShipGeometry sg = Mapper.SHIP_GEOMETRY.get(entity);
+            assert bindTo.parent > 0;
+            
+            ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponent(bindTo.parent, CompType.ShipGeometry);
             if(sg != null) {
-                coord = coord.sub(sg.map.getCenter3d());
-                
-                Quaternion shipRot = Mapper.ROTATION.get(entity).getQuaternion4d();
-                coord = coord.multiply(shipRot);
-                
-                Vector3d shipPos = Mapper.POSITION.get(entity).getVector3d();
-                coord = coord.add(shipPos);
-                
+                coord = coord.subtractLocal(sg.map.getCenterOfMass());
+
+                Rotation shipRot = (Rotation) World.INSTANCE.getComponent(bindTo.parent, CompType.Rotation);
+                shipRot.rotateLocal(coord);
+
+                Position shipPos = (Position) World.INSTANCE.getComponent(bindTo.parent, CompType.Position);
+                coord = coord.add(shipPos.vector);
+
                 return coord;
             }
             
-// not needed as midle components currently have no position
-//            Position pos = Mapper.POSITION.get(entity);
-//            if(pos != null) {
-//                coord.add(pos.getVector3d());
-//            }
-            bindTo = Mapper.BIND_TO.get(entity);
+            bindTo = (BindTo) World.INSTANCE.getComponent(bindTo.parent, CompType.BindTo);
         }
-        
         
         return coord;
     }
     
-    public Vector3d getBlockCoordinates(Entity entity, Vector3Int block, boolean center) {
-        double offset = center ? 0.5: 0.0;
-        
-        Vector3d coord = new Vector3d(block.getX() + offset, block.getY() + offset, block.getZ() + offset);
-        ShipGeometry sg = Mapper.SHIP_GEOMETRY.get(entity);
-        coord = coord.sub(sg.map.getCenter3d());
+    public Vector3f getBlockCoordinates(int eid, Vector3Int block) {
+        Vector3f coord = new Vector3f(block.getX() + 0.5f, block.getY() + 0.5f, block.getZ() + 0.5f);
 
-        Quaternion shipRot = Mapper.ROTATION.get(entity).getQuaternion4d();
-        coord = coord.multiply(shipRot);
+        ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponent(eid, CompType.ShipGeometry);
+        coord.subtractLocal(sg.map.getCenterOfMass());
 
-        Vector3d shipPos = Mapper.POSITION.get(entity).getVector3d();
-        coord = coord.add(shipPos);
+        Rotation rot = (Rotation) World.INSTANCE.getComponent(eid, CompType.Rotation);
+        rot.rotateLocal(coord);
+
+        Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
+        coord.addLocal(pos.vector);
 
         return coord;
     }
-            
-    public Vector3d getBaseCoordinates(Entity entity) {
-        return getBlockCoordinates(entity, new Vector3Int(0,0,0), false);
-    }
-            
-    public Vector3f getVector3f() {
-        return new Vector3f(x / Globals.UNIT_F, y / Globals.UNIT_F, z / Globals.UNIT_F);
-    }
-    
-    public Vector3d getVector3d() {
-        return new Vector3d(x / Globals.UNIT_D, y / Globals.UNIT_D, z / Globals.UNIT_D);
-    }
-    
-    public void set(Position pos) {
-        set(pos.x, pos.y, pos.z);
-    }
 
-    public void set(long x, long y, long z) {
-        if(this.x != x || this.y != y || this.z != z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.dirty = true;
+    public void move(Vector3f displacement) {
+        if(displacement.lengthSquared() > 0.0f) {
+            vector.addLocal(displacement);
+            setDirty(true);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Position(" + x + ", " + y + ", " + z + ", " + dirty + ")";
     }
 
 }

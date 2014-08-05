@@ -1,28 +1,28 @@
 package org.megastage.server;
 
-import com.esotericsoftware.minlog.Log;
+import org.megastage.util.Log;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import org.megastage.util.LogFormat;
+import org.megastage.util.CmdLineParser;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Orlof
- * Date: 6.8.2013
- * Time: 13:43
- * To change this template use File | Settings | File Templates.
- */
 public class Main {
     public static void main(String args[]) throws Exception {
-        Log.setLogger(new LogFormat());
-        Log.set(Log.LEVEL_INFO);
+        CmdLineParser cmd = new CmdLineParser(args);
+        Log.set(cmd.getInteger("--log-level", Log.LEVEL_INFO));
         
-        Element root = readConfig(args[0]);
+        ServerGlobals.autoexit = cmd.isDefined("--auto-exit");
+        
+        Element root = readConfig(cmd.getString("--config", "world.xml"));
         Game game = new Game(root);
+
+        if(!game.loadSavedWorld()) {
+            game.initializeNewWorld(root);
+        }
+
         game.loopForever();
     }
 

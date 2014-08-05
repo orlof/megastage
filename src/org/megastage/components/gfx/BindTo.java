@@ -1,39 +1,20 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.components.gfx;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import com.esotericsoftware.kryonet.Connection;
 import org.jdom2.Element;
-import org.megastage.components.BaseComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.client.ClientGlobals;
-import org.megastage.protocol.Message;
+import org.megastage.client.EntityNode;
+import org.megastage.client.SpatialManager;
+import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.World;
 
-/**
- * This entity's position and rotation become relative to parent
- * @author Orlof
- */
-public class BindTo extends BaseComponent {
+public class BindTo extends ReplicatedComponent {
     public int parent; 
     
     @Override
-    public BaseComponent[] init(World world, Entity parent, Element element) throws Exception {
-        this.parent = parent.id;
-        
+    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
+        this.parent = parentEid;
         return null;
-    }
-
-    @Override
-    public Message replicate(Entity entity) {
-        return always(entity);
-    }
-    
-    @Override
-    public Message synchronize(Entity entity) {
-        return ifDirty(entity);
     }
 
     public void setParent(int eid) {
@@ -42,20 +23,15 @@ public class BindTo extends BaseComponent {
     }
     
     @Override
-    public void receive(Connection pc, Entity entity) {
-        Entity parentEntity = ClientGlobals.artemis.toClientEntity(parent);
+    public void receive(int eid) {
+        super.receive(eid);
 
-        parent = parentEntity.id;
+        EntityNode parentNode = SpatialManager.getOrCreateNode(parent);
+        EntityNode childNode = SpatialManager.getOrCreateNode(eid);
+        parentNode.offset.attachChild(childNode);
 
-        if(ClientGlobals.playerEntity == entity) {
-            ClientGlobals.spatialManager.changeShip(parentEntity);
-        } else {
-            ClientGlobals.spatialManager.bindTo(parentEntity, entity);
+        if(eid == ClientGlobals.playerEntity) {
+            ClientGlobals.setBase(parent);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "BindTo(serverID=" + parent + ")";
     }
 }

@@ -1,53 +1,35 @@
 package org.megastage.components;
 
-import com.artemis.Entity;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.minlog.Log;
-import org.megastage.client.ClientGlobals;
-import org.megastage.protocol.Message;
-import org.megastage.protocol.Network.ComponentMessage;
-import org.megastage.util.ID;
-import org.megastage.util.Mapper;
-import org.megastage.util.Time;
+import org.megastage.client.EntityNode;
+import org.megastage.client.ExplosionNode;
+import org.megastage.client.SpatialManager;
+import org.megastage.client.controls.ExplosionControl;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.World;
 
-/**
- * MegaStage
- * User: Orlof
- * Date: 17.8.2013
- * Time: 20:58
- */
-public class Explosion extends BaseComponent {
-    public transient long startTime = Time.value;
+public class Explosion extends ReplicatedComponent {
+    public transient long startTime = World.INSTANCE.time;
 
     public int state = -1;
 
     @Override
-    public void receive(Connection pc, Entity entity) {
-        Log.info(ID.get(entity) + this.toString());
-        Explosion comp = Mapper.EXPLOSION.get(entity);
-        if(comp == null) {
-            entity.addComponent(this);
-            entity.changedInWorld();
+    public void receive(int eid) {
+        if(!World.INSTANCE.hasComponent(eid, CompType.Explosion)) {
+            ExplosionNode explosionNode = new ExplosionNode("ExplosionNode");
+            explosionNode.addControl(new ExplosionControl(eid));
 
-            ClientGlobals.spatialManager.setupExplosion(entity, this);
-        } else {
-            comp.setState(state);
+            EntityNode node = SpatialManager.getOrCreateNode(eid);
+            node.attachChild(explosionNode);
         }
+
+        World.INSTANCE.setComponent(eid, this);
     }
 
-    @Override
-    public Message synchronize(Entity entity) {
-        return ifDirty(entity);
-    }
-
-    public void setState(int currentState) {
-        if(currentState != state) {
-            state = currentState;
+    public void setState(int state) {
+        if(this.state != state) {
+            this.state = state;
             dirty = true;
         }
-    }
-    
-    public String toString() {
-        return "Explosion[state=" + state + "]";
     }
 }

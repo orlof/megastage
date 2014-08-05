@@ -1,29 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.megastage.components.transfer;
 
-import com.artemis.Entity;
-import com.esotericsoftware.kryonet.Connection;
-import org.megastage.components.BaseComponent;
-import org.megastage.util.Mapper;
+import org.megastage.ecs.ReplicatedComponent;
 
-public class GyroscopeData extends BaseComponent {
-    public char power = 0;
-
-    @Override
-    public void receive(Connection pc, Entity entity) {
-        GyroscopeData data = Mapper.GYROSCOPE_DATA.get(entity);
-        if(data == null) {
-            entity.addComponent(this);
-            entity.changedInWorld();
-        } else {
-            data.power = power;
-        }
-    }
+public class GyroscopeData extends ReplicatedComponent {
+    public int signedValue = 0;
     
+    public static GyroscopeData create(int signedValue) {
+        GyroscopeData data = new GyroscopeData();
+        data.signedValue = signedValue;
+        return data;
+    }
+
     public float getAngularSpeed() {
-        return (power < 0x8000 ? (float) power: power - 65536f) / 32767f;
+        return signedValue / 32767.0f;
     }
 }

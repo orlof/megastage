@@ -1,36 +1,31 @@
 package org.megastage.server;
 
-import com.artemis.Entity;
-import com.badlogic.gdx.utils.Array;
-import com.esotericsoftware.minlog.Log;
 import org.megastage.components.Position;
-import org.megastage.util.ID;
-import org.megastage.util.Mapper;
-import org.megastage.util.Vector3d;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.Group;
+import org.megastage.ecs.World;
+import org.megastage.util.Bag;
 
 public class RadarManager {
-    public static Array<Entity> targets = new Array<>(0);
-
-    public static void update(Array<Entity> entities) {
-        targets = entities;
+    private static Group group;
+    
+    public static void initialize() {
+        group = World.INSTANCE.createGroup(CompType.Position, CompType.RadarEcho);
     }
 
-    public static Array<RadarSignal> getRadarSignals(Entity entity) {
-        Position pos = Mapper.POSITION.get(entity);
+    public static Bag<RadarSignal> getRadarSignals(int eid) {
+        Position pos = (Position) World.INSTANCE.getComponent(eid, CompType.Position);
         if(pos == null) {
-            return new Array<>(0);
+            return new Bag<>(0);
         }
 
-        Vector3d coord = pos.getVector3d();
-        
-        Array<RadarSignal> signals = new Array<>(100);
-        for(Entity target: targets) {
-            if(target == entity) continue;
+        Bag<RadarSignal> signals = new Bag<>(100);
+        for(int target = group.iterator(); target != 0; target = group.next()) {
+            if(target == eid) continue;
 
-            // System that stores targets checks for Position existence
-            Vector3d tcoord = Mapper.POSITION.get(target).getVector3d();
+            Position otherPos = (Position) World.INSTANCE.getComponent(target, CompType.Position);
 
-            double distanceSquared = coord.distanceSquared(tcoord);
+            float distanceSquared = pos.distanceSquared(otherPos);
             signals.add(new RadarSignal(target, distanceSquared));
         }
 
@@ -39,40 +34,17 @@ public class RadarManager {
         return signals;
     }
     
-    public static Entity findBySignature(char signature) {
-        for(Entity entity: targets) {
-            if(match(entity, signature)) {
-                return entity;
+    public static int findBySignature(char signature) {
+        for(int eid = group.iterator(); eid != 0; eid = group.next()) {
+            if(match(eid, signature)) {
+                return eid;
             }
         }
-        return null;
+
+        return 0;
     }
 
-    public static boolean match(Entity entity, char signature) {
-        return (char) (entity.id & 0xffff) == signature;
-    }
-
-    public static class RadarSignal implements Comparable {
-        public Entity entity;
-        public double distanceSquared;
-
-        public RadarSignal(Entity entity, double distanceSquared) {
-            this.entity = entity;
-            this.distanceSquared = distanceSquared;
-        }
-
-        @Override
-        public int compareTo(Object o) {
-            RadarSignal other = (RadarSignal) o;
-
-            if(distanceSquared < other.distanceSquared) return -1;
-            else if(distanceSquared > other.distanceSquared) return 1;
-            return 0;
-        }
-        
-        @Override
-        public String toString() {
-            return ID.get(entity) + distanceSquared;
-        }
+    private static boolean match(int eid, char signature) {
+        return (char) (eid & 0xffff) == signature;
     }
 }
