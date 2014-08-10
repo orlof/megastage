@@ -21,14 +21,22 @@ import org.megastage.components.Mass;
 import org.megastage.components.srv.BlockChanges;
 import org.megastage.components.srv.CollisionType;
 import org.megastage.ecs.BaseComponent;
+import org.megastage.ecs.CompType;
+import org.megastage.ecs.ECSException;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
-import org.megastage.util.Cube3dMap;
 import org.megastage.util.Log;
+import org.megastage.util.Ship;
 
 
 public class ShipGeometry extends ReplicatedComponent {
-    public Cube3dMap map = new Cube3dMap();
+
+    public static Ship getShip(int eid) throws ECSException {
+        ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponentOrError(eid, CompType.ShipGeometry);
+        return sg.ship;
+    }
+
+    public Ship ship = new Ship(32);
     
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
@@ -36,8 +44,8 @@ public class ShipGeometry extends ReplicatedComponent {
         createMapFromXML(element);
         
         BaseComponent[] extraComponents = new BaseComponent[] {
-            Mass.create(map.getMass()),
-            CollisionType.create(CollisionType.SHIP, map.getCollisionRadius()),
+            Mass.create(ship.getMass()),
+            CollisionType.create(CollisionType.SHIP, ship.getCollisionRadius()),
             new BlockChanges(),
         };
         
@@ -53,22 +61,22 @@ public class ShipGeometry extends ReplicatedComponent {
         node.addControl(new RotationControl(eid));
 
         initGeometry(node.offset, eid);
-        node.setOffset(map.getCenterOfMass());
-        Log.debug(map.getCenterOfMass().toString());
+        node.setOffset(ship.getCenterOfMass());
 
         ClientGlobals.globalRotationNode.attachChild(node);
     }
 
     protected void initGeometry(Node node, int eid) {
-        Vector3f centerOfMass = map.getCenterOfMass();
+        Vector3f centerOfMass = ship.getCenterOfMass();
         node.setLocalTranslation(centerOfMass.negateLocal());
 
         // convert block map to Cubes control
-        BlockTerrainControl blockControl = CubesManager.getControl(map);
-        for(int x = 0; x <= map.xsize; x++) {
-            for(int y = 0; y <= map.ysize; y++) {
-                for(int z = 0; z <= map.zsize; z++) {
-                    char c = map.get(x, y, z);
+        int size = ship.getSize();
+        BlockTerrainControl blockControl = CubesManager.getControl(size);
+        for(int x = 0; x <= size; x++) {
+            for(int y = 0; y <= size; y++) {
+                for(int z = 0; z <= size; z++) {
+                    char c = ship.getBlock(x, y, z);
                     Class<? extends Block> block = CubesManager.getBlock(c);
                     if(block != null) {
                         blockControl.setBlock(x, y, z, block);
@@ -93,8 +101,16 @@ public class ShipGeometry extends ReplicatedComponent {
         shipNode.removeFromParent();
     }
 
-    public float getInertia(Vector3f axis) {
-        return map.getInertia(axis);
+    public float getXAxisInertia() {
+        return ship.getXAxisInertia();
+    }
+
+    public float getYAxisInertia() {
+        return ship.getYAxisInertia();
+    }
+
+    public float getZAxisInertia() {
+        return ship.getZAxisInertia();
     }
 
     public void createMapFromXML(Element element) throws DataConversionException {
@@ -116,7 +132,7 @@ public class ShipGeometry extends ReplicatedComponent {
             for(int x=0; x < blocks.length(); x++) {
                 char c = blocks.charAt(x);
                 if(c != ' ') {
-                    map.set(x, y, z, c);
+                    ship.setBlock(x, y, z, c);
                 }
             }
         }

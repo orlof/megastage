@@ -1,17 +1,12 @@
 package org.megastage.systems.srv;
 
+import com.jme3.math.Vector3f;
 import org.megastage.ecs.World;
-import org.megastage.util.Log;
 import java.util.Random;
-import org.megastage.components.dcpu.VirtualForceField;
 import org.megastage.components.dcpu.VirtualThermalLaser;
-import org.megastage.components.gfx.ShipGeometry;
+import org.megastage.components.srv.VectorAttack;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.Processor;
-import org.megastage.server.ForceFieldHit;
-import org.megastage.server.Hit;
-import org.megastage.server.NoHit;
-import org.megastage.server.ShipStructureHit;
 
 public class ThermalLaserSystem extends Processor {
     Random random = new Random();
@@ -27,38 +22,15 @@ public class ThermalLaserSystem extends Processor {
             case VirtualThermalLaser.STATUS_DORMANT:
                 break;
             case VirtualThermalLaser.STATUS_FIRING:
+                VectorAttack att = world.getOrCreateComponent(eid, CompType.VectorAttack, VectorAttack.class);
                 if(world.time < vtlComponent.startTime + vtlComponent.duration) {
-                    // firing
-                    Hit hit = TargetManagerSystem.INSTANCE.findHit(eid, vtlComponent);
-                    
-                    if(hit instanceof NoHit) {
-                        vtlComponent.setHit(0f);
-                        break;
-                    } else if(hit instanceof ForceFieldHit) {
-                        ForceFieldHit ffhit = (ForceFieldHit) hit;
-                        
-                        VirtualForceField forceField = (VirtualForceField) world.getComponent(ffhit.eid, CompType.VirtualForceField);
-                        forceField.damage(ffhit.eid, world.delta * vtlComponent.wattage);
-
-                        vtlComponent.setHit((float) hit.distance);
-
-                    } else if(hit instanceof ShipStructureHit) {
-                        ShipStructureHit shit = (ShipStructureHit) hit;
-                        ShipGeometry geom = (ShipGeometry) world.getComponent(shit.eid, CompType.ShipGeometry);
-                        
-                        vtlComponent.setHit((float) hit.distance);
-
-                        double shotPower = world.delta * vtlComponent.wattage;
-                        if(shotPower > 50.0 * random.nextDouble()) {
-                            geom.map.set(shit.block.getX(), shit.block.getY(), shit.block.getZ(), (char) 0);
-                        }
-                        
-                    } else {
-                        Log.error("Unknown hit target: " + hit.toString());
-                    }
+                    att.vector = new Vector3f(0, 0, -1);
+                    att.damageRate = vtlComponent.wattage;
+                    att.enabled = true;
                     
                 } else {
                     // turn off
+                    att.enabled = false;
                     vtlComponent.setStatusCooldown(world.time);
                 }
                 break;

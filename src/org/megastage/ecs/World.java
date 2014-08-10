@@ -4,6 +4,7 @@ import org.megastage.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 import org.megastage.util.Bag;
+import org.megastage.util.ID;
 
 public class World {
     public static World INSTANCE;
@@ -223,6 +224,13 @@ public class World {
             return population[eid][cid];
         }
         return null;
+    }
+
+    public BaseComponent getComponentOrError(int eid, int cid) throws ECSException {
+        if(hasEntity(eid)) {
+            return population[eid][cid];
+        }
+        throw new ECSException("[%s] has no %s", ID.get(eid), CompType.map[cid]);
     }
 
     public <T extends BaseComponent> T getOrCreateComponent(int eid, int cid, Class<T> type) {

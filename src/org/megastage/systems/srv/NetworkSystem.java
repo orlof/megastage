@@ -42,7 +42,7 @@ import org.megastage.protocol.UserCommand.Unbuild;
 import org.megastage.server.ServerGlobals;
 import org.megastage.server.TemplateManager;
 import org.megastage.util.Bag;
-import org.megastage.util.Cube3dMap;
+import org.megastage.util.Ship;
 import org.megastage.util.ID;
 
 public class NetworkSystem extends Processor {
@@ -211,20 +211,20 @@ public class NetworkSystem extends Processor {
         return end;
     }
     
-    private boolean blocked(Cube3dMap map, int x, int y, int z) {
-        return map.get(x, y, z) != 0 || map.get(x, y+1, z) != 0 || 
-                map.get(x, y-1, z) != '#';
+    private boolean blocked(Ship ship, int x, int y, int z) {
+        return ship.getBlock(x, y, z) != 0 || ship.getBlock(x, y+1, z) != 0 || 
+                ship.getBlock(x, y-1, z) != '#';
     }
     
-    private int collisionXZ(Cube3dMap map, int cx, int cy, int cz, int px, int py, int pz) {
+    private int collisionXZ(Ship ship, int cx, int cy, int cz, int px, int py, int pz) {
         int result = 0;
-        if(cx != px && blocked(map, px, cy, cz)) {
+        if(cx != px && blocked(ship, px, cy, cz)) {
             result |= 1;
         }
-        if(cz != pz && blocked(map, cx, cy, pz)) {
+        if(cz != pz && blocked(ship, cx, cy, pz)) {
             result |= 2;
         }
-        if(cx != px && cz != pz && blocked(map, px, cy, pz)) {
+        if(cx != px && cz != pz && blocked(ship, px, cy, pz)) {
             result |= 3;
         }
         return result;
@@ -240,7 +240,7 @@ public class NetworkSystem extends Processor {
         ShipGeometry geom = (ShipGeometry) world.getComponent(bindTo.parent, CompType.ShipGeometry);
 
         if(cmd.move.lengthSquared() > 0) {
-            updatePlayerPosition(geom.map, connection.player, cmd);
+            updatePlayerPosition(geom.ship, connection.player, cmd);
         }
         updatePlayerRotation(connection.player, cmd);
 
@@ -258,12 +258,12 @@ public class NetworkSystem extends Processor {
 
         if(cmd.build != null) {
             BlockChanges changes = (BlockChanges) world.getComponent(bindTo.parent, CompType.BlockChanges);
-            build(connection, cmd.build, geom.map, changes);
+            build(connection, cmd.build, geom.ship, changes);
         }
         
         if(cmd.unbuild != null) {
             BlockChanges changes = (BlockChanges) world.getComponent(bindTo.parent, CompType.BlockChanges);
-            unbuild(connection, cmd.unbuild, geom.map, changes);
+            unbuild(connection, cmd.unbuild, geom.ship, changes);
         }
         
         if(cmd.teleport != null) {
@@ -354,7 +354,7 @@ public class NetworkSystem extends Processor {
         }
     }
 
-    private void updatePlayerPosition(Cube3dMap map, int player, UserCommand cmd) {
+    private void updatePlayerPosition(Ship ship, int player, UserCommand cmd) {
         Position pos = (Position) world.getComponent(player, CompType.Position);
         
         Vector3f coord = pos.get();
@@ -366,7 +366,7 @@ public class NetworkSystem extends Processor {
         int yprobe = probe(coord.y, cmd.move.y);
         int zprobe = probe(coord.z, cmd.move.z);
         
-        int collision = collisionXZ(map, cx, cy, cz, xprobe, yprobe, zprobe);
+        int collision = collisionXZ(ship, cx, cy, cz, xprobe, yprobe, zprobe);
         if((collision & 1) != 0) {
             cmd.move.setX(0.0f);
         } 
@@ -431,13 +431,13 @@ public class NetworkSystem extends Processor {
         }
     }
 
-    private void build(PlayerConnection connection, Build build, Cube3dMap map, BlockChanges changes) {
+    private void build(PlayerConnection connection, Build build, Ship ship, BlockChanges changes) {
         if(build.x < 0 || build.y < 0 || build.z < 0) {
             Log.warn("Trying to build to negative coordinates");
             return;
         }
 
-        if(map.get(build.x, build.y, build.z) != 0) {
+        if(ship.getBlock(build.x, build.y, build.z) != 0) {
             Log.warn("Trying to build in non-empty block");
             return;
         }
@@ -447,16 +447,16 @@ public class NetworkSystem extends Processor {
             return;
         }
 
-        map.set(build.x, build.y, build.z, '#');
+        ship.setBlock(build.x, build.y, build.z, '#');
         changes.changes.add(new BlockChange(build.x, build.y, build.z, '#', BlockChange.BUILD));
     }
 
-    private void unbuild(PlayerConnection connection, Unbuild unbuild, Cube3dMap map, BlockChanges changes) {
+    private void unbuild(PlayerConnection connection, Unbuild unbuild, Ship ship, BlockChanges changes) {
         if(unbuild.x < 0 || unbuild.y < 0 || unbuild.z < 0) {
             return;
         }
 
-        if(map.get(unbuild.x, unbuild.y, unbuild.z) != '#') {
+        if(ship.getBlock(unbuild.x, unbuild.y, unbuild.z) != '#') {
             return;
         }
 
@@ -464,7 +464,7 @@ public class NetworkSystem extends Processor {
             return;
         }
 
-        map.set(unbuild.x, unbuild.y, unbuild.z, (char) 0);
+        ship.setBlock(unbuild.x, unbuild.y, unbuild.z, (char) 0);
         changes.changes.add(new BlockChange(unbuild.x, unbuild.y, unbuild.z, (char) 0, BlockChange.UNBUILD));
     }
 

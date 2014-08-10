@@ -7,19 +7,19 @@ import org.megastage.components.transfer.ForceFieldData;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 
-public class VirtualForceField extends DCPUHardware implements PowerConsumer {
+public class VirtualForceField extends DCPUHardware {
     public static transient final char STATUS_POWER_OFF = 0;
     public static transient final char STATUS_FIELD_FORMING = 1;
     public static transient final char STATUS_FIELD_ACTIVE = 2;
     
-    public transient double minEnergy;
-    public transient double maxEnergy;
-    public transient double energyDensity;
-    public transient double energyEvaporation;
+    public transient float minEnergy;
+    public transient float maxEnergy;
+    public transient float energyDensity;
+    public transient float energyEvaporation;
 
-    public transient double energy;
-    public transient double power;
-    public transient double radius;
+    public transient float energy;
+    public transient float power;
+    public transient float radius;
     public transient char status;
 
     @Override
@@ -27,17 +27,17 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
         super.init(world, parentEid, element);
         setInfo(TYPE_FORCE_FIELD, 0x0944, MANUFACTORER_CRADLE_TECH);
 
-        energyEvaporation = getDoubleValue(element, "energy_evaporation", 0.005);
-        energyDensity = getDoubleValue(element, "energy_density", 50);
+        energyEvaporation = getFloatValue(element, "energy_evaporation", 0.005f);
+        energyDensity = getFloatValue(element, "energy_density", 50.0f);
         
-        double minRadius = getDoubleValue(element, "min_radius", 5);
-        minEnergy = 4 * Math.PI * minRadius * minRadius * energyDensity;
+        double minRadius = getFloatValue(element, "min_radius", 5.0f);
+        minEnergy = (float) (4 * Math.PI * minRadius * minRadius * energyDensity);
         
         double maxRadius = getDoubleValue(element, "max_radius", 50);
-        maxEnergy = 4 * Math.PI * maxRadius * maxRadius * energyDensity;
+        maxEnergy = (float) (4 * Math.PI * maxRadius * maxRadius * energyDensity);
 
-        energy = getDoubleValue(element, "energy", 0);
-        power = getDoubleValue(element, "power", 1000);
+        energy = getFloatValue(element, "energy", 0.0f);
+        power = getFloatValue(element, "power", 1000.0f);
          
         return null;
     }
@@ -65,19 +65,19 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
         return ForceFieldData.create((float) radius, status).synchronize(eid);
     }
     
-    public void setEnergy(double energy) {
+    public void setEnergy(float energy) {
         if(energy < 0 ) energy = 0;
         if(energy > maxEnergy) energy = maxEnergy;
 
         this.energy = energy;
         
-        double calculatedRadius = Math.sqrt((energy / energyDensity) / (4.0 * Math.PI));
+        float calculatedRadius = (float) Math.sqrt((energy / energyDensity) / (4.0 * Math.PI));
 
         if(energy == 0.0) {
                 status = STATUS_POWER_OFF;
         } else if(energy < minEnergy) {
                 status = STATUS_FIELD_FORMING;
-                calculatedRadius = 0.0;
+                calculatedRadius = 0.0f;
         } else {
                 status = STATUS_FIELD_ACTIVE;
         }
@@ -88,19 +88,18 @@ public class VirtualForceField extends DCPUHardware implements PowerConsumer {
         }
     }
     
-    public void damage(int eid, float damage) {
+    public void damage(float damage) {
         setEnergy(energy - damage);
         Log.info("Damage: " + damage + "/" + energy);
     }
 
-    @Override
-    public double consume(int ship, double available, double delta) {
-        double intake = power * delta;
+    public float consume(int ship, float available, float delta) {
+        float intake = power * delta;
         if(intake > available) {
-            intake = power = 0.0;
+            intake = power = 0.0f;
         }
         
-        double evaporation = energy * energyEvaporation * delta;
+        float evaporation = energy * energyEvaporation * delta;
         
         setEnergy(energy + intake - evaporation);
         

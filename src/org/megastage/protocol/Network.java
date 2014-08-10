@@ -57,7 +57,7 @@ import org.megastage.protocol.UserCommand.Pick;
 import org.megastage.protocol.UserCommand.Teleport;
 import org.megastage.protocol.UserCommand.Unbuild;
 import org.megastage.protocol.UserCommand.Unpick;
-import org.megastage.util.Cube3dMap;
+import org.megastage.util.Ship;
 import org.megastage.util.RAM;
 
 public class Network {
@@ -89,7 +89,6 @@ public class Network {
             CmdText.class,
             CollisionSphere.class,
             ComponentMessage.class,
-            Cube3dMap.class,
             FloppyDriveGeometry.class,
             DeleteFlag.class,
             EngineData.class,
@@ -120,6 +119,7 @@ public class Network {
             RadarTargetData.class,
             RAM.class,
             Rotation.class,
+            Ship.class,
             ShipGeometry.class,
             SpawnPoint.class,
             SunGeometry.class,

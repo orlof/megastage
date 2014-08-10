@@ -5,11 +5,19 @@ import com.jme3.math.Vector3f;
 import org.megastage.ecs.BaseComponent;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
+import org.megastage.components.gfx.BindTo;
+import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.ECSException;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 
 public class Rotation extends ReplicatedComponent {
+
+    public static Quaternion getWorldRotation(int eid) throws ECSException {
+        Rotation rot = (Rotation) World.INSTANCE.getComponentOrError(eid, CompType.Rotation);
+        return rot.getWorldRot(eid);
+    }
     private Quaternion value = new Quaternion();
 
     @Override
@@ -65,5 +73,25 @@ public class Rotation extends ReplicatedComponent {
     public void add(Quaternion rot) {
         value = rot.multLocal(value).normalizeLocal();
         setDirty(true);
+    }
+    
+    public Quaternion getWorldRot(int eid) throws ECSException {
+        Quaternion q = value.clone();
+        
+        BindTo bindTo = (BindTo) World.INSTANCE.getComponent(eid, CompType.BindTo);
+        while(bindTo != null) {
+            assert bindTo.parent > 0;
+            
+            ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponent(bindTo.parent, CompType.ShipGeometry);
+            if(sg != null) {
+                Rotation shipRot = (Rotation) World.INSTANCE.getComponentOrError(bindTo.parent, CompType.Rotation);
+                q.multLocal(shipRot.value);
+                return q;
+            }
+            
+            bindTo = (BindTo) World.INSTANCE.getComponent(bindTo.parent, CompType.BindTo);
+        }
+        
+        return q;
     }
 }

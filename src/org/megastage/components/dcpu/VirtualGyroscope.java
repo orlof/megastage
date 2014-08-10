@@ -16,7 +16,23 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     public static transient final char STATUS_ON = 1;
     public static transient final char STATUS_NO_POWER = 2;
 
-    public Vector3f axis;
+    public enum Axis {
+        X(Vector3f.UNIT_X), 
+        Y(Vector3f.UNIT_Y), 
+        Z(Vector3f.UNIT_Z);
+
+        private Vector3f vector;
+
+        Axis(Vector3f vec) {
+            this.vector = vec;
+        }
+        
+        public Vector3f getVector() {
+            return vector.clone();
+        }
+    }
+    
+    public Axis axis;
     public float maxTorque;
 
     public char value = 0;
@@ -30,10 +46,7 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
         super.init(world, parentEid, element);
         setInfo(TYPE_GYRO, 0xabcd, MANUFACTORER_GENERAL_DRIVES);
 
-        axis = new Vector3f(
-                getFloatValue(element, "x", 0.0f),
-                getFloatValue(element, "y", 0.0f),
-                getFloatValue(element, "z", 1.0f));
+        axis = Axis.valueOf(getStringValue(element, "axis", "X").toUpperCase());
         
         maxTorque = getFloatValue(element, "max_torque", 100.0f);
         gyroscopeId = (char) getIntegerValue(element, "gyroscope_id", 0);
@@ -80,12 +93,20 @@ public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
     }
     
     public float getAngularSpeed(ShipGeometry geom) {
-        if(mapVersion < geom.map.version) {
-            //TODO this is huge perf problem, inertia change should be 
-            //     calculated only for changed block
-            // TODO allow only three possible axis
-            mapVersion = geom.map.version;
-            inertia = geom.getInertia(axis);
+        if(mapVersion < geom.ship.getVersion()) {
+            mapVersion = geom.ship.getVersion();
+            
+            switch(axis) {
+                case X:
+                    inertia = geom.getXAxisInertia();
+                    break;
+                case Y:
+                    inertia = geom.getYAxisInertia();
+                    break;
+                case Z:
+                    inertia = geom.getZAxisInertia();
+                    break;
+            }
         }
         
         return getTorque() / inertia;

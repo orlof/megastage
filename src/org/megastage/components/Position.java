@@ -8,11 +8,18 @@ import org.jdom2.Element;
 import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
+import org.megastage.ecs.ECSException;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
 import org.megastage.util.Log;
 
 public class Position extends ReplicatedComponent {
+
+    public static Vector3f getWorldCoordinates(int eid) throws ECSException {
+        Position pos = (Position) World.INSTANCE.getComponentOrError(eid, CompType.Position);
+        return pos.getWorldCoord(eid);
+    }
+
     private Vector3f vector;
     
     @Override
@@ -48,8 +55,8 @@ public class Position extends ReplicatedComponent {
         return vector.distanceSquared(other.vector);
     }
             
-    public Vector3f getGlobalCoordinates(int eid) {
-        Vector3f coord = new Vector3f(vector);
+    public Vector3f getWorldCoord(int eid) throws ECSException {
+        Vector3f coord = getCopy();
         
         BindTo bindTo = (BindTo) World.INSTANCE.getComponent(eid, CompType.BindTo);
         while(bindTo != null) {
@@ -57,12 +64,12 @@ public class Position extends ReplicatedComponent {
             
             ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponent(bindTo.parent, CompType.ShipGeometry);
             if(sg != null) {
-                coord = coord.subtractLocal(sg.map.getCenterOfMass());
+                coord = coord.subtractLocal(sg.ship.getCenterOfMass());
 
-                Rotation shipRot = (Rotation) World.INSTANCE.getComponent(bindTo.parent, CompType.Rotation);
+                Rotation shipRot = (Rotation) World.INSTANCE.getComponentOrError(bindTo.parent, CompType.Rotation);
                 shipRot.rotateLocal(coord);
 
-                Position shipPos = (Position) World.INSTANCE.getComponent(bindTo.parent, CompType.Position);
+                Position shipPos = (Position) World.INSTANCE.getComponentOrError(bindTo.parent, CompType.Position);
                 coord = coord.add(shipPos.vector);
 
                 return coord;
@@ -78,7 +85,7 @@ public class Position extends ReplicatedComponent {
         Vector3f coord = new Vector3f(block.getX() + 0.5f, block.getY() + 0.5f, block.getZ() + 0.5f);
 
         ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponent(eid, CompType.ShipGeometry);
-        coord.subtractLocal(sg.map.getCenterOfMass());
+        coord.subtractLocal(sg.ship.getCenterOfMass());
 
         Rotation rot = (Rotation) World.INSTANCE.getComponent(eid, CompType.Rotation);
         rot.rotateLocal(coord);

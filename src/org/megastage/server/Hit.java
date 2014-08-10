@@ -1,27 +1,26 @@
 package org.megastage.server;
 
-import com.jme3.math.Vector3f;
-import org.megastage.ecs.World;
-import org.megastage.util.CubeCollisionDetector;
+import org.megastage.ecs.ECSException;
+import org.megastage.util.Ship;
 
 public class Hit {
-    public final double distance;
+    public final float distance;
 
-    public static Hit create(World world, Target target, Vector3f attackVector, float range) {
-        if(target.isShip(world)) {
-            return CubeCollisionDetector.hit(world, target, attackVector, range);
-        } else if(target.isForceField(world)) {
-            return new ForceFieldHit(target, attackVector);
+    public static Hit create(Target target) throws ECSException {
+        if(target.isShip()) {
+            return Ship.getHit(target);
+        } else if(target.isForceField()) {
+            return new ForceFieldHit(target);
         }
         
-        return new NoHit();
+        return NoHit.INSTANCE;
     }
 
     public Hit() {
-        this.distance = Double.MAX_VALUE;
+        this.distance = Float.MAX_VALUE;
     }
 
-    public Hit(double distance) {
+    public Hit(float distance) {
         this.distance = distance;
     }
 

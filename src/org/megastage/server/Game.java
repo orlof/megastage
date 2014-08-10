@@ -16,7 +16,7 @@ import org.megastage.systems.srv.EntityInitializeSystem;
 import org.megastage.systems.srv.ExplosionSystem;
 import org.megastage.systems.srv.PersistenceSystem;
 import org.megastage.systems.srv.ShipMovementSystem;
-import org.megastage.systems.srv.TargetManagerSystem;
+import org.megastage.systems.srv.TargetManager;
 
 public class Game {
     World world;
@@ -42,7 +42,6 @@ public class Game {
           world.addProcessor(new ExplosionSystem(world, 0));
         
 //        world.addProcessor(new GravityManagerSystem(world, 5000));
-        world.addProcessor(new TargetManagerSystem(world, 0));
         
 //        world.addProcessor(new ForceFieldSystem(world, 1000));
 //        world.addProcessor(new ThermalLaserSystem(world, 0));
@@ -51,6 +50,7 @@ public class Game {
 
         world.initialize();
         
+        TargetManager.initialize();
         RadarManager.initialize();
         SoiManager.initialize();
         

@@ -35,7 +35,11 @@ public abstract class Processor {
         //Log.info(getClass().getSimpleName());
         begin();
         for (int eid = group.iterator(); eid != 0; eid = group.next()) {
-            process(eid);
+            try {
+                process(eid);
+            } catch(ECSException ex) {
+                Log.warn(ex);
+            }
         }
         end();
         //Log.info("Exit " + getClass().getSimpleName());
@@ -43,6 +47,6 @@ public abstract class Processor {
 
     protected void begin() {}
     protected void end() {}
-    protected void process(int eid) {}
+    protected void process(int eid) throws ECSException {}
     
 }

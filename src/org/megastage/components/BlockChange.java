@@ -12,8 +12,8 @@ import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
-import org.megastage.util.Cube3dMap;
 import org.megastage.util.ID;
+import org.megastage.util.Ship;
 
 public class BlockChange extends ReplicatedComponent {
     public static final transient char UNBUILD = 0;
@@ -39,8 +39,8 @@ public class BlockChange extends ReplicatedComponent {
         Log.info(ID.get(eid) + toString());
 
         ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponent(eid, CompType.ShipGeometry);
-        Cube3dMap theMap = sg.map;
-        theMap.set(x, y, z, type);
+        Ship ship = sg.ship;
+        ship.setBlock(x, y, z, type);
 
         EntityNode node = SpatialManager.getOrCreateNode(eid);
         BlockTerrainControl ctrl = node.offset.getControl(BlockTerrainControl.class);
