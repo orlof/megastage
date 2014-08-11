@@ -24,10 +24,11 @@ public class VectorAttackSystem extends Processor {
 
     @Override
     protected void process(int eid) throws ECSException {
-        VectorAttack vecAttComp = (VectorAttack) world.getComponentOrError(eid, CompType.VectorAttack);
+        VectorAttack vecAtt = (VectorAttack) world.getComponentOrError(eid, CompType.VectorAttack);
         
-        if(vecAttComp.enabled) {
+        if(vecAtt.enabled) {
             Hit hit = TargetManager.vectorAttackHit(eid);
+            vecAtt.hit = hit;
 
             if(hit instanceof NoHit) {
                 //vtlComponent.setHit(0f);
@@ -35,17 +36,13 @@ public class VectorAttackSystem extends Processor {
                 ForceFieldHit ffhit = (ForceFieldHit) hit;
 
                 VirtualForceField forceField = (VirtualForceField) world.getComponent(ffhit.eid, CompType.VirtualForceField);
-                forceField.damage(world.delta * vecAttComp.damageRate);
-
-                vecAttComp.setVector(vecAttComp.maxVector.mult(hit.distance));
+                forceField.damage(world.delta * vecAtt.damageRate);
 
             } else if(hit instanceof ShipStructureHit) {
                 ShipStructureHit shit = (ShipStructureHit) hit;
                 ShipGeometry geom = (ShipGeometry) world.getComponent(shit.eid, CompType.ShipGeometry);
 
-                vecAttComp.setVector(vecAttComp.maxVector.mult(hit.distance));
-
-                double shotPower = world.delta * vecAttComp.damageRate;
+                double shotPower = world.delta * vecAtt.damageRate;
                 if(shotPower > 50.0 * random.nextDouble()) {
                     geom.ship.setBlock(shit.block.getX(), shit.block.getY(), shit.block.getZ(), (char) 0);
                 }
@@ -53,8 +50,6 @@ public class VectorAttackSystem extends Processor {
             } else {
                 Log.error("Unknown hit target: " + hit.toString());
             }
-        } else {
-            vecAttComp.setVector(Vector3f.ZERO);
         }
     }
 }

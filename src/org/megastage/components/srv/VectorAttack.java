@@ -5,27 +5,21 @@ import org.megastage.ecs.CompType;
 import org.megastage.ecs.ECSException;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
+import org.megastage.server.Hit;
 
 public class VectorAttack extends ReplicatedComponent {
     public static Vector3f getVector(int eid) throws ECSException {
         VectorAttack va = (VectorAttack) World.INSTANCE.getComponentOrError(eid, CompType.VectorAttack);
-        return va.vector;
+        return va.maxVector;
     }
 
     public transient Vector3f maxVector;
-    public transient boolean enabled;
     public transient float damageRate;
 
-    public Vector3f vector;
+    public boolean enabled;
+    public Hit hit;
 
     public VectorAttack(Vector3f vector) {
         this.maxVector = vector;
-    }
-    
-    public void setVector(Vector3f vector) {
-        if(!this.vector.equals(vector)) {
-            this.vector = vector;
-            setDirty(dirty);
-        }
     }
 }

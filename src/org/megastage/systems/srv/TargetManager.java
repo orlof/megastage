@@ -22,10 +22,7 @@ public class TargetManager {
     }
 
     public static Hit vectorAttackHit(int eid) throws ECSException {
-        Vector3f wpnPos = Position.getWorldCoordinates(eid);
-        Vector3f attVec = Rotation.getWorldRotation(eid).multLocal(VectorAttack.getVector(eid));
- 
-        Bag<Target> targets = findAllHits(wpnPos, attVec);
+        Bag<Target> targets = findAllHits(eid);
         
         if(targets.isEmpty()) {
             return NoHit.INSTANCE;
@@ -43,11 +40,16 @@ public class TargetManager {
                 bestHit = hit;
             }
         }
+        
+        bestHit.attacker = eid;
 
         return bestHit;
     }
 
-    private static Bag<Target> findAllHits(Vector3f wpnPos, Vector3f attVec) {
+    private static Bag<Target> findAllHits(int eid) throws ECSException {
+        Vector3f wpnPos = Position.getWorldCoordinates(eid);
+        Vector3f attVec = Rotation.getWorldRotation(eid).multLocal(VectorAttack.getVector(eid));
+ 
         Bag<Target> targets = new Bag<>(group.size);
         
         Target target = new Target();

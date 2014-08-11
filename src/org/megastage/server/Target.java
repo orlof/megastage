@@ -14,6 +14,7 @@ public class Target implements Comparable<Target>, Cloneable {
 
     public int eid;
     public float intersectionDistance;
+    public Vector3f contactPoint;
 
     private float distanceFromTargetToAttackVector;
     private float t;
@@ -43,12 +44,13 @@ public class Target implements Comparable<Target>, Cloneable {
         
         t = targetPosition.dot(attackVector) / l2;
         if (t < 0.0f) {
-            distanceFromTargetToAttackVector = targetPosition.length();
+            contactPoint = Vector3f.ZERO;
         } else if (t > 1.0f) {
-            distanceFromTargetToAttackVector = targetPosition.distance(attackVector);
+            contactPoint = attackVector;
         } else {
-            distanceFromTargetToAttackVector = targetPosition.distance(attackVector.mult(t));
+            contactPoint = attackVector.mult(t);
         }
+        distanceFromTargetToAttackVector = targetPosition.distance(contactPoint);
     }
 
     public boolean calcIntersectionDistance() throws ECSException {
