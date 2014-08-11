@@ -1,5 +1,6 @@
 package org.megastage.systems.srv;
 
+import com.jme3.math.Vector3f;
 import org.megastage.ecs.World;
 import org.megastage.util.Log;
 import java.util.Random;
@@ -23,9 +24,9 @@ public class VectorAttackSystem extends Processor {
 
     @Override
     protected void process(int eid) throws ECSException {
-        VectorAttack vecAttComp = (VectorAttack) world.getComponent(eid, CompType.VectorAttack);
+        VectorAttack vecAttComp = (VectorAttack) world.getComponentOrError(eid, CompType.VectorAttack);
         
-        if(vecAttComp.isEnabled()) {
+        if(vecAttComp.enabled) {
             Hit hit = TargetManager.vectorAttackHit(eid);
 
             if(hit instanceof NoHit) {
@@ -36,13 +37,13 @@ public class VectorAttackSystem extends Processor {
                 VirtualForceField forceField = (VirtualForceField) world.getComponent(ffhit.eid, CompType.VirtualForceField);
                 forceField.damage(world.delta * vecAttComp.damageRate);
 
-                // vtlComponent.setHit((float) hit.distance);
+                vecAttComp.setVector(vecAttComp.maxVector.mult(hit.distance));
 
             } else if(hit instanceof ShipStructureHit) {
                 ShipStructureHit shit = (ShipStructureHit) hit;
                 ShipGeometry geom = (ShipGeometry) world.getComponent(shit.eid, CompType.ShipGeometry);
 
-                // vtlComponent.setHit((float) hit.distance);
+                vecAttComp.setVector(vecAttComp.maxVector.mult(hit.distance));
 
                 double shotPower = world.delta * vecAttComp.damageRate;
                 if(shotPower > 50.0 * random.nextDouble()) {
@@ -52,6 +53,8 @@ public class VectorAttackSystem extends Processor {
             } else {
                 Log.error("Unknown hit target: " + hit.toString());
             }
+        } else {
+            vecAttComp.setVector(Vector3f.ZERO);
         }
     }
 }

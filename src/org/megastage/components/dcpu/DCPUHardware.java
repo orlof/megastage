@@ -89,6 +89,19 @@ public abstract class DCPUHardware extends ReplicatedComponent implements Compar
         
         return ptr;
     }
+    
+    protected static char getChar(float val, float min, float max) {
+        int result = (int) ((val - min) / (max - min) * Character.MAX_VALUE);
+
+        if(result < 0) return 0;
+        if(result > Character.MAX_VALUE) return Character.MAX_VALUE;
+        
+        return (char) result;
+    }
+
+    protected static float getFloat(char val, float min, float max) {
+        return (((float) val) / Character.MAX_VALUE) * (max - min) + min; 
+    }
 
     public static char writeRadiansToMemory(char[] mem, char ptr, double rad) {
         // sign bit
