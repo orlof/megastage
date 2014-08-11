@@ -1,5 +1,6 @@
 package org.megastage.protocol;
 
+import com.cubes.Vector3Int;
 import org.megastage.client.ClientMode;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
@@ -75,6 +76,7 @@ public class Network {
             char[].class,
             char[][].class,
             char[][][].class,
+            float[].class,
             Message[].class,
             Object[].class,
             BaseComponent.class,
@@ -120,6 +122,10 @@ public class Network {
             RAM.class,
             Rotation.class,
             Ship.class,
+            Ship.ShipSegment.class,
+            Ship.ShipSegment[].class,
+            Ship.ShipChunk.class,
+            Ship.ShipCell.class,
             ShipGeometry.class,
             SpawnPoint.class,
             SunGeometry.class,
@@ -131,6 +137,7 @@ public class Network {
             UsableFlag.class,
             UserCommand.class,
             Vector3f.class,
+            Vector3Int.class,
             Velocity.class,
             VirtualFloppyDriveData.class,
             VoidGeometry.class,

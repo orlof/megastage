@@ -35,6 +35,8 @@ public class Ship {
     private float[] yAxisMass;
     private float[] zAxisMass;
     
+    private Ship() {}
+    
     public Ship(int size) {
         segments = ShipSegment.create(size);
         sumOfMass = new Vector3f();
@@ -132,7 +134,7 @@ public class Ship {
         return version;
     }
     
-    private static abstract class ShipSegment implements Comparable<ShipSegment> {
+    public static abstract class ShipSegment implements Comparable<ShipSegment> {
         protected static final Vector3f[] xyzf = new Vector3f[] {
             new Vector3f(-1.0f, -1.0f, -1.0f),
             new Vector3f(-1.0f, -1.0f, +1.0f),
@@ -162,6 +164,8 @@ public class Ship {
 
         protected float tmpDistance;
 
+        private ShipSegment() {}
+        
         protected ShipSegment(int size) {
             // this constructor is called only for top level ship
             this.size = size;
@@ -251,12 +255,14 @@ public class Ship {
     }
 
 
-    private static class ShipChunk extends ShipSegment {
+    public static class ShipChunk extends ShipSegment {
         int delimit;
         int mask;
         boolean empty = true;
 
         ShipSegment[] subs = new ShipSegment[8];
+        
+        private ShipChunk() {}
 
         public ShipChunk(int size) {
             // this constructor is called only for top level ship
@@ -325,7 +331,7 @@ public class Ship {
 
     }
 
-    private static class ShipCell extends ShipSegment {
+    public static class ShipCell extends ShipSegment {
         private char value;
 
         ShipCell() {

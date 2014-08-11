@@ -23,7 +23,7 @@ public class ClientNetworkSystem extends Processor {
 
     @Override
     public void initialize() {
-        client = new Client(16*1024, 8*1024);
+        client = new Client(64*1024, 64*1024);
         Network.register(client.getKryo());
 
         Thread kryoThread = new Thread(client);

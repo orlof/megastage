@@ -383,7 +383,7 @@
 
     <entity name="Cylon Raider">
         <component type="srv.SynchronizeFlag"/>
-        <component type="Position" x="-50" y="0" z="10000"/>
+        <component type="Position" x="-100" y="0" z="10000"/>
         <component type="Rotation"/>
         <!--component type="srv.AffectedByGravityFlag"/-->
         <component type="Velocity"/>

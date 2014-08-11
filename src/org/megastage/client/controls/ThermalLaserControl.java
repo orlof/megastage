@@ -55,7 +55,7 @@ public class ThermalLaserControl extends AbstractControl {
             } else if(vecAtt.hit instanceof ForceFieldHit) {
                 ForceFieldHit ffhit = (ForceFieldHit) vecAtt.hit;
                 EntityNode forceField = SpatialManager.getOrCreateNode(eid);
-                ForceFieldControl control = forceField.getControl(ForceFieldControl.class);
+                ForceFieldControl control = forceField.getControlRecursive(ForceFieldControl.class);
 
                 if(control != null) {
                     control.registerHit(ffhit.contactPoint, ffhit.attacker);

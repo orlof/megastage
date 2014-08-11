@@ -58,7 +58,7 @@ public class NetworkSystem extends Processor {
 
     @Override
     public void initialize() {
-        server = new Server(16*1024, 16*1024) {
+        server = new Server(64*1024, 64*1024) {
             @Override
             protected Connection newConnection () {
                 // By providing our own connection implementation, we can store per

@@ -49,7 +49,7 @@ public class EntityNode extends Node {
         return eid == ClientGlobals.baseEntity;
     }
 
-    public <T extends Control> T getControl(Class<T> type) {
+    public <T extends Control> T getControlRecursive(Class<T> type) {
         return getControl(this, type);
     }
     
