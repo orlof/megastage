@@ -64,6 +64,11 @@ public class Ship {
     }
     
     public char setBlock(int x, int y, int z, char value) {
+        
+        if(x < 0) {
+            
+        }
+        
         char oldValue = segments.set(x, y, z, value);
 
         if(oldValue > 0) {
@@ -224,10 +229,13 @@ public class Ship {
         }
 
         private boolean isRange(Vector3f attVec, Vector3f center) {
+            // return true if edge of target's collision sphere is in weapon's range
             return center.length() - maybeHitRange < attVec.length();
         }
 
         private boolean isFront(Vector3f attVec, Vector3f center) {
+            // return true if angle between attack vector and target position (local) vector is < 90deg
+            //          of if distance between weapon and target is less than target's collision sphere  
             return attVec.angleBetween(center) < FastMath.HALF_PI || center.length() < maybeHitRange;
         }
 
