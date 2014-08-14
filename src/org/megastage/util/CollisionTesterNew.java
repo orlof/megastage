@@ -64,6 +64,7 @@ public class CollisionTesterNew extends SimpleApplication{
             }
         }
         Log.info("Block count: " + c);
+        Log.info("Center: %s", ship.getCenterOfMass());
 
         shipNode = new Node();
         rootNode.attachChild(shipNode);
