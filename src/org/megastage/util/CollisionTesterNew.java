@@ -6,8 +6,6 @@ import com.jme3.system.AppSettings;
 import com.cubes.*;
 import com.cubes.test.CubesTestAssets;
 import com.cubes.test.blocks.*;
-import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.scene.Node;
 import com.jme3.ui.Picture;
 import java.util.Random;

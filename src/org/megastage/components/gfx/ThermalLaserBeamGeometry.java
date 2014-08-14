@@ -9,11 +9,8 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Cylinder;
-import org.jdom2.Element;
 import org.megastage.client.JME3Material;
 import org.megastage.client.controls.ThermalLaserControl;
-import org.megastage.ecs.BaseComponent;
-import org.megastage.ecs.World;
     
 public class ThermalLaserBeamGeometry extends ItemGeometryComponent {
     public Vector3f attackVector;

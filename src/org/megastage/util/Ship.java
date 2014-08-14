@@ -96,6 +96,27 @@ public class Ship {
         return oldValue;
     }
     
+    void something(int x, int y, int z) {
+        if(isOutOfBounds(x, y, z)) {
+            int spos = getSuperPosition(x, y, z);
+            segments = null;
+        }
+    }
+
+    protected final boolean isOutOfBounds(int x, int y, int z) {
+        int size = segments.size;
+        return x<0 || y<0 || z<0 || x>=size || y>=size || z>=size;
+    }
+
+    protected final int getSuperPosition(int x, int y, int z) {
+        int segmentIndex = 0;
+        if(x < 0) segmentIndex |= 4;
+        if(y < 0) segmentIndex |= 2;
+        if(z < 0) segmentIndex |= 1;
+
+        return segmentIndex;
+    }
+
     public Hit getHit(Vector3f wpnPos, Vector3f attVec, Vector3f shipPos, Quaternion shipRot) {
         // rotate weapon's coordinate system so that target has its native orientation
         
@@ -107,7 +128,13 @@ public class Ship {
         
         shipPos.subtractLocal(centerOfMass);
 
-        return segments.getHit(attVec, shipPos);
+        Hit hit = segments.getHit(attVec, shipPos);
+        if(hit instanceof ShipStructureHit) {
+            ShipStructureHit ssh = (ShipStructureHit) hit;
+            ssh.loc.subtractLocal(shipPos).subtractLocal(this.centerOfMass);
+            Log.info("%s", ssh);
+        }
+        return hit;
     }
 
     public int getSize() {
@@ -372,7 +399,7 @@ public class Ship {
         protected Hit getSubSegmentHit(Vector3f attVec, Vector3f center) {
     //        Log.mark();
             if(iterate(attVec, center, 0.5f)) {
-                return new ShipStructureHit(base, center.length());
+                return new ShipStructureHit(center, center.length());
             } 
 
             return NoHit.INSTANCE;
