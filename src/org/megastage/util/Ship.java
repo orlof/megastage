@@ -128,13 +128,13 @@ public class Ship {
         
         shipPos.subtractLocal(centerOfMass);
 
-        Hit hit = segments.getHit(attVec, shipPos);
-        if(hit instanceof ShipStructureHit) {
-            ShipStructureHit ssh = (ShipStructureHit) hit;
-            ssh.loc.subtractLocal(shipPos).subtractLocal(this.centerOfMass);
-            Log.info("%s", ssh);
+        Vector3f hitCenter = segments.getHit(attVec, shipPos);
+        if(hitCenter != null) {
+            hitCenter.subtractLocal(shipPos);
+            Vector3Int block = new Vector3Int((int) hitCenter.x, (int) hitCenter.y, (int) hitCenter.z);
+            return new ShipStructureHit(block, hitCenter.length());
         }
-        return hit;
+        return NoHit.INSTANCE;
     }
 
     public int getSize() {
@@ -234,10 +234,10 @@ public class Ship {
         public abstract char get(int x, int y, int z);
         public abstract char set(int x, int y, int z, char value);
 
-        public Hit getHit(Vector3f attVec, Vector3f center) {
+        public Vector3f getHit(Vector3f attVec, Vector3f center) {
             if(isEmpty()) {
                 // nothing to hit
-                return NoHit.INSTANCE;
+                return null;
             }
 
             center = center.add(segmentOffset);
@@ -248,7 +248,7 @@ public class Ship {
             }
 
             // not hit
-            return NoHit.INSTANCE;
+            return null;
         }
 
         public boolean isHit(Vector3f attVec, Vector3f center) {
@@ -266,7 +266,7 @@ public class Ship {
             return attVec.angleBetween(center) < FastMath.HALF_PI || center.length() < maybeHitRange;
         }
 
-        protected abstract Hit getSubSegmentHit(Vector3f attVec, Vector3f center);
+        protected abstract Vector3f getSubSegmentHit(Vector3f attVec, Vector3f center);
 
         public abstract boolean isEmpty();
 
@@ -342,7 +342,7 @@ public class Ship {
         }
 
         @Override
-        protected Hit getSubSegmentHit(Vector3f attVec, Vector3f center) {
+        protected Vector3f getSubSegmentHit(Vector3f attVec, Vector3f center) {
             Bag<ShipSegment> bag = new Bag<>(8);
 
             for(ShipSegment ss: subs) {
@@ -355,13 +355,13 @@ public class Ship {
             bag.sort();
 
             for(ShipSegment ss: bag) {
-                Hit hit = ss.getHit(attVec, center);
-                if(hit != NoHit.INSTANCE) {
+                Vector3f hit = ss.getHit(attVec, center);
+                if(hit != null) {
                     return hit;
                 }
             }
 
-            return NoHit.INSTANCE;
+            return null;
         }
 
     }
@@ -396,13 +396,13 @@ public class Ship {
         }
 
         @Override
-        protected Hit getSubSegmentHit(Vector3f attVec, Vector3f center) {
+        protected Vector3f getSubSegmentHit(Vector3f attVec, Vector3f center) {
     //        Log.mark();
             if(iterate(attVec, center, 0.5f)) {
-                return new ShipStructureHit(center, center.length());
+                return center;
             } 
 
-            return NoHit.INSTANCE;
+            return null;
         }
 
         private boolean iterate(Vector3f attVec, Vector3f center, float radius) {

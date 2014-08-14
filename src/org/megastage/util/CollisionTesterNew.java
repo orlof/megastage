@@ -107,7 +107,7 @@ public class CollisionTesterNew extends SimpleApplication{
         long start = System.currentTimeMillis();
         Hit hit = ship.getHit(
                 cam.getLocation().clone(), 
-                cam.getDirection().mult(10.0f),
+                cam.getDirection().mult(100.0f),
                 Vector3f.ZERO.clone(), 
                 shipNode.getLocalRotation().clone());
         long end = System.currentTimeMillis() - start;
