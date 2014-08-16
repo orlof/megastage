@@ -16,21 +16,19 @@ import org.megastage.util.ID;
 import org.megastage.util.Ship;
 
 public class BlockChange extends ReplicatedComponent {
-    public static final transient char UNBUILD = 0;
-    public static final transient char BREAK = 1;
-    public static final transient char BUILD = 2;
+    public enum Event { BUILD, UNBUILD, BREAK }
 
     public int x, y, z;
-    public char type;
-    public char event;
+    public Event event;
+    public char value;
 
     public BlockChange() {}
 
-    public BlockChange(int x, int y, int z, char value, char event) {
+    public BlockChange(int x, int y, int z, char value, Event event) {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.type = value;
+        this.value = value;
         this.event = event;
     }
 
@@ -40,26 +38,33 @@ public class BlockChange extends ReplicatedComponent {
 
         ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponent(eid, CompType.ShipGeometry);
         Ship ship = sg.ship;
-        ship.setBlock(x, y, z, type);
+        
+        int majorVersion = ship.majorVersion;
+        ship.setBlock(x, y, z, value);
 
         EntityNode node = SpatialManager.getOrCreateNode(eid);
         BlockTerrainControl ctrl = node.offset.getControl(BlockTerrainControl.class);
 
-        if(type == 0) {
-            ctrl.removeBlock(x, y, z);
-            if(event == BlockChange.BREAK) {
-                ParticleEmitter pe = (ParticleEmitter) node.getChild("BlockSparks");
-
-                SoundManager.get(SoundManager.EXPLOSION_3).playInstance();
-
-                pe.killAllParticles();
-                pe.setLocalTranslation(x, y, z);
-                pe.emitAllParticles();
-                //pe.addControl(new DeleteControl(3000));
+        if(majorVersion == ship.majorVersion) {
+            if(value == 0) {
+                ctrl.removeBlock(x, y, z);
+            } else {
+                Class<? extends Block> block = CubesManager.getBlock(value);
+                ctrl.setBlock(x, y, z, block);
             }
         } else {
-            Class<? extends Block> block = CubesManager.getBlock(type);
-            ctrl.setBlock(x, y, z, block);
+            sg.initGeometry(node.offset);
+        }
+
+        if(event == Event.BREAK) {
+            ParticleEmitter pe = (ParticleEmitter) node.getChild("BlockSparks");
+
+            SoundManager.get(SoundManager.EXPLOSION_3).playInstance();
+
+            pe.killAllParticles();
+            pe.setLocalTranslation(x, y, z);
+            pe.emitAllParticles();
+            //pe.addControl(new DeleteControl(3000));
         }
     }
 }

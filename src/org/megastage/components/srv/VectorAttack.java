@@ -5,21 +5,39 @@ import org.megastage.ecs.CompType;
 import org.megastage.ecs.ECSException;
 import org.megastage.ecs.ReplicatedComponent;
 import org.megastage.ecs.World;
+import org.megastage.protocol.Message;
+import org.megastage.protocol.Network;
 import org.megastage.server.Hit;
 
-public class VectorAttack extends ReplicatedComponent {
+class VectorAttackData extends ReplicatedComponent {
+    public boolean enabled;
+    public Hit hit;
+    
+    public static VectorAttackData create(VectorAttack va) {
+        VectorAttackData vad = new VectorAttackData();
+        vad.enabled = va.enabled;
+        vad.hit = va.hit;
+        return vad;
+    }
+}
+
+
+public class VectorAttack extends VectorAttackData {
     public static Vector3f getVector(int eid) throws ECSException {
         VectorAttack va = (VectorAttack) World.INSTANCE.getComponentOrError(eid, CompType.VectorAttack);
         return va.maxVector;
     }
 
-    public transient Vector3f maxVector;
-    public transient float damageRate;
-
-    public boolean enabled;
-    public Hit hit;
+    public Vector3f maxVector;
+    public float damageRate;
 
     public VectorAttack(Vector3f vector) {
         this.maxVector = vector;
+    }
+
+    @Override
+    public Message synchronize(int eid) {
+        VectorAttackData vad = new VectorAttackData();
+        return new Network.ComponentMessage(eid, VectorAttackData.create(this));
     }
 }

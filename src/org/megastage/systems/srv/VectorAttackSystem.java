@@ -44,7 +44,7 @@ public class VectorAttackSystem extends Processor {
 
                 double shotPower = world.delta * vecAtt.damageRate;
                 if(shotPower > 50.0 * random.nextDouble()) {
-                    geom.ship.setBlock(shit.block.getX(), shit.block.getY(), shit.block.getZ(), (char) 0);
+                    geom.ship.setBlock(shit.block, (char) 0);
                 }
 
             } else {

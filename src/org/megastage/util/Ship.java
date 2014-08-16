@@ -23,7 +23,8 @@ public class Ship {
         return ship.getHit(target.weaponPosition, target.attackVector, pos, rot);
     }
 
-    private int version;
+    public int majorVersion;
+    private int minorVersion;
     
     private ShipSegment segments;
     private Vector3f sumOfMass;
@@ -63,13 +64,18 @@ public class Ship {
         return segments.get(x, y, z);
     }
     
-    public char setBlock(int x, int y, int z, char value) {
-        
-        if(x < 0) {
-            
+    public char setBlock(Vector3Int c, char value) {
+        while(isOutOfBounds(c.getX(), c.getY(), c.getZ())) {
+            int index = getSuperPosition(c);
+            Vector3Int delta = ShipSegment.xyzi[index].multLocal(segments.size);
+            segments = new ShipChunk(segments, index);
+            updateCacheData(delta);
+            majorVersion++;
+
+            c.addLocal(delta);
         }
-        
-        char oldValue = segments.set(x, y, z, value);
+
+        char oldValue = segments.set(c.getX(), c.getY(), c.getZ(), value);
 
         if(oldValue > 0) {
             mass -= 1.0f;
@@ -79,7 +85,7 @@ public class Ship {
             mass += 1.0f;
         }
 
-        sumOfMass.addLocal(x + 0.5f, y + 0.5f, z + 0.5f);
+        sumOfMass.addLocal(c.getX() + 0.5f, c.getY() + 0.5f, c.getZ() + 0.5f);
         
         if(mass > 0.0f) {
             centerOfMass = sumOfMass.divide(mass);
@@ -87,32 +93,25 @@ public class Ship {
             centerOfMass = midPoint;
         }
         
-        xAxisMass[x] += mass;
-        yAxisMass[y] += mass;
-        zAxisMass[z] += mass;
+        xAxisMass[c.getX()] += mass;
+        yAxisMass[c.getY()] += mass;
+        zAxisMass[c.getZ()] += mass;
 
-        version++;
+        minorVersion++;
         
         return oldValue;
     }
     
-    void something(int x, int y, int z) {
-        if(isOutOfBounds(x, y, z)) {
-            int spos = getSuperPosition(x, y, z);
-            segments = null;
-        }
-    }
-
     protected final boolean isOutOfBounds(int x, int y, int z) {
         int size = segments.size;
         return x<0 || y<0 || z<0 || x>=size || y>=size || z>=size;
     }
 
-    protected final int getSuperPosition(int x, int y, int z) {
+    protected final int getSuperPosition(Vector3Int c) {
         int segmentIndex = 0;
-        if(x < 0) segmentIndex |= 4;
-        if(y < 0) segmentIndex |= 2;
-        if(z < 0) segmentIndex |= 1;
+        if(c.getX() < 0) segmentIndex |= 4;
+        if(c.getY() < 0) segmentIndex |= 2;
+        if(c.getZ() < 0) segmentIndex |= 1;
 
         return segmentIndex;
     }
@@ -163,11 +162,21 @@ public class Ship {
     }
 
     public int getVersion() {
-        return version;
+        return minorVersion;
+    }
+    
+    private void updateCacheData(Vector3Int delta) {
+        int size = segments.size;
+        sumOfMass.addLocal(delta.getX(), delta.getY(), delta.getZ());
+        midPoint = new Vector3f(size / 2.0f, size / 2.0f, size / 2.0f);
+
+        System.arraycopy(xAxisMass, 0, xAxisMass = new float[size], delta.getX(), size / 2);
+        System.arraycopy(yAxisMass, 0, yAxisMass = new float[size], delta.getY(), size / 2);
+        System.arraycopy(zAxisMass, 0, zAxisMass = new float[size], delta.getZ(), size / 2);
     }
     
     public static abstract class ShipSegment implements Comparable<ShipSegment> {
-        protected static final Vector3f[] xyzf = new Vector3f[] {
+        public static final Vector3f[] xyzf = new Vector3f[] {
             new Vector3f(-1.0f, -1.0f, -1.0f),
             new Vector3f(-1.0f, -1.0f, +1.0f),
             new Vector3f(-1.0f, +1.0f, -1.0f),
@@ -178,7 +187,7 @@ public class Ship {
             new Vector3f(+1.0f, +1.0f, +1.0f)
         };
 
-        protected static final Vector3Int[] xyzi = new Vector3Int[] {
+        public static final Vector3Int[] xyzi = new Vector3Int[] {
             new Vector3Int(0, 0, 0),
             new Vector3Int(0, 0, 1),
             new Vector3Int(0, 1, 0),
@@ -191,27 +200,28 @@ public class Ship {
 
         protected int size;
         protected Vector3f segmentOffset;
-        protected Vector3Int base;
         protected float maybeHitRange;
 
         protected float tmpDistance;
 
+        public void updateSegmentIndex(int index) {
+            segmentOffset = xyzf[index].mult(size / 2.0f);
+        }
+        
         private ShipSegment() {}
         
         protected ShipSegment(int size) {
             // this constructor is called only for top level ship
             this.size = size;
 
-            base = new Vector3Int(0, 0, 0);
             segmentOffset = xyzf[7].mult(size / 2.0f);
             maybeHitRange = segmentOffset.length();
         }
 
-        protected ShipSegment(int size, Vector3Int parentBase, int segmentIndex) {
+        protected ShipSegment(int size, int segmentIndex) {
             this.size = size;
 
             segmentOffset = xyzf[segmentIndex].mult(size / 2.0f);
-            base = parentBase.add(xyzi[segmentIndex].mult(size));
             maybeHitRange = segmentOffset.length();
         }
 
@@ -223,14 +233,14 @@ public class Ship {
             }
         }
 
-        public static ShipSegment create(int size, Vector3Int parentBase, int segmentIndex) {
+        public static ShipSegment create(int size, int segmentIndex) {
             if(size == 1) {
-                return new ShipCell(parentBase, segmentIndex);
+                return new ShipCell(segmentIndex);
             } else {
-                return new ShipChunk(size, parentBase, segmentIndex);
+                return new ShipChunk(size, segmentIndex);
             }
         }
-
+        
         public abstract char get(int x, int y, int z);
         public abstract char set(int x, int y, int z, char value);
 
@@ -307,11 +317,22 @@ public class Ship {
             mask = delimit - 1;
         }
 
-        public ShipChunk(int size, Vector3Int parentBase, int segmentIndex) {
-            super(size, parentBase, segmentIndex);
+        public ShipChunk(int size, int segmentIndex) {
+            super(size, segmentIndex);
 
             delimit = size / 2;
             mask = delimit - 1;
+        }
+        
+        public ShipChunk(ShipSegment segment, int index) {
+            super(2 * segment.size);
+            
+            delimit = segment.size;
+            mask = delimit - 1;
+            
+            segment.updateSegmentIndex(index);
+            subs[index] = segment;
+            empty = false;
         }
 
         @Override
@@ -329,7 +350,7 @@ public class Ship {
             int subSegmentIndex = getSubSegmentIndex(x, y, z, delimit);
 
             if(subs[subSegmentIndex] == null) {
-                subs[subSegmentIndex] = create(delimit, base, subSegmentIndex);
+                subs[subSegmentIndex] = create(delimit, subSegmentIndex);
                 empty = false;
             }
 
@@ -374,8 +395,8 @@ public class Ship {
             super(1);
         }
 
-        ShipCell(Vector3Int parentBase, int segmentIndex) {
-            super(1, parentBase, segmentIndex);
+        ShipCell(int segmentIndex) {
+            super(1, segmentIndex);
         }
 
         @Override

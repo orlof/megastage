@@ -12,6 +12,8 @@ import java.util.Random;
 import org.megastage.server.Hit;
 import org.megastage.server.NoHit;
 import org.megastage.server.ShipStructureHit;
+import static org.megastage.util.CollisionTesterNew2.RANDOM;
+import static org.megastage.util.CollisionTesterNew2.SIZE;
  
 public class CollisionTesterNew extends SimpleApplication{
     
@@ -49,21 +51,23 @@ public class CollisionTesterNew extends SimpleApplication{
         Log.info("numChunks: %d", numChunks);
         blockTerrain = new BlockTerrainControl(settings, new Vector3Int(numChunks, numChunks, numChunks));
 
-        int c = 0;
+        int count = 0;
         Random rnd = new Random();
         ship = new Ship(SIZE);
-        for(int x=0; x < SIZE; x++) {
-            for(int y=0; y < SIZE; y++) {
-                for(int z=0; z < SIZE; z++) {
-                    if(!RANDOM || rnd.nextInt(10) == 0) {
-                        ship.setBlock(x, y, z, '#');
-                        blockTerrain.setBlock(new Vector3Int(x, y, z), Block_Wood.class); 
-                        c++;
+        Vector3Int c = new Vector3Int();
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
+                for (int z = 0; z < SIZE; z++) {
+                    if (!RANDOM || rnd.nextInt(10) == 0) {
+                        c.set(x, y, z);
+                        ship.setBlock(c, '#');
+                        blockTerrain.setBlock(new Vector3Int(x, y, z), Block_Wood.class);
+                        count++;
                     }
                 }
             }
         }
-        Log.info("Block count: " + c);
+        Log.info("Block count: " + count);
         Log.info("Center: %s", ship.getCenterOfMass());
 
         shipNode = new Node();

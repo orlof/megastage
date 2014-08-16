@@ -12,15 +12,15 @@ public class VirtualForceField extends DCPUHardware {
     public static transient final char STATUS_FIELD_FORMING = 1;
     public static transient final char STATUS_FIELD_ACTIVE = 2;
     
-    public transient float minEnergy;
-    public transient float maxEnergy;
-    public transient float energyDensity;
-    public transient float energyEvaporation;
+    public float minEnergy;
+    public float maxEnergy;
+    public float energyDensity;
+    public float energyEvaporation;
 
-    public transient float energy;
-    public transient float power;
-    public transient float radius;
-    public transient char status;
+    public float energy;
+    public float power;
+    public float radius;
+    public char status;
 
     @Override
     public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {

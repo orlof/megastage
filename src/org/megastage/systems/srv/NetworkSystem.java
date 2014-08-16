@@ -1,5 +1,6 @@
 package org.megastage.systems.srv;
 
+import com.cubes.Vector3Int;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -432,11 +433,7 @@ public class NetworkSystem extends Processor {
     }
 
     private void build(PlayerConnection connection, Build build, Ship ship, BlockChanges changes) {
-        if(build.x < 0 || build.y < 0 || build.z < 0) {
-            Log.warn("Trying to build to negative coordinates");
-            return;
-        }
-
+        Vector3Int vec = new Vector3Int(build.x, build.y, build.z);
         if(ship.getBlock(build.x, build.y, build.z) != 0) {
             Log.warn("Trying to build in non-empty block");
             return;
@@ -447,11 +444,12 @@ public class NetworkSystem extends Processor {
             return;
         }
 
-        ship.setBlock(build.x, build.y, build.z, '#');
-        changes.changes.add(new BlockChange(build.x, build.y, build.z, '#', BlockChange.BUILD));
+        ship.setBlock(vec, '#');
+        changes.changes.add(new BlockChange(build.x, build.y, build.z, '#', BlockChange.Event.BUILD));
     }
 
     private void unbuild(PlayerConnection connection, Unbuild unbuild, Ship ship, BlockChanges changes) {
+        Vector3Int vec = new Vector3Int(unbuild.x, unbuild.y, unbuild.z);
         if(unbuild.x < 0 || unbuild.y < 0 || unbuild.z < 0) {
             return;
         }
@@ -464,8 +462,8 @@ public class NetworkSystem extends Processor {
             return;
         }
 
-        ship.setBlock(unbuild.x, unbuild.y, unbuild.z, (char) 0);
-        changes.changes.add(new BlockChange(unbuild.x, unbuild.y, unbuild.z, (char) 0, BlockChange.UNBUILD));
+        ship.setBlock(vec, (char) 0);
+        changes.changes.add(new BlockChange(unbuild.x, unbuild.y, unbuild.z, (char) 0, BlockChange.Event.UNBUILD));
     }
 
     private void teleport(PlayerConnection connection, UserCommand.Teleport teleport) {
