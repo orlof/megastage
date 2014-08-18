@@ -11,7 +11,7 @@ Megastage is a 3D space opera with DCPU, block building, resource gathering, ite
 
 Development is still in very early phase.
 
-    www.megastage.org
+    http://www.megastage.org/
 
 
 <h4>DEVELOPMENT INFORMATION</h4>

@@ -12,13 +12,11 @@ import java.util.Random;
 import org.megastage.server.Hit;
 import org.megastage.server.NoHit;
 import org.megastage.server.ShipStructureHit;
-import static org.megastage.util.CollisionTesterNew2.RANDOM;
-import static org.megastage.util.CollisionTesterNew2.SIZE;
  
 public class CollisionTesterNew extends SimpleApplication{
     
-    public static final int SIZE = 32;
-    public static final int CHUNK_SIZE = 32;
+    public static final int SIZE = 64;
+    public static final int CHUNK_SIZE = 64;
     public static final boolean RANDOM = true;
  
     public static void main(String[] args){

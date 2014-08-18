@@ -2,6 +2,7 @@ package org.megastage.components;
 
 import com.cubes.Block;
 import com.cubes.BlockTerrainControl;
+import com.cubes.Vector3Int;
 import org.megastage.util.Log;
 import com.jme3.effect.ParticleEmitter;
 import org.megastage.client.CubesManager;
@@ -40,7 +41,7 @@ public class BlockChange extends ReplicatedComponent {
         Ship ship = sg.ship;
         
         int majorVersion = ship.majorVersion;
-        ship.setBlock(x, y, z, value);
+        ship.setBlock(new Vector3Int(x, y, z), value);
 
         EntityNode node = SpatialManager.getOrCreateNode(eid);
         BlockTerrainControl ctrl = node.offset.getControl(BlockTerrainControl.class);

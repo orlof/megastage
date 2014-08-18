@@ -67,7 +67,7 @@ public class Ship {
     public char setBlock(Vector3Int c, char value) {
         while(isOutOfBounds(c.getX(), c.getY(), c.getZ())) {
             int index = getSuperPosition(c);
-            Vector3Int delta = ShipSegment.xyzi[index].multLocal(segments.size);
+            Vector3Int delta = ShipSegment.xyzi[index].mult(segments.size);
             segments = new ShipChunk(segments, index);
             updateCacheData(delta);
             majorVersion++;
@@ -169,6 +169,8 @@ public class Ship {
         int size = segments.size;
         sumOfMass.addLocal(delta.getX(), delta.getY(), delta.getZ());
         midPoint = new Vector3f(size / 2.0f, size / 2.0f, size / 2.0f);
+        
+        Log.info("%d / %s", size, delta);
 
         System.arraycopy(xAxisMass, 0, xAxisMass = new float[size], delta.getX(), size / 2);
         System.arraycopy(yAxisMass, 0, yAxisMass = new float[size], delta.getY(), size / 2);
