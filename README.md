@@ -52,6 +52,6 @@ Every release will contain Windows installation package and .zip file for other 
  - Web graphics
    - StillNoNumber
  - Ship Control System
-   - Gryptix
+   - Cryptix
 
 
