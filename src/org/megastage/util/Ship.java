@@ -63,11 +63,16 @@ public class Ship {
     public char getBlock(int x, int y, int z) {
         return segments.get(x, y, z);
     }
-    
+
+    public Vector3Int prevDelta = new Vector3Int();
+
     public char setBlock(Vector3Int c, char value) {
+        prevDelta.set(0, 0, 0);
         while(isOutOfBounds(c.getX(), c.getY(), c.getZ())) {
             int index = getSuperPosition(c);
             Vector3Int delta = ShipSegment.xyzi[index].mult(segments.size);
+            Log.info("delta: %s", delta);
+            prevDelta.addLocal(delta);
             segments = new ShipChunk(segments, index);
             updateCacheData(delta);
             majorVersion++;
@@ -117,6 +122,10 @@ public class Ship {
     }
 
     public Hit getHit(Vector3f wpnPos, Vector3f attVec, Vector3f shipPos, Quaternion shipRot) {
+        return getHit(wpnPos, attVec, shipPos, shipRot, false);
+    }
+
+    public Hit getHit(Vector3f wpnPos, Vector3f attVec, Vector3f shipPos, Quaternion shipRot, boolean neighbour) {
         // rotate weapon's coordinate system so that target has its native orientation
         
         wpnPos.subtractLocal(shipPos);
@@ -129,13 +138,35 @@ public class Ship {
 
         Vector3f hitCenter = segments.getHit(attVec, shipPos);
         if(hitCenter != null) {
-            hitCenter.subtractLocal(shipPos);
-            Vector3Int block = new Vector3Int((int) hitCenter.x, (int) hitCenter.y, (int) hitCenter.z);
-            return new ShipStructureHit(block, hitCenter.length());
+            float distance = hitCenter.length();
+            Vector3f lhc = hitCenter.subtract(shipPos);
+            Vector3Int block = new Vector3Int((int) lhc.x, (int) lhc.y, (int) lhc.z);
+            if(neighbour) {
+                block.addLocal(getNeighbour(hitCenter, attVec));
+            }
+            return new ShipStructureHit(block, distance);
         }
         return NoHit.INSTANCE;
     }
 
+    public Vector3Int getNeighbour(Vector3f base, Vector3f attVec) {
+        int dx = base.x > 0 ? -1: 1;
+        int dy = base.y > 0 ? -1: 1;
+        int dz = base.z > 0 ? -1: 1;
+
+        float lx = MathUtil.distanceFromPointToLine(base.add(dx, 0, 0), attVec);
+        float ly = MathUtil.distanceFromPointToLine(base.add(0, dy, 0), attVec);
+        float lz = MathUtil.distanceFromPointToLine(base.add(0, 0, dz), attVec);
+
+        if(lx > ly && lx > lz) {
+            return new Vector3Int(dx, 0, 0);
+        } else if(ly > lz) {
+            return new Vector3Int(0, dy, 0);
+        } else {
+            return new Vector3Int(0, 0, dz);
+        }
+    }
+    
     public int getSize() {
         return segments.size;
     }
@@ -175,6 +206,10 @@ public class Ship {
         System.arraycopy(xAxisMass, 0, xAxisMass = new float[size], delta.getX(), size / 2);
         System.arraycopy(yAxisMass, 0, yAxisMass = new float[size], delta.getY(), size / 2);
         System.arraycopy(zAxisMass, 0, zAxisMass = new float[size], delta.getZ(), size / 2);
+    }
+
+    Vector3f getPrevDelta() {
+        return new Vector3f(-prevDelta.getX(), -prevDelta.getY(), -prevDelta.getZ());
     }
     
     public static abstract class ShipSegment implements Comparable<ShipSegment> {

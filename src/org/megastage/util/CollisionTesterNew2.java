@@ -64,7 +64,9 @@ public class CollisionTesterNew2 extends SimpleApplication {
         flyCam.setMoveSpeed(10);
 
         inputManager.addMapping("pick", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping("rot", new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         inputManager.addListener(actionListener, "pick");
+        inputManager.addListener(actionListener, "rot");
          
         createCrosshair();
     }
@@ -81,6 +83,9 @@ public class CollisionTesterNew2 extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
+        if(rotate) {
+            shipNode.rotate(0, tpf, 0);
+        }
     }
 
     private CollisionResults getRayCastingResults(Node node) {
@@ -120,7 +125,8 @@ public class CollisionTesterNew2 extends SimpleApplication {
             }
         }
     }
-    
+
+    boolean rotate = false;
     private ActionListener actionListener = new ActionListener() {
         @Override
         public void onAction(String name, boolean isPressed, float tpf) {
@@ -129,9 +135,13 @@ public class CollisionTesterNew2 extends SimpleApplication {
                 Log.info("%s", col);
 
                 if (col != null) {
+                    Vector3f com = ship.getCenterOfMass();
                     int majorVersion = ship.majorVersion;
                     ship.setBlock(col, '#');
                     Log.info("MajorVersion: %d -> %d", majorVersion, ship.majorVersion);
+                    Log.info("Center of Mass: %s -> %s", com, ship.getCenterOfMass());
+                    
+                    shipNode.move(ship.getPrevDelta());
 
                     if(majorVersion == ship.majorVersion) {
                         ctrl.setBlock(col, CubesManager.getBlock('#'));
@@ -139,6 +149,9 @@ public class CollisionTesterNew2 extends SimpleApplication {
                         initGeometry();
                     }
                 }
+            }
+            if (name.equals("rot")) {
+                rotate = isPressed;
             }
         }
     };
