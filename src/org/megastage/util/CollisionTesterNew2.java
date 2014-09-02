@@ -43,9 +43,8 @@ public class CollisionTesterNew2 extends SimpleApplication {
         ship = new Ship(1);
         ship.setBlock(new Vector3Int(0, 0, 0), '#');
 
-        Log.info("Center: %s", ship.getCenterOfMass());
-
         shipNode = new Node();
+        shipNode.setLocalTranslation(0, 1, 0);
         rootNode.attachChild(shipNode);
 
         terrainNode = new Node();
@@ -120,7 +119,7 @@ public class CollisionTesterNew2 extends SimpleApplication {
                     Log.info("Relocation vector: %s", ship.getRelocation());
                     
                     terrainNode.setLocalTranslation(ship.getCenterOfMass().negate());
-                    //shipNode.move(ship.getPrevDelta());
+                    shipNode.move(shipNode.getWorldRotation().multLocal(ship.getRelocation()));
 
                     if(majorVersion == ship.majorVersion) {
                         ctrl.setBlock(((ShipStructureHit) hit).block, CubesManager.getBlock('#'));
@@ -128,7 +127,6 @@ public class CollisionTesterNew2 extends SimpleApplication {
                         initGeometry();
                     }
                 }
-                Log.info("NO hit");
             }
             if (name.equals("rot")) {
                 rotate = isPressed;

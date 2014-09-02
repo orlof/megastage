@@ -66,11 +66,10 @@ public class Ship {
 
     public Vector3Int prevDelta = new Vector3Int();
     public Vector3f prevCom;
+    public Quaternion prevShipRot;
 
     public Vector3f getRelocation() {
-        Log.info("prevDelta: %s", prevDelta);
-        Log.info("com delta: %s", prevCom);
-        return prevCom.add(prevDelta.getX(), prevDelta.getY(), prevDelta.getZ());
+        return prevCom.subtract(prevDelta.getX(), prevDelta.getY(), prevDelta.getZ());
     }
     
     public char setBlock(Vector3Int c, char value) {
@@ -78,7 +77,7 @@ public class Ship {
         while(isOutOfBounds(c.getX(), c.getY(), c.getZ())) {
             int index = getSuperPosition(c);
             Vector3Int delta = ShipSegment.xyzi[index].mult(segments.size);
-            Log.info("delta: %s", delta);
+            //Log.info("delta: %s", delta);
             prevDelta.addLocal(delta);
             segments = new ShipChunk(segments, index);
             updateCacheData(delta);
@@ -136,11 +135,13 @@ public class Ship {
 
     public Hit getHit(Vector3f wpnPos, Vector3f attVec, Vector3f shipPos, Quaternion shipRot, boolean neighbour) {
         // rotate weapon's coordinate system so that target has its native orientation
+        prevShipRot = shipRot;
         
         wpnPos.subtractLocal(shipPos);
         shipRot.inverseLocal();
         shipRot.multLocal(wpnPos);
-        shipPos.subtractLocal(wpnPos);
+        //shipPos.subtractLocal(wpnPos);
+        shipPos = wpnPos.negate();
         shipRot.multLocal(attVec);
         
         shipPos.subtractLocal(centerOfMass);
