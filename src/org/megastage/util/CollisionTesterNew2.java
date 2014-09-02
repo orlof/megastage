@@ -11,12 +11,15 @@ import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.scene.Node;
 import com.jme3.ui.Picture;
 import java.util.Random;
 import org.megastage.client.CubesManager;
+import org.megastage.server.Hit;
+import org.megastage.server.ShipStructureHit;
 
 public class CollisionTesterNew2 extends SimpleApplication {
 
@@ -84,25 +87,8 @@ public class CollisionTesterNew2 extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         if(rotate) {
-            shipNode.rotate(0, tpf, 0);
+            shipNode.rotate(tpf, tpf, 0);
         }
-    }
-
-    private CollisionResults getRayCastingResults(Node node) {
-        Ray ray = new Ray(cam.getLocation(), cam.getDirection());
-        CollisionResults results = new CollisionResults();
-        node.collideWith(ray, results);
-        return results;
-    }
-
-    private Vector3Int getCurrentPointedBlockLocation(boolean getNeighborLocation) {
-        CollisionResults results = getRayCastingResults(terrainNode);
-        if (results.size() > 0) {
-            Vector3f collisionContactPoint = results.getClosestCollision().getContactPoint().subtract(terrainNode.getWorldTranslation());
-            Log.info("%s", collisionContactPoint);
-            return BlockNavigator.getPointedBlockLocation(ctrl, collisionContactPoint, getNeighborLocation);
-        }
-        return null;
     }
 
     public void initGeometry() {
@@ -131,24 +117,27 @@ public class CollisionTesterNew2 extends SimpleApplication {
         @Override
         public void onAction(String name, boolean isPressed, float tpf) {
             if (name.equals("pick") && !isPressed) {
-                Vector3Int col = getCurrentPointedBlockLocation(true);
-                Log.info("%s", col);
+                // Vector3Int col = getCurrentPointedBlockLocation(true);
+                Hit hit = ship.getHit(cam.getLocation().clone(), cam.getDirection().mult(50), shipNode.getWorldTranslation().clone(), shipNode.getWorldRotation().clone(), true);
+                Log.info("%s", hit);
 
-                if (col != null) {
+                if (hit instanceof ShipStructureHit) {
                     Vector3f com = ship.getCenterOfMass();
                     int majorVersion = ship.majorVersion;
-                    ship.setBlock(col, '#');
+                    ship.setBlock(((ShipStructureHit) hit).block, '#');
                     Log.info("MajorVersion: %d -> %d", majorVersion, ship.majorVersion);
                     Log.info("Center of Mass: %s -> %s", com, ship.getCenterOfMass());
                     
-                    shipNode.move(ship.getPrevDelta());
+                    terrainNode.setLocalTranslation(ship.getCenterOfMass().negate());
+                    //shipNode.move(ship.getPrevDelta());
 
                     if(majorVersion == ship.majorVersion) {
-                        ctrl.setBlock(col, CubesManager.getBlock('#'));
+                        ctrl.setBlock(((ShipStructureHit) hit).block, CubesManager.getBlock('#'));
                     } else {
                         initGeometry();
                     }
                 }
+                Log.info("NO hit");
             }
             if (name.equals("rot")) {
                 rotate = isPressed;

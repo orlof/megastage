@@ -150,6 +150,8 @@ public class Ship {
     }
 
     public Vector3Int getNeighbour(Vector3f base, Vector3f attVec) {
+        //attVec = attVec.normalize();
+        
         int dx = base.x > 0 ? -1: 1;
         int dy = base.y > 0 ? -1: 1;
         int dz = base.z > 0 ? -1: 1;
@@ -158,9 +160,13 @@ public class Ship {
         float ly = MathUtil.distanceFromPointToLine(base.add(0, dy, 0), attVec);
         float lz = MathUtil.distanceFromPointToLine(base.add(0, 0, dz), attVec);
 
-        if(lx > ly && lx > lz) {
+        // Log.info("%s: %f", base.add(dx, 0, 0), lx);
+        // Log.info("%s: %f", base.add(0, dy, 0), ly);
+        // Log.info("%s: %f", base.add(0, 0, dz), lz);
+        
+        if(lx < ly && lx < lz) {
             return new Vector3Int(dx, 0, 0);
-        } else if(ly > lz) {
+        } else if(ly < lz) {
             return new Vector3Int(0, dy, 0);
         } else {
             return new Vector3Int(0, 0, dz);
