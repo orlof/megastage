@@ -4,19 +4,11 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.math.Vector3f;
 import com.jme3.system.AppSettings;
 import com.cubes.*;
-import com.cubes.test.CubesTestAssets;
-import com.cubes.test.blocks.*;
-import com.jme3.collision.CollisionResults;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.MouseButtonTrigger;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Ray;
-import com.jme3.math.Vector2f;
 import com.jme3.scene.Node;
 import com.jme3.ui.Picture;
-import java.util.Random;
 import org.megastage.client.CubesManager;
 import org.megastage.server.Hit;
 import org.megastage.server.ShipStructureHit;
@@ -117,7 +109,6 @@ public class CollisionTesterNew2 extends SimpleApplication {
         @Override
         public void onAction(String name, boolean isPressed, float tpf) {
             if (name.equals("pick") && !isPressed) {
-                // Vector3Int col = getCurrentPointedBlockLocation(true);
                 Hit hit = ship.getHit(cam.getLocation().clone(), cam.getDirection().mult(50), shipNode.getWorldTranslation().clone(), shipNode.getWorldRotation().clone(), true);
                 Log.info("%s", hit);
 
@@ -126,7 +117,7 @@ public class CollisionTesterNew2 extends SimpleApplication {
                     int majorVersion = ship.majorVersion;
                     ship.setBlock(((ShipStructureHit) hit).block, '#');
                     Log.info("MajorVersion: %d -> %d", majorVersion, ship.majorVersion);
-                    Log.info("Center of Mass: %s -> %s", com, ship.getCenterOfMass());
+                    Log.info("Relocation vector: %s", ship.getRelocation());
                     
                     terrainNode.setLocalTranslation(ship.getCenterOfMass().negate());
                     //shipNode.move(ship.getPrevDelta());

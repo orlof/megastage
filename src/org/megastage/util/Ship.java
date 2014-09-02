@@ -28,7 +28,7 @@ public class Ship {
     
     private ShipSegment segments;
     private Vector3f sumOfMass;
-    private Vector3f centerOfMass;
+    private Vector3f centerOfMass = Vector3f.ZERO;
     private Vector3f midPoint;
     private float mass;
     
@@ -65,7 +65,14 @@ public class Ship {
     }
 
     public Vector3Int prevDelta = new Vector3Int();
+    public Vector3f prevCom;
 
+    public Vector3f getRelocation() {
+        Log.info("prevDelta: %s", prevDelta);
+        Log.info("com delta: %s", prevCom);
+        return prevCom.add(prevDelta.getX(), prevDelta.getY(), prevDelta.getZ());
+    }
+    
     public char setBlock(Vector3Int c, char value) {
         prevDelta.set(0, 0, 0);
         while(isOutOfBounds(c.getX(), c.getY(), c.getZ())) {
@@ -91,12 +98,14 @@ public class Ship {
         }
 
         sumOfMass.addLocal(c.getX() + 0.5f, c.getY() + 0.5f, c.getZ() + 0.5f);
-        
+
+        prevCom = centerOfMass.clone();
         if(mass > 0.0f) {
             centerOfMass = sumOfMass.divide(mass);
         } else {
             centerOfMass = midPoint;
         }
+        prevCom = centerOfMass.subtract(prevCom);
         
         xAxisMass[c.getX()] += mass;
         yAxisMass[c.getY()] += mass;
@@ -204,11 +213,9 @@ public class Ship {
     
     private void updateCacheData(Vector3Int delta) {
         int size = segments.size;
-        sumOfMass.addLocal(delta.getX(), delta.getY(), delta.getZ());
+        sumOfMass.addLocal(mass * delta.getX(), mass * delta.getY(), mass * delta.getZ());
         midPoint = new Vector3f(size / 2.0f, size / 2.0f, size / 2.0f);
         
-        Log.info("%d / %s", size, delta);
-
         System.arraycopy(xAxisMass, 0, xAxisMass = new float[size], delta.getX(), size / 2);
         System.arraycopy(yAxisMass, 0, yAxisMass = new float[size], delta.getY(), size / 2);
         System.arraycopy(zAxisMass, 0, zAxisMass = new float[size], delta.getZ(), size / 2);
