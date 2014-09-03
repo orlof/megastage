@@ -44,7 +44,7 @@ public class CollisionTesterNew2 extends SimpleApplication {
         ship.setBlock(new Vector3Int(0, 0, 0), '#');
 
         shipNode = new Node();
-        shipNode.setLocalTranslation(0, 1, 0);
+        //shipNode.setLocalTranslation(0, 1, 0);
         rootNode.attachChild(shipNode);
 
         terrainNode = new Node();
@@ -116,7 +116,6 @@ public class CollisionTesterNew2 extends SimpleApplication {
                     int majorVersion = ship.majorVersion;
                     ship.setBlock(((ShipStructureHit) hit).block, '#');
                     Log.info("MajorVersion: %d -> %d", majorVersion, ship.majorVersion);
-                    Log.info("Relocation vector: %s", ship.getRelocation());
                     
                     terrainNode.setLocalTranslation(ship.getCenterOfMass().negate());
                     shipNode.move(shipNode.getWorldRotation().multLocal(ship.getRelocation()));
