@@ -8,9 +8,9 @@ import org.megastage.client.EntityNode;
 import org.megastage.client.SpatialManager;
 import org.megastage.client.controls.PositionControl;
 import org.megastage.client.controls.RotationControl;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
     
-public abstract class CelestialGeometryComponent extends ReplicatedComponent {
+public abstract class CelestialGeometryComponent extends BaseComponent {
     @Override
     public void receive(int eid) {
         super.receive(eid);

@@ -79,9 +79,9 @@ public class XMLSettings {
     /**
      * retrieves a property as String
      *
-     * @param path to the property value in xml
+     * @param path to the property rgba in xml
      * @param defaultValue
-     * @return the int value or defaultValue if it is not set or could not be parsed
+     * @return the int rgba or defaultValue if it is not set or could not be parsed
      */
     public String get(String path, String defaultValue) {
         String stringVal = get(path);
@@ -102,9 +102,9 @@ public class XMLSettings {
     /**
      * retrieves a property as int
      *
-     * @param path to the property value in xml
+     * @param path to the property rgba in xml
      * @param defaultValue
-     * @return the int value or defaultValue if it is not set or could not be parsed
+     * @return the int rgba or defaultValue if it is not set or could not be parsed
      */
     public int get(String path, int defaultValue) {
         String stringVal = get(path);
@@ -127,9 +127,9 @@ public class XMLSettings {
     /**
      * retrieves a property as int
      *
-     * @param path to the property value in xml
+     * @param path to the property rgba in xml
      * @param defaultValue
-     * @return the int value or defaultValue if it is not set or could not be parsed
+     * @return the int rgba or defaultValue if it is not set or could not be parsed
      */
     public boolean get(String path, boolean defaultValue) {
         String stringVal = get(path);
@@ -147,10 +147,10 @@ public class XMLSettings {
     /**
      * retrieves a property as int
      *
-     * @param path to the property value in xml
+     * @param path to the property rgba in xml
      * @param defaultWidth
      * @param defaultHeight
-     * @return the int value or defaultValue if it is not set or could not be parsed
+     * @return the int rgba or defaultValue if it is not set or could not be parsed
      */
     public Dimension getAsDimension(String path, int defaultWidth, int defaultHeight) {
         return new Dimension(

@@ -10,14 +10,14 @@ import org.megastage.client.JME3Material;
 import org.megastage.client.SpatialManager;
 import org.megastage.client.controls.LocalPositionControl;
 import org.megastage.client.controls.RotationControl;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
     
-public abstract class ItemGeometryComponent extends ReplicatedComponent {
+public abstract class ItemGeometryComponent extends BaseComponent {
     @Override
-    public void receive(int eid) {
-        super.receive(eid);
+    public void receive(int eid, int cid) {
+        super.receive(eid, cid);
 
-        EntityNode node = SpatialManager.getOrCreateNode(eid);
+        EntityNode node = SpatialManager.getOrCreateCleanNode(eid);
         
         node.addControl(new LocalPositionControl(eid));
         node.addControl(new RotationControl(eid));

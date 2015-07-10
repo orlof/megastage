@@ -2,16 +2,15 @@ package org.megastage.systems.srv;
 
 import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
-import org.megastage.util.Log;
+
 import java.util.Arrays;
-import java.util.Comparator;
+
 import org.megastage.components.dcpu.DCPU;
-import org.megastage.components.dcpu.DCPUHardware;
+import org.megastage.components.device.Device;
 import org.megastage.components.dcpu.PowerConsumer;
 import org.megastage.components.dcpu.PowerSupply;
 import org.megastage.components.dcpu.VirtualPowerController;
 import org.megastage.ecs.CompType;
-import org.megastage.util.ID;
 
 public class PowerControllerSystem extends Processor {
 
@@ -24,15 +23,15 @@ public class PowerControllerSystem extends Processor {
         VirtualPowerController ctrl = (VirtualPowerController) world.getComponent(eid, CompType.VirtualPowerController);
         DCPU dcpu = (DCPU) world.getComponent(ctrl.dcpuEID, CompType.DCPU);
 
-        DCPUHardware[] hw = new DCPUHardware[dcpu.hardwareSize];
+        Device[] hw = new Device[dcpu.hardwareSize];
         for(int i=0; i < hw.length; i++) {
-            hw[i] = (DCPUHardware) world.getComponent(dcpu.hardware[i], CompType.DCPUHardware);
+            hw[i] = (Device) world.getComponent(dcpu.hardware[i], CompType.DCPUHardware);
         }
         
         Arrays.sort(hw);
         
         ctrl.supply = 0.0;
-        for(DCPUHardware comp: hw) {
+        for(Device comp: hw) {
             if(comp instanceof PowerSupply) {
                 PowerSupply supply = (PowerSupply) comp;
                 ctrl.supply += supply.generatePower(delta);
@@ -43,7 +42,7 @@ public class PowerControllerSystem extends Processor {
         double powerLeft = ctrl.supply;
         
         ctrl.load = 0.0;
-        for(DCPUHardware comp: hw) {
+        for(Device comp: hw) {
             if(comp instanceof PowerConsumer) {
                 PowerConsumer consumer = (PowerConsumer) comp;
 

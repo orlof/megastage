@@ -2,10 +2,10 @@ package org.megastage.components.srv;
 
 import java.util.LinkedList;
 import org.megastage.components.BlockChange;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.protocol.Message;
 
-public class BlockChanges extends ReplicatedComponent {
+public class BlockChanges extends BaseComponent {
     public LinkedList<BlockChange> changes = new LinkedList<>();
 
     @Override

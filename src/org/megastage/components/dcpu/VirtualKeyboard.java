@@ -1,12 +1,11 @@
 package org.megastage.components.dcpu;
 
-import org.megastage.util.Log;
+import org.megastage.components.device.Device;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
-import org.megastage.util.ID;
 
-public class VirtualKeyboard extends DCPUHardware {
+public class VirtualKeyboard extends Device {
     private char[] keyBuffer = new char[64];
     private int krp;
     private int kwp;

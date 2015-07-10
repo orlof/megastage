@@ -23,12 +23,12 @@ import org.megastage.components.srv.CollisionType;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ECSException;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 import org.megastage.util.Ship;
 
 
-public class ShipGeometry extends ReplicatedComponent {
+public class ShipGeometry extends BaseComponent {
 
     public static Ship getShip(int eid) throws ECSException {
         ShipGeometry sg = (ShipGeometry) World.INSTANCE.getComponentOrError(eid, CompType.ShipGeometry);
@@ -78,7 +78,7 @@ public class ShipGeometry extends ReplicatedComponent {
         BlockTerrainControl ctrl = CubesManager.getControl(size);
         node.addControl(ctrl);
 
-        // convert block map to Cubes control
+        // convert block componentName to Cubes control
         for(int x = 0; x <= size; x++) {
             for(int y = 0; y <= size; y++) {
                 for(int z = 0; z <= size; z++) {
@@ -117,7 +117,7 @@ public class ShipGeometry extends ReplicatedComponent {
 
     public void createMapFromXML(Element element) throws DataConversionException {
         Vector3Int vec = new Vector3Int();
-        List<Element> mapElements = element.getChildren("map");
+        List<Element> mapElements = element.getChildren("componentName");
         for(Element elem: mapElements) {
             Attribute attr = elem.getAttribute("y");
             if(attr != null) {

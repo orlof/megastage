@@ -5,7 +5,7 @@ import org.megastage.systems.srv.DCPUSystem;
 import org.megastage.systems.srv.CleanupSystem;
 import org.megastage.systems.srv.NetworkSystem;
 import org.jdom2.Element;
-import org.megastage.components.gfx.CharacterGeometry;
+import org.megastage.components.geometry.CharacterGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.KryoWorld;
 import org.megastage.ecs.World;
@@ -22,7 +22,7 @@ public class Game {
     World world;
     private static long TICK_SPEED = 50;
 
-    public Game(Element root) throws Exception {
+    public Game(ServerConfig cfg) throws Exception {
         world = new KryoWorld();
 
         world.addProcessor(new EntityInitializeSystem(world, 0));

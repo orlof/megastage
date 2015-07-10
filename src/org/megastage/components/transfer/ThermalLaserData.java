@@ -1,8 +1,8 @@
 package org.megastage.components.transfer;
 
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 
-public class ThermalLaserData extends ReplicatedComponent {
+public class ThermalLaserData extends BaseComponent {
     // TODO this should contain status, w, Hit, range
     public char status;
     public char wattage;

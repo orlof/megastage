@@ -138,8 +138,8 @@ public class FractalDataSource implements HeightDataSource {
                 value += signal * this.octaves[o].persistence;
         }
         
-        // return value, shifting, clamping, and scaling
-        //return FastMath.clamp((value + shift) / (shift * 2), min, max) * heightScale;
+        // return rgba, shifting, clamping, and scaling
+        //return FastMath.clamp((rgba + shift) / (shift * 2), min, max) * heightScale;
 
         value *= heightScale;
         

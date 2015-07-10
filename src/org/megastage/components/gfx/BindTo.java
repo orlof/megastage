@@ -5,10 +5,10 @@ import org.megastage.ecs.BaseComponent;
 import org.megastage.client.ClientGlobals;
 import org.megastage.client.EntityNode;
 import org.megastage.client.SpatialManager;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class BindTo extends ReplicatedComponent {
+public class BindTo extends BaseComponent {
     public int parent; 
     
     @Override

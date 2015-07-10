@@ -1,5 +1,6 @@
 package org.megastage.components.dcpu;
 
+import org.megastage.components.device.Device;
 import org.megastage.util.Log;
 import com.jme3.math.Vector3f;
 import org.jdom2.Element;
@@ -11,7 +12,7 @@ import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 
-public class VirtualGyroscope extends DCPUHardware implements PowerConsumer {
+public class VirtualGyroscope extends Device implements PowerConsumer {
     public static transient final char STATUS_OFF = 0;
     public static transient final char STATUS_ON = 1;
     public static transient final char STATUS_NO_POWER = 2;

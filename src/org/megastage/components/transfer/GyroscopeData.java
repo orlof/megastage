@@ -1,8 +1,8 @@
 package org.megastage.components.transfer;
 
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 
-public class GyroscopeData extends ReplicatedComponent {
+public class GyroscopeData extends BaseComponent {
     public int signedValue = 0;
     
     public static GyroscopeData create(int signedValue) {

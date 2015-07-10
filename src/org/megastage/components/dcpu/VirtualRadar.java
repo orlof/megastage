@@ -1,6 +1,7 @@
 package org.megastage.components.dcpu;
 
 import org.jdom2.Element;
+import org.megastage.components.device.Device;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.components.Position;
@@ -14,7 +15,7 @@ import org.megastage.server.RadarManager;
 import org.megastage.server.SoiManager;
 import org.megastage.util.Bag;
 
-public class VirtualRadar extends DCPUHardware {
+public class VirtualRadar extends Device {
     public int target = 0;
 
     // COMPONENT

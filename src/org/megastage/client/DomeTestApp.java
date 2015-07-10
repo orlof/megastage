@@ -11,8 +11,8 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Sphere;
 
 /** One normal sphere next to two glowing spheres.
- * One has a black-and-white chequered glow map, 
- * the other has a colored random noise glow map. */
+ * One has a black-and-white chequered glow componentName,
+ * the other has a colored random noise glow componentName. */
 public class DomeTestApp extends SimpleApplication {
 
   public static void main(String[] args) {

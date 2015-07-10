@@ -106,7 +106,7 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-//        Time.value = System.currentTimeMillis() + ClientGlobals.timeDiff;
+//        Time.rgba = System.currentTimeMillis() + ClientGlobals.timeDiff;
     }
 
     @Override

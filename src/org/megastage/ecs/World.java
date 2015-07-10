@@ -1,5 +1,6 @@
 package org.megastage.ecs;
 
+import org.jdom2.Element;
 import org.megastage.util.Log;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,12 @@ public class World {
     public long time = 0;
     public float delta = 0.0f;
     protected long offset = 0;
-    
+
+    public World(Element root) {
+        this(10000, CompType.size);
+        CompType.init(root.getChild("components"));
+    }
+
     public World() {
         this(10000, CompType.size);
     }
@@ -171,7 +177,7 @@ public class World {
         // clean all references
         for(BaseComponent bc = compIter(eid); bc != null; bc = compNext()) {
             population[eid][compIterPos] = null;
-            population[eid][CompType.parent[compIterPos]] = null;
+            //population[eid][CompType.parent[compIterPos]] = null;
         }
 
         // remove eid from allocated list
@@ -198,14 +204,10 @@ public class World {
         ensureEntity(eid);
 
         population[eid][cid] = comp;
-        population[eid][CompType.parent[cid]] = comp;
+        //population[eid][CompType.parent[cid]] = comp;
         
         updateEntityInAllGroups(eid);
         return comp;
-    }
-
-    public <E extends BaseComponent> E setComponent(int eid, E comp) {
-        return setComponent(eid, CompType.cid(comp.getClass().getSimpleName()), comp);
     }
 
     public void removeComponent(int eid, int cid) {
@@ -214,7 +216,7 @@ public class World {
         population[eid][cid].delete(eid);
 
         population[eid][cid] = null;
-        population[eid][CompType.parent[cid]] = null;
+        //population[eid][CompType.parent[cid]] = null;
         
         updateEntityInAllGroups(eid);
     }
@@ -230,7 +232,7 @@ public class World {
         if(hasEntity(eid)) {
             return population[eid][cid];
         }
-        throw new ECSException("[%s] has no %s", ID.get(eid), CompType.map[cid]);
+        throw new ECSException("[%s] has no %s", ID.get(eid), CompType.getName(cid));
     }
 
     public <T extends BaseComponent> T getOrCreateComponent(int eid, int cid, Class<T> type) {
@@ -254,13 +256,6 @@ public class World {
         return population[eid][cid] != null;
     }
     
-    public boolean hasComponent(int eid, Class type) {
-        assert !free[eid]: "No entity " + eid;
-
-        Object obj = population[eid][CompType.cid(type.getSimpleName())];
-        return obj != null && type.isInstance(obj);
-    }
-
     private void updateEntityInAllGroups(int eid) {
         for(Group group: groups) {
             group.update(eid);
@@ -273,7 +268,7 @@ public class World {
         }
     }
 
-    // Here is the single thread iterator
+    // single threaded entity iterator
     private transient int eidIterPos;
 
     public int eidIter() {
@@ -284,60 +279,24 @@ public class World {
         return eidIterPos = next[eidIterPos];
     }
 
-    private transient int compIterEID = 0;
-    private transient int compIterPos = 0;
-    private transient Class compIterType;
+    // single threaded component iterator
+    public transient int compIterEID = 0;
+    public transient int compIterPos = 0;
 
     public BaseComponent compIter(int eid) {
-        return compIter(eid, BaseComponent.class);
-    }
-
-    public <E> E compIter(int eid, Class<E> clazz) {
         compIterEID = eid;
         compIterPos = 0;
-        compIterType = clazz;
-        return (E) compNext();
+        return compNext();
     }
     
-    public <E> E compNext() {
+    public BaseComponent compNext() {
         while((++compIterPos) < componentCapacity) {
-            Object comp = population[compIterEID][compIterPos];
-            if(comp != null && compIterType.isInstance(comp) && CompType.parent[compIterPos] == 0) {
-                return (E) population[compIterEID][compIterPos];
+            BaseComponent comp = population[compIterEID][compIterPos];
+            if(comp != null) {
+                return population[compIterEID][compIterPos];
             }
         }
 
         return null;
-    }
-
-    private static class BCInteger extends BaseComponent {
-        public int val = 0;
-        public BCInteger(int v) { val = v; }
-    }
-    
-    private static class BCDouble extends BaseComponent {
-        public double val = 0;
-        public BCDouble(double v) { val = v; }
-    }
-    
-    public static void main(String[] args) throws Exception {
-        System.out.println("Starting");
-        World w = new World(10,10);
-        int eid = w.createEntity();
-        w.setComponent(eid, 0, new BCInteger(0));
-        w.setComponent(eid, 3, new BCDouble(3.0));
-        w.setComponent(eid, 5, new BCInteger(5));
-        w.setComponent(eid, 7, new BCDouble(7.0));
-        w.setComponent(eid, 9, new BCInteger(9));
-        
-        System.out.println("List of all");
-        for(Object comp = w.compIter(eid); comp != null; comp = w.compNext()) {
-            System.out.println(comp.toString());
-        }
-
-        System.out.println("Integer");
-        for(BaseComponent comp = w.compIter(eid); comp != null; comp = w.compNext()) {
-            System.out.println(comp.toString());
-        }
     }
 }

@@ -4,6 +4,7 @@ import com.cubes.Vector3Int;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import org.megastage.components.generic.Flag;
 import org.megastage.util.Log;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -22,13 +23,13 @@ import org.megastage.components.gfx.BindTo;
 import org.megastage.components.Mode;
 import org.megastage.components.dcpu.DCPU;
 import org.megastage.components.dcpu.VirtualFloppyDrive;
-import org.megastage.components.gfx.CharacterGeometry;
+import org.megastage.components.geometry.CharacterGeometry;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.srv.BlockChanges;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.Group;
 import org.megastage.ecs.Processor;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 import org.megastage.client.ClientMode;
 import org.megastage.protocol.Message;
@@ -52,9 +53,9 @@ public class NetworkSystem extends Processor {
     private Group characters;
     
     public NetworkSystem(World world, long interval) {
-        super(world, interval, CompType.SynchronizeFlag);
-        deleted = world.createGroup(CompType.DeleteFlag);
-        characters = world.createGroup(CompType.CharacterGeometry);
+        super(world, interval, CompType.FlagSynchronize);
+        deleted = world.createGroup(CompType.FlagDelete);
+        characters = world.createGroup(CompType.Geometry);
     }
 
     @Override
@@ -186,10 +187,10 @@ public class NetworkSystem extends Processor {
         Bag<Message> list = new Bag<>(20);
         list.add(new TimestampMessage());
 
-        for(ReplicatedComponent comp = world.compIter(eid, ReplicatedComponent.class); comp != null; comp=world.compNext()) {
-            if(comp.isReplicable()) {
+        for(BaseComponent comp = world.compIter(eid); comp != null; comp=world.compNext()) {
+            if(CompType.isReplicable(world.compIterPos)) {
                 Log.debug(comp.toString());
-                Message msg = comp.synchronize(eid);
+                Message msg = comp.synchronize(eid, world.compIterPos);
                 list.add(msg);
             }
         }
@@ -492,19 +493,18 @@ public class NetworkSystem extends Processor {
     public void processDeletedEntities(Bag<Message> update) {
         for (int eid = deleted.iterator(); eid != 0; eid = deleted.next()) {
             Log.info(ID.get(eid));
-            DeleteFlag df = (DeleteFlag) world.getComponent(eid, CompType.DeleteFlag);
-            update.add(new Network.ComponentMessage(eid, df));
+            Flag flag = (Flag) world.getComponent(eid, CompType.FlagDelete);
+            update.add(flag.synchronize(eid, CompType.FlagDelete));
             world.deleteEntity(eid);
        }
     }
 
     public void processSynchronizedEntities(Bag<Message> update) {
         for (int eid = group.iterator(); eid != 0; eid = group.next()) {
-            for(ReplicatedComponent comp = world.compIter(eid, ReplicatedComponent.class); comp != null; comp = world.compNext()) {
-                if(comp.isDirty()) {
-                    // Log.info(format("[%d] %s", eid, comp));
-                    comp.setDirty(false);
-                    Message msg = comp.synchronize(eid);
+            for(BaseComponent comp = world.compIter(eid); comp != null; comp = world.compNext()) {
+                if(comp.dirty && CompType.isReplicable(world.compIterPos)) {
+                    comp.dirty = false;
+                    Message msg = comp.synchronize(eid, world.compIterPos);
                     update.add(msg);
                 }
             }

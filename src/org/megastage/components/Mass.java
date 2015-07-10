@@ -3,10 +3,10 @@ package org.megastage.components;
 import org.megastage.ecs.BaseComponent;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class Mass extends ReplicatedComponent {
+public class Mass extends BaseComponent {
     public float value;
 
     public static Mass create(float m) {

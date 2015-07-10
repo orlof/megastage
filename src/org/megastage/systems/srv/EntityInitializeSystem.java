@@ -9,14 +9,14 @@ import org.megastage.util.ID;
 
 public class EntityInitializeSystem extends Processor {
     public EntityInitializeSystem(World world, long interval) {
-        super(world, interval,  CompType.InitializeFlag);
+        super(world, interval,  CompType.FlagInitialize);
     }
 
     @Override
     protected void process(int eid) {
         Log.debug(ID.get(eid));
         
-        world.removeComponent(eid, CompType.InitializeFlag);
+        world.removeComponent(eid, CompType.FlagInitialize);
         initializeComponents(eid);
     }
 

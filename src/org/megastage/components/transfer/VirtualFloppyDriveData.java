@@ -1,10 +1,10 @@
 package org.megastage.components.transfer;
 
 import org.megastage.client.ClientGlobals;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.server.FloppyManager;
 
-public class VirtualFloppyDriveData extends ReplicatedComponent {
+public class VirtualFloppyDriveData extends BaseComponent {
     public String[] bootroms;
     public String[] floppies;
 

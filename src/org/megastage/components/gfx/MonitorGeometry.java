@@ -19,16 +19,15 @@ import org.megastage.components.client.ClientRaster;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
+import org.megastage.util.XmlUtil;
 
 public class MonitorGeometry extends ItemGeometryComponent {
     public float width, height;
 
     @Override
-    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
-        width = getFloatValue(element, "width", 3.0f);
-        height = getFloatValue(element, "height", 2.0f);
-        
-        return null;
+    public void config(Element elem) {
+        width = XmlUtil.getFloatValue(elem, "width", 3.0f);
+        height = XmlUtil.getFloatValue(elem, "height", 2.0f);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package org.megastage.components.transfer;
 
 import org.megastage.components.dcpu.VirtualForceField;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 
-public class ForceFieldData extends ReplicatedComponent {
+public class ForceFieldData extends BaseComponent {
     public float radius;
     public char status;
 

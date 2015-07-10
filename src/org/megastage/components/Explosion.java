@@ -5,10 +5,10 @@ import org.megastage.client.ExplosionNode;
 import org.megastage.client.SpatialManager;
 import org.megastage.client.controls.ExplosionControl;
 import org.megastage.ecs.CompType;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class Explosion extends ReplicatedComponent {
+public class Explosion extends BaseComponent {
     public transient long startTime = World.INSTANCE.time;
 
     public int state = -1;

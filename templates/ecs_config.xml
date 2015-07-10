@@ -1,0 +1,60 @@
+<root>
+    <components>
+        <NONE class="org.megastage.components.generic.None.class" replicable="false" />
+
+        <FlagDelete class="org.megastage.components.generic.Flag.class" replicable="true" />
+        <FlagInitialize class="org.megastage.components.generic.Flag.class" replicable="false" />
+        <FlagPersistence class="org.megastage.components.generic.Flag.class" replicable="false" />
+        <FlagReplicate class="org.megastage.components.generic.Flag.class" replicable="false" />
+        <FlagSynchronize class="org.megastage.components.generic.Flag.class" replicable="false" />
+        <FlagUsable class="org.megastage.components.generic.Flag.class" replicable="true" />
+
+        <Acceleration class="org.megastage.components.generic.WrapperVector3f.class" replicable="false" />
+        <ClientRaster class="org.megastage.components.ClientRaster.class" replicable="false" />
+        <ClientVideoMemory class="org.megastage.components.ClientVideoMemory.class" replicable="false" />
+        <CollisionSphere class="org.megastage.components.CollisionSphere.class" replicable="false" />
+        <CollisionType class="org.megastage.components.CollisionType.class" replicable="false" />
+        <Energy class="org.megastage.components.Energy.class" replicable="false" />
+        <EngineData class="org.megastage.components.EngineData.class" replicable="false" />
+        <Explosion class="org.megastage.components.Explosion.class" replicable="true" />
+        <ForceFieldData class="org.megastage.components.ForceFieldData.class" replicable="false" />
+        <GyroscopeData class="org.megastage.components.GyroscopeData.class" replicable="false" />
+        <Identifier class="org.megastage.components.generic.WrapperString.class" replicable="true" />
+        <Mass class="org.megastage.components.Mass.class" replicable="false" />
+        <Mode class="org.megastage.components.Mode.class" replicable="true" />
+        <NodeComponent class="org.megastage.components.NodeComponent.class" replicable="false" />
+        <Position class="org.megastage.components.generic.WrapperVector3f.class" replicable="true" />
+        <RadarEcho class="org.megastage.components.generic.WrapperInteger.class" replicable="false" />
+        <RadarTargetData class="org.megastage.components.RadarTargetData.class" replicable="false" />
+        <Rotation class="org.megastage.components.generic.WrapperQuaternion.class" replicable="true" />
+        <SpawnPoint class="org.megastage.components.generic.WrapperVector3f.class" replicable="false" />
+        <ThermalLaserData class="org.megastage.components.ThermalLaserData.class" replicable="false" />
+        <Velocity class="org.megastage.components.generic.WrapperVector3f.class" replicable="false" />
+        <VectorAttack class="org.megastage.components.VectorAttack.class" replicable="false" />
+
+        <DCPU class="org.megastage.components.DCPU.class" replicable="false" />
+        <DCPUInterface class="org.megastage.components.device.DCPUInterface.class" replicable="false" />
+        <ConnectedTo class="org.megastage.components.generic.EntityReference.class" replicable="false" />
+
+        <EngineDevice class="org.megastage.components.device.EngineDevice.class" replicable="true" />
+        <PPSDevice class="org.megastage.components.PPSDevice.class" replicable="false" />
+
+        <DeviceBattery class="org.megastage.components.DeviceBattery.class" replicable="false" />
+        <DeviceClock class="org.megastage.components.DeviceClock.class" replicable="false" />
+        <DeviceFloppyDrive class="org.megastage.components.DeviceFloppyDrive.class" replicable="true" />
+        <DeviceForceField class="org.megastage.components.DeviceForceField.class" replicable="true" />
+        <DeviceGyroscope class="org.megastage.components.DeviceGyroscope.class" replicable="true" />
+        <DeviceKeyboard class="org.megastage.components.DeviceKeyboard.class" replicable="true" />
+        <DeviceMonitor class="org.megastage.components.DeviceMonitor.class" replicable="true" />
+        <DevicePowerController class="org.megastage.components.DevicePowerController.class" replicable="true" />
+        <DevicePowerPlant class="org.megastage.components.DevicePowerPlant.class" replicable="true" />
+        <DeviceRadar class="org.megastage.components.DeviceRadar.class" replicable="true" />
+        <DeviceThermalLaser class="org.megastage.components.DeviceThermalLaser.class" replicable="true" />
+
+        <BindTo class="org.megastage.components.BindTo.class" replicable="true" />
+        <Geometry class="org.megastage.components.Geometry.class" replicable="true" />
+        <BlockChanges class="org.megastage.components.BlockChanges.class" replicable="true" />
+        <CmdText class="org.megastage.components.CmdText.class" replicable="true" />
+        <CubeStructure class="org.megastage.components.CubeStructure.class" replicable="true" />
+    </components>
+</root>

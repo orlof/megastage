@@ -16,7 +16,7 @@ public class Group {
         StringBuilder sb = new StringBuilder("Group[");
         for(int i=0; i < allOf.length; i++) {
             if(i > 0) sb.append(", ");
-            sb.append(CompType.map[allOf[i]]);
+            sb.append(CompType.getName(allOf[i]));
         }
         sb.append("]");
         name = sb.toString();

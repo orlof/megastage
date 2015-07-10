@@ -3,13 +3,13 @@ package org.megastage.components.srv;
 import com.jme3.math.Vector3f;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ECSException;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 import org.megastage.protocol.Network;
 import org.megastage.server.Hit;
 
-class VectorAttackData extends ReplicatedComponent {
+class VectorAttackData extends BaseComponent {
     public boolean enabled;
     public Hit hit;
     

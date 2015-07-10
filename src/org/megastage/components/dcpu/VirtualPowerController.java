@@ -1,19 +1,15 @@
 package org.megastage.components.dcpu;
 
 import org.jdom2.Element;
-import org.megastage.ecs.BaseComponent;
-import org.megastage.ecs.World;
+import org.megastage.components.device.Device;
 
-public class VirtualPowerController extends DCPUHardware {
+public class VirtualPowerController extends Device {
     public transient double supply;
     public transient double load;
 
     @Override
-    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
-        super.init(world, parentEid, element);
+    public void config(Element elem) {
         setInfo(TYPE_POWER_CONTROLLER, 0x0100, MANUFACTORER_ENDER_INNOVATIONS);
-        
-        return null;
     }
 
     @Override
@@ -54,7 +50,7 @@ public class VirtualPowerController extends DCPUHardware {
         char b = dcpu.registers[1];
         char c = dcpu.registers[2];
 
-        DCPUHardware hw = dcpu.getHardware(b);
+        Device hw = dcpu.getHardware(b);
         if(hw != null) {
             hw.priority = c;
         }
@@ -62,7 +58,7 @@ public class VirtualPowerController extends DCPUHardware {
 
     private void getPriority(DCPU dcpu) {
         char b = dcpu.registers[1];
-        DCPUHardware hw = dcpu.getHardware(b);
+        Device hw = dcpu.getHardware(b);
         if(hw != null) {
             dcpu.registers[1] = hw.priority;
         }

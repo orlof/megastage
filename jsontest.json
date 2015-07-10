@@ -1,0 +1,11 @@
+[
+  {
+    "class": "org.megastage.util.TestEntity",
+    "components": {
+      "ComponentName": {
+        "class": "org.megastage.util.TestComponent",
+        "value": "MOI"
+      }
+    }
+  }
+]

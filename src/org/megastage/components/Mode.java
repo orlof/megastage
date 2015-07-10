@@ -1,10 +1,10 @@
 package org.megastage.components;
 
 import org.megastage.client.ClientGlobals;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.client.ClientMode;
 
-public class Mode extends ReplicatedComponent {
+public class Mode extends BaseComponent {
     public ClientMode value = ClientMode.WALK; 
 
     public void setMode(ClientMode newValue) {

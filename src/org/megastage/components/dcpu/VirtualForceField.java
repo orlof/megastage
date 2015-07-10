@@ -1,5 +1,6 @@
 package org.megastage.components.dcpu;
 
+import org.megastage.components.device.Device;
 import org.megastage.util.Log;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
@@ -7,7 +8,7 @@ import org.megastage.components.transfer.ForceFieldData;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 
-public class VirtualForceField extends DCPUHardware {
+public class VirtualForceField extends Device {
     public static transient final char STATUS_POWER_OFF = 0;
     public static transient final char STATUS_FIELD_FORMING = 1;
     public static transient final char STATUS_FIELD_ACTIVE = 2;

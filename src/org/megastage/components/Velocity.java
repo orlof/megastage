@@ -1,9 +1,9 @@
 package org.megastage.components;
 
 import com.jme3.math.Vector3f;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 
-public class Velocity extends ReplicatedComponent {
+public class Velocity extends BaseComponent {
     private Vector3f vector = new Vector3f();
 
     public void set(Vector3f vec) {

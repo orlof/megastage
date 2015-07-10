@@ -1,11 +1,12 @@
 package org.megastage.systems.srv;
 
+import org.megastage.components.device.DCPUInterface;
+import org.megastage.components.device.Device;
 import org.megastage.util.Log;
 import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
 import org.megastage.components.dcpu.*;
 import org.megastage.ecs.CompType;
-import org.megastage.util.ID;
 
 public class DCPUSystem extends Processor {
     public DCPUSystem(World world, long interval) {
@@ -353,7 +354,7 @@ public class DCPUSystem extends Processor {
                 return 0x20000 | dcpu.ram[dcpu.pc++];
         }
 
-        throw new IllegalStateException("Illegal a value type " + Integer.toHexString(type) + "! How did you manage that!?");
+        throw new IllegalStateException("Illegal a rgba type " + Integer.toHexString(type) + "! How did you manage that!?");
     }
 
     public int getAddrA(DCPU dcpu, int type) {
@@ -392,7 +393,7 @@ public class DCPUSystem extends Processor {
                 return 0x20000 | dcpu.ram[dcpu.pc++];
         }
 
-        throw new IllegalStateException("Illegal a value type " + Integer.toHexString(type) + "! How did you manage that!?");
+        throw new IllegalStateException("Illegal a rgba type " + Integer.toHexString(type) + "! How did you manage that!?");
     }
 
     public char getValA(DCPU dcpu, int type) {
@@ -431,7 +432,7 @@ public class DCPUSystem extends Processor {
                 return dcpu.ram[dcpu.pc++];
         }
 
-        throw new IllegalStateException("Illegal a value type " + Integer.toHexString(type) + "! How did you manage that!?");
+        throw new IllegalStateException("Illegal a rgba type " + Integer.toHexString(type) + "! How did you manage that!?");
     }
 
     public char get(DCPU dcpu, int addr) {
@@ -486,17 +487,17 @@ public class DCPUSystem extends Processor {
     }
 
     private void interrupt(DCPU dcpu, int eid) {
-        DCPUHardware hw = (DCPUHardware) world.getComponent(eid, CompType.DCPUHardware);
-        hw.interrupt(dcpu);
+        DCPUInterface dev = (DCPUInterface) world.getComponent(eid, CompType.DCPUInterface);
+        dev.interrupt(dcpu, eid);
     }
 
     private void tick60hz(DCPU dcpu, int eid) {
-        DCPUHardware hw = (DCPUHardware) world.getComponent(eid, CompType.DCPUHardware);
-        hw.tick60hz(dcpu);
+        DCPUInterface dev = (DCPUInterface) world.getComponent(eid, CompType.DCPUInterface);
+        dev.tick60hz(dcpu, eid);
     }
 
     private void query(DCPU dcpu, int eid) {
-        DCPUHardware hw = (DCPUHardware) world.getComponent(eid, CompType.DCPUHardware);
-        hw.query(dcpu);
+        DCPUInterface dev = (DCPUInterface) world.getComponent(eid, CompType.DCPUInterface);
+        dev.query(dcpu);
     }
 }

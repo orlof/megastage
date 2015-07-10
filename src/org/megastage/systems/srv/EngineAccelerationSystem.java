@@ -5,10 +5,9 @@ import org.megastage.ecs.World;
 import org.megastage.ecs.Processor;
 import org.megastage.components.Mass;
 import org.megastage.components.Rotation;
-import org.megastage.components.dcpu.VirtualEngine;
+import org.megastage.components.device.EngineDevice;
 import org.megastage.components.srv.Acceleration;
 import org.megastage.ecs.CompType;
-import org.megastage.util.Log;
 
 public class EngineAccelerationSystem extends Processor {
     public EngineAccelerationSystem(World world, long interval) {
@@ -17,7 +16,7 @@ public class EngineAccelerationSystem extends Processor {
 
     @Override
     protected void process(int eid) {
-        VirtualEngine engine = (VirtualEngine) world.getComponent(eid, CompType.VirtualEngine);
+        EngineDevice engine = (EngineDevice) world.getComponent(eid, CompType.VirtualEngine);
         if(!world.hasEntity(engine.shipEID)) {
             // should only happen during CleanupSystem selay
             return;

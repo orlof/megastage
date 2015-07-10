@@ -1,14 +1,15 @@
 package org.megastage.components.dcpu;
 
-import org.megastage.util.Log;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
-
-import java.io.*;
-import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.server.FloppyManager;
 import org.megastage.util.ID;
+import org.megastage.util.Log;
+import org.megastage.util.MegastageException;
+import org.megastage.util.XmlUtil;
+
+import java.io.*;
 
 /**
  * Experimental 1.7 update to Notch's 1.4 emulator
@@ -21,7 +22,6 @@ public class DCPU extends BaseComponent {
     public int hz = HZ;
     public int hardwareTickInterval = hz / 60;
     
-    public int shipEID;
     public String rom;
 
     public int[] hardware = new int[100];
@@ -48,18 +48,14 @@ public class DCPU extends BaseComponent {
     public int iwp;
 
     @Override
-    public BaseComponent[] init(World world, int parentEid, Element element) throws IOException {
-        this.shipEID = parentEid;
-
-        rom = getStringValue(element, "bootrom", "media/bootrom.bin");
+    public void config(Element elem) {
+        rom = XmlUtil.getStringValue(elem, "bootrom", "media/bootrom.bin");
 
         load(new File(rom));
 
-        powerOnTime = world.time + 2500;
+        powerOnTime = World.INSTANCE.time + 2500;
         startupTime = powerOnTime + 2500;
         nextHardwareTick = hardwareTickInterval;
-        
-        return null;
     }
 
     public void interrupt(char a) {
@@ -98,30 +94,36 @@ public class DCPU extends BaseComponent {
         hardware[hardwareSize++] = eid;
     }
 
-    public void load(File file) throws IOException {
-        DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
-        int i= 0;
-
+    public void load(File file) throws MegastageException {
         try {
-            for (; i < ram.length; i++) {
-                ram[i] = dis.readChar();
-            }
-        } catch (IOException e) {}
+            DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
 
-        Log.info("Boot image: " + i + " words");
-        
-        try { dis.close(); } catch (IOException e) {}
-        
-        for(; i < ram.length; i++) {
-            ram[i] = 0;
+            int i= 0;
+
+            try {
+                for (; i < ram.length; i++) {
+                    ram[i] = dis.readChar();
+                }
+            } catch (IOException e) {}
+
+            Log.info("Boot image: " + i + " words");
+
+            try { dis.close(); } catch (IOException e) {}
+
+            for(; i < ram.length; i++) {
+                ram[i] = 0;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new MegastageException(e);
         }
     }
 
     public void save(File file) throws IOException {
         DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
         try {
-            for (int i = 0; i < ram.length; i++) {
-                dos.writeChar(ram[i]);
+            for (char aRam : ram) {
+                dos.writeChar(aRam);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -129,11 +131,10 @@ public class DCPU extends BaseComponent {
         dos.close();
     }
 
-    public DCPUHardware getHardware(char b) {
+    public int getHardware(char b) {
         if (b < hardwareSize) {
-            return (DCPUHardware) World.INSTANCE.getComponent(hardware[b], CompType.DCPUHardware);
+            return hardware[b];
         }
-        return null;
+        throw new MegastageException("Illegal hardware index");
     }
-
 }

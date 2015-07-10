@@ -49,7 +49,7 @@ public class Planet extends Node {
     protected float baseRadius;
     protected float atmosphereRadius;
     protected HeightDataSource dataSource;
-    // Number of planer quads per patch. This value directly controls the 
+    // Number of planer quads per patch. This rgba directly controls the
     // complexity of the geometry generated.
     protected int quads = ClientGlobals.gfxSettings.PLANET_PLANAR_QUADS_PER_PATCH;
     // Minimal depth for spliting. The planet will start at this depth

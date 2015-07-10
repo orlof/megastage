@@ -1,13 +1,14 @@
 package org.megastage.components.dcpu;
 
 import org.jdom2.Element;
+import org.megastage.components.device.Device;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.components.transfer.MonitorData;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 import org.megastage.protocol.Message;
 
-public class VirtualMonitor extends DCPUHardware {
+public class VirtualMonitor extends Device {
     public MonitorData data = new MonitorData();
 
     @Override

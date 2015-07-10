@@ -89,7 +89,7 @@ public class CollisionTesterNew2 extends SimpleApplication {
         ctrl = CubesManager.getControl(size);
         terrainNode.addControl(ctrl);
 
-        // convert block map to Cubes control
+        // convert block componentName to Cubes control
         for(int x = 0; x < size; x++) {
             for(int y = 0; y < size; y++) {
                 for(int z = 0; z < size; z++) {

@@ -1,5 +1,8 @@
 package org.megastage.server;
 
+import com.esotericsoftware.jsonbeans.Json;
+import com.esotericsoftware.jsonbeans.JsonReader;
+import org.megastage.util.JsonUtil;
 import org.megastage.util.Log;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -16,8 +19,8 @@ public class Main {
         
         ServerGlobals.autoexit = cmd.isDefined("--auto-exit");
         
-        Element root = readConfig(cmd.getString("--config", "world.xml"));
-        Game game = new Game(root);
+        ServerConfig cfg = readConfig(cmd.getString("--config", "server.json"));
+        Game game = new Game(cfg);
 
         if(!game.loadSavedWorld()) {
             game.initializeNewWorld(root);
@@ -26,7 +29,8 @@ public class Main {
         game.loopForever();
     }
 
-    public static Element readConfig(String fileName) throws JDOMException, IOException {
-        return new SAXBuilder().build(new File(fileName)).getRootElement();
+    public static ServerConfig readConfig(String fileName) {
+        Json json = JsonUtil.create();
+        return json.fromJson(ServerConfig.class, new File(fileName));
     }
 }

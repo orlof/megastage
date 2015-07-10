@@ -15,10 +15,10 @@ import org.megastage.client.JME3Material;
 import static org.megastage.client.SpatialManager.getOrCreateNode;
 import org.megastage.client.controls.ImposterPositionControl;
 import org.megastage.ecs.CompType;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class ImposterGeometry extends ReplicatedComponent {
+public class ImposterGeometry extends BaseComponent {
     public float radius;
     public double cutoff;
     public float red, green, blue, alpha;

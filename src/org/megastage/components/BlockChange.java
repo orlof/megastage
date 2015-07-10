@@ -11,12 +11,12 @@ import org.megastage.client.SoundManager;
 import org.megastage.client.SpatialManager;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 import org.megastage.util.ID;
 import org.megastage.util.Ship;
 
-public class BlockChange extends ReplicatedComponent {
+public class BlockChange extends BaseComponent {
     public enum Event { BUILD, UNBUILD, BREAK }
 
     public int x, y, z;

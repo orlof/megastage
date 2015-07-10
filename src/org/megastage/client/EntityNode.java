@@ -38,11 +38,11 @@ public class EntityNode extends Node {
     }
 
     public boolean isUsable() {
-        return World.INSTANCE.hasComponent(eid, CompType.UsableFlag);
+        return World.INSTANCE.hasComponent(eid, CompType.FlagUsable);
     }
 
     public boolean isShip() {
-        return World.INSTANCE.hasComponent(eid, CompType.ShipGeometry);
+        return World.INSTANCE.hasComponent(eid, CompType.CubeStructure);
     }
 
     public boolean isPlayerBase() {

@@ -1,12 +1,12 @@
 package org.megastage.components;
 
 import org.megastage.client.ClientGlobals;
-import org.megastage.components.gfx.CharacterGeometry;
+import org.megastage.components.geometry.CharacterGeometry;
 import org.megastage.ecs.CompType;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class CmdText extends ReplicatedComponent {
+public class CmdText extends BaseComponent {
     public String text;
 
     public static CmdText create(String text) {

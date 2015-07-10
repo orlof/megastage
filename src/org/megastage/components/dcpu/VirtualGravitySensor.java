@@ -1,6 +1,7 @@
 package org.megastage.components.dcpu;
 
 import org.jdom2.Element;
+import org.megastage.components.device.Device;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.components.Mass;
 import org.megastage.ecs.CompType;
@@ -11,7 +12,7 @@ import org.megastage.server.SoiManager;
 import org.megastage.util.Bag;
 import org.megastage.util.Globals;
 
-public class VirtualGravitySensor extends DCPUHardware {
+public class VirtualGravitySensor extends Device {
 
     // COMPONENT
     

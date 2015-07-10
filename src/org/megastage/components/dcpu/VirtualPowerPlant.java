@@ -1,10 +1,11 @@
 package org.megastage.components.dcpu;
 
 import org.jdom2.Element;
+import org.megastage.components.device.Device;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class VirtualPowerPlant extends DCPUHardware implements PowerSupply, PowerConsumer {
+public class VirtualPowerPlant extends Device implements PowerSupply, PowerConsumer {
     
     // MW
     public int production;

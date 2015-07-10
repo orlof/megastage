@@ -1,49 +1,30 @@
 package org.megastage.server;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.megastage.util.Log;
 import org.jdom2.Element;
-import org.megastage.ecs.BaseComponent;
 import org.megastage.components.Identifier;
-import org.megastage.components.srv.InitializeFlag;
+import org.megastage.components.generic.Flag;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
+import org.megastage.util.Log;
 
 public class EntityFactory {
-    public static int create(World world, Element element, int parentEid) {
-        int eid = world.createEntity();
+    public static int create(Element element) {
+        int eid = World.INSTANCE.createEntity();
         
         Identifier id = new Identifier();
         id.name = element.getAttributeValue("name");
-        world.setComponent(eid, CompType.Identifier, id);
+        World.INSTANCE.setComponent(eid, CompType.Identifier, id);
 
         Log.info(id.toString() + "[" + eid + "]");
 
         for(Element e: element.getChildren("component")) {
-            try {
-                Class clazz = Class.forName("org.megastage.components." + e.getAttributeValue("type"));
-                BaseComponent comp = (BaseComponent) clazz.newInstance();
-                BaseComponent[] additionalComponents = comp.init(world, parentEid, e);
+            BaseComponent comp = BaseComponent.create(e);
 
-                Log.info(" Component: " + comp.toString());
-                world.setComponent(eid, CompType.cid(comp.getClass().getSimpleName()), comp);
-
-                if(additionalComponents != null) {
-                    for(BaseComponent c: additionalComponents) {
-                        Log.info(" Component: " + c.toString());
-                        world.setComponent(eid, CompType.cid(c.getClass().getSimpleName()), c);
-                    }
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+            Log.info(" Component: " + comp.toString());
+            World.INSTANCE.setComponent(eid, comp);
         }
-        world.setComponent(eid, CompType.InitializeFlag, new InitializeFlag());
-
-        for(Element e: element.getChildren("entity")) {
-            create(world, e, eid);
-        }
+        World.INSTANCE.setComponent(eid, CompType.FlagInitialize, new Flag());
 
         return eid;
     }

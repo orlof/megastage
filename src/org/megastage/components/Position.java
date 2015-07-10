@@ -9,11 +9,11 @@ import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ECSException;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 import org.megastage.util.Log;
 
-public class Position extends ReplicatedComponent {
+public class Position extends BaseComponent {
 
     public static Vector3f getWorldCoordinates(int eid) throws ECSException {
         Position pos = (Position) World.INSTANCE.getComponentOrError(eid, CompType.Position);

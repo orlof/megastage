@@ -9,10 +9,10 @@ import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ECSException;
-import org.megastage.ecs.ReplicatedComponent;
+import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class Rotation extends ReplicatedComponent {
+public class Rotation extends BaseComponent {
 
     public static Quaternion getWorldRotation(int eid) throws ECSException {
         Rotation rot = (Rotation) World.INSTANCE.getComponentOrError(eid, CompType.Rotation);

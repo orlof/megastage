@@ -1,13 +1,14 @@
 package org.megastage.components.dcpu;
 
 import com.jme3.math.Vector3f;
+import org.megastage.components.device.Device;
 import org.megastage.util.Log;
 import org.jdom2.Element;
 import org.megastage.components.srv.VectorAttack;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class VirtualThermalLaser extends DCPUHardware {
+public class VirtualThermalLaser extends Device {
 
     public enum Status {
         IDLE, FIRING, ENERGY_SHORTAGE, OVERHEAT, DAMAGED;
