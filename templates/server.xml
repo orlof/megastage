@@ -1,0 +1,86 @@
+<root>
+    <templates>
+        <template name="Character">
+            <entity name="Character" root="true">
+                <component type="FlagSynchronize"/>
+                <component type="Position" value="7.5 1.5 7.5"/>
+                <component type="Rotation" value="0 180 0"/>
+                <component type="PlayerCharacter" name="Jon Doe"/>
+                <component type="Geometry" class="geometry.CharacterGeometry" rgba="1.0 0.75 0.5 0.0"/>
+            </entity>
+        </template>
+        <template name="Ship">
+            <entity name="Ship" root="true">
+                <component type="Geometry" class="geometry.Ship"/>
+                <component type="Position" value="0 0 0"/>
+                <component type="Velocity" value="0 0 0"/>
+                <component type="Acceleration" value="0 0 0"/>
+                <component type="Rotation" value="0 180 0"/>
+                <component type="SpawnPoint" value="7.5 1.5 7.5"/>
+                <component type="RadarEcho" value="0"/>
+                <component type="FlagSynchronize"/>
+                <component type="FlagUsable"/>
+            </entity>
+            <entity name="DCPU">
+                <component type="DCPU" bootrom="media/bootrom.bin"/>
+                <component type="BindTo" name="Ship"/>
+            </entity>
+
+            <entity name="Clock">
+                <component type="DCPUInterface" class="device.ClockInterface"/>
+                <component type="ConnectedTo" name="DCPU"/>
+                <component type="ClockDevice"/>
+                <component type="BindTo" name="Ship"/>
+            </entity>
+            <entity name="Keyboard">
+                <component type="DCPUInterface" class="device.KeyboardInterface"/>
+                <component type="ConnectedTo" name="DCPU"/>
+                <component type="KeyboardDevice"/>
+                <component type="BindTo" name="Ship"/>
+            </entity>
+            <entity name="Engine">
+                <component type="DCPUInterface" class="device.EngineInterface"/>
+                <component type="ConnectedTo" name="DCPU"/>
+                <component type="EngineDevice" vector="0 0 -1" max_force="10000" engine_id="0"/>
+                <component type="Geometry" class="geometry.Engine"/>
+                <component type="BindTo" name="Ship"/>
+                <component type="Position" value="6.5 1.5 15.5"/>
+                <component type="Rotation" value="0 0 0"/>
+                <component type="FlagUsable"/>
+                <component type="FlagSynchronize"/>
+            </entity>
+            <entity name="PPS">
+                <component type="DCPUInterface" class="device.PPSInterface"/>
+                <component type="ConnectedTo" name="DCPU"/>
+                <component type="PPSDevice"/>
+                <component type="Geometry" class="geometry.PPS"/>
+                <component type="BindTo" name="Ship"/>
+                <component type="Position" value="4.5 1.5 0.5"/>
+                <component type="Rotation" value="0 0 0"/>
+                <component type="FlagSynchronize"/>
+            </entity>
+            <entity name="Monitor">
+                <component type="DCPUInterface" class="device.MonitorInterface"/>
+                <component type="ConnectedTo" name="DCPU"/>
+                <component type="device.DeviceMonitor"/>
+                <component type="Geometry" class="geometry.Monitor" width="5" height="3"/>
+                <component type="BindTo" name="Ship"/>
+                <component type="Position" value="5.5 1.5 0.5"/>
+                <component type="Rotation" value="0 0 0"/>
+                <component type="FlagSynchronize"/>
+                <component type="FlagUsable"/>
+            </entity>
+            <entity name="FloppyDrive">
+                <component type="DCPUInterface" class="device.FloppyDriveInterface"/>
+                <component type="ConnectedTo" name="DCPU"/>
+                <component type="FloppyDriveDevice"/>
+                <component type="Geometry" class="geometry.FloppyDrive"/>
+                <component type="BindTo" name="Ship"/>
+                <component type="Position" value="7.5 1.5 2.5"/>
+                <component type="Rotation" value="0 0 0"/>
+                <component type="FlagSynchronize"/>
+                <component type="FlagUsable"/>
+            </entity>
+        </template>
+    </templates>
+</root>
