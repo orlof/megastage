@@ -1,26 +1,25 @@
-package org.megastage.components.dcpu;
+package org.megastage.components.device;
 
 import org.jdom2.Element;
+import org.megastage.components.dcpu.DCPU;
 import org.megastage.components.device.Device;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class VirtualClock extends Device {
+public class ClockInterface extends DCPUInterface {
     public int interval;
     public int intCount;
     public char ticks;
     public char interruptMessage;
 
+
     @Override
-    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
-        super.init(world, parentEid, element);
+    public void config(Element elem) {
         setInfo(TYPE_CLOCK, 0x8008, MANUFACTORER_MACKAPAR);
-        return null;
     }
 
-    public void interrupt(int ship, DCPU dcpu) {
-        int a = dcpu.registers[0];
-
+    @Override
+    public void interrupt(DCPU dcpu, int eid) {
         switch(dcpu.registers[0]) {
             case 0:
                 interval = dcpu.registers[1];
@@ -35,7 +34,7 @@ public class VirtualClock extends Device {
     }
 
     @Override
-    public void tick60hz(DCPU dcpu) {
+    public void tick60hz(DCPU dcpu, int eid) {
         if (interval == 0) return;
 
         if (++intCount >= interval) {

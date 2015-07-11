@@ -1,7 +1,7 @@
 package org.megastage.systems.srv;
 
 import org.megastage.components.DeleteFlag;
-import org.megastage.components.gfx.BindTo;
+import org.megastage.components.BindTo;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.Processor;
 import org.megastage.ecs.World;

@@ -27,16 +27,11 @@ import org.megastage.util.XmlUtil;
 import java.awt.image.BufferedImage;
 
 public class CharacterGeometry extends BaseComponent {
-
-    public String name;
     public ColorRGBA rgba;
-
-    public boolean isFree = true;
 
     @Override
     public void config(Element elem) {
         rgba = XmlUtil.getColorRGBAValue(elem, "rgba");
-        name = XmlUtil.getStringValue(elem, "name");
     }
 
     @Override
@@ -115,7 +110,7 @@ public class CharacterGeometry extends BaseComponent {
         Node node = new Node();
         node.setLocalTranslation(0.0f, 2.0f, 0.0f);
 
-        Label tag = new Label(name, "retro");
+        Label tag = new Label("", "retro");
         tag.setFontSize(0.3f);
 
         Vector3f pref = tag.getPreferredSize();
@@ -126,8 +121,9 @@ public class CharacterGeometry extends BaseComponent {
 
         tag.scale(1.0f / scale);
         tag.setLocalTranslation(-(pref.x / scale) * 0.5f, -(pref.y / scale) * 0.5f, 0.0f);
-        
+
         node.addControl(new BillboardControl());
+
         node.attachChild(tag);
         
         return node;

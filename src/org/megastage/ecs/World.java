@@ -100,7 +100,7 @@ public class World {
     
     public void tick() {
         for(int i=0; i < processorsSize; i++) {
-            // Log.info(processors[i].getClass().getSimpleName());
+            // Log.info(processors[i].getClassValue().getSimpleName());
             if(processors[i].checkProcessing()) {
                 try {
                     processors[i].process();

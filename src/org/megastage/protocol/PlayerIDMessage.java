@@ -2,7 +2,7 @@ package org.megastage.protocol;
 
 import com.esotericsoftware.kryonet.Connection;
 import org.megastage.client.ClientGlobals;
-import org.megastage.components.gfx.BindTo;
+import org.megastage.components.BindTo;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 

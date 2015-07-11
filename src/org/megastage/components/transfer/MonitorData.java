@@ -1,7 +1,7 @@
 package org.megastage.components.transfer;
 
 import org.megastage.components.client.ClientVideoMemory;
-import org.megastage.components.dcpu.LEMUtil;
+import org.megastage.components.device.LEMUtil;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
@@ -18,7 +18,7 @@ public class MonitorData extends BaseComponent {
     public RAM palette = new RAM(LEMUtil.defaultPalette);
 
     @Override
-    public void receive(int eid, int cid) {
+    public void receive(int eid) {
         ClientVideoMemory videoMemory = World.INSTANCE.getOrCreateComponent(eid, CompType.ClientVideoMemory, ClientVideoMemory.class);
         videoMemory.update(this);
     }

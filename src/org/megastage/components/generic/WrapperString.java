@@ -11,4 +11,11 @@ public class WrapperString extends GenericComponent {
         super.config(elem);
         value = XmlUtil.getStringValue(elem, "value");
     }
+
+    public static WrapperString create(int cid, String value) {
+        WrapperString me = new WrapperString();
+        me.value = value;
+        me.cid = cid;
+        return me;
+    }
 }

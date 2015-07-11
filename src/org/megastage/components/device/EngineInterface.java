@@ -1,10 +1,16 @@
 package org.megastage.components.device;
 
+import org.jdom2.Element;
 import org.megastage.components.dcpu.DCPU;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 
 public class EngineInterface extends DCPUInterface {
+    @Override
+    public void config(Element elem) {
+        setInfo(TYPE_ENGINE, 0xad3c, MANUFACTORER_GENERAL_DRIVES);
+    }
+
     @Override
     public void interrupt(DCPU dcpu, int eid) {
         char a = dcpu.registers[0];

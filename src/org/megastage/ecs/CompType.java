@@ -1,6 +1,7 @@
 package org.megastage.ecs;
 
 import org.jdom2.Element;
+import org.megastage.util.MegastageException;
 import org.megastage.util.XmlUtil;
 
 import java.lang.reflect.Field;
@@ -19,7 +20,7 @@ public class CompType {
             try {
                 CompSpec spec = new CompSpec(
                         comp.getName(), 
-                        Class.forName(XmlUtil.getStringValue(comp, "class")),
+                        XmlUtil.getClassValue(root, "class"),
                         size++,
                         XmlUtil.getBooleanValue(comp, "replicable"));
 
@@ -28,8 +29,9 @@ public class CompType {
                 
                 Field field = CompType.class.getField(spec.name);
                 field.setInt(null, spec.cid);
-            } catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException e) {
+            } catch (IllegalAccessException | NoSuchFieldException e) {
                 e.printStackTrace();
+                throw new MegastageException(e);
             }
         }
 
@@ -43,15 +45,15 @@ public class CompType {
         return specMap.get(name);
     }
 
-    public static int FlagReplicate;
     public static int NONE;
-    
+
+    public static int FlagReplicate;
     public static int FlagDelete = 11;
     public static int FlagInitialize = 13;
     public static int FlagPersistence = 14;
     public static int FlagSynchronize = 15;
     public static int FlagUsable = 16;
-    
+
     public static int Acceleration = 20;
     public static int ClientRaster = 21;
     public static int ClientVideoMemory = 22;
@@ -81,21 +83,22 @@ public class CompType {
     public static int DCPUInterface = 51;
     public static int EngineDevice = 51;
     public static int PPSDevice = 51;
+    public static int ClockDevice = 51;
+    public static int KeyboardDevice = 51;
+    public static int FloppyDriveDevice = 51;
+    public static int MonitorDevice = 51;
 
     public static int DeviceBattery = 52;
-    public static int DeviceClock = 53;
-    public static int DeviceFloppyDrive = 55;
     public static int DeviceForceField = 56;
     public static int DeviceGyroscope = 58;
-    public static int DeviceKeyboard = 59;
-    public static int DeviceMonitor = 60;
     public static int DevicePowerController = 62;
     public static int DevicePowerPlant = 63;
     public static int DeviceRadar = 64;
     public static int DeviceThermalLaser = 65;
 
-    public static int DCPUConnection = 68;
+    public static int ConnectedTo = 68;
     public static int BindTo = 69;
+    public static int PlayerCharacter = 70;
     public static int Geometry = 70;
     public static int BlockChanges = 90;
     public static int CmdText = 91;

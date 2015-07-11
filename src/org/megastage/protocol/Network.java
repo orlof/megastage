@@ -20,7 +20,9 @@ public class Network {
     public static int serverPort = 57463;
 
     static public void register(Kryo kryo) {
+
         // register classes marked as carriers
+
         Set<Class<? extends Carrier>> carriers = new Reflections("org.megastage").getSubTypesOf(Carrier.class);
         ArrayList<Class<? extends Carrier>> list = new ArrayList<>(carriers);
 
@@ -35,6 +37,8 @@ public class Network {
             kryo.register(carrier);
         }
 
+        // register classes from "3rd party" libraries
+
         kryo.register(String[].class);
         kryo.register(char[].class);
         kryo.register(char[][].class);
@@ -44,13 +48,13 @@ public class Network {
         kryo.register(Vector3Int.class);
     }
 
-    static public class Login extends EventMessage {
+    static public class Login extends EventMessage implements Carrier {
         public String name = ClientGlobals.player;
     }
     
-    static public class Logout extends EventMessage {}
+    static public class Logout extends EventMessage implements Carrier {}
 
-    static public class ComponentMessage implements Message {
+    static public class ComponentMessage implements Message, Carrier {
         public int eid;
         public BaseComponent component;
 
@@ -72,7 +76,7 @@ public class Network {
         }
     }
     
-    static public class TimestampMessage implements Message {
+    static public class TimestampMessage implements Message, Carrier {
         public long time;
         
         public TimestampMessage() {
@@ -96,8 +100,5 @@ public class Network {
         public String toString() {
             return "TimestampMessage(time=" + time + ")";
         }
-        
-        
     }
-
 }

@@ -5,15 +5,34 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
+import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import java.io.File;
 import java.io.IOException;
 
 public class XmlUtil {
     public static boolean hasValue(Element elem, String attrName) {
         return elem.getAttribute(attrName) != null;
+    }
+
+    public static Class getClassValue(Element elem, String attrName) {
+        try {
+            return Class.forName("org.megastage.components." + getStringValue(elem, attrName));
+        } catch (ClassNotFoundException e) {
+            throw new MegastageException(e);
+        }
+    }
+
+    public static Class getClassValue(Element elem, String attrName, Class defaultValue) {
+        try {
+            return getClassValue(elem, attrName);
+        } catch(MegastageException ex) {
+            return defaultValue;
+        }
     }
 
     public static String getStringValue(Element elem, String attrName) {
@@ -235,6 +254,20 @@ public class XmlUtil {
     public static String output(Element root) throws IOException {
         XMLOutputter serializer = new XMLOutputter(Format.getPrettyFormat());
         return serializer.outputString(root);
+    }
+
+    public static Element read(String filename) {
+        try {
+            SAXBuilder builder = new SAXBuilder();
+
+            File xmlFile = new File(filename);
+
+            Document document = builder.build(xmlFile);
+            return document.getRootElement();
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            throw new MegastageException(ex);
+        }
     }
 
 }

@@ -4,12 +4,18 @@ import org.jdom2.Element;
 import org.megastage.protocol.Message;
 import org.megastage.protocol.Network;
 import org.megastage.util.MegastageException;
+import org.megastage.util.XmlUtil;
 
 public abstract class BaseComponent extends ToStringComponent {
-    public transient boolean dirty = true;
+    protected transient boolean dirty = true;
+
+    public boolean isDirty(int eid) {
+        return dirty;
+    }
 
     /** This message is called when server wraps this component for sending to client as status update */
     public Message synchronize(int eid) {
+        dirty = false;
         return new Network.ComponentMessage(eid, this);
     }
 
@@ -27,11 +33,13 @@ public abstract class BaseComponent extends ToStringComponent {
     /** This method is called when entity is deleted **/
     public void delete(int eid) {}
 
-    public static BaseComponent create(Element elem) {
+    public static BaseComponent create(CompSpec spec, Element elem) {
         try {
-            CompSpec spec = CompType.getSpec(elem.getAttributeValue("type"));
-            BaseComponent comp = (BaseComponent) spec.clazz.newInstance();
+            Class clazz = XmlUtil.getClassValue(elem, "class", spec.clazz);
+
+            BaseComponent comp = (BaseComponent) clazz.newInstance();
             comp.config(elem);
+
             return comp;
 
         } catch (Exception e) {

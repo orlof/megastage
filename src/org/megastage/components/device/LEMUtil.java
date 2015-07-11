@@ -1,4 +1,4 @@
-package org.megastage.components.dcpu;
+package org.megastage.components.device;
 
 import javax.imageio.ImageIO;
 import java.io.File;

@@ -1,5 +1,6 @@
 package org.megastage.server;
 
+import org.megastage.components.PlayerCharacter;
 import org.megastage.util.Log;
 import org.megastage.systems.srv.DCPUSystem;
 import org.megastage.systems.srv.CleanupSystem;
@@ -22,7 +23,7 @@ public class Game {
     World world;
     private static long TICK_SPEED = 50;
 
-    public Game(ServerConfig cfg) throws Exception {
+    public Game(Element cfg) throws Exception {
         world = new KryoWorld();
 
         world.addProcessor(new EntityInitializeSystem(world, 0));
@@ -53,15 +54,12 @@ public class Game {
         TargetManager.initialize();
         RadarManager.initialize();
         SoiManager.initialize();
-        
-        for(Element element: root.getChildren("entity-template")) {
-            TemplateManager.addTemplate(element);
-        }
+        TemplateManager.initialize(cfg.getChild("templates"));
     }
     
-    public void initializeNewWorld(Element root) {
-        for(Element element: root.getChildren("entity")) {
-            EntityFactory.create(world, element, 0);
+    public void initializeNewWorld(Element cfg) {
+        for(Element element: cfg.getChildren("entity")) {
+            EntityFactory.create(element);
         }
     }
     
@@ -81,9 +79,9 @@ public class Game {
     public boolean loadSavedWorld() {
         if(((KryoWorld) world).load()) {
             for(int eid=world.eidIter(); eid > 0; eid = world.eidNext()) {
-                if(world.hasComponent(eid, CompType.CharacterGeometry)) {
-                    CharacterGeometry cg = (CharacterGeometry) world.getComponent(eid, CompType.CharacterGeometry);
-                    cg.isFree = true;
+                if(world.hasComponent(eid, CompType.PlayerCharacter)) {
+                    PlayerCharacter pc = (PlayerCharacter) world.getComponent(eid, CompType.PlayerCharacter);
+                    pc.allocated = false;
                 }
             }
 

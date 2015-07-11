@@ -5,13 +5,10 @@ import com.cubes.Vector3Int;
 import com.jme3.math.Vector3f;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
-import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ECSException;
-import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
-import org.megastage.util.Log;
 
 public class Position extends BaseComponent {
 

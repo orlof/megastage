@@ -3,7 +3,7 @@ package org.megastage.components.client;
 import org.megastage.util.Log;
 import com.jme3.math.ColorRGBA;
 import org.megastage.components.transfer.MonitorData;
-import org.megastage.components.dcpu.LEMUtil;
+import org.megastage.components.device.LEMUtil;
 import org.megastage.ecs.BaseComponent;
 
 public final class ClientVideoMemory extends BaseComponent {

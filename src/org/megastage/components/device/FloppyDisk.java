@@ -1,4 +1,4 @@
-package org.megastage.components.dcpu;
+package org.megastage.components.device;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

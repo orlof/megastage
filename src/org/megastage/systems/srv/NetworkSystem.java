@@ -4,48 +4,31 @@ import com.cubes.Vector3Int;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-import org.megastage.components.generic.Flag;
-import org.megastage.util.Log;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import org.megastage.components.dcpu.VirtualKeyboard;
-import org.megastage.protocol.Network;
-import org.megastage.protocol.PlayerConnection;
-import java.io.IOException;
-import org.megastage.components.BlockChange;
-import org.megastage.components.CmdText;
-import org.megastage.components.DeleteFlag;
-import org.megastage.components.Position;
-import org.megastage.components.Rotation;
-import org.megastage.components.srv.SpawnPoint;
-import org.megastage.components.dcpu.VirtualMonitor;
-import org.megastage.components.gfx.BindTo;
-import org.megastage.components.Mode;
+import org.megastage.client.ClientMode;
+import org.megastage.components.*;
 import org.megastage.components.dcpu.DCPU;
-import org.megastage.components.dcpu.VirtualFloppyDrive;
-import org.megastage.components.geometry.CharacterGeometry;
+import org.megastage.components.device.FloppyDriveInterface;
+import org.megastage.components.device.KeyboardInterface;
+import org.megastage.components.device.MonitorDevice;
+import org.megastage.components.generic.Flag;
+import org.megastage.components.BindTo;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.srv.BlockChanges;
-import org.megastage.ecs.CompType;
-import org.megastage.ecs.Group;
-import org.megastage.ecs.Processor;
-import org.megastage.ecs.BaseComponent;
-import org.megastage.ecs.World;
-import org.megastage.client.ClientMode;
-import org.megastage.protocol.Message;
+import org.megastage.components.srv.SpawnPoint;
+import org.megastage.ecs.*;
+import org.megastage.protocol.*;
 import org.megastage.protocol.Network.TimestampMessage;
-import org.megastage.protocol.PlayerIDMessage;
-import org.megastage.protocol.UserCommand;
-import org.megastage.protocol.UserCommand.Build;
-import org.megastage.protocol.UserCommand.ChangeBootRom;
-import org.megastage.protocol.UserCommand.ChangeFloppy;
-import org.megastage.protocol.UserCommand.Keyboard;
-import org.megastage.protocol.UserCommand.Unbuild;
+import org.megastage.protocol.UserCommand.*;
 import org.megastage.server.ServerGlobals;
 import org.megastage.server.TemplateManager;
 import org.megastage.util.Bag;
-import org.megastage.util.Ship;
 import org.megastage.util.ID;
+import org.megastage.util.Log;
+import org.megastage.util.Ship;
+
+import java.io.IOException;
 
 public class NetworkSystem extends Processor {
     private Server server;
@@ -55,7 +38,7 @@ public class NetworkSystem extends Processor {
     public NetworkSystem(World world, long interval) {
         super(world, interval, CompType.FlagSynchronize);
         deleted = world.createGroup(CompType.FlagDelete);
-        characters = world.createGroup(CompType.Geometry);
+        characters = world.createGroup(CompType.PlayerCharacter);
     }
 
     @Override
@@ -84,7 +67,7 @@ public class NetworkSystem extends Processor {
     
     @Override
     protected void process() {
-        // Log.info(getClass().getSimpleName());
+        // Log.info(getClassValue().getSimpleName());
         Connection[] connections = server.getConnections();
         processNewConnections(connections);
         
@@ -105,10 +88,11 @@ public class NetworkSystem extends Processor {
     }
 
     private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
+        PlayerCharacter pc = (PlayerCharacter) world.getComponent(connection.player, CompType.PlayerCharacter);
+
         world.setComponent(connection.player, CompType.CmdText, CmdText.create("left"));
 
-        CharacterGeometry cg = (CharacterGeometry) world.getComponent(connection.player, CompType.CharacterGeometry);
-        cg.isFree = true;
+        pc.allocated = false;
         //world.setComponent(connection.player, CompType.DeleteFlag, new DeleteFlag());
         connection.close();
         
@@ -121,8 +105,8 @@ public class NetworkSystem extends Processor {
     private void initConnection(PlayerConnection connection) {
         int eid = 0;
         for(eid = characters.iterator(); eid > 0; eid = characters.next()) {
-            CharacterGeometry cg = (CharacterGeometry) World.INSTANCE.getComponent(eid, CompType.CharacterGeometry);
-            if(cg.isFree && cg.name.equalsIgnoreCase(connection.nick)) {
+            PlayerCharacter pc = (PlayerCharacter) World.INSTANCE.getComponent(eid, CompType.PlayerCharacter);
+            if(!pc.allocated && pc.name.equalsIgnoreCase(connection.nick)) {
                 break;
             }
         }
@@ -137,8 +121,8 @@ public class NetworkSystem extends Processor {
     private void selectCharacter(PlayerConnection connection, int eid) {
         connection.player = eid;
 
-        CharacterGeometry cg = (CharacterGeometry) world.getComponent(eid, CompType.CharacterGeometry);
-        cg.isFree = false;
+        PlayerCharacter pc = (PlayerCharacter) World.INSTANCE.getComponent(eid, CompType.PlayerCharacter);
+        pc.allocated = true;
 
         world.setComponent(connection.player, CompType.CmdText, CmdText.create("joined"));
 
@@ -166,8 +150,8 @@ public class NetworkSystem extends Processor {
         Position pos = (Position) world.getComponent(eid, CompType.Position);
         pos.set(sp.vector);
 
-        CharacterGeometry cg = (CharacterGeometry) world.getComponent(eid, CompType.CharacterGeometry);
-        cg.name = connection.nick;
+        PlayerCharacter pc = (PlayerCharacter) world.getComponent(eid, CompType.PlayerCharacter);
+        pc.name = connection.nick;
         
         return eid;
     }
@@ -291,7 +275,7 @@ public class NetworkSystem extends Processor {
             
             Log.info("Connection item: %d %s", connection.item, ID.get(connection.item));
         
-            VirtualKeyboard kbd = (VirtualKeyboard) world.getComponent(connection.item, CompType.VirtualKeyboard);
+            KeyboardInterface kbd = (KeyboardInterface) world.getComponent(connection.item, CompType.VirtualKeyboard);
             if(kbd == null) {
                 Log.warn("No virtual keyboard to handle typing");
             } else {
@@ -331,12 +315,12 @@ public class NetworkSystem extends Processor {
         // Position pos = connection.player.getComponent(Position.class);
         // ===================
 
-        VirtualMonitor mon = (VirtualMonitor) world.getComponent(target, CompType.VirtualMonitor);
+        MonitorDevice mon = (MonitorDevice) world.getComponent(target, CompType.VirtualMonitor);
         if(mon != null) {
             DCPU dcpu = (DCPU) world.getComponent(mon.dcpuEID, CompType.DCPU);
 
             for(int i=0; i < dcpu.hardwareSize; i++) {
-                VirtualKeyboard kbd = (VirtualKeyboard) world.getComponent(dcpu.hardware[i], CompType.VirtualKeyboard);
+                KeyboardInterface kbd = (KeyboardInterface) world.getComponent(dcpu.hardware[i], CompType.VirtualKeyboard);
                 if(kbd != null) {
                     connection.item = dcpu.hardware[i];
                     Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
@@ -347,7 +331,7 @@ public class NetworkSystem extends Processor {
             return;
         }
 
-        VirtualFloppyDrive fd = (VirtualFloppyDrive) world.getComponent(target, CompType.VirtualFloppyDrive);
+        FloppyDriveInterface fd = (FloppyDriveInterface) world.getComponent(target, CompType.VirtualFloppyDrive);
         if(fd != null) {
             connection.item = target;
             Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
@@ -415,7 +399,7 @@ public class NetworkSystem extends Processor {
     }
 
     private void changeFloppy(PlayerConnection connection, ChangeFloppy change) {
-        VirtualFloppyDrive vfd = (VirtualFloppyDrive) world.getComponent(connection.item, CompType.VirtualFloppyDrive);
+        FloppyDriveInterface vfd = (FloppyDriveInterface) world.getComponent(connection.item, CompType.VirtualFloppyDrive);
         if(vfd != null) {
             DCPU dcpu = (DCPU) world.getComponent(vfd.dcpuEID, CompType.DCPU);
             vfd.eject(dcpu);
@@ -425,7 +409,7 @@ public class NetworkSystem extends Processor {
     }
 
     private void changeBootRom(PlayerConnection connection, ChangeBootRom change) {
-        VirtualFloppyDrive vfd = (VirtualFloppyDrive) world.getComponent(connection.item, CompType.VirtualFloppyDrive);
+        FloppyDriveInterface vfd = (FloppyDriveInterface) world.getComponent(connection.item, CompType.VirtualFloppyDrive);
         if(vfd != null) {
             DCPU dcpu = (DCPU) world.getComponent(vfd.dcpuEID, CompType.DCPU);
             dcpu.reset(change.filename);
@@ -539,7 +523,7 @@ public class NetworkSystem extends Processor {
 
         @Override
         public void received(Connection connection, Object o) {
-            // Log.info("Received: " + o.getClass().getName());
+            // Log.info("Received: " + o.getClassValue().getName());
             try {
                 PlayerConnection pc = (PlayerConnection) connection;
 

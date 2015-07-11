@@ -1,7 +1,12 @@
 package org.megastage.server;
 
-/**
- * Created by teppo on 8.7.2015.
- */
+import org.jdom2.Element;
+import org.megastage.util.XmlUtil;
+
 public class ServerConfig {
+    public Element root;
+
+    public ServerConfig(String filename) {
+        root = XmlUtil.read(filename);
+    }
 }

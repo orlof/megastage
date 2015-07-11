@@ -42,6 +42,7 @@ public class EngineDevice extends Device {
 
     @Override
     public Message synchronize(int eid) {
+        dirty = false;
         return WrapperCharacter.create(CompType.EngineData, power).synchronize(eid);
     }
 }

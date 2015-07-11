@@ -5,11 +5,9 @@ import com.jme3.math.Vector3f;
 import org.megastage.ecs.BaseComponent;
 import org.jdom2.Element;
 import org.megastage.client.ClientGlobals;
-import org.megastage.components.gfx.BindTo;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ECSException;
-import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
 public class Rotation extends BaseComponent {

@@ -8,9 +8,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import org.megastage.components.dcpu.FloppyDisk;
+import org.megastage.components.device.FloppyDisk;
 
 public class FloppyManager {
+    public static int version = 1;
     public static final HashMap<String, char[]> bootroms = new HashMap<>();
     public static final HashMap<String, FloppyDisk> floppies = new HashMap<>();
 

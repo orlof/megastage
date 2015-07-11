@@ -1,11 +1,12 @@
-package org.megastage.components.dcpu;
+package org.megastage.components.device;
 
+import org.megastage.components.dcpu.DCPU;
 import org.megastage.components.device.Device;
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class VirtualKeyboard extends Device {
+public class KeyboardInterface extends DCPUInterface {
     private char[] keyBuffer = new char[64];
     private int krp;
     private int kwp;
@@ -14,11 +15,8 @@ public class VirtualKeyboard extends Device {
     public boolean doInterrupt;
 
     @Override
-    public BaseComponent[] init(World world, int parentEid, Element element) throws Exception {
-        super.init(world, parentEid, element);
+    public void config(Element elem) {
         setInfo(TYPE_KEYBOARD, 0x1337, MANUFACTORER_MACKAPAR);
-
-        return null;
     }
 
     public void keyTyped(int key) {
@@ -47,8 +45,7 @@ public class VirtualKeyboard extends Device {
     }
 
     @Override
-    public void interrupt(DCPU dcpu) {
-        //Log.info("%s", dcpu);
+    public void interrupt(DCPU dcpu, int eid) {
         int a = dcpu.registers[0];
         if (a == 0) {
             for (int i = 0; i < keyBuffer.length; i++) {
@@ -73,8 +70,7 @@ public class VirtualKeyboard extends Device {
     }
 
     @Override
-    public void tick60hz(DCPU dcpu) {
-        //Log.info("%s", dcpu);
+    public void tick60hz(DCPU dcpu, int eid) {
         if (doInterrupt) {
             if (interruptMessage != 0) dcpu.interrupt(interruptMessage);
             doInterrupt = false;
