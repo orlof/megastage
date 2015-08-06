@@ -22,7 +22,7 @@ public class Game {
     World world;
     private static long TICK_SPEED = 50;
 
-    public Game(ServerConfig cfg) throws Exception {
+    public Game() throws Exception {
         world = new KryoWorld();
 
         world.addProcessor(new EntityInitializeSystem(world, 0));
@@ -53,10 +53,8 @@ public class Game {
         TargetManager.initialize();
         RadarManager.initialize();
         SoiManager.initialize();
-        
-        for(Element element: root.getChildren("entity-template")) {
-            TemplateManager.addTemplate(element);
-        }
+
+        PrefabManager.initialize();
     }
     
     public void initializeNewWorld(Element root) {
