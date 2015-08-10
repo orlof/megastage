@@ -1,22 +1,14 @@
-package org.megastage.components.generic;
+package org.megastage.components.dcpu;
 
 import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
-import org.megastage.ecs.DirtyComponent;
 import org.megastage.server.TemplateManager;
 import org.megastage.util.XmlUtil;
 
-public class EntityReference extends DirtyComponent {
+public class DCPUConnection extends BaseComponent {
     public int eid;
 
     public void config(Element elem) {
         eid = TemplateManager.resolver.get(XmlUtil.getStringValue(elem, "name"));
-    }
-
-    public void setEid(int eid) {
-        if(this.eid != eid) {
-            this.eid = eid;
-            this.dirty = true;
-        }
     }
 }

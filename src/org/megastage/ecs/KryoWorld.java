@@ -15,10 +15,7 @@ public class KryoWorld extends World {
     private Kryo kryo;
     private int runCount;
     
-    private static final File[] files = new File[] {
-        new File("gamestate.001"),
-        new File("gamestate.002"),
-    };
+    private static final File[] files = new File[2];
 
     public KryoWorld() {
         this(10000, CompType.size);
@@ -28,7 +25,11 @@ public class KryoWorld extends World {
         super(entityCapacity, componentCapacity);
         
         kryo = new Kryo();
-        Network.register(kryo);
+        Network.registerClassesToKryo(kryo);
+
+        for(int i=0; i < files.length; i++) {
+            files[i] = new File("savegame.00" + i);
+        }
     }
 
     public boolean load() {

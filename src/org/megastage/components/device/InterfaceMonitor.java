@@ -2,12 +2,10 @@ package org.megastage.components.device;
 
 import org.jdom2.Element;
 import org.megastage.components.dcpu.DCPU;
-import org.megastage.components.transfer.MonitorData;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
-import org.megastage.protocol.Message;
 
-public class MonitorInterface extends DCPUInterface {
+public class InterfaceMonitor extends DCPUInterface {
     @Override
     public void config(Element elem) {
         setInfo(TYPE_LEM, 0x1802, MANUFACTORER_NYA_ELEKTRISKA);
@@ -51,7 +49,7 @@ public class MonitorInterface extends DCPUInterface {
         }
     }
 
-    private MonitorDevice getDevice(int eid) {
-        return (MonitorDevice) World.INSTANCE.getComponent(eid, CompType.MonitorDevice);
+    private DeviceMonitor getDevice(int eid) {
+        return (DeviceMonitor) World.INSTANCE.getComponent(eid, CompType.DeviceMonitor);
     }
 }

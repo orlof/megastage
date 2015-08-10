@@ -1,6 +1,6 @@
 package org.megastage.components.device;
 
-import org.megastage.ecs.BaseComponent;
+import org.megastage.ecs.DirtyComponent;
 
-public abstract class Device extends BaseComponent {
+public abstract class Device extends DirtyComponent {
 }

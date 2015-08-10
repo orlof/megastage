@@ -18,7 +18,7 @@ public class VirtualBattery extends Device implements PowerSupply, PowerConsumer
         super.init(world, parentEid, element);
         setInfo(TYPE_BATTERY, 0xac1d, MANUFACTORER_URI_OASIS);
 
-        capacity = getIntegerValue(element, "capacity", 5000);
+        capacity = getIntegerValue(element, "entityCapacity", 5000);
         energy = getDoubleValue(element, "energy", 0);
         input = getIntegerValue(element, "input", 500);
         output = getIntegerValue(element, "output", 0);

@@ -15,7 +15,7 @@ public class Flag extends BaseComponent {
     }
 
     @Override
-    public void receive(int eid) {
+    public void receive(int eid, int cid) {
         World.INSTANCE.setComponent(eid, cid, this);
     }
 }

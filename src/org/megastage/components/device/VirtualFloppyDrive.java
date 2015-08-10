@@ -1,12 +1,10 @@
 package org.megastage.components.device;
 
-import org.megastage.ecs.ToStringComponent;
-
 enum FloppyOperationType {
     NONE, READ, WRITE;
 }
 
-class FloppyOperation extends ToStringComponent {
+class FloppyOperation {
     FloppyOperationType type;
     int sector;
     int memory;

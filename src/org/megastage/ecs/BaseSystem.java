@@ -1,19 +1,15 @@
 package org.megastage.ecs;
 
-import org.megastage.util.Log;
-
-public abstract class Processor {
+public abstract class BaseSystem {
     private long interval;
     private long wakeup;
     protected double delta;
 
     protected World world;
-    protected Group group;
-    
-    public Processor(World world, long interval, int...components) {
+
+    public BaseSystem(World world, long interval) {
         this.world = world;
         this.interval = interval;
-        this.group = world.createGroup(components);
     }
     
     public void initialize() {}
@@ -32,21 +28,16 @@ public abstract class Processor {
     }
 
     protected void process() {
-        //Log.info(getClassValue().getSimpleName());
-        begin();
-        for (int eid = group.iterator(); eid != 0; eid = group.next()) {
-            try {
-                process(eid);
-            } catch(ECSException ex) {
-                Log.warn(ex);
-            }
+        if(checkProcessing()) {
+            //Log.info(getClassValue().getSimpleName());
+            begin();
+            processSystem();
+            end();
         }
-        end();
-        //Log.info("Exit " + getClassValue().getSimpleName());
     }
 
     protected void begin() {}
     protected void end() {}
-    protected void process(int eid) throws ECSException {}
+    protected void processSystem() throws ECSException {}
     
 }

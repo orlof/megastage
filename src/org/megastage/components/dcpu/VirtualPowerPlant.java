@@ -16,7 +16,7 @@ public class VirtualPowerPlant extends Device implements PowerSupply, PowerConsu
         super.init(world, parentEid, element);
         setInfo(TYPE_POWER_PLANT, 0x0911, MANUFACTORER_SORATOM);
         
-        capacity = getIntegerValue(element, "capacity", 5000);
+        capacity = getIntegerValue(element, "entityCapacity", 5000);
         production = capacity;
 
         return null;

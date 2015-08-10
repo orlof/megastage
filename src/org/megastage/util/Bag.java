@@ -31,16 +31,16 @@ public class Bag<E> implements Iterable<E> {
     private BagIterator it;
 
     /**
-     * Constructs an empty Bag with an initial capacity of 64.
+     * Constructs an empty Bag with an initial entityCapacity of 64.
      */
     public Bag() {
         this(64);
     }
 
     /**
-     * Constructs an empty Bag with the specified initial capacity.
+     * Constructs an empty Bag with the specified initial entityCapacity.
      *
-     * @param capacity the initial capacity of Bag
+     * @param capacity the initial entityCapacity of Bag
      */
     @SuppressWarnings("unchecked")
     public Bag(int capacity) {
@@ -247,13 +247,13 @@ public class Bag<E> implements Iterable<E> {
     /**
      * Adds the specified element to the end of this bag.
      * <p>
-     * If required, it also increases the capacity of the bag.
+     * If required, it also increases the entityCapacity of the bag.
      * </p>
      *
      * @param e element to be added to this list
      */
     public E add(E e) {
-        // is size greater than capacity increase capacity
+        // is size greater than entityCapacity increase entityCapacity
         if (size == data.length) {
             grow();
         }
@@ -278,9 +278,9 @@ public class Bag<E> implements Iterable<E> {
     }
 
     /**
-     * Increase the capacity of the bag.
+     * Increase the entityCapacity of the bag.
      * <p>
-     * Capacity will increase by (3/2)*capacity + 1.
+     * Capacity will increase by (3/2)*entityCapacity + 1.
      * </p>
      */
     private void grow() {
@@ -289,11 +289,11 @@ public class Bag<E> implements Iterable<E> {
     }
 
     /**
-     * Increase the capacity of the bag.
+     * Increase the entityCapacity of the bag.
      *
-     * @param newCapacity new capacity to grow to
+     * @param newCapacity new entityCapacity to grow to
      *
-     * @throws ArrayIndexOutOfBoundsException if new capacity is smaller than
+     * @throws ArrayIndexOutOfBoundsException if new entityCapacity is smaller than
      * old
      */
     @SuppressWarnings("unchecked")
@@ -306,7 +306,7 @@ public class Bag<E> implements Iterable<E> {
     /**
      * Check if an item, if added at the given item will fit into the bag.
      * <p>
-     * If not, the bag capacity will be increased to hold an item at the index.
+     * If not, the bag entityCapacity will be increased to hold an item at the index.
      * </p>
      *
      * @param index index to check

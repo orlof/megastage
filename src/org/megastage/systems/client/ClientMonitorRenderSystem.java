@@ -1,21 +1,20 @@
 package org.megastage.systems.client;
 
-import org.megastage.util.Log;
 import com.jme3.math.ColorRGBA;
 import org.megastage.components.client.ClientRaster;
 import org.megastage.components.client.ClientVideoMemory;
 import org.megastage.client.ClientGlobals;
 import org.megastage.ecs.CompType;
-import org.megastage.ecs.Processor;
+import org.megastage.ecs.EntitySystem;
 import org.megastage.ecs.World;
 
-public class ClientMonitorRenderSystem extends Processor {
+public class ClientMonitorRenderSystem extends EntitySystem {
     public ClientMonitorRenderSystem(World world, long interval) {
         super(world, interval, CompType.ClientVideoMemory, CompType.ClientRaster);
     }
 
     @Override
-    protected void process(int eid) {
+    protected void processEntity(int eid) {
         ClientVideoMemory clientVideoMemory = (ClientVideoMemory) world.getComponent(eid, CompType.ClientVideoMemory);
         
         boolean blink = true;

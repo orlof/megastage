@@ -6,7 +6,7 @@ import org.megastage.components.dcpu.DCPU;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 
-public class PPSInterface extends DCPUInterface {
+public class InterfacePPS extends DCPUInterface {
 
     @Override
     public void config(Element elem) {
@@ -31,8 +31,8 @@ public class PPSInterface extends DCPUInterface {
         }
     }
 
-    private PPSDevice getDevice(int eid) {
-        return (PPSDevice) World.INSTANCE.getComponent(eid, CompType.PPSDevice);
+    private DevicePPS getDevice(int eid) {
+        return (DevicePPS) World.INSTANCE.getComponent(eid, CompType.DevicePPS);
     }
 
     private boolean writeCoordinatesToMemory(char[] mem, char ptr, long time, Vector3f pos) {

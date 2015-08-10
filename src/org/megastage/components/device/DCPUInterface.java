@@ -1,6 +1,7 @@
 package org.megastage.components.device;
 
 import org.megastage.components.dcpu.DCPU;
+import org.megastage.components.dcpu.DCPUConnection;
 import org.megastage.components.generic.EntityReference;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.CompType;
@@ -10,7 +11,7 @@ public abstract class DCPUInterface extends BaseComponent {
 
     @Override
     public void initialize(int eid) {
-        EntityReference conn = (EntityReference) World.INSTANCE.getComponent(eid, CompType.DCPUConnection);
+        DCPUConnection conn = (DCPUConnection) World.INSTANCE.getComponent(eid, CompType.DCPUConnection);
         DCPU dcpu = (DCPU) World.INSTANCE.getComponent(conn.eid, CompType.DCPU);
         dcpu.addHardware(eid);
     }

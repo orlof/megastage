@@ -3,6 +3,7 @@ package org.megastage.systems.client;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import org.megastage.ecs.EntitySystem;
 import org.megastage.util.Log;
 import org.megastage.protocol.Network;
 
@@ -10,11 +11,10 @@ import java.io.IOException;
 import org.megastage.protocol.Message;
 import org.megastage.client.ClientGlobals;
 import org.megastage.ecs.CompType;
-import org.megastage.ecs.Processor;
 import org.megastage.ecs.World;
 import org.megastage.util.Bag;
 
-public class ClientNetworkSystem extends Processor {
+public class ClientNetworkSystem extends EntitySystem {
     private Client client;
 
     public ClientNetworkSystem(World world, long interval) {
@@ -24,7 +24,7 @@ public class ClientNetworkSystem extends Processor {
     @Override
     public void initialize() {
         client = new Client(64*1024, 64*1024);
-        Network.register(client.getKryo());
+        Network.registerClassesToKryo(client.getKryo());
 
         Thread kryoThread = new Thread(client);
         kryoThread.setDaemon(true);

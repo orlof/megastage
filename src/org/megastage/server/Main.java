@@ -1,24 +1,27 @@
 package org.megastage.server;
 
-import org.jdom2.Element;
 import org.megastage.util.CmdLineParser;
 import org.megastage.util.Log;
-import org.megastage.util.XmlUtil;
 
 public class Main {
     public static void main(String args[]) throws Exception {
-        CmdLineParser cmd = new CmdLineParser(args);
-        Log.set(cmd.getInteger("--log-level", Log.LEVEL_INFO));
-        
-        ServerGlobals.autoexit = cmd.isDefined("--auto-exit");
-        
-        Element cfg = XmlUtil.read(cmd.getString("--config", "server.xml"));
-        Game game = new Game(cfg);
+        parseCmdLineArguments(args);
+
+        Game game = new Game();
 
         if(!game.loadSavedWorld()) {
-            game.initializeNewWorld(cfg.getChild("entities"));
+            game.initializeNewWorld();
         }
 
         game.loopForever();
+    }
+
+    private static void parseCmdLineArguments(String[] args) {
+        CmdLineParser cmd = new CmdLineParser(args);
+        Log.set(cmd.getInteger("--log-level", Log.LEVEL_INFO));
+
+        ServerGlobals.autoExit = cmd.isDefined("--auto-exit");
+        ServerGlobals.prefabDir = cmd.getString("--prefabs-dir", "prefabs");
+        ServerGlobals.saveDir = cmd.getString("--save-dir", "savegames");
     }
 }

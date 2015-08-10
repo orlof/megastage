@@ -6,10 +6,10 @@ import org.megastage.client.SpatialManager;
 import org.megastage.components.Position;
 import org.megastage.components.gfx.ImposterGeometry;
 import org.megastage.ecs.CompType;
-import org.megastage.ecs.Processor;
+import org.megastage.ecs.EntitySystem;
 import org.megastage.ecs.World;
 
-public class ImposterSystem extends Processor {
+public class ImposterSystem extends EntitySystem {
     public ImposterSystem(World world, long interval) {
         super(world, interval, CompType.ImposterGeometry, CompType.Position);
     }
@@ -32,7 +32,7 @@ public class ImposterSystem extends Processor {
     }
 
     @Override
-    protected void process(int eid) {
+    protected void processEntity(int eid) {
         Position pos = (Position) world.getComponent(eid, CompType.Position);
         Vector3f coord = pos.get();
 

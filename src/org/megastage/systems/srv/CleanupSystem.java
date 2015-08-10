@@ -1,22 +1,22 @@
 package org.megastage.systems.srv;
 
-import org.megastage.components.DeleteFlag;
+
 import org.megastage.components.BindTo;
+import org.megastage.components.generic.Flag;
 import org.megastage.ecs.CompType;
-import org.megastage.ecs.Processor;
+import org.megastage.ecs.EntitySystem;
 import org.megastage.ecs.World;
 
-public class CleanupSystem extends Processor {
+public class CleanupSystem extends EntitySystem {
     public CleanupSystem(World world, long interval) {
         super(world, interval, CompType.BindTo);
     }
 
     @Override
-    protected void process(int eid) {
+    protected void processEntity(int eid) {
         BindTo bindTo = (BindTo) world.getComponent(eid, CompType.BindTo);
-        if(!world.hasEntity(bindTo.parent)) {
-            world.setComponent(eid, CompType.DeleteFlag, new DeleteFlag());
+        if(!world.hasEntity(bindTo.ref)) {
+            world.setComponent(eid, CompType.FlagDelete, new Flag());
         }
     }
-    
 }

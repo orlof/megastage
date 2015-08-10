@@ -1,10 +1,7 @@
 package org.megastage.components;
 
 import org.megastage.client.ClientGlobals;
-import org.megastage.components.geometry.CharacterGeometry;
-import org.megastage.ecs.CompType;
 import org.megastage.ecs.BaseComponent;
-import org.megastage.ecs.World;
 
 public class CmdText extends BaseComponent {
     public String text;
@@ -21,14 +18,7 @@ public class CmdText extends BaseComponent {
             String next = ClientGlobals.chatLabel[i+1].getText();
             ClientGlobals.chatLabel[i].setText(next);
         }
-        CharacterGeometry cg = (CharacterGeometry) World.INSTANCE.getComponent(eid, CompType.CharacterGeometry);
-        
-        String source = "Unknown";
-        if(cg != null) {
-            source = cg.name;
-        }
 
-        String msg = String.format("%s: %s", source, text);
-        ClientGlobals.chatLabel[ClientGlobals.chatLabel.length-1].setText(msg);
+        ClientGlobals.chatLabel[ClientGlobals.chatLabel.length-1].setText(text);
     }
 }

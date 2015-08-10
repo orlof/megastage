@@ -7,16 +7,16 @@ import org.megastage.components.dcpu.VirtualGyroscope;
 import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ECSException;
-import org.megastage.ecs.Processor;
+import org.megastage.ecs.EntitySystem;
 import org.megastage.ecs.World;
 
-public class AttitudeControlSystem extends Processor {
+public class AttitudeControlSystem extends EntitySystem {
     public AttitudeControlSystem(World world, long interval) {
         super(world, interval, CompType.VirtualGyroscope);
     }
 
     @Override
-    protected void process(int eid) throws ECSException {
+    protected void processEntity(int eid) throws ECSException {
         VirtualGyroscope gyro = (VirtualGyroscope) world.getComponentOrError(eid, CompType.VirtualGyroscope);
         if(gyro.value == 0) return;
 

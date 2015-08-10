@@ -1,18 +1,18 @@
 package org.megastage.systems.srv;
 
+import org.megastage.ecs.EntitySystem;
 import org.megastage.ecs.World;
-import org.megastage.ecs.Processor;
 import org.megastage.components.DeleteFlag;
 import org.megastage.components.Explosion;
 import org.megastage.ecs.CompType;
 
-public class ExplosionSystem extends Processor {
+public class ExplosionSystem extends EntitySystem {
     public ExplosionSystem(World world, long interval) {
         super(world, interval, CompType.Explosion);
     }
 
     @Override
-    protected void process(int eid) {
+    protected void processEntity(int eid) {
         Explosion explosion = (Explosion) world.getComponent(eid, CompType.Explosion);
         
         explosion.setState(currentState(explosion));

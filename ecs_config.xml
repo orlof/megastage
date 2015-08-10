@@ -1,0 +1,120 @@
+<root>
+    <components>
+<<<<<<< HEAD
+        <NONE class="generic.None" replicable="false" />
+
+        <FlagDelete class="generic.Flag" replicable="true" />
+        <FlagInitialize class="generic.Flag" replicable="false" />
+        <FlagPersistence class="generic.Flag" replicable="false" />
+        <FlagReplicate class="generic.Flag" replicable="false" />
+        <FlagSynchronize class="generic.Flag" replicable="false" />
+        <FlagUsable class="generic.Flag" replicable="true" />
+        <PlayerCharacter class="PlayerCharacter" replicable="true" />
+
+        <Acceleration class="generic.WrapperVector3f" replicable="false" />
+        <ClientRaster class="ClientRaster" replicable="false" />
+        <ClientVideoMemory class="ClientVideoMemory" replicable="false" />
+        <CollisionSphere class="CollisionSphere" replicable="false" />
+        <CollisionType class="CollisionType" replicable="false" />
+        <Energy class="Energy" replicable="false" />
+        <EngineData class="EngineData" replicable="false" />
+        <Explosion class="Explosion" replicable="true" />
+        <ForceFieldData class="ForceFieldData" replicable="false" />
+        <GyroscopeData class="GyroscopeData" replicable="false" />
+        <Identifier class="generic.WrapperString" replicable="true" />
+        <Mass class="Mass" replicable="false" />
+        <Mode class="Mode" replicable="true" />
+        <NodeComponent class="NodeComponent" replicable="false" />
+        <Position class="generic.WrapperVector3f" replicable="true" />
+        <RadarEcho class="generic.WrapperInteger" replicable="false" />
+        <RadarTargetData class="RadarTargetData" replicable="false" />
+        <Rotation class="generic.WrapperQuaternion" replicable="true" />
+        <SpawnPoint class="generic.WrapperVector3f" replicable="false" />
+        <ThermalLaserData class="ThermalLaserData" replicable="false" />
+        <Velocity class="generic.WrapperVector3f" replicable="false" />
+        <VectorAttack class="VectorAttack" replicable="false" />
+
+        <DCPU class="DCPU" replicable="false" />
+        <DCPUInterface class="device.DCPUInterface" replicable="false" />
+        <ConnectedTo class="generic.EntityReference" replicable="false" />
+
+        <EngineDevice class="device.EngineDevice" replicable="true" />
+        <PPSDevice class="device.PPSDevice" replicable="true" />
+        <ClockDevice class="device.ClockDevice" replicable="false" />
+        <KeyboardDevice class="device.KeyboardDevice" replicable="false" />
+        <MonitorDevice class="device.MonitorDevice" replicable="true" />
+        <DeviceFloppyDrive class="device.FloppyDriveDevice" replicable="true" />
+
+        <DeviceBattery class="DeviceBattery" replicable="false" />
+        <DeviceForceField class="DeviceForceField" replicable="true" />
+        <DeviceGyroscope class="DeviceGyroscope" replicable="true" />
+        <DevicePowerController class="DevicePowerController" replicable="true" />
+        <DevicePowerPlant class="DevicePowerPlant" replicable="true" />
+        <DeviceRadar class="DeviceRadar" replicable="true" />
+        <DeviceThermalLaser class="DeviceThermalLaser" replicable="true" />
+
+        <BindTo class="BindTo" replicable="true" />
+        <Geometry class="Geometry" replicable="true" />
+        <BlockChanges class="BlockChanges" replicable="true" />
+        <CmdText class="CmdText" replicable="true" />
+        <CubeStructure class="CubeStructure" replicable="true" />
+=======
+new CompSpec("NONE", "org.megastage.components.generic.None", false),
+
+new CompSpec("FlagDelete", "org.megastage.components.generic.Flag", true),
+new CompSpec("FlagInitialize", "org.megastage.components.generic.Flag", false),
+new CompSpec("FlagPersistence", "org.megastage.components.generic.Flag", false),
+new CompSpec("FlagReplicate", "org.megastage.components.generic.Flag", false),
+new CompSpec("FlagSynchronize", "org.megastage.components.generic.Flag", false),
+new CompSpec("FlagUsable", "org.megastage.components.generic.Flag", true),
+
+new CompSpec("Acceleration", "org.megastage.components.generic.WrapperVector3f", false),
+new CompSpec("ClientRaster", "org.megastage.components.ClientRaster", false),
+new CompSpec("ClientVideoMemory", "org.megastage.components.ClientVideoMemory", false),
+new CompSpec("CollisionSphere", "org.megastage.components.CollisionSphere", false),
+new CompSpec("CollisionType", "org.megastage.components.CollisionType", false),
+new CompSpec("Energy", "org.megastage.components.Energy", false),
+new CompSpec("EngineData", "org.megastage.components.EngineData", false),
+new CompSpec("Explosion", "org.megastage.components.Explosion", true),
+new CompSpec("ForceFieldData", "org.megastage.components.ForceFieldData", false),
+new CompSpec("GyroscopeData", "org.megastage.components.GyroscopeData", false),
+new CompSpec("Identifier", "org.megastage.components.generic.WrapperString", true),
+new CompSpec("Mass", "org.megastage.components.Mass", false),
+new CompSpec("Mode", "org.megastage.components.Mode", true),
+new CompSpec("NodeComponent", "org.megastage.components.NodeComponent", false),
+new CompSpec("Position", "org.megastage.components.generic.WrapperVector3f", true),
+new CompSpec("RadarEcho", "org.megastage.components.generic.WrapperInteger", false),
+new CompSpec("RadarTargetData", "org.megastage.components.RadarTargetData", false),
+new CompSpec("Rotation", "org.megastage.components.generic.WrapperQuaternion", true),
+new CompSpec("SpawnPoint", "org.megastage.components.generic.WrapperVector3f", false),
+new CompSpec("ThermalLaserData", "org.megastage.components.ThermalLaserData", false),
+new CompSpec("Velocity", "org.megastage.components.generic.WrapperVector3f", false),
+new CompSpec("VectorAttack", "org.megastage.components.VectorAttack", false),
+
+new CompSpec("DCPU", "org.megastage.components.DCPU", false),
+new CompSpec("DCPUInterface", "org.megastage.components.device.DCPUInterface", false),
+new CompSpec("ConnectedTo", "org.megastage.components.generic.EntityReference", false),
+
+new CompSpec("EngineDevice", "org.megastage.components.device.DeviceEngine", true),
+new CompSpec("PPSDevice", "org.megastage.components.PPSDevice", false),
+
+new CompSpec("DeviceBattery", "org.megastage.components.DeviceBattery", false),
+new CompSpec("DeviceClock", "org.megastage.components.DeviceClock", false),
+new CompSpec("DeviceFloppyDrive", "org.megastage.components.DeviceFloppyDrive", true),
+new CompSpec("DeviceForceField", "org.megastage.components.DeviceForceField", true),
+new CompSpec("DeviceGyroscope", "org.megastage.components.DeviceGyroscope", true),
+new CompSpec("DeviceKeyboard", "org.megastage.components.DeviceKeyboard", true),
+new CompSpec("DeviceMonitor", "org.megastage.components.DeviceMonitor", true),
+new CompSpec("DevicePowerController", "org.megastage.components.DevicePowerController", true),
+new CompSpec("DevicePowerPlant", "org.megastage.components.DevicePowerPlant", true),
+new CompSpec("DeviceRadar", "org.megastage.components.DeviceRadar", true),
+new CompSpec("DeviceThermalLaser", "org.megastage.components.DeviceThermalLaser", true),
+
+new CompSpec("BindTo", "org.megastage.components.BindTo", true),
+new CompSpec("Geometry", "org.megastage.components.Geometry", true),
+new CompSpec("BlockChanges", "org.megastage.components.BlockChanges", true),
+new CompSpec("CmdText", "org.megastage.components.CmdText", true),
+new CompSpec("CubeStructure", "org.megastage.components.CubeStructure", true),
+>>>>>>> f847fc502bc397b44fa514e07385708a80e8c0a2
+    </components>
+</root>

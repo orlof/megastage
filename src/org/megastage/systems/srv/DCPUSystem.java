@@ -1,20 +1,19 @@
 package org.megastage.systems.srv;
 
 import org.megastage.components.device.DCPUInterface;
-import org.megastage.components.device.Device;
+import org.megastage.ecs.EntitySystem;
 import org.megastage.util.Log;
 import org.megastage.ecs.World;
-import org.megastage.ecs.Processor;
 import org.megastage.components.dcpu.*;
 import org.megastage.ecs.CompType;
 
-public class DCPUSystem extends Processor {
+public class DCPUSystem extends EntitySystem {
     public DCPUSystem(World world, long interval) {
         super(world, interval, CompType.DCPU);
     }
 
     @Override
-    protected void process(int eid) {
+    protected void processEntity(int eid) {
         DCPU dcpu = (DCPU) world.getComponent(eid, CompType.DCPU);
 
         long uptime = world.time - dcpu.startupTime;

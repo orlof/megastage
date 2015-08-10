@@ -6,7 +6,7 @@ import org.jdom2.Element;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class KeyboardInterface extends DCPUInterface {
+public class InterfaceKeyboard extends DCPUInterface {
     private char[] keyBuffer = new char[64];
     private int krp;
     private int kwp;

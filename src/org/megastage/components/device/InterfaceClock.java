@@ -6,7 +6,7 @@ import org.megastage.components.device.Device;
 import org.megastage.ecs.BaseComponent;
 import org.megastage.ecs.World;
 
-public class ClockInterface extends DCPUInterface {
+public class InterfaceClock extends DCPUInterface {
     public int interval;
     public int intCount;
     public char ticks;

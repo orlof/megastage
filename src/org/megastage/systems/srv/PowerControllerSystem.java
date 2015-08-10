@@ -1,7 +1,7 @@
 package org.megastage.systems.srv;
 
 import org.megastage.ecs.World;
-import org.megastage.ecs.Processor;
+import org.megastage.ecs.EntitySystem;
 
 import java.util.Arrays;
 
@@ -12,14 +12,14 @@ import org.megastage.components.dcpu.PowerSupply;
 import org.megastage.components.dcpu.VirtualPowerController;
 import org.megastage.ecs.CompType;
 
-public class PowerControllerSystem extends Processor {
+public class PowerControllerSystem extends EntitySystem {
 
     public PowerControllerSystem(World world, long interval) {
         super(world, interval, CompType.VirtualPowerController);
     }
 
     @Override
-    protected void process(int eid) {
+    protected void processEntity(int eid) {
         VirtualPowerController ctrl = (VirtualPowerController) world.getComponent(eid, CompType.VirtualPowerController);
         DCPU dcpu = (DCPU) world.getComponent(ctrl.dcpuEID, CompType.DCPU);
 

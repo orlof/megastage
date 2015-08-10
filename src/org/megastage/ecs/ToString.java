@@ -7,28 +7,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ToStringComponent {
-    protected static transient HashMap<Class, Field[]> cache = new HashMap<>();
+public final class ToString {
+    private static transient HashMap<Class, Field[]> cache = new HashMap<>();
 
-    protected static boolean copyableField(Field f) {
+    private static boolean copyableField(Field f) {
         int modifiers = f.getModifiers();
         return !(Modifier.isStatic(modifiers) || Modifier.isTransient(modifiers));
     }
 
-    protected Field[] getFields() {
-        Field[] fields = cache.get(getClass());
+    private static Field[] getFields(Class clazz) {
+        Field[] fields = cache.get(clazz);
         if (fields != null) {
             return fields;
         }
-        Class currentClass = getClass();
-        List<Field> list = loadFields(currentClass);
+        List<Field> list = loadFields(clazz);
         fields = list.toArray(new Field[list.size()]);
-        cache.put(currentClass, fields);
+        cache.put(clazz, fields);
         return fields;
     }
 
-    protected List<Field> loadFields(Class<?> klass) {
-        Field[] declaredFields = klass.getDeclaredFields();
+    private static List<Field> loadFields(Class<?> clazz) {
+        Field[] declaredFields = clazz.getDeclaredFields();
         List<Field> result = new ArrayList<>(declaredFields.length);
         for (Field f : declaredFields) {
             if (copyableField(f)) {
@@ -36,18 +35,18 @@ public class ToStringComponent {
                 result.add(f);
             }
         }
-        klass = klass.getSuperclass();
-        if (klass != null) {
-            result.addAll(loadFields(klass));
+        clazz = clazz.getSuperclass();
+        if (clazz != null) {
+            result.addAll(loadFields(clazz));
         }
         return result;
     }
 
-    @Override
-    public String toString() {
+    public static String make(Object obj) {
+        Class clazz = obj.getClass();
         StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName()).append("(");
-        Field[] fields = getFields();
+        sb.append(clazz.getSimpleName()).append("(");
+        Field[] fields = getFields(clazz);
         for (int i = 0; i < fields.length; i++) {
             if (i > 0) {
                 sb.append(", ");
@@ -56,16 +55,14 @@ public class ToStringComponent {
             try {
                 sb.append(f.getName()).append(": ");
                 if (f.getType().equals(char.class)) {
-                    sb.append((int) f.getChar(this));
+                    sb.append((int) f.getChar(obj));
                 } else {
-                    sb.append(f.get(this));
+                    sb.append(f.get(obj));
                 }
             } catch (IllegalArgumentException ex) {
                 Log.error("Cannot get fields", ex);
-                //ex.printStackTrace();
             } catch (IllegalAccessException ex) {
                 Log.error("Cannot get fields", ex);
-                //ex.printStackTrace();
             }
         }
         sb.append(")");

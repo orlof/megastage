@@ -1,5 +1,6 @@
 package org.megastage.components.client;
 
+import org.megastage.components.device.DeviceMonitor;
 import org.megastage.util.Log;
 import com.jme3.math.ColorRGBA;
 import org.megastage.components.transfer.MonitorData;
@@ -49,7 +50,7 @@ public final class ClientVideoMemory extends BaseComponent {
         isDirty = true;
     }
 
-    public void update(MonitorData data) {
+    public void update(DeviceMonitor data) {
         Log.trace("video   [" + ((int) data.videoAddr) + "] " + data.video.toString());
         Log.trace("font    [" + ((int) data.fontAddr) + "] " + data.font.toString());
         Log.trace("palette [" + ((int) data.paletteAddr) + "] " + data.palette.toString());

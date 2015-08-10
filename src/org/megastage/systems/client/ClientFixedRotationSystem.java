@@ -4,17 +4,17 @@ import com.jme3.math.Quaternion;
 import org.megastage.components.FixedRotation;
 import org.megastage.components.Rotation;
 import org.megastage.ecs.CompType;
-import org.megastage.ecs.Processor;
+import org.megastage.ecs.EntitySystem;
 import org.megastage.ecs.World;
 
-public class ClientFixedRotationSystem extends Processor {
+public class ClientFixedRotationSystem extends EntitySystem {
 
     public ClientFixedRotationSystem(World world, long interval) {
         super(world, interval, CompType.Rotation, CompType.FixedRotation);
     }
 
     @Override
-    protected void process(int eid) {
+    protected void processEntity(int eid) {
         FixedRotation fr = (FixedRotation) world.getComponent(eid, CompType.FixedRotation);
         
         Quaternion rotation = new Quaternion().fromAngles(

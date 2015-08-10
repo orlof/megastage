@@ -5,15 +5,15 @@ import org.megastage.components.dcpu.VirtualThermalLaser;
 import org.megastage.components.srv.VectorAttack;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ECSException;
-import org.megastage.ecs.Processor;
+import org.megastage.ecs.EntitySystem;
 
-public class ThermalLaserSystem extends Processor {
+public class ThermalLaserSystem extends EntitySystem {
     public ThermalLaserSystem(World world, long interval) {
         super(world, interval, CompType.VirtualThermalLaser);
     }
 
     @Override
-    protected void process(int eid) throws ECSException {
+    protected void processEntity(int eid) throws ECSException {
         VirtualThermalLaser vtlComponent = (VirtualThermalLaser) world.getComponent(eid, CompType.VirtualThermalLaser);
         switch(vtlComponent.status) {
             case FIRING:

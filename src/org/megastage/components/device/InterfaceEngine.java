@@ -5,7 +5,7 @@ import org.megastage.components.dcpu.DCPU;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.World;
 
-public class EngineInterface extends DCPUInterface {
+public class InterfaceEngine extends DCPUInterface {
     @Override
     public void config(Element elem) {
         setInfo(TYPE_ENGINE, 0xad3c, MANUFACTORER_GENERAL_DRIVES);
@@ -24,7 +24,7 @@ public class EngineInterface extends DCPUInterface {
         }
     }
 
-    private EngineDevice getDevice(int eid) {
-        return (EngineDevice) World.INSTANCE.getComponent(eid, CompType.EngineDevice);
+    private DeviceEngine getDevice(int eid) {
+        return (DeviceEngine) World.INSTANCE.getComponent(eid, CompType.DeviceEngine);
     }
 }

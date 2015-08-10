@@ -1,18 +1,18 @@
 package org.megastage.ecs;
 
-import org.jdom2.Element;
-import org.megastage.util.Log;
-import java.util.HashMap;
-import java.util.Map;
 import org.megastage.util.Bag;
 import org.megastage.util.ID;
+import org.megastage.util.Log;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class World {
     public static World INSTANCE;
 
     // stores components for each entity
     protected int size;
-    protected int capacity;
+    protected int entityCapacity;
     protected int componentCapacity;
     protected BaseComponent[][] population;
 
@@ -26,9 +26,9 @@ public class World {
     private Bag<Group> groups = new Bag<>(100);
 
     // manage systems (start using Bag if lot of changes)
-    private Processor[] processors = new Processor[100];
+    private EntitySystem[] entitySystems = new EntitySystem[100];
     private int processorsSize = 0;
-    private Map<Class<? extends Processor>, Processor> processorsMap = new HashMap<>();
+    private Map<Class<? extends EntitySystem>, EntitySystem> processorsMap = new HashMap<>();
     
     
     // time management
@@ -36,11 +36,6 @@ public class World {
     public long time = 0;
     public float delta = 0.0f;
     protected long offset = 0;
-
-    public World(Element root) {
-        this(10000, CompType.size);
-        CompType.init(root.getChild("components"));
-    }
 
     public World() {
         this(10000, CompType.size);
@@ -50,10 +45,10 @@ public class World {
         // I know, this should be moved to initialize() ...
         INSTANCE = this;
         
-        capacity = entityCapacity;
+        this.entityCapacity = entityCapacity;
         this.componentCapacity = componentCapacity;
         
-        int len = capacity + 2;
+        int len = this.entityCapacity + 2;
         population = new BaseComponent[len][];
 
         for (int i = 0; i < len; i++) {
@@ -64,7 +59,7 @@ public class World {
         prev = new int[len];
         free = new boolean[len];
 
-        // capacity = 5 (3)
+        // entityCapacity = 5 (3)
         // 0: 0, 0
         // 1: 2, 4
         // 2: 3, 1
@@ -100,10 +95,10 @@ public class World {
     
     public void tick() {
         for(int i=0; i < processorsSize; i++) {
-            // Log.info(processors[i].getClassValue().getSimpleName());
-            if(processors[i].checkProcessing()) {
+            // Log.info(entitySystems[i].getClassValue().getSimpleName());
+            if(entitySystems[i].checkProcessing()) {
                 try {
-                    processors[i].process();
+                    entitySystems[i].process();
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }
@@ -113,16 +108,16 @@ public class World {
     
     public void initialize() {
         for(int i=0; i < processorsSize; i++) {
-            processors[i].initialize();
+            entitySystems[i].initialize();
         }
     }
     
-    public void addProcessor(Processor processor) {
-        processors[processorsSize++] = processor;
-        processorsMap.put(processor.getClass(), processor);
+    public void addProcessor(EntitySystem entitySystem) {
+        entitySystems[processorsSize++] = entitySystem;
+        processorsMap.put(entitySystem.getClass(), entitySystem);
     }
     
-    public <T extends Processor> T getProcessor(Class<T> processorType) {
+    public <T extends EntitySystem> T getProcessor(Class<T> processorType) {
         return processorType.cast(processorsMap.get(processorType));
     }
 
@@ -131,7 +126,7 @@ public class World {
     }
 
     public int createEntity() {
-        if(size == capacity) {
+        if(size == entityCapacity) {
             throw new RuntimeException("No space for new entity");
         }
 

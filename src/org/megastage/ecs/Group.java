@@ -21,7 +21,7 @@ public class Group {
         sb.append("]");
         name = sb.toString();
 
-        int len = world.capacity + 2;
+        int len = world.entityCapacity + 2;
         next = new int[len];
         prev = new int[len];
 

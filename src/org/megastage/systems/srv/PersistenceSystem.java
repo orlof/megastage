@@ -1,13 +1,13 @@
 package org.megastage.systems.srv;
 
 import org.megastage.ecs.World;
-import org.megastage.ecs.Processor;
+import org.megastage.ecs.EntitySystem;
 import com.esotericsoftware.kryo.Kryo;
 import java.io.File;
 import org.megastage.ecs.KryoWorld;
 import org.megastage.protocol.Network;
 
-public class PersistenceSystem extends Processor {
+public class PersistenceSystem extends EntitySystem {
     Kryo kryo;
     int runCount;
     
@@ -20,7 +20,7 @@ public class PersistenceSystem extends Processor {
         super(world, interval);
 
         kryo = new Kryo();
-        Network.register(kryo);
+        Network.registerClassesToKryo(kryo);
     }
 
     @Override

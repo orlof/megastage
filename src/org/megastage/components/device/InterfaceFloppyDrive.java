@@ -2,8 +2,6 @@ package org.megastage.components.device;
 
 import org.jdom2.Element;
 import org.megastage.components.dcpu.DCPU;
-import org.megastage.components.transfer.VirtualFloppyDriveData;
-import org.megastage.protocol.Message;
 import org.megastage.server.FloppyManager;
 
 /**
@@ -21,7 +19,7 @@ import org.megastage.server.FloppyManager;
  * TODO: Switch to coarser, 60hz time-keeping. Current time-keeping is a bit
  * flawed. TODO: Test this more.
  */
-public class FloppyDriveInterface extends DCPUInterface {
+public class InterfaceFloppyDrive extends DCPUInterface {
 
     public static final char STATE_NO_MEDIA = 0x0000; //There's no floppy in the drive.
     public static final char STATE_READY = 0x0001; //The drive is ready to accept commands.

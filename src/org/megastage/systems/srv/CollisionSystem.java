@@ -1,7 +1,7 @@
 package org.megastage.systems.srv;
 
+import org.megastage.ecs.EntitySystem;
 import org.megastage.ecs.World;
-import org.megastage.ecs.Processor;
 import org.megastage.util.Log;
 import org.megastage.components.Position;
 import org.megastage.components.srv.CollisionType;
@@ -9,7 +9,7 @@ import org.megastage.components.Explosion;
 import org.megastage.components.Identifier;
 import org.megastage.ecs.CompType;
 
-public class CollisionSystem extends Processor {
+public class CollisionSystem extends EntitySystem {
     public CollisionSystem(World world, long interval) {
         super(world, interval, CompType.CollisionType, CompType.Position);
     }

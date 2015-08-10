@@ -2,19 +2,17 @@ package org.megastage.systems.srv;
 
 import com.cubes.Vector3Int;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import org.megastage.client.ClientMode;
 import org.megastage.components.*;
 import org.megastage.components.dcpu.DCPU;
-import org.megastage.components.device.FloppyDriveInterface;
-import org.megastage.components.device.KeyboardInterface;
-import org.megastage.components.device.MonitorDevice;
+import org.megastage.components.device.InterfaceFloppyDrive;
+import org.megastage.components.device.InterfaceKeyboard;
+import org.megastage.components.device.DeviceMonitor;
 import org.megastage.components.generic.Flag;
 import org.megastage.components.BindTo;
-import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.srv.BlockChanges;
 import org.megastage.components.srv.SpawnPoint;
 import org.megastage.ecs.*;
@@ -30,13 +28,16 @@ import org.megastage.util.Ship;
 
 import java.io.IOException;
 
-public class NetworkSystem extends Processor {
+public class NetworkSystem extends BaseSystem {
     private Server server;
+
+    private Group replicated;
     private Group deleted;
     private Group characters;
     
     public NetworkSystem(World world, long interval) {
-        super(world, interval, CompType.FlagSynchronize);
+        super(world, interval);
+        replicated = world.createGroup(CompType.FlagSynchronize);
         deleted = world.createGroup(CompType.FlagDelete);
         characters = world.createGroup(CompType.PlayerCharacter);
     }
@@ -52,22 +53,21 @@ public class NetworkSystem extends Processor {
             }
         };
 
-        Network.register(server.getKryo());
+        Network.registerClassesToKryo(server.getKryo());
 
         new Thread(server).start();
 
-        server.addListener(new ServerNetworkListener());
+        server.addListener(new NetworkListener(server));
 
         try {
             server.bind(Network.serverPort, Network.serverPort + 1);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.error(e);
         }
     }
     
     @Override
     protected void process() {
-        // Log.info(getClassValue().getSimpleName());
         Connection[] connections = server.getConnections();
         processNewConnections(connections);
         
@@ -84,21 +84,6 @@ public class NetworkSystem extends Processor {
                 //Log.info("sending %d messages", data.length);
                 c.sendUDP(data);
             }
-        }
-    }
-
-    private void handleLogoutMessage(PlayerConnection connection, Network.Logout packet) {
-        PlayerCharacter pc = (PlayerCharacter) world.getComponent(connection.player, CompType.PlayerCharacter);
-
-        world.setComponent(connection.player, CompType.CmdText, CmdText.create("left"));
-
-        pc.allocated = false;
-        //world.setComponent(connection.player, CompType.DeleteFlag, new DeleteFlag());
-        connection.close();
-        
-        if(ServerGlobals.autoexit && server.getConnections().length == 0) {
-            server.stop();
-            System.exit(0);
         }
     }
 
@@ -156,34 +141,6 @@ public class NetworkSystem extends Processor {
         return eid;
     }
     
-    private void handleLoginMessage(PlayerConnection connection, Network.Login packet) throws Exception {
-        connection.nick = packet.name;
-    }
-
-    private void replicateEntitiesToNewConnection(PlayerConnection connection) {
-        for(int eid = group.iterator(); eid != 0; eid = group.next()) {
-            Log.debug(ID.get(eid));
-            replicateComponents(connection, eid);
-        }        
-    }
-    
-    private void replicateComponents(PlayerConnection connection, int eid) {
-        Bag<Message> list = new Bag<>(20);
-        list.add(new TimestampMessage());
-
-        for(BaseComponent comp = world.compIter(eid); comp != null; comp=world.compNext()) {
-            if(CompType.isReplicable(world.compIterPos)) {
-                Log.debug(comp.toString());
-                Message msg = comp.synchronize(eid, world.compIterPos);
-                list.add(msg);
-            }
-        }
-
-        if(list.size() > 0) {
-            connection.sendTCP(list.toArray(Message.class));
-        }
-    }
-
     private int probe(float pos, float step) {
         float target = pos + step + Math.signum(step) * 0.3f;
         if(target < 0.0f) target -= 1.0f;
@@ -216,87 +173,6 @@ public class NetworkSystem extends Processor {
         return result;
     }
     
-    private void handleUserCmd(PlayerConnection connection, UserCommand cmd) {
-        // TODO check player mode
-        if(connection.player == 0) return;
-        
-        BindTo bindTo = (BindTo) world.getComponent(connection.player, CompType.BindTo);
-        if(bindTo.parent == 0) return;
-
-        ShipGeometry geom = (ShipGeometry) world.getComponent(bindTo.parent, CompType.ShipGeometry);
-
-        if(cmd.move.lengthSquared() > 0) {
-            updatePlayerPosition(geom.ship, connection.player, cmd);
-        }
-        updatePlayerRotation(connection.player, cmd);
-
-        if(cmd.ship != null) {
-            updateShip(bindTo.parent, cmd);
-        }
-
-        if(cmd.pick != null) {
-            pickItem(connection, cmd);
-        }
-        
-        if(cmd.unpick != null) {
-            unpickItem(connection, cmd);
-        }
-
-        if(cmd.build != null) {
-            BlockChanges changes = (BlockChanges) world.getComponent(bindTo.parent, CompType.BlockChanges);
-            build(connection, cmd.build, geom.ship, changes);
-        }
-        
-        if(cmd.unbuild != null) {
-            BlockChanges changes = (BlockChanges) world.getComponent(bindTo.parent, CompType.BlockChanges);
-            unbuild(connection, cmd.unbuild, geom.ship, changes);
-        }
-        
-        if(cmd.teleport != null) {
-            teleport(connection, cmd.teleport);
-        }
-        
-        if(cmd.cmdText != null) {
-            cmdText(connection, cmd.cmdText);
-        }
-        
-        if(cmd.floppy != null) {
-            changeFloppy(connection, cmd.floppy);
-        }
-        
-        if(cmd.bootRom != null) {
-            changeBootRom(connection, cmd.bootRom);
-        }
-        
-        Keyboard keys = cmd.keyboard;
-        
-        if(keys.keyEventPtr > 0 && connection.item >= 0) {
-            Log.info(keys.toString());
-            
-            Log.info("Connection item: %d %s", connection.item, ID.get(connection.item));
-        
-            KeyboardInterface kbd = (KeyboardInterface) world.getComponent(connection.item, CompType.VirtualKeyboard);
-            if(kbd == null) {
-                Log.warn("No virtual keyboard to handle typing");
-            } else {
-                for(int i=0; i < keys.keyEventPtr; /*NOP*/ ) {
-                    switch(keys.keyEvents[i++]) {
-                        case 'T':
-                            kbd.keyTyped(keys.keyEvents[i++]);
-                            break;
-                        case 'P':
-                            kbd.keyPressed(keys.keyEvents[i++]);
-                            break;
-                        case 'R':
-                            kbd.keyReleased(keys.keyEvents[i++]);
-                            break;
-                        default:
-                            assert false;
-                    }
-                }
-            }
-        }
-    }
 
     private void unpickItem(PlayerConnection connection, UserCommand cmd) {
         connection.item = -1;
@@ -315,12 +191,12 @@ public class NetworkSystem extends Processor {
         // Position pos = connection.player.getComponent(Position.class);
         // ===================
 
-        MonitorDevice mon = (MonitorDevice) world.getComponent(target, CompType.VirtualMonitor);
+        DeviceMonitor mon = (DeviceMonitor) world.getComponent(target, CompType.VirtualMonitor);
         if(mon != null) {
             DCPU dcpu = (DCPU) world.getComponent(mon.dcpuEID, CompType.DCPU);
 
             for(int i=0; i < dcpu.hardwareSize; i++) {
-                KeyboardInterface kbd = (KeyboardInterface) world.getComponent(dcpu.hardware[i], CompType.VirtualKeyboard);
+                InterfaceKeyboard kbd = (InterfaceKeyboard) world.getComponent(dcpu.hardware[i], CompType.VirtualKeyboard);
                 if(kbd != null) {
                     connection.item = dcpu.hardware[i];
                     Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
@@ -331,7 +207,7 @@ public class NetworkSystem extends Processor {
             return;
         }
 
-        FloppyDriveInterface fd = (FloppyDriveInterface) world.getComponent(target, CompType.VirtualFloppyDrive);
+        InterfaceFloppyDrive fd = (InterfaceFloppyDrive) world.getComponent(target, CompType.VirtualFloppyDrive);
         if(fd != null) {
             connection.item = target;
             Mode mode = (Mode) world.getComponent(connection.player, CompType.Mode);
@@ -399,7 +275,7 @@ public class NetworkSystem extends Processor {
     }
 
     private void changeFloppy(PlayerConnection connection, ChangeFloppy change) {
-        FloppyDriveInterface vfd = (FloppyDriveInterface) world.getComponent(connection.item, CompType.VirtualFloppyDrive);
+        InterfaceFloppyDrive vfd = (InterfaceFloppyDrive) world.getComponent(connection.item, CompType.VirtualFloppyDrive);
         if(vfd != null) {
             DCPU dcpu = (DCPU) world.getComponent(vfd.dcpuEID, CompType.DCPU);
             vfd.eject(dcpu);
@@ -409,7 +285,7 @@ public class NetworkSystem extends Processor {
     }
 
     private void changeBootRom(PlayerConnection connection, ChangeBootRom change) {
-        FloppyDriveInterface vfd = (FloppyDriveInterface) world.getComponent(connection.item, CompType.VirtualFloppyDrive);
+        InterfaceFloppyDrive vfd = (InterfaceFloppyDrive) world.getComponent(connection.item, CompType.VirtualFloppyDrive);
         if(vfd != null) {
             DCPU dcpu = (DCPU) world.getComponent(vfd.dcpuEID, CompType.DCPU);
             dcpu.reset(change.filename);
@@ -463,7 +339,7 @@ public class NetworkSystem extends Processor {
         pos.set(sp.vector);
     }
 
-    public void processNewConnections(Connection[] connections) {
+    private void processNewConnections(Connection[] connections) {
         for(Connection c: connections) {
             PlayerConnection pc = (PlayerConnection) c;
             if(!pc.isInitialized) {
@@ -471,6 +347,30 @@ public class NetworkSystem extends Processor {
                 replicateEntitiesToNewConnection(pc);
                 initConnection(pc);
             }
+        }
+    }
+
+    private void replicateEntitiesToNewConnection(PlayerConnection connection) {
+        for(int eid = replicated.iterator(); eid != 0; eid = replicated.next()) {
+            Log.debug(ID.get(eid));
+            replicateComponents(connection, eid);
+        }
+    }
+
+    private void replicateComponents(PlayerConnection connection, int eid) {
+        Bag<Message> list = new Bag<>(20);
+        list.add(new TimestampMessage());
+
+        for(BaseComponent comp = world.compIter(eid); comp != null; comp=world.compNext()) {
+            if(CompType.isReplicable(world.compIterPos)) {
+                Log.debug(comp.toString());
+                Message msg = comp.synchronize(eid);
+                list.add(msg);
+            }
+        }
+
+        if(list.size() > 0) {
+            connection.sendTCP(list.toArray(Message.class));
         }
     }
 
@@ -512,33 +412,4 @@ public class NetworkSystem extends Processor {
         World.INSTANCE.setComponent(connection.player, CompType.CmdText, CmdText.create(cmdText));
     }
 
-    private class ServerNetworkListener extends Listener {
-        @Override
-        public void connected(Connection connection) {
-        }
-
-        @Override
-        public void disconnected(Connection connection) {
-        }
-
-        @Override
-        public void received(Connection connection, Object o) {
-            // Log.info("Received: " + o.getClassValue().getName());
-            try {
-                PlayerConnection pc = (PlayerConnection) connection;
-
-                if(o instanceof Network.Login) {
-                    handleLoginMessage(pc, (Network.Login) o);
-
-                } else if(o instanceof Network.Logout) {
-                    handleLogoutMessage(pc, (Network.Logout) o);
-
-                } else if(o instanceof UserCommand) {
-                    handleUserCmd(pc, (UserCommand) o);
-                }
-            } catch(Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
 }

@@ -1,6 +1,6 @@
 package org.megastage.systems.srv;
 
-import com.jme3.math.Vector3f;
+import org.megastage.ecs.EntitySystem;
 import org.megastage.ecs.World;
 import org.megastage.util.Log;
 import java.util.Random;
@@ -9,13 +9,12 @@ import org.megastage.components.gfx.ShipGeometry;
 import org.megastage.components.srv.VectorAttack;
 import org.megastage.ecs.CompType;
 import org.megastage.ecs.ECSException;
-import org.megastage.ecs.Processor;
 import org.megastage.server.ForceFieldHit;
 import org.megastage.server.Hit;
 import org.megastage.server.NoHit;
 import org.megastage.server.ShipStructureHit;
 
-public class VectorAttackSystem extends Processor {
+public class VectorAttackSystem extends EntitySystem {
     Random random = new Random();
 
     public VectorAttackSystem(World world, long interval) {
@@ -23,7 +22,7 @@ public class VectorAttackSystem extends Processor {
     }
 
     @Override
-    protected void process(int eid) throws ECSException {
+    protected void processEntity(int eid) throws ECSException {
         VectorAttack vecAtt = (VectorAttack) world.getComponentOrError(eid, CompType.VectorAttack);
         
         if(vecAtt.enabled) {

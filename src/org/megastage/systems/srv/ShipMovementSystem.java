@@ -1,20 +1,20 @@
 package org.megastage.systems.srv;
 
+import org.megastage.ecs.EntitySystem;
 import org.megastage.ecs.World;
-import org.megastage.ecs.Processor;
 import org.megastage.util.Log;
 import org.megastage.components.*;
 import org.megastage.components.srv.Acceleration;
 import org.megastage.components.Velocity;
 import org.megastage.ecs.CompType;
 
-public class ShipMovementSystem extends Processor {
+public class ShipMovementSystem extends EntitySystem {
     public ShipMovementSystem(World world, long interval) {
         super(world, interval, CompType.Position, CompType.Velocity, CompType.Acceleration);
     }
 
     @Override
-    protected void process(int eid) {
+    protected void processEntity(int eid) {
         Velocity velocity = (Velocity) world.getComponent(eid, CompType.Velocity);
         Acceleration acceleration = (Acceleration) world.getComponent(eid, CompType.Acceleration);
         Position position = (Position) world.getComponent(eid, CompType.Position);

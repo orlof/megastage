@@ -1,5 +1,7 @@
 package org.megastage.util;
 
+import org.megastage.protocol.Carrier;
+
 import java.util.Arrays;
 
 /**
@@ -9,7 +11,7 @@ import java.util.Arrays;
  * Time: 2:43 PM
  * To change this template use File | Settings | File Templates.
  */
-public class RAM {
+public class RAM implements Carrier {
     public char[] mem;
 
     public RAM() {}
